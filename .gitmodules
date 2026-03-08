@@ -1,0 +1,6 @@
+[submodule "external_deps/Bcrypt"]
+	path = external_deps/Bcrypt
+	url = https://github.com/kay-smith/Bcrypt.cpp
+[submodule "external_deps/jwt-cpp"]
+	path = external_deps/jwt-cpp
+	url = https://github.com/kay-smith/jwt-cpp
