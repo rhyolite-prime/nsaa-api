@@ -26,8 +26,6 @@ namespace raffle::services {
 
         drogon::Task<dto::BaseApiResponse> deleteUser(const std::string &userId);
 
-
-
     };
 
 }
