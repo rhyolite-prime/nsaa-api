@@ -20,6 +20,8 @@ namespace raffle::services {
 
         drogon::Task<dto::BaseApiResponse> getStats();
 
+        drogon::Task<dto::BaseApiResponse> getPermissions();
+
         drogon::Task<dto::BaseApiResponse> createAsync(const dto::CreateUserDto &dto);
 
         drogon::Task<dto::BaseApiResponse> updateAsync(const dto::UpdateUserDto &dto);

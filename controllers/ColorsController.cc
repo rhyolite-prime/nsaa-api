@@ -84,9 +84,9 @@ Task<HttpResponsePtr> ColorsController::update(HttpRequestPtr req) {
 
 drogon::Task<HttpResponsePtr> ColorsController::deleteColor(HttpRequestPtr req) {
 
-    auto userId = req->getParameter("id");
+    auto colourId = req->getParameter("id");
 
-    if (userId.empty()) {
+    if (colourId.empty()) {
         dto::BaseApiResponse response;
         response.success = false;
         response.error["message"] = "Color ID is required";
@@ -96,9 +96,9 @@ drogon::Task<HttpResponsePtr> ColorsController::deleteColor(HttpRequestPtr req) 
     }
 
     auto plugin = drogon::app().getPlugin<plugins::RaffleServicePlugin>();
-    auto &userService = plugin->getColorService();
+    auto &colourService = plugin->getColorService();
 
-    auto result = co_await userService.deleteColor(userId);
+    auto result = co_await colourService.deleteColor(colourId);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     resp->setStatusCode(result.success ? k200OK : (result.error.isMember("code") && result.error["code"].asInt() == constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
     co_return resp;

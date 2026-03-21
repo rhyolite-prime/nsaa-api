@@ -14,8 +14,7 @@ using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
 
-drogon::Task<dto::BaseApiResponse>
-UserService::getAll(int pageNo, int pageSize, const std::string &query) {
+drogon::Task<dto::BaseApiResponse> UserService::getAll(int pageNo, int pageSize, const std::string &query) {
 
   auto dbClient = drogon::app().getDbClient();
   auto mp = CoroMapper<Users>(dbClient);
@@ -63,9 +62,11 @@ UserService::getAll(int pageNo, int pageSize, const std::string &query) {
       camelCaseRole["lastName"] = roleJson["last_name"];
       camelCaseRole["email"] = roleJson["email"];
       camelCaseRole["phoneNumber"] = roleJson["phone_number"];
+      camelCaseRole["username"] = roleJson["username"];
       camelCaseRole["profileImageUrl"] = roleJson["profile_image_url"];
       camelCaseRole["isLockedOut"] = roleJson["is_locked_out"];
       camelCaseRole["isActive"] = roleJson["is_active"];
+      camelCaseRole["isAdmin"] = roleJson["is_admin_user"];
       camelCaseRole["createdAt"] = roleJson["created_at"];
       data.append(camelCaseRole);
     }
@@ -127,6 +128,29 @@ drogon::Task<dto::BaseApiResponse> UserService::getStats() {
   }
 }
 
+  drogon::Task<dto::BaseApiResponse> UserService::getPermissions() {
+
+    dto::BaseApiResponse response;
+    try {
+      const auto &customConfig = drogon::app().getCustomConfig();
+      if (customConfig.isMember("Permissions") && customConfig["Permissions"].isArray()) {
+        const auto &permissions = customConfig["Permissions"];
+        response.result["data"] = permissions;
+        response.result["totalCount"] = (Json::UInt64)permissions.size();
+      } else {
+        response.result["data"] = Json::arrayValue;
+        response.result["totalCount"] = 0;
+      }
+      response.success = true;
+      response.message = "Permissions retrieved successfully";
+    } catch (const std::exception &e) {
+      response.success = false;
+      response.error["code"] = constants::ERR_INTERNAL;
+      response.error["message"] = "Internal error.";
+      response.error["detail"] = e.what();
+    }
+    co_return response;
+  }
 drogon::Task<dto::BaseApiResponse> UserService::createAsync(const dto::CreateUserDto &userDto) {
 
   auto dbClient = drogon::app().getDbClient();
@@ -157,8 +181,7 @@ drogon::Task<dto::BaseApiResponse> UserService::createAsync(const dto::CreateUse
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-UserService::updateAsync(const dto::UpdateUserDto &userDto) {
+drogon::Task<dto::BaseApiResponse> UserService::updateAsync(const dto::UpdateUserDto &userDto) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Users> mp(dbClient);
@@ -210,8 +233,7 @@ UserService::updateAsync(const dto::UpdateUserDto &userDto) {
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-UserService::deleteUser(const std::string &userId) {
+drogon::Task<dto::BaseApiResponse> UserService::deleteUser(const std::string &userId) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Users> mp(dbClient);

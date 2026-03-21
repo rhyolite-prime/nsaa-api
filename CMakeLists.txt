@@ -65,7 +65,12 @@ add_executable(${PROJECT_NAME} main.cc
         services/settings/SettingService.cc
         dto/CreateUserDto.h
         dto/UpdateUserDto.h
-        services/users/UserService.cc)
+        services/users/UserService.cc
+        dto/CreateRoleDto.h
+        dto/UpdateRoleDto.h
+        services/roles/RoleService.cc
+        dto/PermissionDto.h
+        dto/CreateSettingsDto.h)
 
 # ##############################################################################
 # If you include the drogon source code locally in your project, use this method

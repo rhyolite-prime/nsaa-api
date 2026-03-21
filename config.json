@@ -350,6 +350,52 @@
         },
         "TicketConfiguration": {
             "Price": 0.3
-        }
+        },
+        "Permissions": [
+            {
+                "systemName": "colours.view",
+                "displayName": "View Colours"
+            },
+            {
+                "systemName": "colours.create",
+                "displayName": "Create Colour"
+            },
+            {
+                "systemName": "colours.update",
+                "displayName": "Update Colour"
+            },
+            {
+                "systemName": "colours.delete",
+                "displayName": "Delete Colour"
+            },
+            {
+                "systemName": "raffles.view",
+                "displayName": "View Raffles"
+            },
+            {
+                "systemName": "raffles.create",
+                "displayName": "Create Raffles"
+            },
+            {
+                "systemName": "raffles.edit",
+                "displayName": "Edit Raffles"
+            },
+            {
+                "systemName": "tickets.view",
+                "displayName": "View Tickets"
+            },
+            {
+                "systemName": "draws.execute",
+                "displayName": "Execute Draws"
+            },
+            {
+                "systemName": "reports.view",
+                "displayName": "View Reports"
+            },
+            {
+                "systemName": "winners.view",
+                "displayName": "View Winners"
+            }
+        ]
     }
 }
