@@ -15,17 +15,15 @@ public:
 
   void fromJson(const Json::Value &json);
 
-  [[nodiscard]] const std::string &getId() const { return id_; }
-  [[nodiscard]] const std::string &getFirstName() const { return first_name_; }
-  [[nodiscard]] const std::string &getLastName() const { return last_name_; }
-  [[nodiscard]] const std::string &getEmail() const { return email_; }
-  [[nodiscard]] const std::string &getUsername() const { return username_; }
-  [[nodiscard]] const std::string &getPhoneNumber() const {
-    return phone_number_;
-  }
-  [[nodiscard]] const std::vector<std::string> &getRoles() const {
-    return roles_;
-  }
+  [[nodiscard]] const std::string& getId() const { return id_; }
+  [[nodiscard]] const std::string& getFirstName() const { return first_name_; }
+  [[nodiscard]] const std::string& getLastName() const { return last_name_; }
+  [[nodiscard]] const std::string& getEmail() const { return email_; }
+  [[nodiscard]] const std::string& getUsername() const { return username_; }
+  [[nodiscard]] const std::string& getPhoneNumber() const { return phone_number_; }
+  [[nodiscard]] bool isAdmin() const { return is_admin_; }
+  [[nodiscard]] bool isActive() const { return is_active_; }
+  [[nodiscard]] const std::vector<std::string>& getRoles() const { return roles_; }
 
   void setId(const std::string &value) { id_ = value; }
   void setFirstName(const std::string &value) { first_name_ = value; }
@@ -33,6 +31,8 @@ public:
   void setEmail(const std::string &value) { email_ = value; }
   void setUsername(const std::string &value) { username_ = value; }
   void setPhoneNumber(const std::string &value) { phone_number_ = value; }
+  void setIsAdmin(bool value) { is_admin_ = value; }
+  void setIsActive(bool value) { is_active_ = value; }
   void setRoles(const std::vector<std::string> &value) { roles_ = value; }
 
 private:
@@ -43,6 +43,8 @@ private:
   std::string email_;
   std::string password_;
   std::string phone_number_;
+  bool is_admin_ = false;
+  bool is_active_ = false;
   std::vector<std::string> roles_;
 };
 
@@ -70,6 +72,14 @@ inline void UpdateUserDto::fromJson(const Json::Value &json) {
 
   if (json.isMember("phoneNumber") && !json["phoneNumber"].isNull()) {
     phone_number_ = json["phoneNumber"].asString();
+  }
+
+  if (json.isMember("isAdmin") && !json["isAdmin"].isNull()) {
+    is_admin_ = json["isAdmin"].asBool();
+  }
+
+  if (json.isMember("isActive") && !json["isActive"].isNull()) {
+    is_active_ = json["isActive"].asBool();
   }
 
   if (json.isMember("roles") && json["roles"].isArray()) {

@@ -68,6 +68,21 @@ drogon::Task<dto::BaseApiResponse> UserService::getAll(int pageNo, int pageSize,
       camelCaseRole["isActive"] = roleJson["is_active"];
       camelCaseRole["isAdmin"] = roleJson["is_admin_user"];
       camelCaseRole["createdAt"] = roleJson["created_at"];
+
+      if (roleJson.isMember("roles") && roleJson["roles"].isString() && !roleJson["roles"].asString().empty()) {
+        Json::Value parsedRoles;
+        Json::CharReaderBuilder readerBuilder;
+        std::string errs;
+        std::istringstream s(roleJson["roles"].asString());
+        if (Json::parseFromStream(readerBuilder, s, &parsedRoles, &errs)) {
+          camelCaseRole["roles"] = parsedRoles;
+        } else {
+          camelCaseRole["roles"] = Json::arrayValue;
+        }
+      } else {
+        camelCaseRole["roles"] = Json::arrayValue;
+      }
+
       data.append(camelCaseRole);
     }
     response.result["data"] = data;
@@ -128,7 +143,7 @@ drogon::Task<dto::BaseApiResponse> UserService::getStats() {
   }
 }
 
-  drogon::Task<dto::BaseApiResponse> UserService::getPermissions() {
+drogon::Task<dto::BaseApiResponse> UserService::getPermissions() {
 
     dto::BaseApiResponse response;
     try {
@@ -151,6 +166,7 @@ drogon::Task<dto::BaseApiResponse> UserService::getStats() {
     }
     co_return response;
   }
+
 drogon::Task<dto::BaseApiResponse> UserService::createAsync(const dto::CreateUserDto &userDto) {
 
   auto dbClient = drogon::app().getDbClient();
@@ -164,8 +180,17 @@ drogon::Task<dto::BaseApiResponse> UserService::createAsync(const dto::CreateUse
   newUser.setPhoneNumber(userDto.getPhoneNumber());
   newUser.setPasswordHash(bcrypt::generateHash(userDto.getPassword()));
   newUser.setIsActive(true);
+  newUser.setIsAdminUser(userDto.isAdmin());
   newUser.setIsLockedOut(false);
   newUser.setCreatedAt(trantor::Date::now());
+
+  Json::Value rolesJson(Json::arrayValue);
+  for (const auto& role : userDto.getRoles()) {
+    rolesJson.append(role);
+  }
+  Json::StreamWriterBuilder writer;
+  writer["indentation"] = "";
+  newUser.setRoles(Json::writeString(writer, rolesJson));
 
   dto::BaseApiResponse response;
   try {
@@ -213,7 +238,19 @@ drogon::Task<dto::BaseApiResponse> UserService::updateAsync(const dto::UpdateUse
       existingUser.setPhoneNumber(userDto.getPhoneNumber());
     }
 
+    if (!userDto.getRoles().empty()) {
+      Json::Value rolesJson(Json::arrayValue);
+      for (const auto& role : userDto.getRoles()) {
+        rolesJson.append(role);
+      }
+      Json::StreamWriterBuilder writer;
+      writer["indentation"] = "";
+      existingUser.setRoles(Json::writeString(writer, rolesJson));
+    }
+
     existingUser.setUpdatedAt(trantor::Date::now());
+    existingUser.setIsAdminUser(userDto.isAdmin());
+    existingUser.setIsActive(userDto.isActive());
 
     co_await mp.update(existingUser);
 
@@ -267,4 +304,4 @@ drogon::Task<dto::BaseApiResponse> UserService::deleteUser(const std::string &us
   co_return response;
 }
 
-} // namespace raffle::services
+}

@@ -116,9 +116,9 @@ Task<HttpResponsePtr> UsersController::deleteUser(HttpRequestPtr req)
     }
 
     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &roleService = plugin->getRoleService();
+    auto &userService = plugin->getUserService();
 
-    auto result = co_await roleService.deleteRole(userId);
+    auto result = co_await userService.deleteUser(userId);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     resp->setStatusCode(result.success ? k200OK : (result.error.isMember("code") && result.error["code"].asInt() == raffle::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
     co_return resp;
