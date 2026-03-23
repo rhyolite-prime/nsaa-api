@@ -5,8 +5,8 @@
 #ifndef CHOPMONEYRAFFLEAPI_TICKETSERVICE_H
 #define CHOPMONEYRAFFLEAPI_TICKETSERVICE_H
 
-#include "../../dto/BaseApiResponse.h"
-#include "../../dto/CreateTicketDto.h"
+#include "dto/BaseApiResponse.h"
+#include "dto/CreateTicketDto.h"
 #include <drogon/drogon.h>
 #include <string>
 

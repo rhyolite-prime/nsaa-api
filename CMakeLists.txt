@@ -70,7 +70,11 @@ add_executable(${PROJECT_NAME} main.cc
         dto/UpdateRoleDto.h
         services/roles/RoleService.cc
         dto/PermissionDto.h
-        dto/CreateSettingsDto.h)
+        dto/CreateSettingsDto.h
+        dto/WebCheckoutDto.h
+        dto/DirectReceiveMoneyDto.h
+        services/hubtel_api/HubtelApi.cc
+        dto/CheckoutResponse.h)
 
 # ##############################################################################
 # If you include the drogon source code locally in your project, use this method

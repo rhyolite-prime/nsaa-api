@@ -348,6 +348,14 @@
             "DrawCallBackUrl": "https://nsaa-bo-api.rhyoliteprime.com/api/v1/raffle/run-draw",
             "RaffleActivationCallBackUrl": "https://nsaa-bo-api.rhyoliteprime.com/api/v1/raffle/activate"
         },
+        "HubtelPaymentApi":{
+            "ApiIdOrUsername": "B1nxqoW",
+            "ApiKeyOrPassword": "f35f164564334b6d8bf6a02e580aca52",
+            "PosSalesAccountId": "2037871",
+            "PrepaidAccountId": "2024561",
+            "MerchantAccountNumber": "2037871",
+            "WebCheckoutCallBackUrl": "https://nsaa-api.rhyoliteprime.com/api/v1/HubtelCallbackProcessor/WebCheckout"
+        },
         "TicketConfiguration": {
             "Price": 0.3
         },

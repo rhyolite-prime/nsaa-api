@@ -20,6 +20,11 @@
 #include <uuid/uuid.h>
 
 #include "utils/IdGeneratorUtils.h"
+#include "../hubtel_api/HubtelApi.h"
+#include "../../dto/CheckoutResponse.h"
+#include "../../dto/WebCheckoutDto.h"
+#include <iomanip>
+#include <sstream>
 
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
@@ -282,14 +287,38 @@ TicketService::create(const dto::CreateTicketDto &dto) {
     auto result = co_await ticketMapper.insert(newTicket);
 
     // initialize checkout
+    raffle::services::HubtelApi hubtelApi;
+    raffle::dto::WebCheckoutDto webCheckoutDto;
+    webCheckoutDto.setCustomerName("Customer " + dto.getCustomerPhone());
+    webCheckoutDto.setPhoneNo(dto.getCustomerPhone());
+    webCheckoutDto.setCustomerEmail("customer@example.com");
+    webCheckoutDto.setChannel("mtn-gh");
+    webCheckoutDto.setTotalAmount(totalAmount);
+    webCheckoutDto.setDescription("Ticket Purchase - " + raffleSlug);
+    webCheckoutDto.setClientReference(clientReference);
+    
+    const auto &hubtelConfig = customConfig["HubtelPaymentApi"];
+    if (hubtelConfig.isMember("WebCheckoutCallBackUrl")) {
+        webCheckoutDto.setCallbackUrl(hubtelConfig["WebCheckoutCallBackUrl"].asString());
+    }
+
+    auto hubtelResult = co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
 
     dto::BaseApiResponse response;
-    response.success = true;
-    response.message = "Ticket created successfully";
-    response.result["ticketId"] = result.getValueOfId();
-    response.result["ticketNumber"] = result.getValueOfTicketNumber();
-    response.result["paymentReference"] = clientReference;
-    response.result["checkoutUrl"] = "https://pay.hubtel.com/beafd0b9232e4037a5fbc4b951e3bdbd/direct";
+    if (hubtelResult.responseCode == "0000") {
+        response.success = true;
+        response.message = "Ticket created successfully. Please complete payment.";
+        response.result["ticketId"] = result.getValueOfId();
+        response.result["ticketNumber"] = result.getValueOfTicketNumber();
+        response.result["paymentReference"] = clientReference;
+        response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
+    } else {
+        response.success = false;
+        response.message = "Ticket created but failed to initialize payment. " + hubtelResult.status;
+        response.error["code"] = constants::ERR_INTERNAL;
+        response.error["message"] = "Payment initialization failed.";
+        response.result["ticketId"] = result.getValueOfId();
+    }
 
     co_return response;
 
