@@ -84,9 +84,9 @@ Task<HttpResponsePtr> RolesController::update(HttpRequestPtr req)
 
 Task<HttpResponsePtr> RolesController::deleteRole(HttpRequestPtr req)
 {
-    auto colourId = req->getParameter("id");
+    auto roleId = req->getParameter("id");
 
-    if (colourId.empty()) {
+    if (roleId.empty()) {
         raffle::dto::BaseApiResponse response;
         response.success = false;
         response.error["message"] = "Role ID is required";
@@ -98,7 +98,7 @@ Task<HttpResponsePtr> RolesController::deleteRole(HttpRequestPtr req)
     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
     auto &roleService = plugin->getRoleService();
 
-    auto result = co_await roleService.deleteRole(colourId);
+    auto result = co_await roleService.deleteRole(roleId);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     resp->setStatusCode(result.success ? k200OK : (result.error.isMember("code") && result.error["code"].asInt() == raffle::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
     co_return resp;

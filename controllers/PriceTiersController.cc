@@ -1,5 +1,6 @@
 #include "PriceTiersController.h"
 #include "dto/BaseApiResponse.h"
+#include "constants/ErrorCodes.h"
 #include "plugins/RaffleServicePlugin.h"
 
 Task<HttpResponsePtr> PriceTiersController::getAll(HttpRequestPtr req)
@@ -33,36 +34,73 @@ Task<HttpResponsePtr> PriceTiersController::getAll(HttpRequestPtr req)
 
 Task<HttpResponsePtr> PriceTiersController::create(HttpRequestPtr req)
 {
-    raffle::dto::BaseApiResponse response;
-    response.success = true;
+    auto jsonBody = req->getJsonObject();
 
-    response.message = "Price Tiers retrieved successfully";
+    if (!jsonBody) {
+        raffle::dto::BaseApiResponse response;
+        response.success = false;
+        response.error["message"] = "Invalid JSON body";
+        auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+        resp->setStatusCode(k400BadRequest);
+        co_return resp;
+    }
 
-    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    raffle::dto::CreatePriceTierDto priceTierDto;
+    priceTierDto.fromJson(*jsonBody);
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &priceTierService = plugin->getPriceTierService();
+
+    auto result = co_await priceTierService.createAsync(priceTierDto);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
 
 }
 
 Task<HttpResponsePtr> PriceTiersController::update(HttpRequestPtr req)
 {
-    raffle::dto::BaseApiResponse response;
-    response.success = true;
+    auto jsonBody = req->getJsonObject();
 
-    response.message = "Price Tiers retrieved successfully";
+    if (!jsonBody) {
+        raffle::dto::BaseApiResponse response;
+        response.success = false;
+        response.error["message"] = "Invalid JSON body";
+        auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+        resp->setStatusCode(k400BadRequest);
+        co_return resp;
+    }
 
-    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    raffle::dto::UpdatePriceTierDto priceTierDto;
+    priceTierDto.fromJson(*jsonBody);
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &priceTierService = plugin->getPriceTierService();
+
+    auto result = co_await priceTierService.updateAsync(priceTierDto);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
 
 }
 
 Task<HttpResponsePtr> PriceTiersController::deletePriceTier(HttpRequestPtr req)
 {
-    raffle::dto::BaseApiResponse response;
-    response.success = true;
+    auto priceTierId = req->getParameter("id");
 
-    response.message = "Price Tiers deleted successfully";
+    if (priceTierId.empty()) {
+        raffle::dto::BaseApiResponse response;
+        response.success = false;
+        response.error["message"] = "Price Tier is required";
+        auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+        resp->setStatusCode(k400BadRequest);
+        co_return resp;
+    }
 
-    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &priceTierService = plugin->getPriceTierService();
+
+    auto result = co_await priceTierService.deletePriceTier(priceTierId);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    resp->setStatusCode(result.success ? k200OK : (result.error.isMember("code") && result.error["code"].asInt() == raffle::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
     co_return resp;
 
 }

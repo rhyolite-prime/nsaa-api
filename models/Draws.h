@@ -57,6 +57,7 @@ class Draws
         static const std::string _updated_at;
         static const std::string _alias;
         static const std::string _winning_colour;
+        static const std::string _raffle_id;
     };
 
     static const int primaryKeyNumber;
@@ -230,8 +231,18 @@ class Draws
     void setWinningColour(std::string &&pWinningColour) noexcept;
     void setWinningColourToNull() noexcept;
 
+    /**  For column raffle_id  */
+    ///Get the value of the column raffle_id, returns the default value if the column is null
+    const std::string &getValueOfRaffleId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getRaffleId() const noexcept;
+    ///Set the value of the column raffle_id
+    void setRaffleId(const std::string &pRaffleId) noexcept;
+    void setRaffleId(std::string &&pRaffleId) noexcept;
+    void setRaffleIdToNull() noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 13;  }
+
+    static size_t getColumnNumber() noexcept {  return 14;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -266,6 +277,7 @@ class Draws
     std::shared_ptr<::trantor::Date> updatedAt_;
     std::shared_ptr<std::string> alias_;
     std::shared_ptr<std::string> winningColour_;
+    std::shared_ptr<std::string> raffleId_;
     struct MetaData
     {
         const std::string colName_;
@@ -277,7 +289,7 @@ class Draws
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[13]={ false };
+    bool dirtyFlag_[14]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -365,6 +377,11 @@ class Draws
         if(dirtyFlag_[12])
         {
             sql += "winning_colour,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[13])
+        {
+            sql += "raffle_id,";
             ++parametersCount;
         }
         if(parametersCount > 0)
@@ -467,6 +484,11 @@ class Draws
             sql.append(placeholderStr, n);
         }
         if(dirtyFlag_[12])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[13])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);

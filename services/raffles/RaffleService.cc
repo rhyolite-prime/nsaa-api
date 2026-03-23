@@ -6,6 +6,7 @@
 #include "Raffles.h"
 #include "constants/ErrorCodes.h"
 #include "dto/BaseApiResponse.h"
+#include <algorithm>
 #include <cstdio>
 #include <ctime>
 #include <drogon/orm/CoroMapper.h>
@@ -17,18 +18,59 @@ using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::getAll(int pageNo, int pageSize, const std::string &query) {
+static std::string normalizeDateString(std::string dateStr) {
+  if (dateStr.empty())
+    return dateStr;
+  std::replace(dateStr.begin(), dateStr.end(), 'T', ' ');
+  if (dateStr.length() == 16) { // YYYY-MM-DD HH:MM
+    dateStr += ":00";
+  }
+  return dateStr;
+}
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getAll(
+    int pageNo, int pageSize, const std::string &query,
+    const std::string &startDate, const std::string &endDate,
+    const std::string &status) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
   Criteria searchCriteria;
+  bool criteriaSet = false;
+
+  auto addCriteria = [&](const Criteria &c) {
+    if (!criteriaSet) {
+      searchCriteria = c;
+      criteriaSet = true;
+    } else {
+      searchCriteria = searchCriteria && c;
+    }
+  };
+
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
-    searchCriteria =
-        Criteria(Raffles::Cols::_name, CompareOperator::Like, likeQuery) ||
-        Criteria(Raffles::Cols::_slug, CompareOperator::Like, likeQuery);
+    addCriteria(Criteria(Raffles::Cols::_name, CompareOperator::Like,
+                         likeQuery) ||
+                Criteria(Raffles::Cols::_slug, CompareOperator::Like,
+                         likeQuery));
+  }
+
+  if (!status.empty()) {
+    addCriteria(
+        Criteria(Raffles::Cols::_status, CompareOperator::EQ, status));
+  }
+
+  if (!startDate.empty()) {
+    addCriteria(Criteria(
+        Raffles::Cols::_start_time, CompareOperator::GE,
+        trantor::Date::fromDbStringLocal(normalizeDateString(startDate))));
+  }
+
+  if (!endDate.empty()) {
+    addCriteria(Criteria(
+        Raffles::Cols::_start_time, CompareOperator::LE,
+        trantor::Date::fromDbStringLocal(normalizeDateString(endDate))));
   }
 
   try {
@@ -102,8 +144,7 @@ RaffleService::getAll(int pageNo, int pageSize, const std::string &query) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::createAsync(const dto::CreateRaffleDto &dto) {
+drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateRaffleDto &dto) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
@@ -136,13 +177,13 @@ RaffleService::createAsync(const dto::CreateRaffleDto &dto) {
       newRaffle.setStatus("SCHEDULED"); // Default status as per schema
     }
 
-    newRaffle.setPrizePool("0.00");
+    newRaffle.setPrizePool(dto.getPrizePool());
     newRaffle.setTotalEntries(0);
 
     // Parse dates
-    auto startTime = trantor::Date::fromDbStringLocal(dto.getStartTime());
-    auto endTime = trantor::Date::fromDbStringLocal(dto.getEndTime());
-    auto drawTime = trantor::Date::fromDbStringLocal(dto.getDrawTime());
+    auto startTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getStartTime()));
+    auto endTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getEndTime()));
+    auto drawTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getDrawTime()));
 
     newRaffle.setStartTime(startTime);
     newRaffle.setEndTime(endTime);
@@ -171,6 +212,7 @@ RaffleService::createAsync(const dto::CreateRaffleDto &dto) {
       std::string drawCode(buf);
       newDraw.setDrawCode(drawCode);
       newDraw.setAlias(dto.getSlug());
+      newDraw.setRaffleId(result.getValueOfId());
       newDraw.setStatus("SCHEDULED");
 
       // Set draw date and time from raffle's drawTime
@@ -219,15 +261,114 @@ RaffleService::createAsync(const dto::CreateRaffleDto &dto) {
 
 drogon::Task<dto::BaseApiResponse>
 RaffleService::updateAsync(const dto::UpdateRaffleDto &dto) {
-  dto::BaseApiResponse response;
-  response.success = false;
-  response.error["code"] = constants::ERR_UNSUPPORTED_OPERATION;
-  response.error["message"] = "Not implemented";
-  co_return response;
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> mapper(dbClient);
+
+  try {
+    if (dto.getId().empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Raffle ID is required for update.";
+      co_return errorResponse;
+    }
+
+    auto existingRaffle = co_await mapper.findByPrimaryKey(dto.getId());
+
+    bool drawTimeChanged = false;
+    bool slugChanged = false;
+
+    if (!dto.getName().empty()) {
+      existingRaffle.setName(dto.getName());
+    }
+
+    if (!dto.getSlug().empty() && existingRaffle.getValueOfSlug() != dto.getSlug()) {
+      existingRaffle.setSlug(dto.getSlug());
+      slugChanged = true;
+    }
+
+    if (!dto.getStatus().empty()) {
+      existingRaffle.setStatus(dto.getStatus());
+    }
+
+    if (!dto.getPrizePool().empty()) {
+      existingRaffle.setPrizePool(dto.getPrizePool());
+    }
+
+    if (!dto.getStartTime().empty()) {
+      existingRaffle.setStartTime(
+          trantor::Date::fromDbStringLocal(normalizeDateString(dto.getStartTime())));
+    }
+
+    if (!dto.getEndTime().empty()) {
+      existingRaffle.setEndTime(
+          trantor::Date::fromDbStringLocal(normalizeDateString(dto.getEndTime())));
+    }
+
+    if (!dto.getDrawTime().empty()) {
+      auto newDrawTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getDrawTime()));
+      if (existingRaffle.getValueOfDrawTime() != newDrawTime) {
+        existingRaffle.setDrawTime(newDrawTime);
+        drawTimeChanged = true;
+      }
+    }
+
+    auto result = co_await mapper.update(existingRaffle);
+
+    if (drawTimeChanged || slugChanged) {
+      try {
+        CoroMapper<Draws> drawMapper(dbClient);
+        auto draw = co_await drawMapper.findOne(
+            Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, dto.getId()));
+
+        if (drawTimeChanged) {
+          auto drawTimeDate = existingRaffle.getValueOfDrawTime();
+          time_t seconds = static_cast<time_t>(
+              drawTimeDate.microSecondsSinceEpoch() / 1000000);
+          struct tm tm_time;
+          localtime_r(&seconds, &tm_time);
+          char buf[32];
+          snprintf(buf, sizeof(buf), "%04d%02d%02d-%02d%02d",
+                   tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
+                   tm_time.tm_hour, tm_time.tm_min);
+          draw.setDrawCode(std::string(buf));
+          draw.setDrawDate(drawTimeDate);
+        }
+
+        if (slugChanged) {
+          draw.setAlias(existingRaffle.getValueOfSlug());
+        }
+
+        co_await drawMapper.update(draw);
+      } catch (const std::exception &e) {
+        LOG_ERROR << "Failed to update associated draw for raffle "
+                  << dto.getId() << ": " << e.what();
+      }
+    }
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.message = "Raffle updated successfully";
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while updating raffle.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::deleteRaffle(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::deleteRaffle(const std::string &raffleId) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
@@ -241,6 +382,31 @@ RaffleService::deleteRaffle(const std::string &raffleId) {
       co_return errorResponse;
     }
 
+    // 1. Fetch the raffle to check its status
+    auto existingRaffle = co_await mapper.findByPrimaryKey(raffleId);
+
+    // 2. Guard: Prevent deletion of ACTIVE raffles
+    if (existingRaffle.getValueOfStatus() == "ACTIVE") {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Cannot delete an active raffle. Deactivate it first.";
+      co_return errorResponse;
+    }
+
+    // 3. Delete associated draw record if it exists
+    try {
+      CoroMapper<Draws> drawMapper(dbClient);
+      co_await drawMapper.deleteBy(
+          Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+    } catch (const std::exception &e) {
+      LOG_ERROR << "Failed to delete associated draw for raffle " << raffleId
+                << ": " << e.what();
+      // Continue with raffle deletion even if draw deletion fails (or should we fail?)
+      // Given the requirement, let's proceed but log the error.
+    }
+
+    // 4. Delete the raffle record
     auto deletedRowCount = co_await mapper.deleteByPrimaryKey(raffleId);
 
     if (deletedRowCount == 0) {
@@ -462,8 +628,7 @@ RaffleService::updateWinningColour(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::activate(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>RaffleService::activate(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 

@@ -289,8 +289,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
     response.result["ticketId"] = result.getValueOfId();
     response.result["ticketNumber"] = result.getValueOfTicketNumber();
     response.result["paymentReference"] = clientReference;
-    response.result["checkoutUrl"] =
-        "https://pay.hubtel.com/beafd0b9232e4037a5fbc4b951e3bdbd/direct";
+    response.result["checkoutUrl"] = "https://pay.hubtel.com/beafd0b9232e4037a5fbc4b951e3bdbd/direct";
 
     co_return response;
 

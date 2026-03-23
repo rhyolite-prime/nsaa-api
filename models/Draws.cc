@@ -26,6 +26,7 @@ const std::string Draws::Cols::_completed_at = "\"completed_at\"";
 const std::string Draws::Cols::_updated_at = "\"updated_at\"";
 const std::string Draws::Cols::_alias = "\"alias\"";
 const std::string Draws::Cols::_winning_colour = "\"winning_colour\"";
+const std::string Draws::Cols::_raffle_id = "\"raffle_id\"";
 const std::string Draws::primaryKeyName = "id";
 const bool Draws::hasPrimaryKey = true;
 const std::string Draws::tableName = "\"draws\"";
@@ -43,7 +44,8 @@ const std::vector<typename Draws::MetaData> Draws::metaData_={
 {"completed_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"alias","std::string","character varying",200,0,0,0},
-{"winning_colour","std::string","character varying",50,0,0,0}
+{"winning_colour","std::string","character varying",50,0,0,0},
+{"raffle_id","std::string","uuid",0,0,0,0}
 };
 const std::string &Draws::getColumnName(size_t index) noexcept(false)
 {
@@ -178,11 +180,15 @@ Draws::Draws(const Row &r, const ssize_t indexOffset) noexcept
         {
             winningColour_=std::make_shared<std::string>(r["winning_colour"].as<std::string>());
         }
+        if(!r["raffle_id"].isNull())
+        {
+            raffleId_=std::make_shared<std::string>(r["raffle_id"].as<std::string>());
+        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 13 > r.size())
+        if(offset + 14 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -325,13 +331,18 @@ Draws::Draws(const Row &r, const ssize_t indexOffset) noexcept
         {
             winningColour_=std::make_shared<std::string>(r[index].as<std::string>());
         }
+        index = offset + 13;
+        if(!r[index].isNull())
+        {
+            raffleId_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
     }
 
 }
 
 Draws::Draws(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 13)
+    if(pMasqueradingVector.size() != 14)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -510,6 +521,14 @@ Draws::Draws(const Json::Value &pJson, const std::vector<std::string> &pMasquera
         if(!pJson[pMasqueradingVector[12]].isNull())
         {
             winningColour_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
+        }
+    }
+    if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
+    {
+        dirtyFlag_[13] = true;
+        if(!pJson[pMasqueradingVector[13]].isNull())
+        {
+            raffleId_=std::make_shared<std::string>(pJson[pMasqueradingVector[13]].asString());
         }
     }
 }
@@ -692,12 +711,20 @@ Draws::Draws(const Json::Value &pJson) noexcept(false)
             winningColour_=std::make_shared<std::string>(pJson["winning_colour"].asString());
         }
     }
+    if(pJson.isMember("raffle_id"))
+    {
+        dirtyFlag_[13]=true;
+        if(!pJson["raffle_id"].isNull())
+        {
+            raffleId_=std::make_shared<std::string>(pJson["raffle_id"].asString());
+        }
+    }
 }
 
 void Draws::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 13)
+    if(pMasqueradingVector.size() != 14)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -877,6 +904,14 @@ void Draws::updateByMasqueradedJson(const Json::Value &pJson,
             winningColour_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
+    if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
+    {
+        dirtyFlag_[13] = true;
+        if(!pJson[pMasqueradingVector[13]].isNull())
+        {
+            raffleId_=std::make_shared<std::string>(pJson[pMasqueradingVector[13]].asString());
+        }
+    }
 }
 
 void Draws::updateByJson(const Json::Value &pJson) noexcept(false)
@@ -1054,6 +1089,14 @@ void Draws::updateByJson(const Json::Value &pJson) noexcept(false)
         if(!pJson["winning_colour"].isNull())
         {
             winningColour_=std::make_shared<std::string>(pJson["winning_colour"].asString());
+        }
+    }
+    if(pJson.isMember("raffle_id"))
+    {
+        dirtyFlag_[13] = true;
+        if(!pJson["raffle_id"].isNull())
+        {
+            raffleId_=std::make_shared<std::string>(pJson["raffle_id"].asString());
         }
     }
 }
@@ -1374,6 +1417,33 @@ void Draws::setWinningColourToNull() noexcept
     dirtyFlag_[12] = true;
 }
 
+const std::string &Draws::getValueOfRaffleId() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(raffleId_)
+        return *raffleId_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Draws::getRaffleId() const noexcept
+{
+    return raffleId_;
+}
+void Draws::setRaffleId(const std::string &pRaffleId) noexcept
+{
+    raffleId_ = std::make_shared<std::string>(pRaffleId);
+    dirtyFlag_[13] = true;
+}
+void Draws::setRaffleId(std::string &&pRaffleId) noexcept
+{
+    raffleId_ = std::make_shared<std::string>(std::move(pRaffleId));
+    dirtyFlag_[13] = true;
+}
+void Draws::setRaffleIdToNull() noexcept
+{
+    raffleId_.reset();
+    dirtyFlag_[13] = true;
+}
+
 void Draws::updateId(const uint64_t id)
 {
 }
@@ -1393,7 +1463,8 @@ const std::vector<std::string> &Draws::insertColumns() noexcept
         "completed_at",
         "updated_at",
         "alias",
-        "winning_colour"
+        "winning_colour",
+        "raffle_id"
     };
     return inCols;
 }
@@ -1543,6 +1614,17 @@ void Draws::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[13])
+    {
+        if(getRaffleId())
+        {
+            binder << getValueOfRaffleId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 
 const std::vector<std::string> Draws::updateColumns() const
@@ -1599,6 +1681,10 @@ const std::vector<std::string> Draws::updateColumns() const
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
+    }
+    if(dirtyFlag_[13])
+    {
+        ret.push_back(getColumnName(13));
     }
     return ret;
 }
@@ -1748,6 +1834,17 @@ void Draws::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[13])
+    {
+        if(getRaffleId())
+        {
+            binder << getValueOfRaffleId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 Json::Value Draws::toJson() const
 {
@@ -1856,6 +1953,14 @@ Json::Value Draws::toJson() const
     {
         ret["winning_colour"]=Json::Value();
     }
+    if(getRaffleId())
+    {
+        ret["raffle_id"]=getValueOfRaffleId();
+    }
+    else
+    {
+        ret["raffle_id"]=Json::Value();
+    }
     return ret;
 }
 
@@ -1868,7 +1973,7 @@ Json::Value Draws::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 13)
+    if(pMasqueradingVector.size() == 14)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -2013,6 +2118,17 @@ Json::Value Draws::toMasqueradedJson(
                 ret[pMasqueradingVector[12]]=Json::Value();
             }
         }
+        if(!pMasqueradingVector[13].empty())
+        {
+            if(getRaffleId())
+            {
+                ret[pMasqueradingVector[13]]=getValueOfRaffleId();
+            }
+            else
+            {
+                ret[pMasqueradingVector[13]]=Json::Value();
+            }
+        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
@@ -2120,6 +2236,14 @@ Json::Value Draws::toMasqueradedJson(
     {
         ret["winning_colour"]=Json::Value();
     }
+    if(getRaffleId())
+    {
+        ret["raffle_id"]=getValueOfRaffleId();
+    }
+    else
+    {
+        ret["raffle_id"]=Json::Value();
+    }
     return ret;
 }
 
@@ -2200,13 +2324,18 @@ bool Draws::validateJsonForCreation(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(12, "winning_colour", pJson["winning_colour"], err, true))
             return false;
     }
+    if(pJson.isMember("raffle_id"))
+    {
+        if(!validJsonOfField(13, "raffle_id", pJson["raffle_id"], err, true))
+            return false;
+    }
     return true;
 }
 bool Draws::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 13)
+    if(pMasqueradingVector.size() != 14)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2326,6 +2455,14 @@ bool Draws::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                   return false;
           }
       }
+      if(!pMasqueradingVector[13].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[13]))
+          {
+              if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
+                  return false;
+          }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -2406,13 +2543,18 @@ bool Draws::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(12, "winning_colour", pJson["winning_colour"], err, false))
             return false;
     }
+    if(pJson.isMember("raffle_id"))
+    {
+        if(!validJsonOfField(13, "raffle_id", pJson["raffle_id"], err, false))
+            return false;
+    }
     return true;
 }
 bool Draws::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                              const std::vector<std::string> &pMasqueradingVector,
                                              std::string &err)
 {
-    if(pMasqueradingVector.size() != 13)
+    if(pMasqueradingVector.size() != 14)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2486,6 +2628,11 @@ bool Draws::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
+      {
+          if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
               return false;
       }
     }
@@ -2681,6 +2828,17 @@ bool Draws::validJsonOfField(size_t index,
                 return false;
             }
 
+            break;
+        case 13:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
             break;
         default:
             err="Internal error in the server";

@@ -16,6 +16,7 @@ public:
 
   void fromJson(const Json::Value &json);
 
+  [[nodiscard]] const std::string &getId() const { return id_; }
   [[nodiscard]] const std::string &getName() const { return name_; }
   [[nodiscard]] const std::string &getSlug() const { return slug_; }
   [[nodiscard]] const std::string &getStartTime() const { return start_time_; }
@@ -25,6 +26,7 @@ public:
   [[nodiscard]] const std::string &getPrizePool() const { return prize_pool_; }
 
   // Setters
+  void setId(const std::string &value) { id_ = value; }
   void setName(const std::string &value) { name_ = value; }
   void setSlug(const std::string &value) { slug_ = value; }
   void setStartTime(const std::string &value) { start_time_ = value; }
@@ -34,6 +36,7 @@ public:
   void setPrizePool(const std::string &value) { prize_pool_ = value; }
 
 private:
+  std::string id_;
   std::string name_;
   std::string slug_;
   std::string start_time_;
@@ -44,6 +47,10 @@ private:
 };
 
 inline void UpdateRaffleDto::fromJson(const Json::Value &json) {
+
+  if (json.isMember("id") && !json["id"].isNull()) {
+    id_ = json["id"].asString();
+  }
 
   if (json.isMember("name") && !json["name"].isNull()) {
     name_ = json["name"].asString();
