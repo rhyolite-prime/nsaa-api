@@ -10,8 +10,8 @@ int main() {
         // Array of allowed origins
         const std::vector<std::string> allowedOrigins = {
             "http://localhost:3008",
-            "https://nsaa-bo.rhyoliteprime.com",
-            "https://rhyoliteprime.com",
+            "https://nsaa.rhyoliteprime.com",
+            "https://pos.rhyoliteprime.com",
             "https://www.rhyoliteprime.com"
         };
 
