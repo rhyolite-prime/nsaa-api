@@ -207,7 +207,7 @@
             //display_local_time: false by default, if true, the log time is displayed in local time
             "display_local_time": false,
             "log_path": "./logs",
-            "log_file": "chop-money-raffle.log",
+            "log_file": "callback-gateway.log",
             "log_async": true,
             "log_flush_interval": 1
         },

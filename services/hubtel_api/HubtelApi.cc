@@ -28,7 +28,8 @@ HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
     Json::Value payload;
     payload["totalAmount"] = dto.getTotalAmount();
     payload["description"] = dto.getDescription();
-    payload["callbackUrl"] = dto.getCallbackUrl();
+    payload["callbackUrl"] = "https://webhook.site/93972647-7e6d-40dc-af87-5c3d9f6f696b";
+    //payload["callbackUrl"] = dto.getCallbackUrl();
     payload["returnUrl"] = dto.getReturnUrl();
     payload["merchantAccountNumber"] = merchantAccountNumber;
     payload["cancellationUrl"] = dto.getCancellationUrl();
@@ -37,6 +38,10 @@ HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
     Json::StreamWriterBuilder writer;
     writer["indentation"] = "";
     const std::string body = Json::writeString(writer, payload);
+
+    LOG_INFO << "InitializeWebCheckout request body => " << body
+                 << ", reference: " << dto.getClientReference();
+
 
     const std::string auth = username + ":" + password;
     const std::string authHeader = "Basic " + drogon::utils::base64Encode(auth);
