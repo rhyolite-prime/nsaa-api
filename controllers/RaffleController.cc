@@ -1,5 +1,5 @@
 #include "RaffleController.h"
-
+#include "constants/ErrorCodes.h"
 #include "dto/BaseApiResponse.h"
 #include "plugins/RaffleServicePlugin.h"
 
@@ -23,10 +23,25 @@ Task<HttpResponsePtr> RaffleController::getAll(HttpRequestPtr req) {
     query = "";
   }
 
+  std::string startDate = req->getParameter("startDate");
+  if (startDate.empty()) {
+    startDate = "";
+  }
+
+  std::string endDate = req->getParameter("endDate");
+  if (startDate.empty()) {
+    startDate = "";
+  }
+
+  std::string status = req->getParameter("status");
+  if (status.empty()) {
+    status = "";
+  }
+
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &raffleService = plugin->getRaffleService();
 
-  auto result = co_await raffleService.getAll(pageNo, pageSize, query);
+  auto result = co_await raffleService.getAll(pageNo, pageSize, query, startDate, endDate, status);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }
@@ -178,5 +193,28 @@ Task<HttpResponsePtr> RaffleController::activate(HttpRequestPtr req) {
   response.error["message"] = "Scheduled campaign run successfully";
   auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
   resp->setStatusCode(k400BadRequest);
+  co_return resp;
+}
+
+
+Task<HttpResponsePtr> RaffleController::deleteRaffle(HttpRequestPtr req)
+{
+  auto raffleId = req->getParameter("id");
+
+  if (raffleId.empty()) {
+    raffle::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Raffle ID is required";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.deleteRaffle(raffleId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  resp->setStatusCode(result.success ? k200OK : (result.error.isMember("code") && result.error["code"].asInt() == raffle::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
   co_return resp;
 }

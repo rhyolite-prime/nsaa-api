@@ -16,13 +16,15 @@ namespace raffle::services {
 class RaffleService {
 public:
   drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize,
-                                            const std::string &query);
+                                            const std::string &query,
+                                            const std::string &startDate = "",
+                                            const std::string &endDate = "",
+                                            const std::string &status = "");
 
   drogon::Task<dto::BaseApiResponse>
   createAsync(const dto::CreateRaffleDto &dto);
 
-  drogon::Task<dto::BaseApiResponse>
-  updateAsync(const dto::UpdateRaffleDto &dto);
+  drogon::Task<dto::BaseApiResponse> updateAsync(const dto::UpdateRaffleDto &dto);
 
   drogon::Task<dto::BaseApiResponse> deleteRaffle(const std::string &raffleId);
   drogon::Task<dto::BaseApiResponse>

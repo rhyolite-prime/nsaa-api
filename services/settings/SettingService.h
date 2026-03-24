@@ -8,13 +8,16 @@
 #include <drogon/drogon.h>
 #include <drogon/utils/coroutine.h>
 
+#include "dto/CreateSettingsDto.h"
+
 namespace raffle::services {
 
     class SettingService {
     public:
 
-        drogon::Task<dto::BaseApiResponse> getSettings(int pageNo, int pageSize, const std::string &query);
-        drogon::Task<dto::BaseApiResponse> createOrUpdate();
+        drogon::Task<dto::BaseApiResponse> getSettings();
+
+        drogon::Task<dto::BaseApiResponse> createOrUpdate(const dto::CreateSettingsDto &dto);
 
 
     };

@@ -7,6 +7,8 @@
 #include "dto/BaseApiResponse.h"
 #include <drogon/drogon.h>
 #include <drogon/utils/coroutine.h>
+#include "dto/CreatePriceTierDto.h"
+#include "dto/UpdatePriceTierDto.h"
 
 namespace raffle::services {
 
@@ -15,6 +17,11 @@ namespace raffle::services {
 
         drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
 
+        drogon::Task<dto::BaseApiResponse> createAsync(const dto::CreatePriceTierDto &dto);
+
+        drogon::Task<dto::BaseApiResponse> updateAsync(const dto::UpdatePriceTierDto &dto);
+
+        drogon::Task<dto::BaseApiResponse> deletePriceTier(const std::string &tierId);
 
     };
 

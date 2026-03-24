@@ -1,0 +1,12 @@
+**** To add Bcrypt and jwt-cpp as dependencies ***
+git submodule add <bcrypt-repo-url> external_deps/Bcrypt
+git submodule add <jwt-cpp-repo-url> external_deps/jwt-cpp
+
+git add .gitmodules external_deps/Bcrypt external_deps/jwt-cpp
+git commit -m "Add Bcrypt and jwt-cpp as submodules"
+
+*** Anyone cloning the repo must also run:
+git submodule update --init --recursive
+
+or clone with:
+git clone --recurse-submodules <repo-url>

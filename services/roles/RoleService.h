@@ -8,14 +8,20 @@
 #include "dto/BaseApiResponse.h"
 #include <drogon/drogon.h>
 #include <drogon/utils/coroutine.h>
+#include "dto/CreateRoleDto.h"
+#include "dto/UpdateRoleDto.h"
 
 namespace raffle::services {
 
     class RoleService {
     public:
+        drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
 
-        drogon::Task<dto::BaseApiResponse> getStats(int pageNo, int pageSize, const std::string &query);
+        drogon::Task<dto::BaseApiResponse> createAsync(const dto::CreateRoleDto &dto);
 
+        drogon::Task<dto::BaseApiResponse> updateAsync(const dto::UpdateRoleDto &dto);
+
+        drogon::Task<dto::BaseApiResponse> deleteRole(const std::string &roleId);
 
     };
 

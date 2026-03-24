@@ -11,7 +11,7 @@ public:
   ADD_METHOD_TO(TicketsController::getAll, std::string(PREFIX) + "/get-all",
                 Get, Options);
   ADD_METHOD_TO(TicketsController::getStats, std::string(PREFIX) + "/get-stats", Get, Options);
-  ADD_METHOD_TO(TicketsController::create, std::string(PREFIX) + "/create", Post, Options);
+  ADD_METHOD_TO(TicketsController::create, std::string(PREFIX) + "/buy", Post, Options);
   METHOD_LIST_END
 
   drogon::Task<HttpResponsePtr> getAll(HttpRequestPtr req);

@@ -205,7 +205,11 @@
             //The TRACE level is only valid when built in DEBUG mode.
             "log_level": "DEBUG",
             //display_local_time: false by default, if true, the log time is displayed in local time
-            "display_local_time": false
+            "display_local_time": false,
+            "log_path": "./logs",
+            "log_file": "callback-gateway.log",
+            "log_async": true,
+            "log_flush_interval": 1
         },
         //run_as_daemon: False by default
         "run_as_daemon": false,
@@ -348,8 +352,62 @@
             "DrawCallBackUrl": "https://nsaa-bo-api.rhyoliteprime.com/api/v1/raffle/run-draw",
             "RaffleActivationCallBackUrl": "https://nsaa-bo-api.rhyoliteprime.com/api/v1/raffle/activate"
         },
+        "HubtelPaymentApi":{
+            "ApiIdOrUsername": "B1nxqoW",
+            "ApiKeyOrPassword": "f35f164564334b6d8bf6a02e580aca52",
+            "PosSalesAccountId": "2037871",
+            "PrepaidAccountId": "2024561",
+            "MerchantAccountNumber": "2037871",
+            "WebCheckoutCallBackUrl": "https://nsaa-api.rhyoliteprime.com/api/v1/HubtelCallbackProcessor/WebCheckout"
+        },
         "TicketConfiguration": {
             "Price": 0.3
-        }
+        },
+        "Permissions": [
+            {
+                "systemName": "colours.view",
+                "displayName": "View Colours"
+            },
+            {
+                "systemName": "colours.create",
+                "displayName": "Create Colour"
+            },
+            {
+                "systemName": "colours.update",
+                "displayName": "Update Colour"
+            },
+            {
+                "systemName": "colours.delete",
+                "displayName": "Delete Colour"
+            },
+            {
+                "systemName": "raffles.view",
+                "displayName": "View Raffles"
+            },
+            {
+                "systemName": "raffles.create",
+                "displayName": "Create Raffles"
+            },
+            {
+                "systemName": "raffles.edit",
+                "displayName": "Edit Raffles"
+            },
+            {
+                "systemName": "tickets.view",
+                "displayName": "View Tickets"
+            },
+            {
+                "systemName": "draws.execute",
+                "displayName": "Execute Draws"
+            },
+            {
+                "systemName": "reports.view",
+                "displayName": "View Reports"
+            },
+            {
+                "systemName": "winners.view",
+                "displayName": "View Winners"
+            }
+        ]
     }
 }

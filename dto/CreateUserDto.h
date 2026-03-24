@@ -23,6 +23,8 @@ namespace raffle::dto {
         [[nodiscard]] const std::string& getUsername() const { return username_; }
         [[nodiscard]] const std::string& getPassword() const { return password_; }
         [[nodiscard]] const std::string& getPhoneNumber() const { return phone_number_; }
+        [[nodiscard]] bool isAdmin() const { return is_admin_; }
+        [[nodiscard]] bool isActive() const { return is_active_; }
         [[nodiscard]] const std::vector<std::string>& getRoles() const { return roles_; }
 
         // Setters
@@ -32,6 +34,8 @@ namespace raffle::dto {
         void setUsername(const std::string& value) { username_ = value; }
         void setPassword(const std::string& value) { password_ = value; }
         void setPhoneNumber(const std::string& value) { phone_number_ = value; }
+        void setIsAdmin(bool value) { is_admin_ = value; }
+        void setIsActive(bool value) { is_active_ = value; }
         void setRoles(const std::vector<std::string>& value) { roles_ = value; }
 
     private:
@@ -42,6 +46,8 @@ namespace raffle::dto {
         std::string email_;
         std::string password_;
         std::string phone_number_;
+        bool is_admin_ = false;
+        bool is_active_ = false;
         std::vector<std::string> roles_;
 
     };
@@ -71,6 +77,14 @@ namespace raffle::dto {
         if (json.isMember("phoneNumber") && !json["phoneNumber"].isNull()) {
             phone_number_ = json["phoneNumber"].asString();
         }
+
+         if (json.isMember("isAdmin") && !json["isAdmin"].isNull()) {
+             is_admin_ = json["isAdmin"].asBool();
+         }
+
+         if (json.isMember("isActive") && !json["isActive"].isNull()) {
+             is_active_ = json["isActive"].asBool();
+         }
 
          if (json.isMember("roles") && json["roles"].isArray()) {
              roles_.clear();

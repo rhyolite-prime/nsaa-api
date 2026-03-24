@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 project(ChopMoneyRaffleApi CXX)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-fcoroutines)
+endif()
+
 include(CheckIncludeFileCXX)
 
 check_include_file_cxx(any HAS_ANY)
@@ -16,8 +24,7 @@ else ()
     set(CMAKE_CXX_STANDARD 14)
 endif ()
 
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+
 
 add_executable(${PROJECT_NAME} main.cc
         plugins/RaffleServicePlugin.h
@@ -58,7 +65,17 @@ add_executable(${PROJECT_NAME} main.cc
         services/settings/SettingService.cc
         dto/CreateUserDto.h
         dto/UpdateUserDto.h
-        services/users/UserService.cc)
+        services/users/UserService.cc
+        dto/CreateRoleDto.h
+        dto/UpdateRoleDto.h
+        services/roles/RoleService.cc
+        dto/PermissionDto.h
+        dto/CreateSettingsDto.h
+        dto/WebCheckoutDto.h
+        dto/DirectReceiveMoneyDto.h
+        services/hubtel_api/HubtelApi.cc
+        dto/CheckoutResponse.h
+        dto/DirectReceiveMoneyResponse.h)
 
 # ##############################################################################
 # If you include the drogon source code locally in your project, use this method
