@@ -51,7 +51,7 @@ HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
     req->setMethod(drogon::Post);
     req->setPath("/items/initiate");
     req->setBody(body);
-    req->addHeader("Content-Type", "application/json");
+    req->setContentTypeCode(drogon::CT_APPLICATION_JSON);
     req->addHeader("Authorization", authHeader);
 
     auto httpResp = co_await client->sendRequestCoro(req);
