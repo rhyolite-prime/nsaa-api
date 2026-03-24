@@ -74,7 +74,8 @@ add_executable(${PROJECT_NAME} main.cc
         dto/WebCheckoutDto.h
         dto/DirectReceiveMoneyDto.h
         services/hubtel_api/HubtelApi.cc
-        dto/CheckoutResponse.h)
+        dto/CheckoutResponse.h
+        dto/DirectReceiveMoneyResponse.h)
 
 # ##############################################################################
 # If you include the drogon source code locally in your project, use this method

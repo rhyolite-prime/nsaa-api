@@ -289,10 +289,8 @@ TicketService::create(const dto::CreateTicketDto &dto) {
     // initialize checkout
     raffle::services::HubtelApi hubtelApi;
     raffle::dto::WebCheckoutDto webCheckoutDto;
-    webCheckoutDto.setCustomerName("Customer " + dto.getCustomerPhone());
-    webCheckoutDto.setPhoneNo(dto.getCustomerPhone());
-    webCheckoutDto.setCustomerEmail("customer@example.com");
-    webCheckoutDto.setChannel("mtn-gh");
+    webCheckoutDto.setCallbackUrl("");
+    webCheckoutDto.setCancellationUrl("");
     webCheckoutDto.setTotalAmount(totalAmount);
     webCheckoutDto.setDescription("Ticket Purchase - " + raffleSlug);
     webCheckoutDto.setClientReference(clientReference);

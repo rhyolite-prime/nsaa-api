@@ -23,9 +23,6 @@ public:
     [[nodiscard]] const std::string &getCallbackUrl() const { return callback_url_; }
     [[nodiscard]] const std::string &getReturnUrl() const { return return_url_; }
     [[nodiscard]] const std::string &getCancellationUrl() const { return cancellation_url_; }
-    [[nodiscard]] const std::string &getCustomerName() const { return customer_name_; }
-    [[nodiscard]] const std::string &getCustomerEmail() const { return customer_email_; }
-    [[nodiscard]] const std::string &getChannel() const { return channel_; }
     [[nodiscard]] const std::string &getClientReference() const { return client_reference_; }
 
     void setPhoneNo(const std::string &value) { phone_no_ = value; }
@@ -34,9 +31,6 @@ public:
     void setCallbackUrl(const std::string &value) { callback_url_ = value; }
     void setReturnUrl(const std::string &value) { return_url_ = value; }
     void setCancellationUrl(const std::string &value) { cancellation_url_ = value; }
-    void setCustomerName(const std::string &value) { customer_name_ = value; }
-    void setCustomerEmail(const std::string &value) { customer_email_ = value; }
-    void setChannel(const std::string &value) { channel_ = value; }
     void setClientReference(const std::string &value) { client_reference_ = value; }
 
 private:
@@ -46,9 +40,6 @@ private:
     std::string callback_url_;
     std::string return_url_;
     std::string cancellation_url_;
-    std::string customer_name_;
-    std::string customer_email_;
-    std::string channel_;
     std::string client_reference_;
 
     };
@@ -78,17 +69,10 @@ private:
             cancellation_url_ = json["cancellationUrl"].asString();
         }
 
-        if (json.isMember("customerName") && !json["customerName"].isNull()) {
-            customer_name_ = json["customerName"].asString();
+        if (json.isMember("clientReference") && !json["clientReference"].isNull()) {
+            client_reference_ = json["clientReference"].asString();
         }
 
-        if (json.isMember("customerEmail") && !json["customerEmail"].isNull()) {
-            customer_email_ = json["customerEmail"].asString();
-        }
-
-        if (json.isMember("channel") && !json["channel"].isNull()) {
-            channel_ = json["channel"].asString();
-        }
     }
 
 
