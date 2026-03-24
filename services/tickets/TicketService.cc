@@ -11,6 +11,7 @@
 #include <drogon/orm/DbClient.h>
 #include <drogon/orm/Mapper.h>
 #include <drogon/utils/coroutine.h>
+#include <string>
 
 #include "Colours.h"
 #include "Draws.h"
@@ -288,7 +289,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
     // initialize checkout
     raffle::services::HubtelApi hubtelApi;
     raffle::dto::WebCheckoutDto webCheckoutDto;
-    webCheckoutDto.setCallbackUrl("https://webhook.site/93972647-7e6d-40dc-af87-5c3d9f6f696b");
+    webCheckoutDto.setCallbackUrl("https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
     webCheckoutDto.setCancellationUrl("https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3");
     webCheckoutDto.setReturnUrl("https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3");
     webCheckoutDto.setTotalAmount(totalAmount);
@@ -337,4 +338,125 @@ TicketService::create(const dto::CreateTicketDto &dto) {
   }
 }
 
-} // namespace raffle::services
+
+drogon::Task<dto::BaseApiResponse>
+TicketService::activate(const std::string &paymentReference) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Tickets> ticketMapper(dbClient);
+  CoroMapper<Raffles> raffleMapper(dbClient);
+  CoroMapper<Draws> drawMapper(dbClient);
+
+  try {
+    // 1. Find the ticket by payment reference
+    auto tickets = co_await ticketMapper.findBy(Criteria(
+        Tickets::Cols::_payment_reference, CompareOperator::EQ, paymentReference));
+
+    if (tickets.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_DB_NOT_FOUND;
+      errorResponse.error["message"] = "Ticket not found with the provided payment reference.";
+      co_return errorResponse;
+    }
+
+    auto ticket = tickets[0];
+
+    // 2. Check if already active (idempotency)
+    if (ticket.getValueOfIsActive() && ticket.getValueOfPaymentStatus() == "PAID") {
+        dto::BaseApiResponse response;
+        response.success = true;
+        response.message = "Ticket is already active.";
+        response.result["ticketId"] = ticket.getValueOfId();
+        co_return response;
+    }
+
+    // 3. Update the ticket
+    ticket.setPaymentStatus("PAID");
+    ticket.setIsActive(true);
+    ticket.setUpdatedAt(trantor::Date::now());
+    co_await ticketMapper.update(ticket);
+
+    // 4. Update the associated Raffle
+    auto raffleId = ticket.getValueOfRaffleId();
+    try {
+        auto raffle = co_await raffleMapper.findByPrimaryKey(raffleId);
+        int currentEntries = raffle.getValueOfTotalEntries();
+        raffle.setTotalEntries(currentEntries + ticket.getValueOfQuantity());
+
+        std::string currentPoolStr = raffle.getValueOfPrizePool();
+        double currentPool = 0;
+        if (!currentPoolStr.empty()) {
+            try {
+                currentPool = std::stod(currentPoolStr);
+            } catch (...) {
+                currentPool = 0;
+            }
+        }
+        double ticketAmount = std::stod(ticket.getValueOfTotalAmount());
+        currentPool += ticketAmount;
+
+        char buffer[64];
+        snprintf(buffer, sizeof(buffer), "%.2f", currentPool);
+        raffle.setPrizePool(std::string(buffer));
+        raffle.setUpdatedAt(trantor::Date::now());
+        
+        co_await raffleMapper.update(raffle);
+    } catch (const std::exception &e) {
+        LOG_ERROR << "Failed to update associated raffle for ticket " << ticket.getValueOfId() << ": " << e.what();
+    }
+
+    // 5. Update the associated Draw
+    auto drawId = ticket.getValueOfDrawId();
+    try {
+        auto draw = co_await drawMapper.findByPrimaryKey(drawId);
+        int currentEntries = draw.getValueOfTotalEntries();
+        draw.setTotalEntries(currentEntries + ticket.getValueOfQuantity());
+
+        std::string currentPoolStr = draw.getValueOfTotalPool();
+        double currentPool = 0;
+        if (!currentPoolStr.empty()) {
+            try {
+                currentPool = std::stod(currentPoolStr);
+            } catch (...) {
+                currentPool = 0;
+            }
+        }
+        double ticketAmount = std::stod(ticket.getValueOfTotalAmount());
+        currentPool += ticketAmount;
+
+        char buffer[64];
+        snprintf(buffer, sizeof(buffer), "%.2f", currentPool);
+        draw.setTotalPool(std::string(buffer));
+        draw.setUpdatedAt(trantor::Date::now());
+        
+        co_await drawMapper.update(draw);
+    } catch (const std::exception &e) {
+        LOG_ERROR << "Failed to update associated draw for ticket " << ticket.getValueOfId() << ": " << e.what();
+    }
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.message = "Ticket activated successfully.";
+    response.result["ticketId"] = ticket.getValueOfId();
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while activating ticket.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+
+
+}
