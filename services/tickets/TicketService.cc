@@ -267,8 +267,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
 
     auto &app = drogon::app();
     auto customConfig = app.getCustomConfig();
-    std::string ticketFee =
-        customConfig["TicketConfiguration"]["Price"].asString();
+    std::string ticketFee = customConfig["TicketConfiguration"]["Price"].asString();
 
     // Placeholder for entry fee
     newTicket.setEntryFee(ticketFee);
@@ -278,7 +277,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
     newTicket.setTotalAmount(std::to_string(totalAmount));
 
     newTicket.setPaymentStatus("PENDING");
-    newTicket.setPurchaseChannel("WSSD"); // USSD, WSSD
+    newTicket.setPurchaseChannel(dto.getPurchaseChannel()); // USSD, WSSD
     newTicket.setPaymentMethod(dto.getPaymentMethod());
 
     newTicket.setIsActive(false); // will be updated and set to true when the
@@ -289,8 +288,9 @@ TicketService::create(const dto::CreateTicketDto &dto) {
     // initialize checkout
     raffle::services::HubtelApi hubtelApi;
     raffle::dto::WebCheckoutDto webCheckoutDto;
-    webCheckoutDto.setCallbackUrl("");
-    webCheckoutDto.setCancellationUrl("");
+    webCheckoutDto.setCallbackUrl("https://webhook.site/93972647-7e6d-40dc-af87-5c3d9f6f696b");
+    webCheckoutDto.setCancellationUrl("https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3");
+    webCheckoutDto.setReturnUrl("https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3");
     webCheckoutDto.setTotalAmount(totalAmount);
     webCheckoutDto.setDescription("Ticket Purchase - " + raffleSlug);
     webCheckoutDto.setClientReference(clientReference);
