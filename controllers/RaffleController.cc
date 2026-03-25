@@ -70,6 +70,17 @@ Task<HttpResponsePtr> RaffleController::create(HttpRequestPtr req) {
   co_return resp;
 }
 
+Task<HttpResponsePtr> RaffleController::getActiveRaffle(HttpRequestPtr req) {
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getActiveRaffle();
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
+}
+
 Task<HttpResponsePtr> RaffleController::update(HttpRequestPtr req) {
 
   auto jsonBody = req->getJsonObject();
@@ -104,8 +115,7 @@ Task<HttpResponsePtr> RaffleController::getDetails(HttpRequestPtr req) {
   co_return resp;
 }
 
-Task<HttpResponsePtr>
-RaffleController::extendRaffleDeadline(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::extendRaffleDeadline(HttpRequestPtr req) {
   raffle::dto::BaseApiResponse response;
   response.success = true;
 
@@ -115,8 +125,7 @@ RaffleController::extendRaffleDeadline(HttpRequestPtr req) {
   co_return resp;
 }
 
-Task<HttpResponsePtr>
-RaffleController::getTopTicketHolders(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::getTopTicketHolders(HttpRequestPtr req) {
   raffle::dto::BaseApiResponse response;
   response.success = true;
 
@@ -126,8 +135,7 @@ RaffleController::getTopTicketHolders(HttpRequestPtr req) {
   co_return resp;
 }
 
-Task<HttpResponsePtr>
-RaffleController::getRecentTicketHolders(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::getRecentTicketHolders(HttpRequestPtr req) {
   raffle::dto::BaseApiResponse response;
   response.success = true;
 
@@ -195,7 +203,6 @@ Task<HttpResponsePtr> RaffleController::activate(HttpRequestPtr req) {
   resp->setStatusCode(k400BadRequest);
   co_return resp;
 }
-
 
 Task<HttpResponsePtr> RaffleController::deleteRaffle(HttpRequestPtr req)
 {

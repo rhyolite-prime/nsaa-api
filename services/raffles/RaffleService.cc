@@ -50,15 +50,12 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(
 
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
-    addCriteria(Criteria(Raffles::Cols::_name, CompareOperator::Like,
-                         likeQuery) ||
-                Criteria(Raffles::Cols::_slug, CompareOperator::Like,
-                         likeQuery));
+    addCriteria(Criteria(Raffles::Cols::_name, CompareOperator::Like, likeQuery) ||
+                Criteria(Raffles::Cols::_slug, CompareOperator::Like, likeQuery));
   }
 
   if (!status.empty()) {
-    addCriteria(
-        Criteria(Raffles::Cols::_status, CompareOperator::EQ, status));
+    addCriteria(Criteria(Raffles::Cols::_status, CompareOperator::EQ, status));
   }
 
   if (!startDate.empty()) {
@@ -101,9 +98,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(
     response.result["pageSize"] = pageSize;
     response.result["totalPages"] = (int)totalPages;
     response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
-    response.result["upperBound"] = (int)totalPages == pageNo
-                                        ? (Json::UInt64)totalCount
-                                        : (Json::UInt64)(pageNo * pageSize);
+    response.result["upperBound"] = (int)totalPages == pageNo ? (Json::UInt64)totalCount : (Json::UInt64)(pageNo * pageSize);
 
     Json::Value data = Json::arrayValue;
     for (const auto &raffle : raffles) {
@@ -142,6 +137,58 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(
     errorResponse.error["detail"] = e.what();
     co_return errorResponse;
   }
+}
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffle() {
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> mapper(dbClient);
+
+  try {
+
+    auto raffle = co_await mapper.findOne(Criteria(Raffles::Cols::_status, CompareOperator::EQ, "ACTIVE"));
+
+    if (raffle.getValueOfStatus() != "ACTIVE") {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "The specified raffle is not active.";
+      co_return errorResponse;
+    }
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    Json::Value raffleJson;
+    raffleJson["id"] = raffle.getValueOfId();
+    raffleJson["name"] = raffle.getValueOfName();
+    raffleJson["slug"] = raffle.getValueOfSlug();
+    raffleJson["status"] = raffle.getValueOfStatus();
+    raffleJson["totalEntries"] = raffle.getValueOfTotalEntries();
+    raffleJson["createdAt"] = raffle.getValueOfCreatedAt().toDbStringLocal();
+    raffleJson["prizePool"] = raffle.getValueOfPrizePool();
+    raffleJson["winningColour"] = raffle.getValueOfWinningColour();
+    raffleJson["startsAt"] = raffle.getValueOfStartTime().toDbStringLocal();
+    raffleJson["endsAt"] = raffle.getValueOfEndTime().toDbStringLocal();
+    raffleJson["drawTime"] = raffle.getValueOfDrawTime().toDbStringLocal();
+    response.result = raffleJson;
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Raffle not found or database error.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+
 }
 
 drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateRaffleDto &dto) {

@@ -32,16 +32,15 @@ using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
 
-drogon::Task<dto::BaseApiResponse>
-TicketService::getAll(int pageNo, int pageSize, const std::string &query) {
+drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> mapper(dbClient);
 
   Criteria searchCriteria;
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
-    searchCriteria = Criteria(Tickets::Cols::_customer_phone,
-                              CompareOperator::Like, likeQuery);
+    searchCriteria = Criteria(Tickets::Cols::_customer_phone,CompareOperator::Like, likeQuery);
+    searchCriteria = Criteria(Tickets::Cols::_ticket_number,CompareOperator::Like, likeQuery);
   }
 
   try {
@@ -174,8 +173,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::getStats() {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-TicketService::create(const dto::CreateTicketDto &dto) {
+drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicketDto &dto) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
   CoroMapper<Draws> drawMapper(dbClient);
@@ -337,9 +335,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
   }
 }
 
-
-drogon::Task<dto::BaseApiResponse>
-TicketService::activate(const std::string &paymentReference) {
+drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &paymentReference) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> ticketMapper(dbClient);
   CoroMapper<Raffles> raffleMapper(dbClient);
@@ -347,8 +343,7 @@ TicketService::activate(const std::string &paymentReference) {
 
   try {
     // 1. Find the ticket by payment reference
-    auto tickets = co_await ticketMapper.findBy(Criteria(
-        Tickets::Cols::_payment_reference, CompareOperator::EQ, paymentReference));
+    auto tickets = co_await ticketMapper.findBy(Criteria(Tickets::Cols::_payment_reference, CompareOperator::EQ, paymentReference));
 
     if (tickets.empty()) {
       dto::BaseApiResponse errorResponse;
@@ -382,21 +377,6 @@ TicketService::activate(const std::string &paymentReference) {
         int currentEntries = raffle.getValueOfTotalEntries();
         raffle.setTotalEntries(currentEntries + ticket.getValueOfQuantity());
 
-        std::string currentPoolStr = raffle.getValueOfPrizePool();
-        double currentPool = 0;
-        if (!currentPoolStr.empty()) {
-            try {
-                currentPool = std::stod(currentPoolStr);
-            } catch (...) {
-                currentPool = 0;
-            }
-        }
-        double ticketAmount = std::stod(ticket.getValueOfTotalAmount());
-        currentPool += ticketAmount;
-
-        char buffer[64];
-        snprintf(buffer, sizeof(buffer), "%.2f", currentPool);
-        raffle.setPrizePool(std::string(buffer));
         raffle.setUpdatedAt(trantor::Date::now());
         
         co_await raffleMapper.update(raffle);
@@ -455,7 +435,5 @@ TicketService::activate(const std::string &paymentReference) {
     co_return errorResponse;
   }
 }
-
-
 
 }
