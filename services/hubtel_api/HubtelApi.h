@@ -27,6 +27,8 @@ namespace raffle::services {
 
         drogon::Task<dto::TransactionStatusCheckResponse> TransactionStatusCheck(const std::string &paymentReference);
 
+        //drogon::Task<dto::SmsResponse> SendSms(const std::string &messageContent);
+
     };
 
 }

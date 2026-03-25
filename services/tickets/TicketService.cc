@@ -127,7 +127,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::getStats() {
         "SELECT count(*) as total_tickets, "
         "count(CASE WHEN is_active = true THEN 1 END) as active_tickets, "
         "count(CASE WHEN payment_status = 'PAID' THEN 1 END) as paid_tickets, "
-        "sum(total_amount) as total_revenue "
+        "coalesce(sum(CASE WHEN is_active = true THEN total_amount ELSE 0 END), 0) as total_revenue "
         "FROM tickets");
 
     dto::BaseApiResponse response;
