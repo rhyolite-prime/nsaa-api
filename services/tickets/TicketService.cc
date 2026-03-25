@@ -287,19 +287,18 @@ TicketService::create(const dto::CreateTicketDto &dto) {
     auto result = co_await ticketMapper.insert(newTicket);
 
     // initialize checkout
+    const auto &hubtelConfig = customConfig["HubtelPaymentApi"];
     raffle::services::HubtelApi hubtelApi;
     raffle::dto::WebCheckoutDto webCheckoutDto;
-    webCheckoutDto.setCallbackUrl("https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
-    webCheckoutDto.setCancellationUrl("https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3");
-    webCheckoutDto.setReturnUrl("https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3");
+    webCheckoutDto.setCallbackUrl( hubtelConfig.isMember("WebCheckoutCallBackUrl")? hubtelConfig["WebCheckoutCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
+    webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());
+    webCheckoutDto.setReturnUrl(hubtelConfig["ReturnUrl"].asString());
     webCheckoutDto.setTotalAmount(totalAmount);
     webCheckoutDto.setDescription("Ticket Purchase - " + raffleSlug);
     webCheckoutDto.setClientReference(clientReference);
     
-    const auto &hubtelConfig = customConfig["HubtelPaymentApi"];
-    if (hubtelConfig.isMember("WebCheckoutCallBackUrl")) {
-        webCheckoutDto.setCallbackUrl(hubtelConfig["WebCheckoutCallBackUrl"].asString());
-    }
+
+
 
     auto hubtelResult = co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
 
