@@ -284,39 +284,66 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
     auto result = co_await ticketMapper.insert(newTicket);
 
-    // initialize checkout
-    const auto &hubtelConfig = customConfig["HubtelPaymentApi"];
-    raffle::services::HubtelApi hubtelApi;
-    raffle::dto::WebCheckoutDto webCheckoutDto;
-    webCheckoutDto.setCallbackUrl( hubtelConfig.isMember("WebCheckoutCallBackUrl")? hubtelConfig["WebCheckoutCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
-    webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());
-    webCheckoutDto.setReturnUrl(hubtelConfig["ReturnUrl"].asString());
-    webCheckoutDto.setTotalAmount(totalAmount);
-    webCheckoutDto.setDescription("Ticket Purchase - " + raffleSlug);
-    webCheckoutDto.setClientReference(clientReference);
-    
+    // initialize payment
+        const auto &hubtelConfig = customConfig["HubtelPaymentApi"];
+        raffle::services::HubtelApi hubtelApi;
+        dto::BaseApiResponse response;
 
+        if (dto.getPurchaseChannel() == "WSSD") {
+            raffle::dto::WebCheckoutDto webCheckoutDto;
+            webCheckoutDto.setCallbackUrl(hubtelConfig.isMember("WebCheckoutCallBackUrl") ? hubtelConfig["WebCheckoutCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
+            webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());
+            webCheckoutDto.setReturnUrl(hubtelConfig["ReturnUrl"].asString());
+            webCheckoutDto.setTotalAmount(totalAmount);
+            webCheckoutDto.setDescription("Ticket Purchase - " + raffleSlug);
+            webCheckoutDto.setClientReference(clientReference);
 
+            auto hubtelResult = co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
 
-    auto hubtelResult = co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
+            if (hubtelResult.responseCode == "0000") {
+                response.success = true;
+                response.message = "Ticket created successfully. Please complete payment.";
+                response.result["ticketId"] = result.getValueOfId();
+                response.result["ticketNumber"] = result.getValueOfTicketNumber();
+                response.result["paymentReference"] = clientReference;
+                response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
+            } else {
+                response.success = false;
+                response.message = "Ticket created but failed to initialize payment. " + hubtelResult.status;
+                response.error["code"] = constants::ERR_INTERNAL;
+                response.error["message"] = "Payment initialization failed.";
+                response.result["ticketId"] = result.getValueOfId();
+            }
+        } else {
+            raffle::dto::DirectReceiveMoneyDto directReceiveDto;
+            directReceiveDto.setAmount(totalAmount);
+            directReceiveDto.setCustomerMsisdn(dto.getCustomerPhone());
+            directReceiveDto.setChannel(dto.getPaymentMethod()); // e.g. "mtn-gh", "vodafone-gh"
+            directReceiveDto.setClientReference(clientReference);
+            directReceiveDto.setDescription("Ticket Purchase - " + raffleSlug);
+            directReceiveDto.setPrimaryCallbackUrl(hubtelConfig.isMember("DirectReceiveMoneyCallBackUrl")
+                ? hubtelConfig["DirectReceiveCallBackUrl"].asString()
+                : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/direct-receive");
 
-    dto::BaseApiResponse response;
-    if (hubtelResult.responseCode == "0000") {
-        response.success = true;
-        response.message = "Ticket created successfully. Please complete payment.";
-        response.result["ticketId"] = result.getValueOfId();
-        response.result["ticketNumber"] = result.getValueOfTicketNumber();
-        response.result["paymentReference"] = clientReference;
-        response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
-    } else {
-        response.success = false;
-        response.message = "Ticket created but failed to initialize payment. " + hubtelResult.status;
-        response.error["code"] = constants::ERR_INTERNAL;
-        response.error["message"] = "Payment initialization failed.";
-        response.result["ticketId"] = result.getValueOfId();
-    }
+            auto hubtelResult = co_await hubtelApi.InitializeDirectReceiveMoney(directReceiveDto);
 
-    co_return response;
+            if (hubtelResult.responseCode == "0000") {
+                response.success = true;
+                response.message = "Ticket created successfully. Prompt sent to customer.";
+                response.result["ticketId"] = result.getValueOfId();
+                response.result["ticketNumber"] = result.getValueOfTicketNumber();
+                response.result["paymentReference"] = clientReference;
+                response.result["transactionId"] = hubtelResult.data.transactionId;
+            } else {
+                response.success = false;
+                response.message = "Ticket created but failed to initiate mobile money prompt. " + hubtelResult.message;
+                response.error["code"] = constants::ERR_INTERNAL;
+                response.error["message"] = "Direct payment initialization failed.";
+                response.result["ticketId"] = result.getValueOfId();
+            }
+        }
+
+        co_return response;
 
   } catch (const drogon::orm::DrogonDbException &e) {
     dto::BaseApiResponse errorResponse;

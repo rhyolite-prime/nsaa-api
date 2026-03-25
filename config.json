@@ -359,6 +359,7 @@
             "PrepaidAccountId": "2024561",
             "MerchantAccountNumber": "2037871",
             "WebCheckoutCallBackUrl": "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout",
+            "DirectReceiveMoneyCallBackUrl": "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/direct-receive-money",
             "ReturnUrl": "https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3"
         },
         "TicketConfiguration": {

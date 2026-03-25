@@ -11,8 +11,7 @@
 
 namespace raffle::services {
 
-drogon::Task<dto::CheckoutResponse>
-HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
+drogon::Task<dto::CheckoutResponse> HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
 
   dto::CheckoutResponse response;
 
@@ -91,8 +90,7 @@ HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
   }
 }
 
-drogon::Task<dto::DirectReceiveMoneyResponse>
-HubtelApi::InitializeDirectReceiveMoney(const dto::DirectReceiveMoneyDto &dto) {
+drogon::Task<dto::DirectReceiveMoneyResponse> HubtelApi::InitializeDirectReceiveMoney(const dto::DirectReceiveMoneyDto &dto) {
 
   dto::DirectReceiveMoneyResponse response;
 
