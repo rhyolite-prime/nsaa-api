@@ -15,7 +15,9 @@
 #include <drogon/utils/coroutine.h>
 #include <string>
 
+#include "RngLogs.h"
 #include "Tickets.h"
+#include "PrizeTiers.h"
 
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
@@ -819,11 +821,66 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDetails(const std::string &
     raffleJson["endsAt"] = raffle.getValueOfEndTime().toDbStringLocal();
     raffleJson["drawTime"] = raffle.getValueOfDrawTime().toDbStringLocal();
 
-    // Fetch associated draw
+    // Fetch associated draw and prize tiers
+    raffleJson["prizeTiers"] = Json::arrayValue;
     try {
       CoroMapper<Draws> drawMapper(dbClient);
-      auto draw = co_await drawMapper.findOne(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+      auto draw = co_await drawMapper.findOne(
+          Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
       raffleJson["draw"] = snakeCaseToCamelCase(draw.toJson());
+
+      // Fetch RNG logs for prize tiers
+      auto rngLogs = co_await dbClient->execSqlCoro(
+          "SELECT rng_type, count(*) as winner_count "
+          "FROM rng_logs "
+          "WHERE draw_id = $1 "
+          "GROUP BY rng_type",
+          draw.getValueOfId());
+
+      Json::Value tiers = Json::arrayValue;
+
+      // Fetch prize tiers from the database
+      CoroMapper<PrizeTiers> prizeTierMapper(dbClient);
+      auto prizeTiers = co_await prizeTierMapper.orderBy(PrizeTiers::Cols::_tier_level, SortOrder::ASC).findAll();
+
+      for (auto const &tierData : prizeTiers) {
+        Json::Value tier;
+        tier["name"] = tierData.getValueOfTierName();
+        
+        // Convert prize_amount (string/numeric) to double/int
+        std::string amountStr = tierData.getValueOfPrizeAmount();
+        double amountValue = 0.0;
+        if (!amountStr.empty()) {
+          try {
+            amountValue = std::stod(amountStr);
+          } catch (...) {
+            amountValue = 0.0;
+          }
+        }
+        tier["amount"] = amountValue;
+        tier["winners"] = 0;
+
+        // Map system_name to rng_type
+        std::string systemName = tierData.getValueOfSystemName();
+        std::string rngType;
+        if (systemName == "ultimate") {
+          rngType = "ULTIMATE_WINNER";
+        } else {
+          std::string upperSysName = systemName;
+          std::transform(upperSysName.begin(), upperSysName.end(), upperSysName.begin(), ::toupper);
+          rngType = "TIER_WINNER_" + upperSysName;
+        }
+
+        for (auto const &row : rngLogs) {
+          if (row["rng_type"].as<std::string>() == rngType) {
+            tier["winners"] = row["winner_count"].as<int>();
+            break;
+          }
+        }
+        tiers.append(tier);
+      }
+      raffleJson["prizeWinnerTiers"] = tiers;
+
     } catch (...) {
       raffleJson["draw"] = Json::nullValue;
     }
@@ -947,7 +1004,8 @@ RaffleService::getTopTicketHolders(const std::string &raffleId) {
     dto::BaseApiResponse errorResponse;
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] = "Database error while fetching top ticket holders.";
+    errorResponse.error["message"] =
+        "Database error while fetching top ticket holders.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   } catch (const std::exception &e) {
@@ -1097,7 +1155,6 @@ RaffleService::getTicketStats(const std::string &raffleId) {
     co_return errorResponse;
   }
 }
-
 
 drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw() {
   auto dbClient = drogon::app().getDbClient();

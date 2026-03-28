@@ -23,6 +23,7 @@ const std::string PrizeTiers::Cols::_number_of_winners = "\"number_of_winners\""
 const std::string PrizeTiers::Cols::_is_cashback = "\"is_cashback\"";
 const std::string PrizeTiers::Cols::_created_at = "\"created_at\"";
 const std::string PrizeTiers::Cols::_updated_at = "\"updated_at\"";
+const std::string PrizeTiers::Cols::_system_name = "\"system_name\"";
 const std::string PrizeTiers::primaryKeyName = "id";
 const bool PrizeTiers::hasPrimaryKey = true;
 const std::string PrizeTiers::tableName = "\"prize_tiers\"";
@@ -37,7 +38,8 @@ const std::vector<typename PrizeTiers::MetaData> PrizeTiers::metaData_={
 {"number_of_winners","int32_t","integer",4,0,0,0},
 {"is_cashback","bool","boolean",1,0,0,0},
 {"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
-{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
+{"system_name","std::string","character varying",50,0,0,0}
 };
 const std::string &PrizeTiers::getColumnName(size_t index) noexcept(false)
 {
@@ -124,11 +126,15 @@ PrizeTiers::PrizeTiers(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        if(!r["system_name"].isNull())
+        {
+            systemName_=std::make_shared<std::string>(r["system_name"].as<std::string>());
+        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 10 > r.size())
+        if(offset + 11 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -220,13 +226,18 @@ PrizeTiers::PrizeTiers(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        index = offset + 10;
+        if(!r[index].isNull())
+        {
+            systemName_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
     }
 
 }
 
 PrizeTiers::PrizeTiers(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 10)
+    if(pMasqueradingVector.size() != 11)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -345,6 +356,14 @@ PrizeTiers::PrizeTiers(const Json::Value &pJson, const std::vector<std::string> 
                 }
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
+        }
+    }
+    if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
+    {
+        dirtyFlag_[10] = true;
+        if(!pJson[pMasqueradingVector[10]].isNull())
+        {
+            systemName_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
 }
@@ -467,12 +486,20 @@ PrizeTiers::PrizeTiers(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+    if(pJson.isMember("system_name"))
+    {
+        dirtyFlag_[10]=true;
+        if(!pJson["system_name"].isNull())
+        {
+            systemName_=std::make_shared<std::string>(pJson["system_name"].asString());
+        }
+    }
 }
 
 void PrizeTiers::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 10)
+    if(pMasqueradingVector.size() != 11)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -592,6 +619,14 @@ void PrizeTiers::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+    if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
+    {
+        dirtyFlag_[10] = true;
+        if(!pJson[pMasqueradingVector[10]].isNull())
+        {
+            systemName_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
+        }
+    }
 }
 
 void PrizeTiers::updateByJson(const Json::Value &pJson) noexcept(false)
@@ -709,6 +744,14 @@ void PrizeTiers::updateByJson(const Json::Value &pJson) noexcept(false)
                 }
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
+        }
+    }
+    if(pJson.isMember("system_name"))
+    {
+        dirtyFlag_[10] = true;
+        if(!pJson["system_name"].isNull())
+        {
+            systemName_=std::make_shared<std::string>(pJson["system_name"].asString());
         }
     }
 }
@@ -948,6 +991,33 @@ void PrizeTiers::setUpdatedAtToNull() noexcept
     dirtyFlag_[9] = true;
 }
 
+const std::string &PrizeTiers::getValueOfSystemName() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(systemName_)
+        return *systemName_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &PrizeTiers::getSystemName() const noexcept
+{
+    return systemName_;
+}
+void PrizeTiers::setSystemName(const std::string &pSystemName) noexcept
+{
+    systemName_ = std::make_shared<std::string>(pSystemName);
+    dirtyFlag_[10] = true;
+}
+void PrizeTiers::setSystemName(std::string &&pSystemName) noexcept
+{
+    systemName_ = std::make_shared<std::string>(std::move(pSystemName));
+    dirtyFlag_[10] = true;
+}
+void PrizeTiers::setSystemNameToNull() noexcept
+{
+    systemName_.reset();
+    dirtyFlag_[10] = true;
+}
+
 void PrizeTiers::updateId(const uint64_t id)
 {
 }
@@ -964,7 +1034,8 @@ const std::vector<std::string> &PrizeTiers::insertColumns() noexcept
         "number_of_winners",
         "is_cashback",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "system_name"
     };
     return inCols;
 }
@@ -1081,6 +1152,17 @@ void PrizeTiers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[10])
+    {
+        if(getSystemName())
+        {
+            binder << getValueOfSystemName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 
 const std::vector<std::string> PrizeTiers::updateColumns() const
@@ -1125,6 +1207,10 @@ const std::vector<std::string> PrizeTiers::updateColumns() const
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
+    }
+    if(dirtyFlag_[10])
+    {
+        ret.push_back(getColumnName(10));
     }
     return ret;
 }
@@ -1241,6 +1327,17 @@ void PrizeTiers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[10])
+    {
+        if(getSystemName())
+        {
+            binder << getValueOfSystemName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 Json::Value PrizeTiers::toJson() const
 {
@@ -1325,6 +1422,14 @@ Json::Value PrizeTiers::toJson() const
     {
         ret["updated_at"]=Json::Value();
     }
+    if(getSystemName())
+    {
+        ret["system_name"]=getValueOfSystemName();
+    }
+    else
+    {
+        ret["system_name"]=Json::Value();
+    }
     return ret;
 }
 
@@ -1337,7 +1442,7 @@ Json::Value PrizeTiers::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 10)
+    if(pMasqueradingVector.size() == 11)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -1449,6 +1554,17 @@ Json::Value PrizeTiers::toMasqueradedJson(
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+        if(!pMasqueradingVector[10].empty())
+        {
+            if(getSystemName())
+            {
+                ret[pMasqueradingVector[10]]=getValueOfSystemName();
+            }
+            else
+            {
+                ret[pMasqueradingVector[10]]=Json::Value();
+            }
+        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
@@ -1532,6 +1648,14 @@ Json::Value PrizeTiers::toMasqueradedJson(
     {
         ret["updated_at"]=Json::Value();
     }
+    if(getSystemName())
+    {
+        ret["system_name"]=getValueOfSystemName();
+    }
+    else
+    {
+        ret["system_name"]=Json::Value();
+    }
     return ret;
 }
 
@@ -1597,13 +1721,18 @@ bool PrizeTiers::validateJsonForCreation(const Json::Value &pJson, std::string &
         if(!validJsonOfField(9, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+    if(pJson.isMember("system_name"))
+    {
+        if(!validJsonOfField(10, "system_name", pJson["system_name"], err, true))
+            return false;
+    }
     return true;
 }
 bool PrizeTiers::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                     const std::vector<std::string> &pMasqueradingVector,
                                                     std::string &err)
 {
-    if(pMasqueradingVector.size() != 10)
+    if(pMasqueradingVector.size() != 11)
     {
         err = "Bad masquerading vector";
         return false;
@@ -1699,6 +1828,14 @@ bool PrizeTiers::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                   return false;
           }
       }
+      if(!pMasqueradingVector[10].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[10]))
+          {
+              if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
+                  return false;
+          }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -1764,13 +1901,18 @@ bool PrizeTiers::validateJsonForUpdate(const Json::Value &pJson, std::string &er
         if(!validJsonOfField(9, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+    if(pJson.isMember("system_name"))
+    {
+        if(!validJsonOfField(10, "system_name", pJson["system_name"], err, false))
+            return false;
+    }
     return true;
 }
 bool PrizeTiers::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                   const std::vector<std::string> &pMasqueradingVector,
                                                   std::string &err)
 {
-    if(pMasqueradingVector.size() != 10)
+    if(pMasqueradingVector.size() != 11)
     {
         err = "Bad masquerading vector";
         return false;
@@ -1829,6 +1971,11 @@ bool PrizeTiers::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
+      {
+          if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
     }
@@ -1967,6 +2114,25 @@ bool PrizeTiers::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+            break;
+        case 10:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::strlen(pJson.asCString()) > 50)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 50)";
+                return false;
+            }
+
             break;
         default:
             err="Internal error in the server";
