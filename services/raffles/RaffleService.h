@@ -36,6 +36,14 @@ public:
   drogon::Task<dto::BaseApiResponse> updateWinningColour(const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> activate(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getDetails(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getRecentTicketHolders(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getAllRaffleTickets(const std::string &raffleId, int pageNo, int pageSize);
+
+  drogon::Task<dto::BaseApiResponse> executeDraw();
 };
 
 } // namespace raffle::services
