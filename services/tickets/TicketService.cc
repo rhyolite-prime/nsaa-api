@@ -249,8 +249,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     newTicket.setCustomerPhone(dto.getCustomerPhone());
     newTicket.setRaffleId(activeRaffle.getValueOfId());
 
-    std::string clientReference =
-        raffle::utils::IdGeneratorUtils::generateGuid();
+    std::string clientReference = raffle::utils::IdGeneratorUtils::generateGuid();
 
     newTicket.setPaymentReference(clientReference);
     newTicket.setCustomerId(customerId);
