@@ -788,8 +788,7 @@ RaffleService::activate(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::getDetails(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::getDetails(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -823,8 +822,7 @@ RaffleService::getDetails(const std::string &raffleId) {
     // Fetch associated draw
     try {
       CoroMapper<Draws> drawMapper(dbClient);
-      auto draw = co_await drawMapper.findOne(
-          Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+      auto draw = co_await drawMapper.findOne(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
       raffleJson["draw"] = snakeCaseToCamelCase(draw.toJson());
     } catch (...) {
       raffleJson["draw"] = Json::nullValue;
