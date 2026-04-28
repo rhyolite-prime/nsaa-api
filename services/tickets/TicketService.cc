@@ -3,14 +3,15 @@
 //
 
 #include "TicketService.h"
-#include "../../dto/BaseApiResponse.h"
-#include "../../dto/CreateTicketDto.h"
+#include "dto/BaseApiResponse.h"
+#include "dto/CreateTicketDto.h"
 #include "Customers.h"
 #include "constants/ErrorCodes.h"
 #include <drogon/orm/CoroMapper.h>
 #include <drogon/orm/DbClient.h>
 #include <drogon/orm/Mapper.h>
 #include <drogon/utils/coroutine.h>
+#include <string>
 
 #include "Colours.h"
 #include "Draws.h"
@@ -20,27 +21,27 @@
 #include <uuid/uuid.h>
 
 #include "utils/IdGeneratorUtils.h"
-#include "../hubtel_api/HubtelApi.h"
-#include "../../dto/CheckoutResponse.h"
-#include "../../dto/WebCheckoutDto.h"
+#include "dto/CheckoutResponse.h"
+#include "dto/WebCheckoutDto.h"
 #include <iomanip>
 #include <sstream>
+
+#include "services/hubtel_api/HubtelApi.h"
 
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
 
-drogon::Task<dto::BaseApiResponse>
-TicketService::getAll(int pageNo, int pageSize, const std::string &query) {
+drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> mapper(dbClient);
 
   Criteria searchCriteria;
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
-    searchCriteria = Criteria(Tickets::Cols::_customer_phone,
-                              CompareOperator::Like, likeQuery);
+    searchCriteria = Criteria(Tickets::Cols::_customer_phone,CompareOperator::Like, likeQuery);
+    searchCriteria = Criteria(Tickets::Cols::_ticket_number,CompareOperator::Like, likeQuery);
   }
 
   try {
@@ -126,7 +127,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::getStats() {
         "SELECT count(*) as total_tickets, "
         "count(CASE WHEN is_active = true THEN 1 END) as active_tickets, "
         "count(CASE WHEN payment_status = 'PAID' THEN 1 END) as paid_tickets, "
-        "sum(total_amount) as total_revenue "
+        "coalesce(sum(CASE WHEN is_active = true THEN total_amount ELSE 0 END), 0) as total_revenue "
         "FROM tickets");
 
     dto::BaseApiResponse response;
@@ -173,8 +174,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::getStats() {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-TicketService::create(const dto::CreateTicketDto &dto) {
+drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicketDto &dto) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
   CoroMapper<Draws> drawMapper(dbClient);
@@ -250,8 +250,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
     newTicket.setCustomerPhone(dto.getCustomerPhone());
     newTicket.setRaffleId(activeRaffle.getValueOfId());
 
-    std::string clientReference =
-        raffle::utils::IdGeneratorUtils::generateGuid();
+    std::string clientReference = raffle::utils::IdGeneratorUtils::generateGuid();
 
     newTicket.setPaymentReference(clientReference);
     newTicket.setCustomerId(customerId);
@@ -285,40 +284,75 @@ TicketService::create(const dto::CreateTicketDto &dto) {
 
     auto result = co_await ticketMapper.insert(newTicket);
 
-    // initialize checkout
-    raffle::services::HubtelApi hubtelApi;
-    raffle::dto::WebCheckoutDto webCheckoutDto;
-    webCheckoutDto.setCallbackUrl("https://webhook.site/93972647-7e6d-40dc-af87-5c3d9f6f696b");
-    webCheckoutDto.setCancellationUrl("https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3");
-    webCheckoutDto.setReturnUrl("https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3");
-    webCheckoutDto.setTotalAmount(totalAmount);
-    webCheckoutDto.setDescription("Ticket Purchase - " + raffleSlug);
-    webCheckoutDto.setClientReference(clientReference);
-    
-    const auto &hubtelConfig = customConfig["HubtelPaymentApi"];
-    if (hubtelConfig.isMember("WebCheckoutCallBackUrl")) {
-        webCheckoutDto.setCallbackUrl(hubtelConfig["WebCheckoutCallBackUrl"].asString());
-    }
+    // initialize payment
+        const auto &hubtelConfig = customConfig["HubtelPaymentApi"];
+        raffle::services::HubtelApi hubtelApi;
+        dto::BaseApiResponse response;
 
-    auto hubtelResult = co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
+        if (dto.getPurchaseChannel() == "WSSD") {
+            raffle::dto::WebCheckoutDto webCheckoutDto;
+            webCheckoutDto.setCallbackUrl(hubtelConfig.isMember("WebCheckoutCallBackUrl") ? hubtelConfig["WebCheckoutCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
+            webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());
+            webCheckoutDto.setReturnUrl(hubtelConfig["ReturnUrl"].asString());
+            webCheckoutDto.setTotalAmount(totalAmount);
+            webCheckoutDto.setDescription("Ticket Purchase - " + raffleSlug);
+            webCheckoutDto.setClientReference(clientReference);
 
-    dto::BaseApiResponse response;
-    if (hubtelResult.responseCode == "0000") {
-        response.success = true;
-        response.message = "Ticket created successfully. Please complete payment.";
-        response.result["ticketId"] = result.getValueOfId();
-        response.result["ticketNumber"] = result.getValueOfTicketNumber();
-        response.result["paymentReference"] = clientReference;
-        response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
-    } else {
-        response.success = false;
-        response.message = "Ticket created but failed to initialize payment. " + hubtelResult.status;
-        response.error["code"] = constants::ERR_INTERNAL;
-        response.error["message"] = "Payment initialization failed.";
-        response.result["ticketId"] = result.getValueOfId();
-    }
+            auto hubtelResult = co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
 
-    co_return response;
+            LOG_INFO << "Hubtel WebCheckout result for clientReference=" << clientReference
+                         << " responseCode=" << hubtelResult.responseCode
+                         << " status=" << hubtelResult.status
+                         << " checkoutUrl=" << hubtelResult.data.checkoutUrl;
+
+            if (hubtelResult.responseCode == "0000") {
+                response.success = true;
+                response.message = "Ticket created successfully. Please complete payment.";
+                response.result["ticketId"] = result.getValueOfId();
+                response.result["ticketNumber"] = result.getValueOfTicketNumber();
+                response.result["paymentReference"] = clientReference;
+                response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
+            } else {
+                response.success = false;
+                response.message = "Ticket created but failed to initialize payment. " + hubtelResult.status;
+                response.error["code"] = constants::ERR_INTERNAL;
+                response.error["message"] = "Payment initialization failed.";
+                response.result["ticketId"] = result.getValueOfId();
+            }
+        } else {
+            raffle::dto::DirectReceiveMoneyDto directReceiveDto;
+            directReceiveDto.setAmount(totalAmount);
+            directReceiveDto.setCustomerMsisdn(dto.getCustomerPhone());
+            directReceiveDto.setChannel(dto.getPaymentMethod()); // e.g. "mtn-gh", "vodafone-gh"
+            directReceiveDto.setClientReference(clientReference);
+            directReceiveDto.setDescription("Ticket Purchase - " + raffleSlug);
+            directReceiveDto.setPrimaryCallbackUrl(hubtelConfig.isMember("DirectReceiveMoneyCallBackUrl")
+                ? hubtelConfig["DirectReceiveCallBackUrl"].asString()
+                : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/direct-receive");
+
+            auto hubtelResult = co_await hubtelApi.InitializeDirectReceiveMoney(directReceiveDto);
+
+            LOG_INFO << "Hubtel DirectReceive result for clientReference=" << clientReference
+                         << " responseCode=" << hubtelResult.responseCode
+                         << " transactionId=" << hubtelResult.data.transactionId;
+
+            if (hubtelResult.responseCode == "0000") {
+                response.success = true;
+                response.message = "Ticket created successfully. Prompt sent to customer.";
+                response.result["ticketId"] = result.getValueOfId();
+                response.result["ticketNumber"] = result.getValueOfTicketNumber();
+                response.result["paymentReference"] = clientReference;
+                response.result["transactionId"] = hubtelResult.data.transactionId;
+            } else {
+                response.success = false;
+                response.message = "Ticket created but failed to initiate mobile money prompt. " + hubtelResult.message;
+                response.error["code"] = constants::ERR_INTERNAL;
+                response.error["message"] = "Direct payment initialization failed.";
+                response.result["ticketId"] = result.getValueOfId();
+            }
+        }
+
+        co_return response;
 
   } catch (const drogon::orm::DrogonDbException &e) {
     dto::BaseApiResponse errorResponse;
@@ -337,4 +371,105 @@ TicketService::create(const dto::CreateTicketDto &dto) {
   }
 }
 
-} // namespace raffle::services
+drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &paymentReference) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Tickets> ticketMapper(dbClient);
+  CoroMapper<Raffles> raffleMapper(dbClient);
+  CoroMapper<Draws> drawMapper(dbClient);
+
+  try {
+    // 1. Find the ticket by payment reference
+    auto tickets = co_await ticketMapper.findBy(Criteria(Tickets::Cols::_payment_reference, CompareOperator::EQ, paymentReference));
+
+    if (tickets.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_DB_NOT_FOUND;
+      errorResponse.error["message"] = "Ticket not found with the provided payment reference.";
+      co_return errorResponse;
+    }
+
+    auto ticket = tickets[0];
+
+    // 2. Check if already active (idempotency)
+    if (ticket.getValueOfIsActive() && ticket.getValueOfPaymentStatus() == "PAID") {
+        dto::BaseApiResponse response;
+        response.success = true;
+        response.message = "Ticket is already active.";
+        response.result["ticketId"] = ticket.getValueOfId();
+        co_return response;
+    }
+
+    // 3. Update the ticket
+    ticket.setPaymentStatus("PAID");
+    ticket.setIsActive(true);
+    ticket.setUpdatedAt(trantor::Date::now());
+    co_await ticketMapper.update(ticket);
+
+    // 4. Update the associated Raffle
+    auto raffleId = ticket.getValueOfRaffleId();
+    try {
+        auto raffle = co_await raffleMapper.findByPrimaryKey(raffleId);
+        int currentEntries = raffle.getValueOfTotalEntries();
+        raffle.setTotalEntries(currentEntries + ticket.getValueOfQuantity());
+
+        raffle.setUpdatedAt(trantor::Date::now());
+        
+        co_await raffleMapper.update(raffle);
+    } catch (const std::exception &e) {
+        LOG_ERROR << "Failed to update associated raffle for ticket " << ticket.getValueOfId() << ": " << e.what();
+    }
+
+    // 5. Update the associated Draw
+    auto drawId = ticket.getValueOfDrawId();
+    try {
+        auto draw = co_await drawMapper.findByPrimaryKey(drawId);
+        int currentEntries = draw.getValueOfTotalEntries();
+        draw.setTotalEntries(currentEntries + ticket.getValueOfQuantity());
+
+        std::string currentPoolStr = draw.getValueOfTotalPool();
+        double currentPool = 0;
+        if (!currentPoolStr.empty()) {
+            try {
+                currentPool = std::stod(currentPoolStr);
+            } catch (...) {
+                currentPool = 0;
+            }
+        }
+        double ticketAmount = std::stod(ticket.getValueOfTotalAmount());
+        currentPool += ticketAmount;
+
+        char buffer[64];
+        snprintf(buffer, sizeof(buffer), "%.2f", currentPool);
+        draw.setTotalPool(std::string(buffer));
+        draw.setUpdatedAt(trantor::Date::now());
+        
+        co_await drawMapper.update(draw);
+    } catch (const std::exception &e) {
+        LOG_ERROR << "Failed to update associated draw for ticket " << ticket.getValueOfId() << ": " << e.what();
+    }
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.message = "Ticket activated successfully.";
+    response.result["ticketId"] = ticket.getValueOfId();
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while activating ticket.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+}

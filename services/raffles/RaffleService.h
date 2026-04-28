@@ -21,19 +21,37 @@ public:
                                             const std::string &endDate = "",
                                             const std::string &status = "");
 
-  drogon::Task<dto::BaseApiResponse>
-  createAsync(const dto::CreateRaffleDto &dto);
+  drogon::Task<dto::BaseApiResponse> createAsync(const dto::CreateRaffleDto &dto);
 
   drogon::Task<dto::BaseApiResponse> updateAsync(const dto::UpdateRaffleDto &dto);
 
   drogon::Task<dto::BaseApiResponse> deleteRaffle(const std::string &raffleId);
-  drogon::Task<dto::BaseApiResponse>
-  incrementEntries(const std::string &raffleId);
-  drogon::Task<dto::BaseApiResponse>
-  incrementPricePool(const std::string &raffleId);
-  drogon::Task<dto::BaseApiResponse>
-  updateWinningColour(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getActiveRaffle();
+
+  drogon::Task<dto::BaseApiResponse> incrementEntries(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> incrementPricePool(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> updateWinningColour(const std::string &raffleId);
+
   drogon::Task<dto::BaseApiResponse> activate(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getDetails(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getRecentTicketHolders(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getTopTicketHolders(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getTickets(const std::string &raffleId, int pageNo, int pageSize);
+
+  drogon::Task<dto::BaseApiResponse> getTicketStats(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getRngLogs(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getAllRaffleTickets(const std::string &raffleId, int pageNo, int pageSize);
+
+  drogon::Task<dto::BaseApiResponse> executeDraw();
 };
 
 } // namespace raffle::services

@@ -82,7 +82,7 @@ Task<HttpResponsePtr> ColorsController::update(HttpRequestPtr req) {
     co_return resp;
 }
 
-drogon::Task<HttpResponsePtr> ColorsController::deleteColor(HttpRequestPtr req) {
+Task<HttpResponsePtr> ColorsController::deleteColor(HttpRequestPtr req) {
 
     auto colourId = req->getParameter("id");
 

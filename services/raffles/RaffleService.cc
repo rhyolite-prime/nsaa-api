@@ -7,11 +7,17 @@
 #include "constants/ErrorCodes.h"
 #include "dto/BaseApiResponse.h"
 #include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <ctime>
 #include <drogon/orm/CoroMapper.h>
 #include <drogon/orm/Mapper.h>
 #include <drogon/utils/coroutine.h>
+#include <string>
+
+#include "RngLogs.h"
+#include "Tickets.h"
+#include "PrizeTiers.h"
 
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
@@ -28,10 +34,44 @@ static std::string normalizeDateString(std::string dateStr) {
   return dateStr;
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getAll(
-    int pageNo, int pageSize, const std::string &query,
-    const std::string &startDate, const std::string &endDate,
-    const std::string &status) {
+static std::string toCamelCase(const std::string &snake) {
+  std::string camel;
+  bool nextUpper = false;
+  for (char c : snake) {
+    if (c == '_') {
+      nextUpper = true;
+    } else {
+      if (nextUpper) {
+        camel += static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+        nextUpper = false;
+      } else {
+        camel += c;
+      }
+    }
+  }
+  return camel;
+}
+
+static Json::Value snakeCaseToCamelCase(const Json::Value &val) {
+  if (val.isObject()) {
+    Json::Value camelObj(Json::objectValue);
+    for (auto it = val.begin(); it != val.end(); ++it) {
+      camelObj[toCamelCase(it.name())] = snakeCaseToCamelCase(*it);
+    }
+    return camelObj;
+  } else if (val.isArray()) {
+    Json::Value camelArray(Json::arrayValue);
+    for (const auto &item : val) {
+      camelArray.append(snakeCaseToCamelCase(item));
+    }
+    return camelArray;
+  }
+  return val;
+}
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSize, const std::string &query,
+                      const std::string &startDate, const std::string &endDate,
+                      const std::string &status) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
@@ -50,15 +90,13 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(
 
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
-    addCriteria(Criteria(Raffles::Cols::_name, CompareOperator::Like,
-                         likeQuery) ||
-                Criteria(Raffles::Cols::_slug, CompareOperator::Like,
-                         likeQuery));
+    addCriteria(
+        Criteria(Raffles::Cols::_name, CompareOperator::Like, likeQuery) ||
+        Criteria(Raffles::Cols::_slug, CompareOperator::Like, likeQuery));
   }
 
   if (!status.empty()) {
-    addCriteria(
-        Criteria(Raffles::Cols::_status, CompareOperator::EQ, status));
+    addCriteria(Criteria(Raffles::Cols::_status, CompareOperator::EQ, status));
   }
 
   if (!startDate.empty()) {
@@ -144,6 +182,58 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(
   }
 }
 
+drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffle() {
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> mapper(dbClient);
+
+  try {
+
+    auto raffle = co_await mapper.findOne(
+        Criteria(Raffles::Cols::_status, CompareOperator::EQ, "ACTIVE"));
+
+    if (raffle.getValueOfStatus() != "ACTIVE") {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "The specified raffle is not active.";
+      co_return errorResponse;
+    }
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    Json::Value raffleJson;
+    raffleJson["id"] = raffle.getValueOfId();
+    raffleJson["name"] = raffle.getValueOfName();
+    raffleJson["slug"] = raffle.getValueOfSlug();
+    raffleJson["status"] = raffle.getValueOfStatus();
+    raffleJson["totalEntries"] = raffle.getValueOfTotalEntries();
+    raffleJson["createdAt"] = raffle.getValueOfCreatedAt().toDbStringLocal();
+    raffleJson["prizePool"] = raffle.getValueOfPrizePool();
+    raffleJson["winningColour"] = raffle.getValueOfWinningColour();
+    raffleJson["startsAt"] = raffle.getValueOfStartTime().toDbStringLocal();
+    raffleJson["endsAt"] = raffle.getValueOfEndTime().toDbStringLocal();
+    raffleJson["drawTime"] = raffle.getValueOfDrawTime().toDbStringLocal();
+    response.result = raffleJson;
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Raffle not found or database error.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
 drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateRaffleDto &dto) {
 
   auto dbClient = drogon::app().getDbClient();
@@ -181,9 +271,12 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
     newRaffle.setTotalEntries(0);
 
     // Parse dates
-    auto startTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getStartTime()));
-    auto endTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getEndTime()));
-    auto drawTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getDrawTime()));
+    auto startTime = trantor::Date::fromDbStringLocal(
+        normalizeDateString(dto.getStartTime()));
+    auto endTime =
+        trantor::Date::fromDbStringLocal(normalizeDateString(dto.getEndTime()));
+    auto drawTime = trantor::Date::fromDbStringLocal(
+        normalizeDateString(dto.getDrawTime()));
 
     newRaffle.setStartTime(startTime);
     newRaffle.setEndTime(endTime);
@@ -282,7 +375,8 @@ RaffleService::updateAsync(const dto::UpdateRaffleDto &dto) {
       existingRaffle.setName(dto.getName());
     }
 
-    if (!dto.getSlug().empty() && existingRaffle.getValueOfSlug() != dto.getSlug()) {
+    if (!dto.getSlug().empty() &&
+        existingRaffle.getValueOfSlug() != dto.getSlug()) {
       existingRaffle.setSlug(dto.getSlug());
       slugChanged = true;
     }
@@ -296,17 +390,18 @@ RaffleService::updateAsync(const dto::UpdateRaffleDto &dto) {
     }
 
     if (!dto.getStartTime().empty()) {
-      existingRaffle.setStartTime(
-          trantor::Date::fromDbStringLocal(normalizeDateString(dto.getStartTime())));
+      existingRaffle.setStartTime(trantor::Date::fromDbStringLocal(
+          normalizeDateString(dto.getStartTime())));
     }
 
     if (!dto.getEndTime().empty()) {
-      existingRaffle.setEndTime(
-          trantor::Date::fromDbStringLocal(normalizeDateString(dto.getEndTime())));
+      existingRaffle.setEndTime(trantor::Date::fromDbStringLocal(
+          normalizeDateString(dto.getEndTime())));
     }
 
     if (!dto.getDrawTime().empty()) {
-      auto newDrawTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getDrawTime()));
+      auto newDrawTime = trantor::Date::fromDbStringLocal(
+          normalizeDateString(dto.getDrawTime()));
       if (existingRaffle.getValueOfDrawTime() != newDrawTime) {
         existingRaffle.setDrawTime(newDrawTime);
         drawTimeChanged = true;
@@ -318,8 +413,8 @@ RaffleService::updateAsync(const dto::UpdateRaffleDto &dto) {
     if (drawTimeChanged || slugChanged) {
       try {
         CoroMapper<Draws> drawMapper(dbClient);
-        auto draw = co_await drawMapper.findOne(
-            Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, dto.getId()));
+        auto draw = co_await drawMapper.findOne(Criteria(
+            Draws::Cols::_raffle_id, CompareOperator::EQ, dto.getId()));
 
         if (drawTimeChanged) {
           auto drawTimeDate = existingRaffle.getValueOfDrawTime();
@@ -368,7 +463,8 @@ RaffleService::updateAsync(const dto::UpdateRaffleDto &dto) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::deleteRaffle(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::deleteRaffle(const std::string &raffleId) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
@@ -390,7 +486,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::deleteRaffle(const std::string
       dto::BaseApiResponse errorResponse;
       errorResponse.success = false;
       errorResponse.error["code"] = constants::ERR_VALIDATION;
-      errorResponse.error["message"] = "Cannot delete an active raffle. Deactivate it first.";
+      errorResponse.error["message"] =
+          "Cannot delete an active raffle. Deactivate it first.";
       co_return errorResponse;
     }
 
@@ -402,8 +499,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::deleteRaffle(const std::string
     } catch (const std::exception &e) {
       LOG_ERROR << "Failed to delete associated draw for raffle " << raffleId
                 << ": " << e.what();
-      // Continue with raffle deletion even if draw deletion fails (or should we fail?)
-      // Given the requirement, let's proceed but log the error.
+      // Continue with raffle deletion even if draw deletion fails (or should we
+      // fail?) Given the requirement, let's proceed but log the error.
     }
 
     // 4. Delete the raffle record
@@ -628,7 +725,8 @@ RaffleService::updateWinningColour(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>RaffleService::activate(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::activate(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -678,6 +776,511 @@ drogon::Task<dto::BaseApiResponse>RaffleService::activate(const std::string &raf
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
     errorResponse.error["message"] = "Database error while activating raffle.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getDetails(const std::string &raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> mapper(dbClient);
+
+  try {
+    if (raffleId.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Raffle ID cannot be empty.";
+      co_return errorResponse;
+    }
+
+    auto raffle = co_await mapper.findByPrimaryKey(raffleId);
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    Json::Value raffleJson;
+    raffleJson["id"] = raffle.getValueOfId();
+    raffleJson["name"] = raffle.getValueOfName();
+    raffleJson["slug"] = raffle.getValueOfSlug();
+    raffleJson["status"] = raffle.getValueOfStatus();
+    raffleJson["totalEntries"] = raffle.getValueOfTotalEntries();
+    raffleJson["createdAt"] = raffle.getValueOfCreatedAt().toDbStringLocal();
+    raffleJson["prizePool"] = raffle.getValueOfPrizePool();
+    raffleJson["winningColour"] = raffle.getValueOfWinningColour();
+    raffleJson["winningColourId"] = raffle.getValueOfWinningColourId();
+    raffleJson["startsAt"] = raffle.getValueOfStartTime().toDbStringLocal();
+    raffleJson["endsAt"] = raffle.getValueOfEndTime().toDbStringLocal();
+    raffleJson["drawTime"] = raffle.getValueOfDrawTime().toDbStringLocal();
+
+    // Fetch associated draw and prize tiers
+    raffleJson["prizeTiers"] = Json::arrayValue;
+    try {
+      CoroMapper<Draws> drawMapper(dbClient);
+      auto draw = co_await drawMapper.findOne(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+      raffleJson["draw"] = snakeCaseToCamelCase(draw.toJson());
+
+      // Fetch RNG logs for prize tiers
+      auto drawSummary = co_await dbClient->execSqlCoro(
+          "select * from rng_logs where rng_type = 'DRAW_COMPLETED' and generated_value = 'SUCCESS' and "
+          "draw_id = $1 ",
+          draw.getValueOfId());
+
+      Json::Value drawSummaryJson = Json::objectValue;
+      if (!drawSummary.empty()) {
+        const auto &row = drawSummary[0];
+        drawSummaryJson["id"] = row["id"].as<std::string>();
+        drawSummaryJson["drawId"] = row["draw_id"].as<std::string>();
+        drawSummaryJson["rngType"] = row["rng_type"].as<std::string>();
+        drawSummaryJson["generatedValue"] = row["generated_value"].as<std::string>();
+
+        if (row["metadata"].isNull()) {
+          drawSummaryJson["metadata"] = Json::nullValue;
+        } else {
+          drawSummaryJson["metadata"] = row["metadata"].as<Json::Value>();
+        }
+      }
+
+      raffleJson["drawSummary"] = snakeCaseToCamelCase(drawSummaryJson);
+
+      // Fetch RNG logs for prize tiers
+      auto rngLogs = co_await dbClient->execSqlCoro(
+          "SELECT rng_type, count(*) as winner_count "
+          "FROM rng_logs "
+          "WHERE draw_id = $1 "
+          "GROUP BY rng_type",
+          draw.getValueOfId());
+
+      Json::Value tiers = Json::arrayValue;
+
+      // Fetch prize tiers from the database
+      CoroMapper<PrizeTiers> prizeTierMapper(dbClient);
+      auto prizeTiers = co_await prizeTierMapper.orderBy(PrizeTiers::Cols::_tier_level, SortOrder::ASC).findAll();
+
+      for (auto const &tierData : prizeTiers) {
+        Json::Value tier;
+        tier["name"] = tierData.getValueOfTierName();
+        
+        // Convert prize_amount (string/numeric) to double/int
+        std::string amountStr = tierData.getValueOfPrizeAmount();
+        double amountValue = 0.0;
+        if (!amountStr.empty()) {
+          try {
+            amountValue = std::stod(amountStr);
+          } catch (...) {
+            amountValue = 0.0;
+          }
+        }
+        tier["amount"] = amountValue;
+        tier["winners"] = 0;
+
+        // Map system_name to rng_type
+        std::string systemName = tierData.getValueOfSystemName();
+        std::string rngType;
+        if (systemName == "ultimate") {
+          rngType = "ULTIMATE_WINNER";
+        } else {
+          std::string upperSysName = systemName;
+          std::transform(upperSysName.begin(), upperSysName.end(), upperSysName.begin(), ::toupper);
+          rngType = "TIER_WINNER_" + upperSysName;
+        }
+
+        for (auto const &row : rngLogs) {
+          if (row["rng_type"].as<std::string>() == rngType) {
+            tier["winners"] = row["winner_count"].as<int>();
+            break;
+          }
+        }
+        tiers.append(tier);
+      }
+      raffleJson["prizeWinnerTiers"] = tiers;
+
+    } catch (...) {
+      raffleJson["draw"] = Json::nullValue;
+    }
+
+    response.result = raffleJson;
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Raffle not found or database error.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+drogon::Task<dto::BaseApiResponse>
+RaffleService::getRecentTicketHolders(const std::string &raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+  try {
+    if (raffleId.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Raffle ID cannot be empty.";
+      co_return errorResponse;
+    }
+
+    auto result = co_await dbClient->execSqlCoro(
+        "SELECT t.id, t.ticket_number, t.created_at, t.total_amount, "
+        "c.first_name, c.last_name, c.msisdn "
+        "FROM tickets t "
+        "JOIN customers c ON t.customer_id = c.id "
+        "WHERE t.raffle_id = $1 AND t.payment_status = 'PAID' "
+        "ORDER BY t.created_at DESC "
+        "LIMIT 10",
+        raffleId);
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    Json::Value data = Json::arrayValue;
+    for (auto const &row : result) {
+      Json::Value item;
+      item["id"] = row["id"].as<std::string>();
+      item["ticketNumber"] = row["ticket_number"].as<std::string>();
+      item["amount"] = row["total_amount"].as<std::string>();
+      item["createdAt"] = row["created_at"].as<std::string>();
+      item["holder"] = row["first_name"].as<std::string>() + " " +
+                       row["last_name"].as<std::string>();
+      item["msisdn"] = row["msisdn"].as<std::string>();
+      data.append(item);
+    }
+    response.result["data"] = data;
+    co_return response;
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] =
+        "Database error while fetching ticket holders.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getTopTicketHolders(const std::string &raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+  try {
+    if (raffleId.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Raffle ID cannot be empty.";
+      co_return errorResponse;
+    }
+
+    auto result = co_await dbClient->execSqlCoro(
+        "SELECT c.first_name, c.last_name, c.msisdn, SUM(t.quantity) as "
+        "total_tickets, MAX(t.ticket_number) as ticket_number, "
+        "SUM(SUM(t.quantity)) OVER () as total_valid_entries "
+        "FROM tickets t "
+        "JOIN customers c ON t.customer_id = c.id "
+        "WHERE t.raffle_id = $1 AND t.payment_status = 'PAID' "
+        "GROUP BY c.id, c.first_name, c.last_name, c.msisdn "
+        "ORDER BY total_tickets DESC "
+        "LIMIT 6",
+        raffleId);
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    Json::Value data = Json::arrayValue;
+    for (auto const &row : result) {
+      Json::Value item;
+      item["firstName"] = row["first_name"].as<std::string>();
+      item["lastName"] = row["last_name"].as<std::string>();
+      item["holder"] = row["first_name"].as<std::string>() + " " +
+                       row["last_name"].as<std::string>();
+      item["msisdn"] = row["msisdn"].as<std::string>();
+      item["ticketNumber"] = row["ticket_number"].as<std::string>();
+      item["totalTickets"] = row["total_tickets"].as<int>();
+      data.append(item);
+    }
+    response.result["data"] = data;
+    response.result["totalValidEntries"] = result.empty() ? 0 : result[0]["total_valid_entries"].as<int>();
+    co_return response;
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] =
+        "Database error while fetching top ticket holders.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getAllRaffleTickets(const std::string &raffleId, int pageNo, int pageSize) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Tickets> mapper(dbClient);
+
+  try {
+    if (raffleId.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Raffle ID cannot be empty.";
+      co_return errorResponse;
+    }
+
+    auto totalCount = co_await mapper.count(
+        Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+
+    if (totalCount == 0) {
+      dto::BaseApiResponse response;
+      response.success = true;
+      response.result["data"] = Json::arrayValue;
+      response.result["totalCount"] = 0;
+      co_return response;
+    }
+
+    int offset = (pageNo - 1) * pageSize;
+    auto tickets =
+        co_await mapper.orderBy(Tickets::Cols::_created_at, SortOrder::DESC)
+            .limit(pageSize)
+            .offset(offset)
+            .findBy(Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ,
+                             raffleId));
+
+    auto totalPages = (totalCount + pageSize - 1) / pageSize;
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["totalCount"] = (Json::UInt64)totalCount;
+    response.result["pageNo"] = pageNo;
+    response.result["pageSize"] = pageSize;
+    response.result["totalPages"] = (int)totalPages;
+    response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
+    response.result["upperBound"] = (int)totalPages == pageNo
+                                        ? (Json::UInt64)totalCount
+                                        : (Json::UInt64)(pageNo * pageSize);
+
+    Json::Value data = Json::arrayValue;
+    for (const auto &ticket : tickets) {
+      data.append(snakeCaseToCamelCase(ticket.toJson()));
+    }
+    response.result["data"] = data;
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] =
+        "Database error while fetching raffle tickets.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getTickets(const std::string &raffleId, int pageNo, int pageSize) {
+  return getAllRaffleTickets(raffleId, pageNo, pageSize);
+}
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getTicketStats(const std::string &raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+
+  try {
+    if (raffleId.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Raffle ID cannot be empty.";
+      co_return errorResponse;
+    }
+
+    auto result = co_await dbClient->execSqlCoro(
+        "SELECT count(*) as total_tickets, "
+        "count(CASE WHEN is_active = true THEN 1 END) as active_tickets, "
+        "count(CASE WHEN payment_status = 'PAID' THEN 1 END) as paid_tickets, "
+        "coalesce(sum(CASE WHEN payment_status = 'PAID' THEN "
+        "CAST(total_amount AS NUMERIC) ELSE 0 END), 0) as total_revenue, "
+        "coalesce(sum(CASE WHEN payment_status = 'PAID' THEN quantity ELSE 0 "
+        "END), 0) as total_entries "
+        "FROM tickets "
+        "WHERE raffle_id = $1",
+        raffleId);
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    if (!result.empty()) {
+      response.result["totalTickets"] = result[0]["total_tickets"].as<int>();
+      response.result["activeTickets"] = result[0]["active_tickets"].as<int>();
+      response.result["paidTickets"] = result[0]["paid_tickets"].as<int>();
+      response.result["totalRevenue"] = result[0]["total_revenue"].as<double>();
+      response.result["totalEntries"] = result[0]["total_entries"].as<int>();
+    } else {
+      response.result["totalTickets"] = 0;
+      response.result["activeTickets"] = 0;
+      response.result["paidTickets"] = 0;
+      response.result["totalRevenue"] = 0.0;
+      response.result["totalEntries"] = 0;
+    }
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] =
+        "Database error while fetching ticket stats.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getRngLogs(const std::string &raffleId) {
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> raffleMapper(dbClient);
+  CoroMapper<Draws> drawMapper(dbClient);
+  CoroMapper<RngLogs> rngLogsMapper(dbClient);
+
+  try {
+
+    auto raffle = co_await raffleMapper.findByPrimaryKey(raffleId);
+
+    auto draw = co_await drawMapper.findOne(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ,  raffle.getValueOfId()));
+
+    auto rngLogs = co_await rngLogsMapper.findBy(Criteria(RngLogs::Cols::_draw_id, CompareOperator::EQ, draw.getValueOfId()));
+
+    dto::BaseApiResponse response;
+    response.success = true;
+
+    Json::Value data = Json::arrayValue;
+
+    for (const auto &rngLog : rngLogs) {
+      Json::Value rngLogJson;
+      rngLogJson["id"] = rngLog.getValueOfId();
+      rngLogJson["drawId"] = rngLog.getValueOfDrawId();
+      rngLogJson["rngType"] = rngLog.getValueOfRngType();
+      rngLogJson["seedValue"] = rngLog.getValueOfSeedValue();
+      rngLogJson["generatedValue"] = rngLog.getValueOfGeneratedValue();
+      rngLogJson["generatedAt"] = rngLog.getValueOfGeneratedAt().toDbStringLocal();
+
+      // Handle metadata parsing
+      std::string metadataStr = rngLog.getValueOfMetadata();
+      if (!metadataStr.empty()) {
+        Json::Value metadataJson;
+        Json::Reader reader;
+        if (reader.parse(metadataStr, metadataJson)) {
+          rngLogJson["metadata"] = metadataJson;
+        } else {
+          rngLogJson["metadata"] = metadataStr;
+        }
+      } else {
+        rngLogJson["metadata"] = Json::nullValue;
+      }
+      data.append(rngLogJson);
+    }
+    response.result["data"] = data;
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while fetching RNG logs.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+
+}
+
+
+drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw() {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> raffleMapper(dbClient);
+  CoroMapper<Draws> drawMapper(dbClient);
+
+  try {
+    // 1. Get the active raffle
+    auto activeRaffle = co_await raffleMapper.findOne(
+        Criteria(Raffles::Cols::_status, CompareOperator::EQ, "ACTIVE"));
+
+    // 2. Get the associated draw ID
+    auto draw = co_await drawMapper.findOne(
+        Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ,
+                 activeRaffle.getValueOfId()));
+
+    // 3. Run execute draw postgres function
+    auto sqlResult = co_await dbClient->execSqlCoro(
+        "SELECT public.execute_draw($1)", draw.getValueOfId());
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.message = "Draw executed successfully";
+
+    if (!sqlResult.empty()) {
+      // Extract the JSONB result from the first column of the first row
+      response.result = snakeCaseToCamelCase(sqlResult[0][0].as<Json::Value>());
+
+      // at this point results are guaranteed
+      // update raffle status to "COMPLETED".
+      activeRaffle.setStatus("COMPLETED");
+      co_await raffleMapper.update(activeRaffle);
+
+    } else {
+      response.result["drawId"] = draw.getValueOfId();
+    }
+
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while executing draw.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   } catch (const std::exception &e) {

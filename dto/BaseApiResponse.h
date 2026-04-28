@@ -32,4 +32,5 @@ namespace raffle::dto {
     };
 
 }
+
 #endif //CHOPMONEYRAFFLEAPI_BASEAPIRESPONSE_H

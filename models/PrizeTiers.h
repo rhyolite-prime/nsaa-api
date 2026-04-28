@@ -54,6 +54,7 @@ class PrizeTiers
         static const std::string _is_cashback;
         static const std::string _created_at;
         static const std::string _updated_at;
+        static const std::string _system_name;
     };
 
     static const int primaryKeyNumber;
@@ -197,8 +198,18 @@ class PrizeTiers
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
+    /**  For column system_name  */
+    ///Get the value of the column system_name, returns the default value if the column is null
+    const std::string &getValueOfSystemName() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getSystemName() const noexcept;
+    ///Set the value of the column system_name
+    void setSystemName(const std::string &pSystemName) noexcept;
+    void setSystemName(std::string &&pSystemName) noexcept;
+    void setSystemNameToNull() noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 10;  }
+
+    static size_t getColumnNumber() noexcept {  return 11;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -230,6 +241,7 @@ class PrizeTiers
     std::shared_ptr<bool> isCashback_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+    std::shared_ptr<std::string> systemName_;
     struct MetaData
     {
         const std::string colName_;
@@ -241,7 +253,7 @@ class PrizeTiers
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[10]={ false };
+    bool dirtyFlag_[11]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -313,6 +325,11 @@ class PrizeTiers
         if(!dirtyFlag_[9])
         {
             needSelection=true;
+        }
+        if(dirtyFlag_[10])
+        {
+            sql += "system_name,";
+            ++parametersCount;
         }
         if(parametersCount > 0)
         {
@@ -394,6 +411,11 @@ class PrizeTiers
         else
         {
             sql +="default,";
+        }
+        if(dirtyFlag_[10])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
         }
         if(parametersCount > 0)
         {

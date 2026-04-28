@@ -91,8 +91,7 @@ drogon::Task<dto::BaseApiResponse> ColorService::getAll(int pageNo, int pageSize
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-ColorService::createAsync(const dto::CreateColorDto &dto) {
+drogon::Task<dto::BaseApiResponse> ColorService::createAsync(const dto::CreateColorDto &dto) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Colours> mapper(dbClient);
 
@@ -129,8 +128,7 @@ ColorService::createAsync(const dto::CreateColorDto &dto) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-ColorService::updateAsync(const dto::UpdateColorDto &dto) {
+drogon::Task<dto::BaseApiResponse> ColorService::updateAsync(const dto::UpdateColorDto &dto) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Colours> mapper(dbClient);
 
@@ -190,8 +188,7 @@ ColorService::updateAsync(const dto::UpdateColorDto &dto) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-ColorService::deleteColor(const std::string &colorId) {
+drogon::Task<dto::BaseApiResponse> ColorService::deleteColor(const std::string &colorId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Colours> mapper(dbClient);
 

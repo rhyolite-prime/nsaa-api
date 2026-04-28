@@ -11,8 +11,7 @@
 
 namespace raffle::services {
 
-drogon::Task<dto::CheckoutResponse>
-HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
+drogon::Task<dto::CheckoutResponse> HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
 
   dto::CheckoutResponse response;
 
@@ -22,8 +21,7 @@ HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
 
     const std::string username = hubtelConfig["ApiIdOrUsername"].asString();
     const std::string password = hubtelConfig["ApiKeyOrPassword"].asString();
-    const std::string merchantAccountNumber =
-        hubtelConfig["MerchantAccountNumber"].asString();
+    const std::string merchantAccountNumber = hubtelConfig["MerchantAccountNumber"].asString();
 
     Json::Value payload;
     payload["totalAmount"] = dto.getTotalAmount();
@@ -51,7 +49,7 @@ HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
     req->setMethod(drogon::Post);
     req->setPath("/items/initiate");
     req->setBody(body);
-    req->addHeader("Content-Type", "application/json");
+    req->setContentTypeCode(drogon::CT_APPLICATION_JSON);
     req->addHeader("Authorization", authHeader);
 
     auto httpResp = co_await client->sendRequestCoro(req);
@@ -91,8 +89,7 @@ HubtelApi::InitializeWebCheckout(const dto::WebCheckoutDto &dto) {
   }
 }
 
-drogon::Task<dto::DirectReceiveMoneyResponse>
-HubtelApi::InitializeDirectReceiveMoney(const dto::DirectReceiveMoneyDto &dto) {
+drogon::Task<dto::DirectReceiveMoneyResponse> HubtelApi::InitializeDirectReceiveMoney(const dto::DirectReceiveMoneyDto &dto) {
 
   dto::DirectReceiveMoneyResponse response;
 
@@ -102,8 +99,7 @@ HubtelApi::InitializeDirectReceiveMoney(const dto::DirectReceiveMoneyDto &dto) {
 
     const std::string username = hubtelConfig["ApiIdOrUsername"].asString();
     const std::string password = hubtelConfig["ApiKeyOrPassword"].asString();
-    const std::string merchantAccountNumber =
-        hubtelConfig["MerchantAccountNumber"].asString();
+    const std::string merchantAccountNumber = hubtelConfig["MerchantAccountNumber"].asString();
 
     auto now = std::time(nullptr);
     std::tm localTime{};
@@ -174,6 +170,7 @@ HubtelApi::InitializeDirectReceiveMoney(const dto::DirectReceiveMoneyDto &dto) {
 }
 
 drogon::Task<dto::TransactionStatusCheckResponse> HubtelApi::TransactionStatusCheck(const std::string &clientReference) {
+
   dto::TransactionStatusCheckResponse response;
   try {
     const auto &config = drogon::app().getCustomConfig();
