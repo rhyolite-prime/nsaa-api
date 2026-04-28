@@ -290,6 +290,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
         dto::BaseApiResponse response;
 
         if (dto.getPurchaseChannel() == "WSSD") {
+
             raffle::dto::WebCheckoutDto webCheckoutDto;
             webCheckoutDto.setCallbackUrl(hubtelConfig.isMember("WebCheckoutCallBackUrl") ? hubtelConfig["WebCheckoutCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
             webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());
