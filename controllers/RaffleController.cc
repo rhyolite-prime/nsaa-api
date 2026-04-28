@@ -237,13 +237,16 @@ Task<HttpResponsePtr> RaffleController::initiateFinalDraw(HttpRequestPtr req) {
 }
 
 Task<HttpResponsePtr> RaffleController::getRngLogs(HttpRequestPtr req) {
-  raffle::dto::BaseApiResponse response;
-  response.success = true;
 
-  response.message = "Raffle retrieved successfully";
+  auto raffleId = req->getParameter("id");
 
-  auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getRngLogs(raffleId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
+
 }
 
 Task<HttpResponsePtr> RaffleController::runDraw(HttpRequestPtr req) {

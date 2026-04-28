@@ -3,8 +3,8 @@
 //
 
 #include "TicketService.h"
-#include "../../dto/BaseApiResponse.h"
-#include "../../dto/CreateTicketDto.h"
+#include "dto/BaseApiResponse.h"
+#include "dto/CreateTicketDto.h"
 #include "Customers.h"
 #include "constants/ErrorCodes.h"
 #include <drogon/orm/CoroMapper.h>
@@ -21,11 +21,12 @@
 #include <uuid/uuid.h>
 
 #include "utils/IdGeneratorUtils.h"
-#include "../hubtel_api/HubtelApi.h"
-#include "../../dto/CheckoutResponse.h"
-#include "../../dto/WebCheckoutDto.h"
+#include "dto/CheckoutResponse.h"
+#include "dto/WebCheckoutDto.h"
 #include <iomanip>
 #include <sstream>
+
+#include "services/hubtel_api/HubtelApi.h"
 
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;

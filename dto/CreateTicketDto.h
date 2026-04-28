@@ -37,7 +37,6 @@ public:
     std::string payment_method_;
     int32_t quantity_ = 1;
     std::string customer_phone_;
-    std::string payment_reference_;
     std::string purchase_channel_;
 
 };
@@ -56,9 +55,6 @@ inline void CreateTicketDto::fromJson(const Json::Value &json) {
     customer_phone_ = json["customerPhone"].asString();
   }
 
-  if (json.isMember("paymentReference") && !json["paymentReference"].isNull()) {
-    payment_reference_ = json["paymentReference"].asString();
-  }
 
   if (json.isMember("paymentMethod") && !json["paymentMethod"].isNull()) {
     payment_method_ = json["paymentMethod"].asString();
