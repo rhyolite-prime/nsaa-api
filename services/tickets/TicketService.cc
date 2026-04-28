@@ -312,6 +312,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
                 response.result["ticketNumber"] = result.getValueOfTicketNumber();
                 response.result["paymentReference"] = clientReference;
                 response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
+                response.result["selectedColour"] = colourName;
             } else {
                 response.success = false;
                 response.message = "Ticket created but failed to initialize payment. " + hubtelResult.status;
@@ -343,6 +344,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
                 response.result["ticketNumber"] = result.getValueOfTicketNumber();
                 response.result["paymentReference"] = clientReference;
                 response.result["transactionId"] = hubtelResult.data.transactionId;
+                response.result["selectedColour"] = colourName;
             } else {
                 response.success = false;
                 response.message = "Ticket created but failed to initiate mobile money prompt. " + hubtelResult.message;
