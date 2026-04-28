@@ -1238,7 +1238,6 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getRngLogs(const std::string &
 }
 
 
-
 drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw() {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);

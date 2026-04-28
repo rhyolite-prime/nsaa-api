@@ -300,6 +300,11 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
             auto hubtelResult = co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
 
+            LOG_INFO << "Hubtel WebCheckout result for clientReference=" << clientReference
+                         << " responseCode=" << hubtelResult.responseCode
+                         << " status=" << hubtelResult.status
+                         << " checkoutUrl=" << hubtelResult.data.checkoutUrl;
+
             if (hubtelResult.responseCode == "0000") {
                 response.success = true;
                 response.message = "Ticket created successfully. Please complete payment.";
@@ -326,6 +331,10 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
                 : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/direct-receive");
 
             auto hubtelResult = co_await hubtelApi.InitializeDirectReceiveMoney(directReceiveDto);
+
+            LOG_INFO << "Hubtel DirectReceive result for clientReference=" << clientReference
+                         << " responseCode=" << hubtelResult.responseCode
+                         << " transactionId=" << hubtelResult.data.transactionId;
 
             if (hubtelResult.responseCode == "0000") {
                 response.success = true;
