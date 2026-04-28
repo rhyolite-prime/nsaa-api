@@ -22,7 +22,7 @@ public:
   [[nodiscard]] int32_t getQuantity() const { return quantity_; }
   [[nodiscard]] const std::string& getCustomerPhone() const { return customer_phone_; }
   [[nodiscard]] const std::string& getPaymentMethod() const { return payment_method_; }
-  [[nodiscard]] const std::string& getPurchaseChannel() const { return payment_method_; }
+  [[nodiscard]] const std::string& getPurchaseChannel() const { return purchase_channel_; }
 
   // Setters
   void setColourId(const std::string &value) { colour_id_ = value; }
