@@ -36,10 +36,6 @@ drogon::Task<dto::CheckoutResponse> HubtelApi::InitializeWebCheckout(const dto::
     writer["indentation"] = "";
     const std::string body = Json::writeString(writer, payload);
 
-    LOG_INFO << "InitializeWebCheckout request body => " << body
-                 << ", reference: " << dto.getClientReference();
-
-
     const std::string auth = username + ":" + password;
     const std::string authHeader = "Basic " + drogon::utils::base64Encode(auth);
 
@@ -224,6 +220,42 @@ drogon::Task<dto::TransactionStatusCheckResponse> HubtelApi::TransactionStatusCh
     response.message = "Failure";
     response.responseCode = "EXCEPTION";
     co_return response;
+  }
+}
+
+
+drogon::Task<bool> HubtelApi::SendSms(const std::string &phoneNumber, const std::string &messageContent) {
+
+  LOG_INFO << "smsMessage => " << messageContent;
+
+  auto client = drogon::HttpClient::newHttpClient("https://sms.hubtel.com");
+
+  // Construct the path with query parameters
+  auto req = drogon::HttpRequest::newHttpRequest();
+  req->setPath("/v1/messages/send");
+  req->setParameter("clientsecret", "sffrctup");
+  req->setParameter("clientid", "xfuqfoyu");
+  req->setParameter("from", "RHYOLITE");
+  req->setParameter("to", phoneNumber);
+  req->setParameter("content", messageContent);
+  req->setMethod(drogon::Get);
+
+  try {
+    auto resp = co_await client->sendRequestCoro(req);
+
+    // The API returns the response body which we should log
+    std::string smsNotificationResponse = std::string(resp->getBody());
+    LOG_INFO << "hubtelSmsApiResponse => " << smsNotificationResponse << ",phoneNo => " << phoneNumber  ;
+
+    if (resp->getStatusCode() != drogon::k201Created) {
+      LOG_ERROR << "Hubtel SMS request failed. Status: " << resp->getStatusCode();
+      co_return false;
+    }
+    co_return true;
+
+  } catch (const std::exception &e) {
+    LOG_ERROR << "Exception sending SMS: " << e.what();
+    co_return false;
   }
 }
 

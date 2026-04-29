@@ -13,6 +13,7 @@
 #include "services/dashboard/DashboardService.h"
 #include "services/draws/DrawService.h"
 #include "services/price_tiers/PriceTierService.h"
+#include "services/quartz/QuartzApi.h"
 #include "services/raffles/RaffleService.h"
 #include "services/rng_logs/RngLogService.h"
 #include "services/roles/RoleService.h"
@@ -48,6 +49,7 @@ namespace raffle::plugins {
         services::UserService &getUserService() { return userService_; }
         services::DrawService &getDrawService() { return drawService_; }
         services::RaffleService &getRaffleService() { return raffleService_; }
+        services::QuartzApi &getQuartzApi() { return quartzApi_; }
 
     private:
         services::DrawService drawService_;
@@ -62,6 +64,7 @@ namespace raffle::plugins {
         services::TicketService ticketService_;
         services::TransactionAuditService transactionAuditService_;
         services::UserService userService_;
+        services::QuartzApi quartzApi_;
     };
 
 }

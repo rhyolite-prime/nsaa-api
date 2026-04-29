@@ -225,17 +225,6 @@ Task<HttpResponsePtr> RaffleController::getTicketStats(HttpRequestPtr req) {
 }
 
 
-
-Task<HttpResponsePtr> RaffleController::initiateFinalDraw(HttpRequestPtr req) {
-  raffle::dto::BaseApiResponse response;
-  response.success = true;
-
-  response.message = "Raffle retrieved successfully";
-
-  auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-  co_return resp;
-}
-
 Task<HttpResponsePtr> RaffleController::getRngLogs(HttpRequestPtr req) {
 
   auto raffleId = req->getParameter("id");
@@ -250,14 +239,67 @@ Task<HttpResponsePtr> RaffleController::getRngLogs(HttpRequestPtr req) {
 }
 
 Task<HttpResponsePtr> RaffleController::runDraw(HttpRequestPtr req) {
+
+  auto jsonBody = req->getJsonObject();
+
+  std::string raffleId;
+
+  if (jsonBody->isString()) {
+    raffleId = jsonBody->asString();
+  } else {
+    raffle::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Expected a string value for campaign ID";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  co_await raffleService.runDraw(raffleId);
+
   raffle::dto::BaseApiResponse response;
   response.success = true;
-
-  response.message = "Draw run successfully";
-
+  response.error["message"] = "Raffle activated successfully";
   auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+  resp->setStatusCode(k400BadRequest);
+  co_return resp;
+
+}
+
+Task<HttpResponsePtr> RaffleController::runClosure(HttpRequestPtr req) {
+
+  auto jsonBody = req->getJsonObject();
+
+  std::string raffleId;
+
+  if (jsonBody->isString()) {
+    raffleId = jsonBody->asString();
+  } else {
+    raffle::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Expected a string value for campaign ID";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  co_await raffleService.closeRaffle(raffleId);
+
+  raffle::dto::BaseApiResponse response;
+  response.success = true;
+  response.error["message"] = "Raffle activated successfully";
+  auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+  resp->setStatusCode(k400BadRequest);
   co_return resp;
 }
+
+
 
 Task<HttpResponsePtr> RaffleController::executeDraw(HttpRequestPtr req) {
 
@@ -293,7 +335,7 @@ Task<HttpResponsePtr> RaffleController::activate(HttpRequestPtr req) {
 
   raffle::dto::BaseApiResponse response;
   response.success = true;
-  response.error["message"] = "Scheduled campaign run successfully";
+  response.error["message"] = "Raffle activated successfully";
   auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
   resp->setStatusCode(k400BadRequest);
   co_return resp;

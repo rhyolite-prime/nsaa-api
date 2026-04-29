@@ -349,8 +349,9 @@
         },
         "QuartzSchedulerApi": {
             "BaseUrl": "https://scheduler.richcreationsdevelopment.com",
-            "DrawCallBackUrl": "https://nsaa-bo-api.rhyoliteprime.com/api/v1/raffle/run-draw",
-            "RaffleActivationCallBackUrl": "https://nsaa-bo-api.rhyoliteprime.com/api/v1/raffle/activate"
+            "RaffleActivationCallBackUrl": "https://nsaa-bo-api.rhyoliteprime.com/api/v1/raffle/activate",
+            "RaffleClosureCallBackUrl": "https://nsaa-bo-api.rhyoliteprime.com/api/v1/raffle/run-closure",
+            "RaffleDrawCallBackUrl": "https://nsaa-bo-api.rhyoliteprime.com/api/v1/raffle/run-draw"
         },
         "HubtelPaymentApi":{
             "ApiIdOrUsername": "B1nxqoW",

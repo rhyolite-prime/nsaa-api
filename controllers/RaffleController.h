@@ -20,11 +20,12 @@ class RaffleController : public drogon::HttpController<RaffleController>
     ADD_METHOD_TO(RaffleController::getTickets, std::string(PREFIX) + "/get-tickets", Get, Options);
     ADD_METHOD_TO(RaffleController::getTicketStats, std::string(PREFIX) + "/get-tickets-stats", Get, Options);
     ADD_METHOD_TO(RaffleController::getRecentTicketHolders, std::string(PREFIX) + "/get-recent-ticket-holders", Get, Options);
-    ADD_METHOD_TO(RaffleController::initiateFinalDraw, std::string(PREFIX) + "/initiate-final-draw", Get, Options);
     ADD_METHOD_TO(RaffleController::getRngLogs, std::string(PREFIX) + "/get-rng-logs", Get, Options);
-    ADD_METHOD_TO(RaffleController::runDraw, std::string(PREFIX) + "/run-draw", Post, Options);
-    ADD_METHOD_TO(RaffleController::executeDraw, std::string(PREFIX) + "/execute-draw", Get, Options);
     ADD_METHOD_TO(RaffleController::activate, std::string(PREFIX) + "/activate", Post, Options);
+    ADD_METHOD_TO(RaffleController::runDraw, std::string(PREFIX) + "/run-draw", Post, Options);
+    ADD_METHOD_TO(RaffleController::runClosure, std::string(PREFIX) + "/run-closure", Post, Options);
+    ADD_METHOD_TO(RaffleController::executeDraw, std::string(PREFIX) + "/execute-draw", Get, Options);
+
     //draws
     METHOD_LIST_END
 
@@ -39,9 +40,9 @@ class RaffleController : public drogon::HttpController<RaffleController>
     Task<HttpResponsePtr> getDetails(HttpRequestPtr req);
     Task<HttpResponsePtr> getTopTicketHolders(HttpRequestPtr req);
     Task<HttpResponsePtr> getRecentTicketHolders(HttpRequestPtr req);
-    Task<HttpResponsePtr> initiateFinalDraw(HttpRequestPtr req);
     Task<HttpResponsePtr> getRngLogs(HttpRequestPtr req);
     Task<HttpResponsePtr> runDraw(HttpRequestPtr req);
+    Task<HttpResponsePtr> runClosure(HttpRequestPtr req);
     Task<HttpResponsePtr> executeDraw (HttpRequestPtr req);
     Task<HttpResponsePtr> activate(HttpRequestPtr req);
 };
