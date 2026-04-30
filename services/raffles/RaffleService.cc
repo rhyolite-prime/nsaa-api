@@ -337,7 +337,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       auto activationEndTime = activationStartTime.after(5 * 60);  // 5 mins apart
 
       raffleActivationQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(activationStartTime);
-      raffleActivationQuartzJobDto.startDate = activationStartTime.toDbStringLocal();
+      raffleActivationQuartzJobDto.startDate = activationStartTime.after(-5 * 60).toDbStringLocal(); // -5 mins earlier
       raffleActivationQuartzJobDto.endDate = activationEndTime.toDbStringLocal();
 
       co_await quartzApi.scheduleJob(raffleActivationQuartzJobDto);
@@ -357,7 +357,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       auto closureEndTime = closureStartTime.after(5 * 60);
 
       raffleClosureQuartzJobDto.schedule = raffle::utils::CronUtils::buildCronExpression(closureStartTime);
-      raffleClosureQuartzJobDto.startDate = closureStartTime.toDbStringLocal();
+      raffleClosureQuartzJobDto.startDate = closureStartTime.after(-5 * 60).toDbStringLocal();;
       raffleClosureQuartzJobDto.endDate = closureEndTime.toDbStringLocal();
 
       co_await quartzApi.scheduleJob(raffleClosureQuartzJobDto);
@@ -376,7 +376,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       auto drawEndTime = drawStartTime.after(5 * 60);
 
       raffleDrawQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(drawStartTime);
-      raffleDrawQuartzJobDto.startDate = drawStartTime.toDbStringLocal();
+      raffleDrawQuartzJobDto.startDate = drawStartTime.after(-5 * 60).toDbStringLocal();
       raffleDrawQuartzJobDto.endDate = drawEndTime.toDbStringLocal();
 
       co_await quartzApi.scheduleJob(raffleDrawQuartzJobDto);
