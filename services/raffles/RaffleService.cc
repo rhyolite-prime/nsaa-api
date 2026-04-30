@@ -293,8 +293,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       auto activationEndTime = activationStartTime.after(5 * 60);  // 5 mins apart
 
       raffleActivationQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(activationStartTime);
-      raffleActivationQuartzJobDto.startDate = utils::DateUtils::formatQuartzDate(activationStartTime.after(-5 * 60)); // -5 mins earlier
-      raffleActivationQuartzJobDto.endDate = utils::DateUtils::formatQuartzDate(activationEndTime);
+      raffleActivationQuartzJobDto.startDate = activationStartTime.after(-5 * 60).toDbStringLocal(); // -5 mins earlier
+      raffleActivationQuartzJobDto.endDate = activationEndTime.toDbStringLocal();
 
       co_await quartzApi.scheduleJob(raffleActivationQuartzJobDto);
 
@@ -313,8 +313,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       auto closureEndTime = closureStartTime.after(5 * 60);
 
       raffleClosureQuartzJobDto.schedule = raffle::utils::CronUtils::buildCronExpression(closureStartTime);
-      raffleClosureQuartzJobDto.startDate = utils::DateUtils::formatQuartzDate(closureStartTime.after(-5 * 60));
-      raffleClosureQuartzJobDto.endDate = utils::DateUtils::formatQuartzDate(closureEndTime);
+      raffleClosureQuartzJobDto.startDate = closureStartTime.after(-5 * 60).toDbStringLocal();
+      raffleClosureQuartzJobDto.endDate = closureEndTime.toDbStringLocal();
 
       co_await quartzApi.scheduleJob(raffleClosureQuartzJobDto);
 
@@ -328,12 +328,12 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       // Default or empty callbackUrl as not specified by user context
       raffleDrawQuartzJobDto.customData.callbackUrl = raffleDrawCallBackUrl;
 
-      auto drawStartTime = result.getValueOfDrawTime();
+      const auto& drawStartTime = result.getValueOfDrawTime();
       auto drawEndTime = drawStartTime.after(5 * 60);
 
       raffleDrawQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(drawStartTime);
-      raffleDrawQuartzJobDto.startDate = utils::DateUtils::formatQuartzDate(drawStartTime.after(-5 * 60));
-      raffleDrawQuartzJobDto.endDate = utils::DateUtils::formatQuartzDate(drawEndTime);
+      raffleDrawQuartzJobDto.startDate = drawStartTime.after(-5 * 60).toDbStringLocal();
+      raffleDrawQuartzJobDto.endDate = drawEndTime.toDbStringLocal();
 
       co_await quartzApi.scheduleJob(raffleDrawQuartzJobDto);
 
