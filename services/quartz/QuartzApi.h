@@ -12,7 +12,7 @@ namespace raffle::services {
 
     class QuartzApi {
     public:
-        drogon::Task<bool> scheduleJob(const raffle::dto::QuartzJobDto &dto);
+        drogon::Task<bool> scheduleJob(const dto::QuartzJobDto &dto);
     };
 
 }

@@ -214,8 +214,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     // 3. Customer Management
     CoroMapper<Customers> customerMapper(dbClient);
     std::string customerId;
-    auto existingCustomers = co_await customerMapper.findBy(Criteria(
-        Customers::Cols::_msisdn, CompareOperator::EQ, dto.getCustomerPhone()));
+    auto existingCustomers = co_await customerMapper.findBy(Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, dto.getCustomerPhone()));
 
     if (!existingCustomers.empty()) {
       customerId = existingCustomers[0].getValueOfId();
@@ -313,6 +312,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
                 response.result["ticketNumber"] = result.getValueOfTicketNumber();
                 response.result["paymentReference"] = clientReference;
                 response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
+                response.result["selectedColour"] = colourName;
             } else {
                 response.success = false;
                 response.message = "Ticket created but failed to initialize payment. " + hubtelResult.status;
@@ -344,6 +344,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
                 response.result["ticketNumber"] = result.getValueOfTicketNumber();
                 response.result["paymentReference"] = clientReference;
                 response.result["transactionId"] = hubtelResult.data.transactionId;
+                response.result["selectedColour"] = colourName;
             } else {
                 response.success = false;
                 response.message = "Ticket created but failed to initiate mobile money prompt. " + hubtelResult.message;
@@ -448,6 +449,42 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
         co_await drawMapper.update(draw);
     } catch (const std::exception &e) {
         LOG_ERROR << "Failed to update associated draw for ticket " << ticket.getValueOfId() << ": " << e.what();
+    }
+
+    // 6. Update the associated Customer
+    auto customerId = ticket.getValueOfCustomerId();
+    if (!customerId.empty()) {
+        try {
+            CoroMapper<Customers> customerMapper(dbClient);
+            auto customer = co_await customerMapper.findByPrimaryKey(customerId);
+            
+            // Update number of entries
+            int32_t currentEntries = customer.getValueOfNumberOfEntries();
+            customer.setNumberOfEntries(currentEntries + ticket.getValueOfQuantity());
+            
+            // Update total spent
+            double currentSpent = 0;
+            std::string currentSpentStr = customer.getValueOfTotalSpent();
+            if (!currentSpentStr.empty()) {
+                try {
+                    currentSpent = std::stod(currentSpentStr);
+                } catch (...) {
+                    currentSpent = 0;
+                }
+            }
+            double ticketAmount = std::stod(ticket.getValueOfTotalAmount());
+            currentSpent += ticketAmount;
+            
+            char spentBuffer[64];
+            snprintf(spentBuffer, sizeof(spentBuffer), "%.2f", currentSpent);
+            customer.setTotalSpent(std::string(spentBuffer));
+            
+            customer.setUpdatedAt(trantor::Date::now());
+            
+            co_await customerMapper.update(customer);
+        } catch (const std::exception &e) {
+            LOG_ERROR << "Failed to update associated customer for ticket " << ticket.getValueOfId() << ": " << e.what();
+        }
     }
 
     dto::BaseApiResponse response;

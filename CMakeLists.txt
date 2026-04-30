@@ -61,6 +61,8 @@ add_executable(${PROJECT_NAME} main.cc
         dto/CreateTicketDto.h
         utils/IdGeneratorUtils.h
         utils/IdGeneratorUtils.cc
+        utils/CronUtils.h
+        utils/CronUtils.cc
         controllers/PaymentCallbackController.h
         services/settings/SettingService.cc
         dto/CreateUserDto.h
@@ -76,7 +78,11 @@ add_executable(${PROJECT_NAME} main.cc
         services/hubtel_api/HubtelApi.cc
         dto/CheckoutResponse.h
         dto/DirectReceiveMoneyResponse.h
-        controllers/HubtelCallbackProcessorController.h)
+        controllers/HubtelCallbackProcessorController.h
+        services/email/EmailService.h
+        dto/SendEmailDto.h
+        services/email/EmailService.cc
+)
 
 # ##############################################################################
 # If you include the drogon source code locally in your project, use this method

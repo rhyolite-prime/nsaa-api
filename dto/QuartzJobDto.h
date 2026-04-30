@@ -26,8 +26,8 @@ namespace raffle::dto {
             json["name"] = name;
             json["description"] = description;
             json["schedule"] = schedule;
-            json["startDate"] = startDate;
-            json["endDate"] = endDate;
+            json["startDate"] = toIso8601(startDate);
+            json["endDate"] = toIso8601(endDate);
 
             Json::Value customDataJson;
             customDataJson["callbackUrl"] = customData.callbackUrl;
@@ -35,6 +35,16 @@ namespace raffle::dto {
             json["customData"] = customDataJson;
 
             return json;
+        }
+
+     private:
+        static std::string toIso8601(const std::string &dbDate) {
+            if (dbDate.size() >= 10 && dbDate[10] == ' ') {
+                std::string iso = dbDate;
+                iso[10] = 'T';
+                return iso;
+            }
+            return dbDate;
         }
     };
 
