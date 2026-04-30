@@ -824,6 +824,9 @@ drogon::Task<dto::BaseApiResponse> RaffleService::activate(const std::string &ra
     dto::BaseApiResponse response;
     response.success = true;
     response.message = "Raffle activated successfully";
+
+    //notify admin via email
+
     co_return response;
 
   } catch (const DrogonDbException &e) {
@@ -844,7 +847,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::activate(const std::string &ra
 }
 
 
-  drogon::Task<dto::BaseApiResponse> RaffleService::closeRaffle(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::closeRaffle(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -864,6 +867,9 @@ drogon::Task<dto::BaseApiResponse> RaffleService::activate(const std::string &ra
     dto::BaseApiResponse response;
     response.success = true;
     response.message = "Raffle closed successfully";
+
+    // notify admin via email
+
     co_return response;
 
   } catch (const DrogonDbException &e) {
@@ -1420,6 +1426,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::runDraw(const std::string &raf
     } else {
       response.result["drawId"] = draw.getValueOfId();
     }
+
+    // notify admin via email
 
     co_return response;
 

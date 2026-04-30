@@ -79,6 +79,9 @@ add_executable(${PROJECT_NAME} main.cc
         dto/CheckoutResponse.h
         dto/DirectReceiveMoneyResponse.h
         controllers/HubtelCallbackProcessorController.h
+        services/email/EmailService.h
+        dto/SendEmailDto.h
+        services/email/EmailService.cc
 )
 
 # ##############################################################################

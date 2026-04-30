@@ -241,6 +241,7 @@ drogon::Task<bool> HubtelApi::SendSms(const std::string &phoneNumber, const std:
   req->setMethod(drogon::Get);
 
   try {
+
     auto resp = co_await client->sendRequestCoro(req);
 
     // The API returns the response body which we should log
