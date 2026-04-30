@@ -6,14 +6,14 @@
 #include "Raffles.h"
 #include "constants/ErrorCodes.h"
 #include "dto/BaseApiResponse.h"
-#include <algorithm>
-#include <cctype>
+#include <string>
 #include <cstdio>
 #include <ctime>
 #include <drogon/orm/CoroMapper.h>
 #include <drogon/orm/Mapper.h>
 #include <drogon/utils/coroutine.h>
-#include <string>
+#include "utils/DateUtils.h"
+#include "utils/StringUtils.h"
 
 #include "RngLogs.h"
 #include "Tickets.h"
@@ -26,50 +26,6 @@ using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
 
-static std::string normalizeDateString(std::string dateStr) {
-  if (dateStr.empty())
-    return dateStr;
-  std::replace(dateStr.begin(), dateStr.end(), 'T', ' ');
-  if (dateStr.length() == 16) { // YYYY-MM-DD HH:MM
-    dateStr += ":00";
-  }
-  return dateStr;
-}
-
-static std::string toCamelCase(const std::string &snake) {
-  std::string camel;
-  bool nextUpper = false;
-  for (char c : snake) {
-    if (c == '_') {
-      nextUpper = true;
-    } else {
-      if (nextUpper) {
-        camel += static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
-        nextUpper = false;
-      } else {
-        camel += c;
-      }
-    }
-  }
-  return camel;
-}
-
-static Json::Value snakeCaseToCamelCase(const Json::Value &val) {
-  if (val.isObject()) {
-    Json::Value camelObj(Json::objectValue);
-    for (auto it = val.begin(); it != val.end(); ++it) {
-      camelObj[toCamelCase(it.name())] = snakeCaseToCamelCase(*it);
-    }
-    return camelObj;
-  } else if (val.isArray()) {
-    Json::Value camelArray(Json::arrayValue);
-    for (const auto &item : val) {
-      camelArray.append(snakeCaseToCamelCase(item));
-    }
-    return camelArray;
-  }
-  return val;
-}
 
 drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSize, const std::string &query,
                       const std::string &startDate, const std::string &endDate,
@@ -104,13 +60,13 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSiz
   if (!startDate.empty()) {
     addCriteria(Criteria(
         Raffles::Cols::_start_time, CompareOperator::GE,
-        trantor::Date::fromDbStringLocal(normalizeDateString(startDate))));
+        trantor::Date::fromDbStringLocal(utils::DateUtils::normalizeDateString(startDate))));
   }
 
   if (!endDate.empty()) {
     addCriteria(Criteria(
         Raffles::Cols::_start_time, CompareOperator::LE,
-        trantor::Date::fromDbStringLocal(normalizeDateString(endDate))));
+        trantor::Date::fromDbStringLocal(utils::DateUtils::normalizeDateString(endDate))));
   }
 
   try {
@@ -272,9 +228,9 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
     newRaffle.setTotalEntries(0);
 
     // Parse dates
-    auto startTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getStartTime()));
-    auto endTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getEndTime()));
-    auto drawTime = trantor::Date::fromDbStringLocal(normalizeDateString(dto.getDrawTime()));
+    auto startTime = trantor::Date::fromDbStringLocal(utils::DateUtils::normalizeDateString(dto.getStartTime()));
+    auto endTime = trantor::Date::fromDbStringLocal(utils::DateUtils::normalizeDateString(dto.getEndTime()));
+    auto drawTime = trantor::Date::fromDbStringLocal(utils::DateUtils::normalizeDateString(dto.getDrawTime()));
 
     newRaffle.setStartTime(startTime);
     newRaffle.setEndTime(endTime);
@@ -337,8 +293,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       auto activationEndTime = activationStartTime.after(5 * 60);  // 5 mins apart
 
       raffleActivationQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(activationStartTime);
-      raffleActivationQuartzJobDto.startDate = activationStartTime.after(-5 * 60).toDbStringLocal(); // -5 mins earlier
-      raffleActivationQuartzJobDto.endDate = activationEndTime.toDbStringLocal();
+      raffleActivationQuartzJobDto.startDate = utils::DateUtils::formatQuartzDate(activationStartTime.after(-5 * 60)); // -5 mins earlier
+      raffleActivationQuartzJobDto.endDate = utils::DateUtils::formatQuartzDate(activationEndTime);
 
       co_await quartzApi.scheduleJob(raffleActivationQuartzJobDto);
 
@@ -357,8 +313,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       auto closureEndTime = closureStartTime.after(5 * 60);
 
       raffleClosureQuartzJobDto.schedule = raffle::utils::CronUtils::buildCronExpression(closureStartTime);
-      raffleClosureQuartzJobDto.startDate = closureStartTime.after(-5 * 60).toDbStringLocal();;
-      raffleClosureQuartzJobDto.endDate = closureEndTime.toDbStringLocal();
+      raffleClosureQuartzJobDto.startDate = utils::DateUtils::formatQuartzDate(closureStartTime.after(-5 * 60));
+      raffleClosureQuartzJobDto.endDate = utils::DateUtils::formatQuartzDate(closureEndTime);
 
       co_await quartzApi.scheduleJob(raffleClosureQuartzJobDto);
 
@@ -376,8 +332,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       auto drawEndTime = drawStartTime.after(5 * 60);
 
       raffleDrawQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(drawStartTime);
-      raffleDrawQuartzJobDto.startDate = drawStartTime.after(-5 * 60).toDbStringLocal();
-      raffleDrawQuartzJobDto.endDate = drawEndTime.toDbStringLocal();
+      raffleDrawQuartzJobDto.startDate = utils::DateUtils::formatQuartzDate(drawStartTime.after(-5 * 60));
+      raffleDrawQuartzJobDto.endDate = utils::DateUtils::formatQuartzDate(drawEndTime);
 
       co_await quartzApi.scheduleJob(raffleDrawQuartzJobDto);
 
@@ -451,17 +407,17 @@ drogon::Task<dto::BaseApiResponse> RaffleService::updateAsync(const dto::UpdateR
 
     if (!dto.getStartTime().empty()) {
       existingRaffle.setStartTime(trantor::Date::fromDbStringLocal(
-          normalizeDateString(dto.getStartTime())));
+          utils::DateUtils::normalizeDateString(dto.getStartTime())));
     }
 
     if (!dto.getEndTime().empty()) {
       existingRaffle.setEndTime(trantor::Date::fromDbStringLocal(
-          normalizeDateString(dto.getEndTime())));
+          utils::DateUtils::normalizeDateString(dto.getEndTime())));
     }
 
     if (!dto.getDrawTime().empty()) {
       auto newDrawTime = trantor::Date::fromDbStringLocal(
-          normalizeDateString(dto.getDrawTime()));
+          utils::DateUtils::normalizeDateString(dto.getDrawTime()));
       if (existingRaffle.getValueOfDrawTime() != newDrawTime) {
         existingRaffle.setDrawTime(newDrawTime);
         drawTimeChanged = true;
@@ -925,7 +881,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDetails(const std::string &
     try {
       CoroMapper<Draws> drawMapper(dbClient);
       auto draw = co_await drawMapper.findOne(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
-      raffleJson["draw"] = snakeCaseToCamelCase(draw.toJson());
+      raffleJson["draw"] = utils::StringUtils::snakeCaseToCamelCase(draw.toJson());
 
       // Fetch RNG logs for prize tiers
       auto drawSummary = co_await dbClient->execSqlCoro(
@@ -948,7 +904,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDetails(const std::string &
         }
       }
 
-      raffleJson["drawSummary"] = snakeCaseToCamelCase(drawSummaryJson);
+      raffleJson["drawSummary"] = utils::StringUtils::snakeCaseToCamelCase(drawSummaryJson);
 
       // Fetch RNG logs for prize tiers
       auto rngLogs = co_await dbClient->execSqlCoro(
@@ -1186,7 +1142,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAllRaffleTickets(const std:
 
     Json::Value data = Json::arrayValue;
     for (const auto &ticket : tickets) {
-      data.append(snakeCaseToCamelCase(ticket.toJson()));
+      data.append(utils::StringUtils::snakeCaseToCamelCase(ticket.toJson()));
     }
     response.result["data"] = data;
     co_return response;
@@ -1364,7 +1320,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw() {
 
     if (!sqlResult.empty()) {
       // Extract the JSONB result from the first column of the first row
-      response.result = snakeCaseToCamelCase(sqlResult[0][0].as<Json::Value>());
+      response.result = utils::StringUtils::snakeCaseToCamelCase(sqlResult[0][0].as<Json::Value>());
 
       // at this point results are guaranteed
       // update raffle status to "COMPLETED".
@@ -1416,7 +1372,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::runDraw(const std::string &raf
 
     if (!sqlResult.empty()) {
       // Extract the JSONB result from the first column of the first row
-      response.result = snakeCaseToCamelCase(sqlResult[0][0].as<Json::Value>());
+      response.result = utils::StringUtils::snakeCaseToCamelCase(sqlResult[0][0].as<Json::Value>());
 
       // at this point results are guaranteed
       // update raffle status to "COMPLETED".

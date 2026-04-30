@@ -63,6 +63,10 @@ add_executable(${PROJECT_NAME} main.cc
         utils/IdGeneratorUtils.cc
         utils/CronUtils.h
         utils/CronUtils.cc
+        utils/DateUtils.h
+        utils/DateUtils.cc
+        utils/StringUtils.h
+        utils/StringUtils.cc
         controllers/PaymentCallbackController.h
         services/settings/SettingService.cc
         dto/CreateUserDto.h
