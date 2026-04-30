@@ -25,14 +25,9 @@ std::string DateUtils::formatQuartzDate(const trantor::Date &date) {
     struct tm tm_time;
     localtime_r(&seconds, &tm_time);
 
-    std::ostringstream oss;
-    oss << (tm_time.tm_mon + 1) << "/" << tm_time.tm_mday << "/"
-        << (tm_time.tm_year + 1900) << " "
-        << (tm_time.tm_hour % 12 == 0 ? 12 : tm_time.tm_hour % 12) << ":"
-        << std::setfill('0') << std::setw(2) << tm_time.tm_min << ":"
-        << std::setfill('0') << std::setw(2) << tm_time.tm_sec << " "
-        << (tm_time.tm_hour >= 12 ? "PM" : "AM");
-    return oss.str();
+    char buf[32];
+    strftime(buf, sizeof(buf), "%d-%m-%YT%H:%M:%S", &tm_time);
+    return std::string(buf);
 }
 
 } // namespace raffle::utils
