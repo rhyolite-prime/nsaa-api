@@ -37,7 +37,7 @@ namespace raffle::dto {
             return json;
         }
 
-     private:
+    private:
         static std::string toIso8601(const std::string &dbDate) {
             if (dbDate.size() >= 10 && dbDate[10] == ' ') {
                 std::string iso = dbDate;
