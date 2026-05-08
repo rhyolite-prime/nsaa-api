@@ -8,6 +8,7 @@
 
 #include <drogon/plugins/Plugin.h>
 
+#include "services/affiliate_partners/AffiliatePartnerService.h"
 #include "services/colors/ColorService.h"
 #include "services/customers/CustomerService.h"
 #include "services/dashboard/DashboardService.h"
@@ -50,6 +51,7 @@ namespace raffle::plugins {
         services::DrawService &getDrawService() { return drawService_; }
         services::RaffleService &getRaffleService() { return raffleService_; }
         services::QuartzApi &getQuartzApi() { return quartzApi_; }
+        services::AffiliatePartnerService &getAffiliatePartnerService() { return affiliatePartnerService_; }
 
     private:
         services::DrawService drawService_;
@@ -65,6 +67,7 @@ namespace raffle::plugins {
         services::TransactionAuditService transactionAuditService_;
         services::UserService userService_;
         services::QuartzApi quartzApi_;
+        services::AffiliatePartnerService affiliatePartnerService_;
     };
 
 }
