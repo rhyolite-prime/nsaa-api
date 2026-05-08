@@ -42,7 +42,6 @@ Task<HttpResponsePtr> AffiliatePartnerController::getStats(HttpRequestPtr req) {
     auto result = co_await affiliatePartnerService.getPartnerStats();
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
-
 }
 
 

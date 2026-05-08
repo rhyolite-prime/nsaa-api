@@ -170,7 +170,7 @@ drogon::Task<dto::BaseApiResponse> AffiliatePartnerService::getPartnerStats() {
       response.result["verifiedPartners"] = verifiedCount;
       response.result["activeStatus"] = activeCount;
       response.result["totalEarned"] = totalEarned;
-      response.result["complianceRate"] = std::round(complianceRate); // Rounding to match the UI style (e.g., 94%)
+      response.result["complianceRate"] = complianceRate; // Rounding to match the UI style (e.g., 94%)
     } else {
       response.result["verifiedPartners"] = 0;
       response.result["activeStatus"] = 0;
