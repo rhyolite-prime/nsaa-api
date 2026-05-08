@@ -86,6 +86,11 @@ add_executable(${PROJECT_NAME} main.cc
         services/email/EmailService.h
         dto/SendEmailDto.h
         services/email/EmailService.cc
+        services/affiliate_partners/AffiliatePartnerService.h
+        services/affiliate_partners/AffiliatePartnerService.cc
+        dto/AffiliatePartnerDto.h
+        utils/DatabaseUtils.cc
+
 )
 
 # ##############################################################################

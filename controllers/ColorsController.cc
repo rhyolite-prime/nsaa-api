@@ -33,7 +33,6 @@ Task<HttpResponsePtr> ColorsController::getAll(HttpRequestPtr req)
     co_return resp;
 }
 
-
 Task<HttpResponsePtr> ColorsController::create(HttpRequestPtr req) {
 
     auto jsonBody = req->getJsonObject();
