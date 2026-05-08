@@ -167,8 +167,8 @@ drogon::Task<dto::BaseApiResponse> AffiliatePartnerService::getPartnerStats() {
         complianceRate = (static_cast<double>(verifiedCount) / static_cast<double>(totalCount)) * 100.0;
       }
 
-      response.result["verifiedPartners"] = verifiedCount;
-      response.result["activeStatus"] = activeCount;
+      response.result["verifiedPartners"] = (Json::Int64) verifiedCount;
+      response.result["activeStatus"] = (Json::Int64) activeCount;
       response.result["totalEarned"] = totalEarned;
       response.result["complianceRate"] = complianceRate; // Rounding to match the UI style (e.g., 94%)
     } else {
