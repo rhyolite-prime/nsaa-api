@@ -331,6 +331,9 @@ drogon::Task<dto::BaseApiResponse> AffiliatePartnerService::create(const dto::Af
 
     auto result = co_await mapper.insert(newAffiliatePartner);
 
+    //send email to partner congratulating them about their onboarding
+    //generating login credentials and sending alongside the same mail
+
     dto::BaseApiResponse response;
     response.success = true;
     response.message = "Affiliate partner created successfully";
