@@ -122,15 +122,14 @@ drogon::Task<dto::DirectReceiveMoneyResponse> HubtelApi::InitializeDirectReceive
     auto client = drogon::HttpClient::newHttpClient(baseUrl);
     auto req = drogon::HttpRequest::newHttpRequest();
     req->setMethod(drogon::Post);
-    req->setPath("/merchantaccount/merchants/" + merchantAccountNumber +
-                 "/receive/mobilemoney");
+    req->setPath("/merchantaccount/merchants/" + merchantAccountNumber + "/receive/mobilemoney");
     req->setBody(body);
     req->addHeader("Content-Type", "application/json");
     req->addHeader("Authorization", authHeader);
 
     auto httpResp = co_await client->sendRequestCoro(req);
 
-    LOG_INFO << "InitializeCheckout response => "
+    LOG_INFO << "InitializeDirectReceiveMoney response => "
              << (httpResp ? httpResp->getBody() : "No response")
              << ", reference: " << dto.getClientReference();
 

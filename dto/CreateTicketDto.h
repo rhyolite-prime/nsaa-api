@@ -23,6 +23,7 @@ public:
   [[nodiscard]] const std::string& getCustomerPhone() const { return customer_phone_; }
   [[nodiscard]] const std::string& getPaymentMethod() const { return payment_method_; }
   [[nodiscard]] const std::string& getPurchaseChannel() const { return purchase_channel_; }
+  [[nodiscard]] const std::string& getProvider() const { return provider_; }
 
   // Setters
   void setColourId(const std::string &value) { colour_id_ = value; }
@@ -30,6 +31,7 @@ public:
   void setCustomerPhone(const std::string &value) { customer_phone_ = value; }
   void setPaymentMethod(const std::string &value) { payment_method_ = value; }
   void setPurchaseChannel(const std::string &value) { purchase_channel_ = value; }
+  void setProvider(const std::string &value) { provider_ = value; }
 
 
   private:
@@ -38,6 +40,7 @@ public:
     int32_t quantity_ = 1;
     std::string customer_phone_;
     std::string purchase_channel_;
+    std::string provider_;
 
 };
 
@@ -62,6 +65,10 @@ inline void CreateTicketDto::fromJson(const Json::Value &json) {
 
   if (json.isMember("purchaseChannel") && !json["purchaseChannel"].isNull()) {
     purchase_channel_ = json["purchaseChannel"].asString();
+  }
+
+  if (json.isMember("provider") && !json["provider"].isNull()) {
+    provider_ = json["provider"].asString();
   }
 
 

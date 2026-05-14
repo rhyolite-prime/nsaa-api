@@ -291,6 +291,8 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
         if (dto.getPurchaseChannel() == "WSSD") {
 
             raffle::dto::WebCheckoutDto webCheckoutDto;
+            std::string callbackUrl = hubtelConfig["WebCheckoutCallBackUrl"].asString();
+
             webCheckoutDto.setCallbackUrl(hubtelConfig.isMember("WebCheckoutCallBackUrl") ? hubtelConfig["WebCheckoutCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
             webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());
             webCheckoutDto.setReturnUrl(hubtelConfig["ReturnUrl"].asString());
@@ -321,14 +323,39 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
                 response.result["ticketId"] = result.getValueOfId();
             }
         } else {
-            raffle::dto::DirectReceiveMoneyDto directReceiveDto;
+
+
+            std::string provider = dto.getProvider();
+
+            // convert to lowercase
+            std::transform(provider.begin(), provider.end(), provider.begin(),  [](unsigned char c) { return std::tolower(c); });
+
+            if (provider.find("mtn") != std::string::npos)
+            {
+                provider = "mtn-gh";
+            }
+            else if (provider.find("vodafone") != std::string::npos)
+            {
+                provider = "vodafone-gh";
+            }
+            else if (provider.find("airtel") != std::string::npos)
+            {
+                provider = "tigo-gh";
+            }
+            else if (provider.find("tigo") != std::string::npos)
+            {
+                provider = "tigo-gh";
+            }
+
+            dto::DirectReceiveMoneyDto directReceiveDto;
             directReceiveDto.setAmount(totalAmount);
             directReceiveDto.setCustomerMsisdn(dto.getCustomerPhone());
-            directReceiveDto.setChannel(dto.getPaymentMethod()); // e.g. "mtn-gh", "vodafone-gh"
+            directReceiveDto.setChannel(provider);
             directReceiveDto.setClientReference(clientReference);
             directReceiveDto.setDescription("Ticket Purchase - " + raffleSlug);
+
             directReceiveDto.setPrimaryCallbackUrl(hubtelConfig.isMember("DirectReceiveMoneyCallBackUrl")
-                ? hubtelConfig["DirectReceiveCallBackUrl"].asString()
+                ? hubtelConfig["DirectReceiveMoneyCallBackUrl"].asString()
                 : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/direct-receive");
 
             auto hubtelResult = co_await hubtelApi.InitializeDirectReceiveMoney(directReceiveDto);
