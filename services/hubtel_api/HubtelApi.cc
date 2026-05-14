@@ -157,7 +157,87 @@ drogon::Task<dto::DirectReceiveMoneyResponse> HubtelApi::InitializeDirectReceive
     co_return response;
 
   } catch (const std::exception &e) {
-    LOG_ERROR << "Error! Failed to initiate Hubtel web_checkout. " << e.what();
+    LOG_ERROR << "Error! Failed to initiate Hubtel direct_receive_money. " << e.what();
+    response.message = "Failure";
+    response.responseCode = "EXCEPTION";
+    co_return response;
+  }
+}
+
+
+drogon::Task<dto::DirectReceiveMoneyResponse> HubtelApi::QueueReceiveMoneyRequest(const dto::DirectReceiveMoneyDto &dto) {
+
+  dto::DirectReceiveMoneyResponse response;
+
+  try {
+
+    const auto &config = drogon::app().getCustomConfig();
+    const auto &hubtelConfig = config["HubtelPaymentApi"];
+
+    const std::string username = hubtelConfig["ApiIdOrUsername"].asString();
+    const std::string password = hubtelConfig["ApiKeyOrPassword"].asString();
+    const std::string merchantAccountNumber = hubtelConfig["MerchantAccountNumber"].asString();
+
+    const std::string auth = username + ":" + password;
+
+    Json::Value payload;
+    payload["CustomerName"] = dto.getCustomerName();
+    payload["CustomerMsisdn"] = dto.getCustomerMsisdn();
+    payload["CustomerEmail"] = dto.getCustomerEmail();
+    payload["Channel"] = dto.getChannel();
+    payload["Amount"] = dto.getAmount();
+    payload["PrimaryCallbackUrl"] = dto.getPrimaryCallbackUrl();
+    payload["Description"] = dto.getDescription();
+    payload["ClientReference"] = dto.getClientReference();
+    payload["BasicAuthToken"] = drogon::utils::base64Encode(auth);
+    payload["PaymentProviderEndpointUrl"] = "https://rmp.hubtel.com/merchantaccount/merchants/" + merchantAccountNumber + "/receive/mobilemoney";
+
+    Json::StreamWriterBuilder writer;
+    writer["indentation"] = "";
+    const std::string body = Json::writeString(writer, payload);
+    auto client = drogon::HttpClient::newHttpClient("https://dse-api.rhyoliteprime.com");
+
+    auto req = drogon::HttpRequest::newHttpRequest();
+    req->setMethod(drogon::Post);
+    req->setPath("/api/services/app/Auxillary/InitUssdReceiveMoney");
+    req->setBody(body);
+    req->setContentTypeCode(drogon::CT_APPLICATION_JSON);
+    req->addHeader("Accept", "application/json");
+
+    auto httpResp = co_await client->sendRequestCoro(req);
+    LOG_INFO << "QueueReceiveMoneyRequest payload => " << body;
+
+    LOG_INFO << "QueueReceiveMoneyRequest response => "
+             << (httpResp ? httpResp->getBody() : "No response")
+             << ", reference: " << dto.getClientReference();
+
+    if (!httpResp) {
+      response.message = "Failure";
+      response.responseCode = "ERROR";
+      co_return response;
+    }
+
+    if (httpResp->statusCode() != drogon::k200OK &&
+        httpResp->statusCode() != drogon::k201Created &&
+        httpResp->statusCode() != drogon::k202Accepted) {
+
+      LOG_ERROR << "QueueReceiveMoneyRequest failed. Status => "
+                << httpResp->statusCode()
+                << ", body => "
+                << httpResp->getBody();
+
+      response.message = "Failure";
+      response.responseCode = std::to_string(httpResp->statusCode());
+      co_return response;
+    }
+
+    response.message = "Receive Money Request Queued Successfully";
+    response.responseCode = "0001";
+
+    co_return response;
+
+  } catch (const std::exception &e) {
+    LOG_ERROR << "Error! Failed to queue direct receive money request. " << e.what();
     response.message = "Failure";
     response.responseCode = "EXCEPTION";
     co_return response;
