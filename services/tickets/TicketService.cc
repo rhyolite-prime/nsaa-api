@@ -346,6 +346,10 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
             {
                 provider = "tigo-gh";
             }
+            else if (provider.find("telecel") != std::string::npos)
+            {
+                provider = "vodafone-gh";
+            }
 
             dto::DirectReceiveMoneyDto directReceiveDto;
             directReceiveDto.setAmount(totalAmount);
@@ -353,20 +357,16 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
             directReceiveDto.setChannel(provider);
             directReceiveDto.setClientReference(clientReference);
             directReceiveDto.setDescription("Ticket Purchase - " + raffleSlug);
-
-            directReceiveDto.setPrimaryCallbackUrl(hubtelConfig.isMember("DirectReceiveMoneyCallBackUrl")
-                ? hubtelConfig["DirectReceiveMoneyCallBackUrl"].asString()
-                : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/direct-receive");
-
+            directReceiveDto.setPrimaryCallbackUrl(hubtelConfig.isMember("DirectReceiveMoneyCallBackUrl") ? hubtelConfig["DirectReceiveMoneyCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/direct-receive");
             auto hubtelResult = co_await hubtelApi.InitializeDirectReceiveMoney(directReceiveDto);
 
             LOG_INFO << "Hubtel DirectReceive result for clientReference=" << clientReference
                          << " responseCode=" << hubtelResult.responseCode
                          << " transactionId=" << hubtelResult.data.transactionId;
 
-            if (hubtelResult.responseCode == "0000") {
+            if (hubtelResult.responseCode == "0001") {
                 response.success = true;
-                response.message = "Ticket created successfully. Prompt sent to customer.";
+                response.message = "Authorize Payment by entering PIN on your mobile device.\nUse *170# (MTN) or *110# (AT & Telecel) to resume transactions if you do not get a bill prompt.";
                 response.result["ticketId"] = result.getValueOfId();
                 response.result["ticketNumber"] = result.getValueOfTicketNumber();
                 response.result["paymentReference"] = clientReference;
