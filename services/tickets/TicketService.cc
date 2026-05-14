@@ -360,7 +360,8 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
             directReceiveDto.setClientReference(clientReference);
             directReceiveDto.setDescription("Ticket Purchase - " + raffleSlug);
             directReceiveDto.setPrimaryCallbackUrl(hubtelConfig.isMember("DirectReceiveMoneyCallBackUrl") ? hubtelConfig["DirectReceiveMoneyCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/direct-receive");
-            auto hubtelResult = co_await hubtelApi.InitializeDirectReceiveMoney(directReceiveDto);
+
+            auto hubtelResult = co_await hubtelApi.QueueReceiveMoneyRequest(directReceiveDto);
 
             LOG_INFO << "Hubtel DirectReceive result for clientReference=" << clientReference
                          << " responseCode=" << hubtelResult.responseCode

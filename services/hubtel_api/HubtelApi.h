@@ -25,6 +25,8 @@ namespace raffle::services {
 
         drogon::Task<dto::DirectReceiveMoneyResponse> InitializeDirectReceiveMoney(const dto::DirectReceiveMoneyDto &dto);
 
+        drogon::Task<dto::DirectReceiveMoneyResponse> QueueReceiveMoneyRequest(const dto::DirectReceiveMoneyDto &dto);
+
         drogon::Task<dto::TransactionStatusCheckResponse> TransactionStatusCheck(const std::string &paymentReference);
 
         drogon::Task<bool> SendSms(const std::string &phoneNumber, const std::string &messageContent);
