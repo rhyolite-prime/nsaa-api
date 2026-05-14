@@ -352,8 +352,10 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
             }
 
             dto::DirectReceiveMoneyDto directReceiveDto;
-            directReceiveDto.setAmount(totalAmount);
+            directReceiveDto.setCustomerName("NSAA_" + dto.getCustomerPhone());
+            directReceiveDto.setCustomerEmail(dto.getCustomerPhone()+ "@nsaaplay.com");
             directReceiveDto.setCustomerMsisdn(dto.getCustomerPhone());
+            directReceiveDto.setAmount(totalAmount);
             directReceiveDto.setChannel(provider);
             directReceiveDto.setClientReference(clientReference);
             directReceiveDto.setDescription("Ticket Purchase - " + raffleSlug);
