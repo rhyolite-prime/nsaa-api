@@ -343,8 +343,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
 
       std::string provider = dto.getProvider();
 
-      //log the value of the provider before its transformed
-      LOG_INFO << "Provider before_transformation: " << provider;
+
 
       // convert to lowercase
       std::transform(provider.begin(), provider.end(), provider.begin(),
@@ -367,7 +366,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
       directReceiveDto.setCustomerEmail(dto.getCustomerPhone() +"@nsaaplay.com");
       directReceiveDto.setCustomerMsisdn(dto.getCustomerPhone());
       directReceiveDto.setAmount(totalAmount);
-      LOG_INFO << "Provider after_transformation: " << provider;
+
       directReceiveDto.setChannel(provider);
       directReceiveDto.setClientReference(clientReference);
       directReceiveDto.setDescription("Ticket Purchase - " + raffleSlug);
@@ -382,9 +381,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
 
       if (hubtelResult.responseCode == "0001") {
         response.success = true;
-        response.message =  "Authorize Payment by entering PIN on your mobile device.\nUse "
-            "*170# (MTN) or *110# (AT & Telecel) to resume transactions if you "
-            "do not get a bill prompt.";
+        response.message =  "Authorize Payment by entering PIN on your mobile device.\nIf no bill prompt appears, use *170# (MTN) or *110# (AT & Telecel) to resume";
         response.result["ticketId"] = result.getValueOfId();
         response.result["ticketNumber"] = result.getValueOfTicketNumber();
         response.result["paymentReference"] = clientReference;
