@@ -38,6 +38,11 @@ namespace drogon_model
 {
 namespace ChopMoneyRaffle
 {
+class Colours;
+class Customers;
+class Draws;
+class PrizeTiers;
+class Tickets;
 
 class Winners
 {
@@ -311,6 +316,26 @@ class Winners
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+    Draws getDraws(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getDraws(const drogon::orm::DbClientPtr &clientPtr,
+                  const std::function<void(Draws)> &rcb,
+                  const drogon::orm::ExceptionCallback &ecb) const;
+    Tickets getTickets(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getTickets(const drogon::orm::DbClientPtr &clientPtr,
+                    const std::function<void(Tickets)> &rcb,
+                    const drogon::orm::ExceptionCallback &ecb) const;
+    Customers getCustomers(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getCustomers(const drogon::orm::DbClientPtr &clientPtr,
+                      const std::function<void(Customers)> &rcb,
+                      const drogon::orm::ExceptionCallback &ecb) const;
+    PrizeTiers getPrizeTiers(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getPrizeTiers(const drogon::orm::DbClientPtr &clientPtr,
+                       const std::function<void(PrizeTiers)> &rcb,
+                       const drogon::orm::ExceptionCallback &ecb) const;
+    Colours getColours(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getColours(const drogon::orm::DbClientPtr &clientPtr,
+                    const std::function<void(Colours)> &rcb,
+                    const drogon::orm::ExceptionCallback &ecb) const;
   private:
     friend drogon::orm::Mapper<Winners>;
     friend drogon::orm::BaseBuilder<Winners, true, true>;

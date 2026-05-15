@@ -38,6 +38,7 @@ namespace drogon_model
 {
 namespace ChopMoneyRaffle
 {
+class Colours;
 
 class Draws
 {
@@ -249,6 +250,10 @@ class Draws
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+    Colours getColours(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getColours(const drogon::orm::DbClientPtr &clientPtr,
+                    const std::function<void(Colours)> &rcb,
+                    const drogon::orm::ExceptionCallback &ecb) const;
   private:
     friend drogon::orm::Mapper<Draws>;
     friend drogon::orm::BaseBuilder<Draws, true, true>;

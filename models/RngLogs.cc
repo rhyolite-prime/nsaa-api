@@ -6,8 +6,10 @@
  */
 
 #include "RngLogs.h"
+#include "Draws.h"
 #include <drogon/utils/Utilities.h>
 #include <string>
+#include <codecvt>
 
 using namespace drogon;
 using namespace drogon::orm;
@@ -1499,14 +1501,14 @@ bool RngLogs::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 50)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
-
             break;
         case 3:
             if(pJson.isNull())
@@ -1518,14 +1520,14 @@ bool RngLogs::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 255)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
-
             break;
         case 4:
             if(pJson.isNull())
@@ -1538,14 +1540,14 @@ bool RngLogs::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 255)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
-
             break;
         case 5:
             if(pJson.isNull())
@@ -1579,18 +1581,61 @@ bool RngLogs::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 100)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
-
             break;
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
+}
+Draws RngLogs::getDraws(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from draws where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *drawId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Draws(r[0]);
+}
+
+void RngLogs::getDraws(const DbClientPtr &clientPtr,
+                       const std::function<void(Draws)> &rcb,
+                       const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from draws where id = $1";
+    *clientPtr << sql
+               << *drawId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Draws(r[0]));
+                    }
+               }
+               >> ecb;
 }
