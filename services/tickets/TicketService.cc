@@ -380,8 +380,21 @@ TicketService::create(const dto::CreateTicketDto &dto) {
                << " transactionId=" << hubtelResult.data.transactionId;
 
       if (hubtelResult.responseCode == "0001") {
+
+        std::string promptMessage = "Authorize Payment by entering PIN on your mobile device.";
+
+        if (provider == "mtn-gh") {
+          promptMessage +=
+              "\nIf no bill prompt appears, dial *170# to resume.";
+        } else if (provider == "vodafone-gh" || provider == "tigo-gh") {
+          promptMessage +=
+              "\nIf no bill prompt appears, dial *110# to resume.";
+        }
+
+
+
         response.success = true;
-        response.message =  "Authorize Payment by entering PIN on your mobile device.\nIf no bill prompt appears, use *170# (MTN) or *110# (AT & Telecel) to resume";
+        response.message = promptMessage;
         response.result["ticketId"] = result.getValueOfId();
         response.result["ticketNumber"] = result.getValueOfTicketNumber();
         response.result["paymentReference"] = clientReference;
