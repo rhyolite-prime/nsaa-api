@@ -385,10 +385,10 @@ TicketService::create(const dto::CreateTicketDto &dto) {
 
         if (provider == "mtn-gh") {
           promptMessage +=
-              "\nIf no bill prompt appears, dial *170# to resume.";
+              "If no bill prompt appears, dial *170# to resume.";
         } else if (provider == "vodafone-gh" || provider == "tigo-gh") {
           promptMessage +=
-              "\nIf no bill prompt appears, dial *110# to resume.";
+              "If no bill prompt appears, dial *110# to resume.";
         }
 
 
