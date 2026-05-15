@@ -38,6 +38,9 @@ namespace drogon_model
 {
 namespace ChopMoneyRaffle
 {
+class Colours;
+class Customers;
+class Draws;
 
 class Tickets
 {
@@ -62,6 +65,7 @@ class Tickets
         static const std::string _customer_phone;
         static const std::string _colour_name;
         static const std::string _raffle_id;
+        static const std::string _ticket_id;
     };
 
     static const int primaryKeyNumber;
@@ -280,14 +284,36 @@ class Tickets
     void setRaffleId(const std::string &pRaffleId) noexcept;
     void setRaffleId(std::string &&pRaffleId) noexcept;
 
+    /**  For column ticket_id  */
+    ///Get the value of the column ticket_id, returns the default value if the column is null
+    const std::string &getValueOfTicketId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getTicketId() const noexcept;
+    ///Set the value of the column ticket_id
+    void setTicketId(const std::string &pTicketId) noexcept;
+    void setTicketId(std::string &&pTicketId) noexcept;
+    void setTicketIdToNull() noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 18;  }
+
+    static size_t getColumnNumber() noexcept {  return 19;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+    Draws getDraws(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getDraws(const drogon::orm::DbClientPtr &clientPtr,
+                  const std::function<void(Draws)> &rcb,
+                  const drogon::orm::ExceptionCallback &ecb) const;
+    Customers getCustomers(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getCustomers(const drogon::orm::DbClientPtr &clientPtr,
+                      const std::function<void(Customers)> &rcb,
+                      const drogon::orm::ExceptionCallback &ecb) const;
+    Colours getColours(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getColours(const drogon::orm::DbClientPtr &clientPtr,
+                    const std::function<void(Colours)> &rcb,
+                    const drogon::orm::ExceptionCallback &ecb) const;
   private:
     friend drogon::orm::Mapper<Tickets>;
     friend drogon::orm::BaseBuilder<Tickets, true, true>;
@@ -321,6 +347,7 @@ class Tickets
     std::shared_ptr<std::string> customerPhone_;
     std::shared_ptr<std::string> colourName_;
     std::shared_ptr<std::string> raffleId_;
+    std::shared_ptr<std::string> ticketId_;
     struct MetaData
     {
         const std::string colName_;
@@ -332,7 +359,7 @@ class Tickets
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[18]={ false };
+    bool dirtyFlag_[19]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -446,6 +473,11 @@ class Tickets
         if(dirtyFlag_[17])
         {
             sql += "raffle_id,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[18])
+        {
+            sql += "ticket_id,";
             ++parametersCount;
         }
         if(parametersCount > 0)
@@ -577,6 +609,11 @@ class Tickets
             sql.append(placeholderStr, n);
         }
         if(dirtyFlag_[17])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[18])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);

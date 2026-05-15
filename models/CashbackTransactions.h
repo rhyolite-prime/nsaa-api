@@ -38,6 +38,10 @@ namespace drogon_model
 {
 namespace ChopMoneyRaffle
 {
+class Colours;
+class Customers;
+class Draws;
+class Tickets;
 
 class CashbackTransactions
 {
@@ -236,6 +240,22 @@ class CashbackTransactions
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+    Draws getDraws(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getDraws(const drogon::orm::DbClientPtr &clientPtr,
+                  const std::function<void(Draws)> &rcb,
+                  const drogon::orm::ExceptionCallback &ecb) const;
+    Tickets getTickets(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getTickets(const drogon::orm::DbClientPtr &clientPtr,
+                    const std::function<void(Tickets)> &rcb,
+                    const drogon::orm::ExceptionCallback &ecb) const;
+    Customers getCustomers(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getCustomers(const drogon::orm::DbClientPtr &clientPtr,
+                      const std::function<void(Customers)> &rcb,
+                      const drogon::orm::ExceptionCallback &ecb) const;
+    Colours getColours(const drogon::orm::DbClientPtr &clientPtr) const;
+    void getColours(const drogon::orm::DbClientPtr &clientPtr,
+                    const std::function<void(Colours)> &rcb,
+                    const drogon::orm::ExceptionCallback &ecb) const;
   private:
     friend drogon::orm::Mapper<CashbackTransactions>;
     friend drogon::orm::BaseBuilder<CashbackTransactions, true, true>;

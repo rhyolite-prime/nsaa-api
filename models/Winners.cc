@@ -6,8 +6,14 @@
  */
 
 #include "Winners.h"
+#include "Colours.h"
+#include "Customers.h"
+#include "Draws.h"
+#include "PrizeTiers.h"
+#include "Tickets.h"
 #include <drogon/utils/Utilities.h>
 #include <string>
+#include <codecvt>
 
 using namespace drogon;
 using namespace drogon::orm;
@@ -3766,14 +3772,14 @@ bool Winners::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 20)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
-
             break;
         case 9:
             if(pJson.isNull())
@@ -3785,14 +3791,14 @@ bool Winners::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 50)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
-
             break;
         case 10:
             if(pJson.isNull())
@@ -3804,14 +3810,14 @@ bool Winners::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 100)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
-
             break;
         case 11:
             if(pJson.isNull())
@@ -3823,14 +3829,14 @@ bool Winners::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 20)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
-
             break;
         case 12:
             if(pJson.isNull())
@@ -3842,14 +3848,14 @@ bool Winners::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 50)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
-
             break;
         case 13:
             if(pJson.isNull())
@@ -3872,14 +3878,14 @@ bool Winners::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 20)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
-
             break;
         case 15:
             if(pJson.isNull())
@@ -3891,14 +3897,14 @@ bool Winners::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 100)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
-
             break;
         case 16:
             if(pJson.isNull())
@@ -3949,4 +3955,219 @@ bool Winners::validJsonOfField(size_t index,
             return false;
     }
     return true;
+}
+Draws Winners::getDraws(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from draws where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *drawId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Draws(r[0]);
+}
+
+void Winners::getDraws(const DbClientPtr &clientPtr,
+                       const std::function<void(Draws)> &rcb,
+                       const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from draws where id = $1";
+    *clientPtr << sql
+               << *drawId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Draws(r[0]));
+                    }
+               }
+               >> ecb;
+}
+Tickets Winners::getTickets(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from tickets where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *ticketId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Tickets(r[0]);
+}
+
+void Winners::getTickets(const DbClientPtr &clientPtr,
+                         const std::function<void(Tickets)> &rcb,
+                         const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from tickets where id = $1";
+    *clientPtr << sql
+               << *ticketId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Tickets(r[0]));
+                    }
+               }
+               >> ecb;
+}
+Customers Winners::getCustomers(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from customers where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *customerId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Customers(r[0]);
+}
+
+void Winners::getCustomers(const DbClientPtr &clientPtr,
+                           const std::function<void(Customers)> &rcb,
+                           const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from customers where id = $1";
+    *clientPtr << sql
+               << *customerId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Customers(r[0]));
+                    }
+               }
+               >> ecb;
+}
+PrizeTiers Winners::getPrizeTiers(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from prize_tiers where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *prizeTierId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return PrizeTiers(r[0]);
+}
+
+void Winners::getPrizeTiers(const DbClientPtr &clientPtr,
+                            const std::function<void(PrizeTiers)> &rcb,
+                            const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from prize_tiers where id = $1";
+    *clientPtr << sql
+               << *prizeTierId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(PrizeTiers(r[0]));
+                    }
+               }
+               >> ecb;
+}
+Colours Winners::getColours(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from colours where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *colourId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Colours(r[0]);
+}
+
+void Winners::getColours(const DbClientPtr &clientPtr,
+                         const std::function<void(Colours)> &rcb,
+                         const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from colours where id = $1";
+    *clientPtr << sql
+               << *colourId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Colours(r[0]));
+                    }
+               }
+               >> ecb;
 }

@@ -6,8 +6,12 @@
  */
 
 #include "Tickets.h"
+#include "Colours.h"
+#include "Customers.h"
+#include "Draws.h"
 #include <drogon/utils/Utilities.h>
 #include <string>
+#include <codecvt>
 
 using namespace drogon;
 using namespace drogon::orm;
@@ -31,6 +35,7 @@ const std::string Tickets::Cols::_updated_at = "\"updated_at\"";
 const std::string Tickets::Cols::_customer_phone = "\"customer_phone\"";
 const std::string Tickets::Cols::_colour_name = "\"colour_name\"";
 const std::string Tickets::Cols::_raffle_id = "\"raffle_id\"";
+const std::string Tickets::Cols::_ticket_id = "\"ticket_id\"";
 const std::string Tickets::primaryKeyName = "id";
 const bool Tickets::hasPrimaryKey = true;
 const std::string Tickets::tableName = "\"tickets\"";
@@ -53,7 +58,8 @@ const std::vector<typename Tickets::MetaData> Tickets::metaData_={
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"customer_phone","std::string","character varying",20,0,0,0},
 {"colour_name","std::string","character varying",20,0,0,0},
-{"raffle_id","std::string","uuid",0,0,0,1}
+{"raffle_id","std::string","uuid",0,0,0,1},
+{"ticket_id","std::string","character varying",10,0,0,0}
 };
 const std::string &Tickets::getColumnName(size_t index) noexcept(false)
 {
@@ -172,11 +178,15 @@ Tickets::Tickets(const Row &r, const ssize_t indexOffset) noexcept
         {
             raffleId_=std::make_shared<std::string>(r["raffle_id"].as<std::string>());
         }
+        if(!r["ticket_id"].isNull())
+        {
+            ticketId_=std::make_shared<std::string>(r["ticket_id"].as<std::string>());
+        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 18 > r.size())
+        if(offset + 19 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -308,13 +318,18 @@ Tickets::Tickets(const Row &r, const ssize_t indexOffset) noexcept
         {
             raffleId_=std::make_shared<std::string>(r[index].as<std::string>());
         }
+        index = offset + 18;
+        if(!r[index].isNull())
+        {
+            ticketId_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
     }
 
 }
 
 Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 18)
+    if(pMasqueradingVector.size() != 19)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -497,6 +512,14 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
         if(!pJson[pMasqueradingVector[17]].isNull())
         {
             raffleId_=std::make_shared<std::string>(pJson[pMasqueradingVector[17]].asString());
+        }
+    }
+    if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
+    {
+        dirtyFlag_[18] = true;
+        if(!pJson[pMasqueradingVector[18]].isNull())
+        {
+            ticketId_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
         }
     }
 }
@@ -683,12 +706,20 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             raffleId_=std::make_shared<std::string>(pJson["raffle_id"].asString());
         }
     }
+    if(pJson.isMember("ticket_id"))
+    {
+        dirtyFlag_[18]=true;
+        if(!pJson["ticket_id"].isNull())
+        {
+            ticketId_=std::make_shared<std::string>(pJson["ticket_id"].asString());
+        }
+    }
 }
 
 void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 18)
+    if(pMasqueradingVector.size() != 19)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -872,6 +903,14 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             raffleId_=std::make_shared<std::string>(pJson[pMasqueradingVector[17]].asString());
         }
     }
+    if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
+    {
+        dirtyFlag_[18] = true;
+        if(!pJson[pMasqueradingVector[18]].isNull())
+        {
+            ticketId_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
+        }
+    }
 }
 
 void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
@@ -1053,6 +1092,14 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
         if(!pJson["raffle_id"].isNull())
         {
             raffleId_=std::make_shared<std::string>(pJson["raffle_id"].asString());
+        }
+    }
+    if(pJson.isMember("ticket_id"))
+    {
+        dirtyFlag_[18] = true;
+        if(!pJson["ticket_id"].isNull())
+        {
+            ticketId_=std::make_shared<std::string>(pJson["ticket_id"].asString());
         }
     }
 }
@@ -1483,6 +1530,33 @@ void Tickets::setRaffleId(std::string &&pRaffleId) noexcept
     dirtyFlag_[17] = true;
 }
 
+const std::string &Tickets::getValueOfTicketId() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(ticketId_)
+        return *ticketId_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Tickets::getTicketId() const noexcept
+{
+    return ticketId_;
+}
+void Tickets::setTicketId(const std::string &pTicketId) noexcept
+{
+    ticketId_ = std::make_shared<std::string>(pTicketId);
+    dirtyFlag_[18] = true;
+}
+void Tickets::setTicketId(std::string &&pTicketId) noexcept
+{
+    ticketId_ = std::make_shared<std::string>(std::move(pTicketId));
+    dirtyFlag_[18] = true;
+}
+void Tickets::setTicketIdToNull() noexcept
+{
+    ticketId_.reset();
+    dirtyFlag_[18] = true;
+}
+
 void Tickets::updateId(const uint64_t id)
 {
 }
@@ -1507,7 +1581,8 @@ const std::vector<std::string> &Tickets::insertColumns() noexcept
         "updated_at",
         "customer_phone",
         "colour_name",
-        "raffle_id"
+        "raffle_id",
+        "ticket_id"
     };
     return inCols;
 }
@@ -1712,6 +1787,17 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[18])
+    {
+        if(getTicketId())
+        {
+            binder << getValueOfTicketId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 
 const std::vector<std::string> Tickets::updateColumns() const
@@ -1788,6 +1874,10 @@ const std::vector<std::string> Tickets::updateColumns() const
     if(dirtyFlag_[17])
     {
         ret.push_back(getColumnName(17));
+    }
+    if(dirtyFlag_[18])
+    {
+        ret.push_back(getColumnName(18));
     }
     return ret;
 }
@@ -1992,6 +2082,17 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[18])
+    {
+        if(getTicketId())
+        {
+            binder << getValueOfTicketId();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 Json::Value Tickets::toJson() const
 {
@@ -2140,6 +2241,14 @@ Json::Value Tickets::toJson() const
     {
         ret["raffle_id"]=Json::Value();
     }
+    if(getTicketId())
+    {
+        ret["ticket_id"]=getValueOfTicketId();
+    }
+    else
+    {
+        ret["ticket_id"]=Json::Value();
+    }
     return ret;
 }
 
@@ -2152,7 +2261,7 @@ Json::Value Tickets::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 18)
+    if(pMasqueradingVector.size() == 19)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -2352,6 +2461,17 @@ Json::Value Tickets::toMasqueradedJson(
                 ret[pMasqueradingVector[17]]=Json::Value();
             }
         }
+        if(!pMasqueradingVector[18].empty())
+        {
+            if(getTicketId())
+            {
+                ret[pMasqueradingVector[18]]=getValueOfTicketId();
+            }
+            else
+            {
+                ret[pMasqueradingVector[18]]=Json::Value();
+            }
+        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
@@ -2499,6 +2619,14 @@ Json::Value Tickets::toMasqueradedJson(
     {
         ret["raffle_id"]=Json::Value();
     }
+    if(getTicketId())
+    {
+        ret["ticket_id"]=getValueOfTicketId();
+    }
+    else
+    {
+        ret["ticket_id"]=Json::Value();
+    }
     return ret;
 }
 
@@ -2624,13 +2752,18 @@ bool Tickets::validateJsonForCreation(const Json::Value &pJson, std::string &err
         err="The raffle_id column cannot be null";
         return false;
     }
+    if(pJson.isMember("ticket_id"))
+    {
+        if(!validJsonOfField(18, "ticket_id", pJson["ticket_id"], err, true))
+            return false;
+    }
     return true;
 }
 bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                  const std::vector<std::string> &pMasqueradingVector,
                                                  std::string &err)
 {
-    if(pMasqueradingVector.size() != 18)
+    if(pMasqueradingVector.size() != 19)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2810,6 +2943,14 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
             return false;
         }
       }
+      if(!pMasqueradingVector[18].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[18]))
+          {
+              if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, true))
+                  return false;
+          }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -2915,13 +3056,18 @@ bool Tickets::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(17, "raffle_id", pJson["raffle_id"], err, false))
             return false;
     }
+    if(pJson.isMember("ticket_id"))
+    {
+        if(!validJsonOfField(18, "ticket_id", pJson["ticket_id"], err, false))
+            return false;
+    }
     return true;
 }
 bool Tickets::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 18)
+    if(pMasqueradingVector.size() != 19)
     {
         err = "Bad masquerading vector";
         return false;
@@ -3022,6 +3168,11 @@ bool Tickets::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
           if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, false))
               return false;
       }
+      if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
+      {
+          if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, false))
+              return false;
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -3061,14 +3212,14 @@ bool Tickets::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 50)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
-
             break;
         case 2:
             if(pJson.isNull())
@@ -3152,14 +3303,14 @@ bool Tickets::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 100)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
-
             break;
         case 9:
             if(pJson.isNull())
@@ -3171,14 +3322,14 @@ bool Tickets::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 20)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
-
             break;
         case 10:
             if(pJson.isNull())
@@ -3190,14 +3341,14 @@ bool Tickets::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 20)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
-
             break;
         case 11:
             if(pJson.isNull())
@@ -3209,14 +3360,14 @@ bool Tickets::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 20)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
-
             break;
         case 12:
             if(pJson.isNull())
@@ -3261,14 +3412,14 @@ bool Tickets::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 20)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
-
             break;
         case 16:
             if(pJson.isNull())
@@ -3280,14 +3431,14 @@ bool Tickets::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::strlen(pJson.asCString()) > 20)
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
-
             break;
         case 17:
             if(pJson.isNull())
@@ -3301,9 +3452,157 @@ bool Tickets::validJsonOfField(size_t index,
                 return false;
             }
             break;
+        case 18:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 10)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 10)";
+                return false;
+            }
+            break;
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
+}
+Draws Tickets::getDraws(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from draws where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *drawId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Draws(r[0]);
+}
+
+void Tickets::getDraws(const DbClientPtr &clientPtr,
+                       const std::function<void(Draws)> &rcb,
+                       const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from draws where id = $1";
+    *clientPtr << sql
+               << *drawId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Draws(r[0]));
+                    }
+               }
+               >> ecb;
+}
+Customers Tickets::getCustomers(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from customers where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *customerId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Customers(r[0]);
+}
+
+void Tickets::getCustomers(const DbClientPtr &clientPtr,
+                           const std::function<void(Customers)> &rcb,
+                           const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from customers where id = $1";
+    *clientPtr << sql
+               << *customerId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Customers(r[0]));
+                    }
+               }
+               >> ecb;
+}
+Colours Tickets::getColours(const DbClientPtr &clientPtr) const {
+    static const std::string sql = "select * from colours where id = $1";
+    Result r(nullptr);
+    {
+        auto binder = *clientPtr << sql;
+        binder << *colourId_ << Mode::Blocking >>
+            [&r](const Result &result) { r = result; };
+        binder.exec();
+    }
+    if (r.size() == 0)
+    {
+        throw UnexpectedRows("0 rows found");
+    }
+    else if (r.size() > 1)
+    {
+        throw UnexpectedRows("Found more than one row");
+    }
+    return Colours(r[0]);
+}
+
+void Tickets::getColours(const DbClientPtr &clientPtr,
+                         const std::function<void(Colours)> &rcb,
+                         const ExceptionCallback &ecb) const
+{
+    static const std::string sql = "select * from colours where id = $1";
+    *clientPtr << sql
+               << *colourId_
+               >> [rcb = std::move(rcb), ecb](const Result &r){
+                    if (r.size() == 0)
+                    {
+                        ecb(UnexpectedRows("0 rows found"));
+                    }
+                    else if (r.size() > 1)
+                    {
+                        ecb(UnexpectedRows("Found more than one row"));
+                    }
+                    else
+                    {
+                        rcb(Colours(r[0]));
+                    }
+               }
+               >> ecb;
 }
