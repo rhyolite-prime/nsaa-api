@@ -381,7 +381,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
 
       if (hubtelResult.responseCode == "0001") {
 
-        std::string promptMessage = "Authorize Payment by entering PIN on your mobile device.";
+        std::string promptMessage = "Authorize Payment by entering PIN on your mobile device. ";
 
         if (provider == "mtn-gh") {
           promptMessage +=

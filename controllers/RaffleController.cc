@@ -362,3 +362,13 @@ Task<HttpResponsePtr> RaffleController::deleteRaffle(HttpRequestPtr req)
   resp->setStatusCode(result.success ? k200OK : (result.error.isMember("code") && result.error["code"].asInt() == raffle::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
   co_return resp;
 }
+
+Task<HttpResponsePtr> RaffleController::getWeeklyRaffles(HttpRequestPtr req) {
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getWeeklyRaffles();
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}

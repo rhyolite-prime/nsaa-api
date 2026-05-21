@@ -25,6 +25,7 @@ class RaffleController : public drogon::HttpController<RaffleController>
     ADD_METHOD_TO(RaffleController::runDraw, std::string(PREFIX) + "/run-draw", Post, Options);
     ADD_METHOD_TO(RaffleController::runClosure, std::string(PREFIX) + "/run-closure", Post, Options);
     ADD_METHOD_TO(RaffleController::executeDraw, std::string(PREFIX) + "/execute-draw", Get, Options);
+    ADD_METHOD_TO(RaffleController::getWeeklyRaffles, std::string(PREFIX) + "/get-weekly", Get, Options);
 
     //draws
     METHOD_LIST_END
@@ -45,4 +46,5 @@ class RaffleController : public drogon::HttpController<RaffleController>
     Task<HttpResponsePtr> runClosure(HttpRequestPtr req);
     Task<HttpResponsePtr> executeDraw (HttpRequestPtr req);
     Task<HttpResponsePtr> activate(HttpRequestPtr req);
+    Task<HttpResponsePtr> getWeeklyRaffles(HttpRequestPtr req);
 };
