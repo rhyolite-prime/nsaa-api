@@ -37,8 +37,7 @@ namespace raffle::dto {
         [[nodiscard]] double getMinimumPayoutThreshold() const { return minimum_payout_threshold_; }
         [[nodiscard]] const std::string& getPaymentMethod() const { return payment_method_; }
         [[nodiscard]] const Json::Value& getSettlementDetails() const { return settlement_details_; }
-        [[nodiscard]] int getMaxRafflesPerDay() const { return max_raffles_per_day_; }
-        [[nodiscard]] const std::vector<std::string>& getAllowedRaffleCategories() const { return allowed_raffle_categories_; }
+        [[nodiscard]] int getMaxRafflesPerWeek() const { return max_raffles_per_week_; }
         [[nodiscard]] bool isRequiresApproval() const { return requires_approval_; }
         [[nodiscard]] int getTotalTicketsSold() const { return total_tickets_sold_; }
         [[nodiscard]] double getTotalRevenueGenerated() const { return total_revenue_generated_; }
@@ -78,8 +77,7 @@ namespace raffle::dto {
         void setMinimumPayoutThreshold(double value) { minimum_payout_threshold_ = value; }
         void setPaymentMethod(const std::string& value) { payment_method_ = value; }
         void setSettlementDetails(const Json::Value& value) { settlement_details_ = value; }
-        void setMaxRafflesPerDay(int value) { max_raffles_per_day_ = value; }
-        void setAllowedRaffleCategories(const std::vector<std::string>& value) { allowed_raffle_categories_ = value; }
+        void setMaxRafflesPerWeek(int value) { max_raffles_per_week_ = value; }
         void setRequiresApproval(bool value) { requires_approval_ = value; }
         void setTotalTicketsSold(int value) { total_tickets_sold_ = value; }
         void setTotalRevenueGenerated(double value) { total_revenue_generated_ = value; }
@@ -120,8 +118,7 @@ namespace raffle::dto {
         double minimum_payout_threshold_ = 100.00;
         std::string payment_method_;
         Json::Value settlement_details_;
-        int max_raffles_per_day_ = 0;
-        std::vector<std::string> allowed_raffle_categories_;
+        int max_raffles_per_week_ = 0;
         bool requires_approval_ = true;
         int total_tickets_sold_ = 0;
         double total_revenue_generated_ = 0.00;
@@ -163,9 +160,15 @@ namespace raffle::dto {
         if (json.isMember("billingEmail") && !json["billingEmail"].isNull()) {
             billing_email_ = json["billingEmail"].asString();
         }
+
         if (json.isMember("country") && !json["country"].isNull()) {
             country_ = json["country"].asString();
         }
+
+        if (json.isMember("regionOrState") && !json["regionOrState"].isNull()) {
+            country_ = json["regionOrState"].asString();
+        }
+
         if (json.isMember("currency") && !json["currency"].isNull()) {
             currency_ = json["currency"].asString();
         }
@@ -202,15 +205,10 @@ namespace raffle::dto {
         if (json.isMember("settlementDetails") && !json["settlementDetails"].isNull()) {
             settlement_details_ = json["settlementDetails"];
         }
-        if (json.isMember("maxRafflesPerDay") && !json["maxRafflesPerDay"].isNull()) {
-            max_raffles_per_day_ = json["maxRafflesPerDay"].asInt();
+        if (json.isMember("maxRafflesPerWeek") && !json["maxRafflesPerWeek"].isNull()) {
+            max_raffles_per_week_ = json["maxRafflesPerWeek"].asInt();
         }
-        if (json.isMember("allowedRaffleCategories") && !json["allowedRaffleCategories"].isNull()) {
-            allowed_raffle_categories_.clear();
-            for (const auto& category : json["allowedRaffleCategories"]) {
-                allowed_raffle_categories_.push_back(category.asString());
-            }
-        }
+
         if (json.isMember("requiresApproval") && !json["requiresApproval"].isNull()) {
             requires_approval_ = json["requiresApproval"].asBool();
         }

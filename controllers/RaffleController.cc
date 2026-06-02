@@ -262,7 +262,7 @@ Task<HttpResponsePtr> RaffleController::runDraw(HttpRequestPtr req) {
 
   raffle::dto::BaseApiResponse response;
   response.success = true;
-  response.error["message"] = "Raffle activated successfully";
+  response.error["message"] = "Raffle draw executed successfully";
   auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
   resp->setStatusCode(k400BadRequest);
   co_return resp;
@@ -293,7 +293,7 @@ Task<HttpResponsePtr> RaffleController::runClosure(HttpRequestPtr req) {
 
   raffle::dto::BaseApiResponse response;
   response.success = true;
-  response.error["message"] = "Raffle activated successfully";
+  response.error["message"] = "Raffle closed successfully";
   auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
   resp->setStatusCode(k400BadRequest);
   co_return resp;
@@ -360,5 +360,15 @@ Task<HttpResponsePtr> RaffleController::deleteRaffle(HttpRequestPtr req)
   auto result = co_await raffleService.deleteRaffle(raffleId);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   resp->setStatusCode(result.success ? k200OK : (result.error.isMember("code") && result.error["code"].asInt() == raffle::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
+  co_return resp;
+}
+
+Task<HttpResponsePtr> RaffleController::getWeeklyRaffles(HttpRequestPtr req) {
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getWeeklyRaffles();
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }

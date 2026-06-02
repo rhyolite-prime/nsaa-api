@@ -90,6 +90,21 @@ add_executable(${PROJECT_NAME} main.cc
         services/affiliate_partners/AffiliatePartnerService.cc
         dto/AffiliatePartnerDto.h
         utils/DatabaseUtils.cc
+        services/infobip/InfobipApi.h
+        services/infobip/InfobipApi.cc
+        services/faqs/FaqService.h
+        services/hero_sliders/HeroSliderService.h
+        services/media_library/MediaLibraryService.h
+        services/pages/PageService.h
+        services/banners/BannerService.h
+        dto/AffiliatePartnerDraftDto.h
+        services/faqs/FaqService.cc
+        services/banners/BannerService.cc
+        services/hero_sliders/HeroSliderService.cc
+        services/media_library/MediaLibraryService.cc
+        services/pages/PageService.cc
+        utils/codecvt_helper.h
+        dto/HeroSliderDto.h
 
 )
 
@@ -155,6 +170,8 @@ target_sources(${PROJECT_NAME}
 # set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS ON)
 
 # ##############################################################################
+
+target_compile_options(${PROJECT_NAME} PRIVATE "-include" "${CMAKE_CURRENT_SOURCE_DIR}/utils/codecvt_helper.h" "-Wno-deprecated-declarations")
 
 add_subdirectory(test)
 add_subdirectory(external_deps/Bcrypt)

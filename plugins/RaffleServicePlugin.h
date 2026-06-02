@@ -9,10 +9,15 @@
 #include <drogon/plugins/Plugin.h>
 
 #include "services/affiliate_partners/AffiliatePartnerService.h"
+#include "services/banners/BannerService.h"
 #include "services/colors/ColorService.h"
 #include "services/customers/CustomerService.h"
 #include "services/dashboard/DashboardService.h"
 #include "services/draws/DrawService.h"
+#include "services/faqs/FaqService.h"
+#include "services/hero_sliders/HeroSliderService.h"
+#include "services/media_library/MediaLibraryService.h"
+#include "services/pages/PageService.h"
 #include "services/price_tiers/PriceTierService.h"
 #include "services/quartz/QuartzApi.h"
 #include "services/raffles/RaffleService.h"
@@ -52,6 +57,11 @@ namespace raffle::plugins {
         services::RaffleService &getRaffleService() { return raffleService_; }
         services::QuartzApi &getQuartzApi() { return quartzApi_; }
         services::AffiliatePartnerService &getAffiliatePartnerService() { return affiliatePartnerService_; }
+        services::BannerService &getBannerService() { return bannerService_; }
+        services::FaqService &getFaqService() { return faqService_; }
+        services::HeroSliderService &getHeroSliderService() { return heroSliderService_; }
+        services::MediaLibraryService &getMediaLibraryService() { return mediaLibraryService_; }
+        services::PageService &getPageService() { return pageService_; }
 
     private:
         services::DrawService drawService_;
@@ -68,6 +78,11 @@ namespace raffle::plugins {
         services::UserService userService_;
         services::QuartzApi quartzApi_;
         services::AffiliatePartnerService affiliatePartnerService_;
+        services::BannerService bannerService_;
+        services::FaqService faqService_;
+        services::HeroSliderService heroSliderService_;
+        services::MediaLibraryService mediaLibraryService_;
+        services::PageService pageService_;
     };
 
 }

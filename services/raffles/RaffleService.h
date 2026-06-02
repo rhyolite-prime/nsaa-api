@@ -56,6 +56,8 @@ public:
   drogon::Task<dto::BaseApiResponse> runDraw(const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> closeRaffle(const std::string &raffleId);
+
+  drogon::Task<dto::BaseApiResponse> getWeeklyRaffles();
 };
 
 } // namespace raffle::services

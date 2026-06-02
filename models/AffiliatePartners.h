@@ -65,8 +65,7 @@ class AffiliatePartners
         static const std::string _minimum_payout_threshold;
         static const std::string _payment_method;
         static const std::string _settlement_details;
-        static const std::string _max_raffles_per_day;
-        static const std::string _allowed_raffle_categories;
+        static const std::string _max_raffles_per_week;
         static const std::string _requires_approval;
         static const std::string _total_tickets_sold;
         static const std::string _total_revenue_generated;
@@ -85,6 +84,8 @@ class AffiliatePartners
         static const std::string _notes;
         static const std::string _created_at;
         static const std::string _updated_at;
+        static const std::string _partnership_type;
+        static const std::string _region_or_state;
     };
 
     static const int primaryKeyNumber;
@@ -342,24 +343,14 @@ class AffiliatePartners
     void setSettlementDetails(std::string &&pSettlementDetails) noexcept;
     void setSettlementDetailsToNull() noexcept;
 
-    /**  For column max_raffles_per_day  */
-    ///Get the value of the column max_raffles_per_day, returns the default value if the column is null
-    const int32_t &getValueOfMaxRafflesPerDay() const noexcept;
+    /**  For column max_raffles_per_week  */
+    ///Get the value of the column max_raffles_per_week, returns the default value if the column is null
+    const int32_t &getValueOfMaxRafflesPerWeek() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<int32_t> &getMaxRafflesPerDay() const noexcept;
-    ///Set the value of the column max_raffles_per_day
-    void setMaxRafflesPerDay(const int32_t &pMaxRafflesPerDay) noexcept;
-    void setMaxRafflesPerDayToNull() noexcept;
-
-    /**  For column allowed_raffle_categories  */
-    ///Get the value of the column allowed_raffle_categories, returns the default value if the column is null
-    const std::string &getValueOfAllowedRaffleCategories() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getAllowedRaffleCategories() const noexcept;
-    ///Set the value of the column allowed_raffle_categories
-    void setAllowedRaffleCategories(const std::string &pAllowedRaffleCategories) noexcept;
-    void setAllowedRaffleCategories(std::string &&pAllowedRaffleCategories) noexcept;
-    void setAllowedRaffleCategoriesToNull() noexcept;
+    const std::shared_ptr<int32_t> &getMaxRafflesPerWeek() const noexcept;
+    ///Set the value of the column max_raffles_per_week
+    void setMaxRafflesPerWeek(const int32_t &pMaxRafflesPerWeek) noexcept;
+    void setMaxRafflesPerWeekToNull() noexcept;
 
     /**  For column requires_approval  */
     ///Get the value of the column requires_approval, returns the default value if the column is null
@@ -533,8 +524,28 @@ class AffiliatePartners
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
+    /**  For column partnership_type  */
+    ///Get the value of the column partnership_type, returns the default value if the column is null
+    const std::string &getValueOfPartnershipType() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPartnershipType() const noexcept;
+    ///Set the value of the column partnership_type
+    void setPartnershipType(const std::string &pPartnershipType) noexcept;
+    void setPartnershipType(std::string &&pPartnershipType) noexcept;
+    void setPartnershipTypeToNull() noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 41;  }
+    /**  For column region_or_state  */
+    ///Get the value of the column region_or_state, returns the default value if the column is null
+    const std::string &getValueOfRegionOrState() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getRegionOrState() const noexcept;
+    ///Set the value of the column region_or_state
+    void setRegionOrState(const std::string &pRegionOrState) noexcept;
+    void setRegionOrState(std::string &&pRegionOrState) noexcept;
+    void setRegionOrStateToNull() noexcept;
+
+
+    static size_t getColumnNumber() noexcept {  return 42;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -577,8 +588,7 @@ class AffiliatePartners
     std::shared_ptr<std::string> minimumPayoutThreshold_;
     std::shared_ptr<std::string> paymentMethod_;
     std::shared_ptr<std::string> settlementDetails_;
-    std::shared_ptr<int32_t> maxRafflesPerDay_;
-    std::shared_ptr<std::string> allowedRaffleCategories_;
+    std::shared_ptr<int32_t> maxRafflesPerWeek_;
     std::shared_ptr<bool> requiresApproval_;
     std::shared_ptr<int32_t> totalTicketsSold_;
     std::shared_ptr<std::string> totalRevenueGenerated_;
@@ -597,6 +607,8 @@ class AffiliatePartners
     std::shared_ptr<std::string> notes_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+    std::shared_ptr<std::string> partnershipType_;
+    std::shared_ptr<std::string> regionOrState_;
     struct MetaData
     {
         const std::string colName_;
@@ -608,7 +620,7 @@ class AffiliatePartners
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[41]={ false };
+    bool dirtyFlag_[42]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -743,109 +755,114 @@ class AffiliatePartners
         }
         if(dirtyFlag_[21])
         {
-            sql += "max_raffles_per_day,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[22])
-        {
-            sql += "allowed_raffle_categories,";
+            sql += "max_raffles_per_week,";
             ++parametersCount;
         }
         sql += "requires_approval,";
         ++parametersCount;
-        if(!dirtyFlag_[23])
+        if(!dirtyFlag_[22])
         {
             needSelection=true;
         }
         sql += "total_tickets_sold,";
         ++parametersCount;
-        if(!dirtyFlag_[24])
+        if(!dirtyFlag_[23])
         {
             needSelection=true;
         }
         sql += "total_revenue_generated,";
         ++parametersCount;
-        if(!dirtyFlag_[25])
+        if(!dirtyFlag_[24])
         {
             needSelection=true;
         }
         sql += "total_commission_earned,";
         ++parametersCount;
-        if(!dirtyFlag_[26])
+        if(!dirtyFlag_[25])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[27])
+        if(dirtyFlag_[26])
         {
             sql += "last_payout_date,";
             ++parametersCount;
         }
-        if(dirtyFlag_[28])
+        if(dirtyFlag_[27])
         {
             sql += "api_key,";
             ++parametersCount;
         }
-        if(dirtyFlag_[29])
+        if(dirtyFlag_[28])
         {
             sql += "api_secret,";
             ++parametersCount;
         }
-        if(dirtyFlag_[30])
+        if(dirtyFlag_[29])
         {
             sql += "ip_whitelist,";
             ++parametersCount;
         }
-        if(dirtyFlag_[31])
+        if(dirtyFlag_[30])
         {
             sql += "webhook_secret,";
             ++parametersCount;
         }
-        if(dirtyFlag_[32])
+        if(dirtyFlag_[31])
         {
             sql += "tax_id,";
             ++parametersCount;
         }
-        if(dirtyFlag_[33])
+        if(dirtyFlag_[32])
         {
             sql += "legal_entity_name,";
             ++parametersCount;
         }
         sql += "kyc_verified,";
         ++parametersCount;
-        if(!dirtyFlag_[34])
+        if(!dirtyFlag_[33])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[35])
+        if(dirtyFlag_[34])
         {
             sql += "agreement_accepted_at,";
             ++parametersCount;
         }
-        if(dirtyFlag_[36])
+        if(dirtyFlag_[35])
         {
             sql += "agreement_version,";
             ++parametersCount;
         }
         sql += "support_priority,";
         ++parametersCount;
-        if(!dirtyFlag_[37])
+        if(!dirtyFlag_[36])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[38])
+        if(dirtyFlag_[37])
         {
             sql += "notes,";
             ++parametersCount;
         }
         sql += "created_at,";
         ++parametersCount;
-        if(!dirtyFlag_[39])
+        if(!dirtyFlag_[38])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[40])
+        if(dirtyFlag_[39])
         {
             sql += "updated_at,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[40])
+        {
+            sql += "partnership_type,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[41])
+        {
+            sql += "region_or_state,";
             ++parametersCount;
         }
         if(parametersCount > 0)
@@ -1014,6 +1031,10 @@ class AffiliatePartners
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[23])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -1045,10 +1066,6 @@ class AffiliatePartners
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(dirtyFlag_[27])
         {
@@ -1085,14 +1102,14 @@ class AffiliatePartners
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[34])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(dirtyFlag_[35])
         {
@@ -1104,30 +1121,35 @@ class AffiliatePartners
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[37])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(dirtyFlag_[38])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[39])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[40])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[41])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);

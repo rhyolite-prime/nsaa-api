@@ -7,6 +7,8 @@
 #include "dto/BaseApiResponse.h"
 #include <drogon/drogon.h>
 #include <drogon/utils/coroutine.h>
+
+#include "dto/AffiliatePartnerDraftDto.h"
 #include "dto/AffiliatePartnerDto.h"
 
 namespace raffle::services {
@@ -19,6 +21,8 @@ namespace raffle::services {
   drogon::Task<dto::BaseApiResponse> getPartnerStats();
 
   drogon::Task<dto::BaseApiResponse> create(const dto::AffiliatePartnerDto &dto);
+
+  drogon::Task<dto::BaseApiResponse> createDraft(const dto::AffiliatePartnerDraftDto &dto);
 
   drogon::Task<dto::BaseApiResponse> update(const dto::AffiliatePartnerDto &dto, const std::string &partnerId);
 
