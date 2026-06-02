@@ -211,11 +211,35 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
     newRaffle.setName(dto.getName());
 
     if (!dto.getSlug().empty()) {
-      newRaffle.setSlug(dto.getSlug());
+      auto now = trantor::Date::now();
+      time_t seconds = static_cast<time_t>(now.microSecondsSinceEpoch() / 1000000);
+      struct tm tm_now;
+      localtime_r(&seconds, &tm_now);
+
+      char dateBuf[32];
+      snprintf(dateBuf,
+               sizeof(dateBuf),
+               "%04d%02d%02d",
+               tm_now.tm_year + 1900,
+               tm_now.tm_mon + 1,
+               tm_now.tm_mday);
+
+      newRaffle.setSlug(dto.getSlug() + "-" + std::string(dateBuf));
     } else {
-      // Logic for slug if missing - maybe use name?
-      // For now, let's assume slug is provided as per NOT NULL UNIQUE
-      newRaffle.setSlug(dto.getName());
+      auto now = trantor::Date::now();
+      time_t seconds = static_cast<time_t>(now.microSecondsSinceEpoch() / 1000000);
+      struct tm tm_now;
+      localtime_r(&seconds, &tm_now);
+
+      char dateBuf[32];
+      snprintf(dateBuf,
+               sizeof(dateBuf),
+               "%04d%02d%02d",
+               tm_now.tm_year + 1900,
+               tm_now.tm_mon + 1,
+               tm_now.tm_mday);
+
+      newRaffle.setSlug(dto.getName() + "-" + std::string(dateBuf));
     }
 
     if (!dto.getStatus().empty()) {
@@ -1405,6 +1429,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::runDraw(const std::string &raf
 }
 
 drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffles() {
+
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -1452,7 +1477,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffles() {
       std::string formattedName = raffle.getValueOfName();
       std::string status = raffle.getValueOfStatus();
 
-      if (status == "COMPLETED") {
+      if (status == "COMPLETED" || status == "CLOSED") {
         formattedName += " (Done)";
       } else if (status == "ACTIVE") {
         formattedName += " (Ongoing)";
@@ -1466,7 +1491,10 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffles() {
         formattedName += " (" + dayName + ")";
       }
 
-      data.append(formattedName);
+      Json::Value raffleObj;
+      raffleObj["name"] = formattedName;
+      raffleObj["raffleId"] = raffle.getValueOfId();
+      data.append(raffleObj);
     }
 
     response.result = data;

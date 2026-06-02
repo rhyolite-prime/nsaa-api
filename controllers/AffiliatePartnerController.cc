@@ -2,6 +2,7 @@
 #include "plugins/RaffleServicePlugin.h"
 #include "dto/BaseApiResponse.h"
 #include "constants/ErrorCodes.h"
+#include "dto/AffiliatePartnerDraftDto.h"
 
 
 Task<HttpResponsePtr> AffiliatePartnerController::getAll(HttpRequestPtr req)
@@ -68,6 +69,32 @@ Task<HttpResponsePtr> AffiliatePartnerController::create(HttpRequestPtr req) {
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
 }
+
+
+Task<HttpResponsePtr> AffiliatePartnerController::createDraft(HttpRequestPtr req) {
+
+    auto jsonBody = req->getJsonObject();
+
+    if (!jsonBody) {
+        raffle::dto::BaseApiResponse response;
+        response.success = false;
+        response.error["message"] = "Invalid JSON body";
+        auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+        resp->setStatusCode(k400BadRequest);
+        co_return resp;
+    }
+
+    raffle::dto::AffiliatePartnerDraftDto dto;
+    dto.fromJson(*jsonBody);
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &affiliatePartnerService = plugin->getAffiliatePartnerService();
+
+    auto result = co_await affiliatePartnerService.createDraft(dto);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
+
 
 Task<HttpResponsePtr> AffiliatePartnerController::update(HttpRequestPtr req, const std::string &partnerId) {
 

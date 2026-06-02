@@ -267,13 +267,9 @@ drogon::Task<dto::BaseApiResponse> AffiliatePartnerService::create(const dto::Af
     }
 
     // Set raffle limits and categories
-    if (dto.getMaxRafflesPerDay() > 0) {
-        newAffiliatePartner.setMaxRafflesPerDay(dto.getMaxRafflesPerDay());
-    }
+      newAffiliatePartner.setMaxRafflesPerWeek(dto.getMaxRafflesPerWeek());
 
-    if (!dto.getAllowedRaffleCategories().empty()) {
-        newAffiliatePartner.setAllowedRaffleCategories(utils::DatabaseUtils::vectorToPgArray(dto.getAllowedRaffleCategories()));
-    }
+
 
     newAffiliatePartner.setRequiresApproval(dto.isRequiresApproval());
 
@@ -359,6 +355,76 @@ drogon::Task<dto::BaseApiResponse> AffiliatePartnerService::create(const dto::Af
 }
 
 
+drogon::Task<dto::BaseApiResponse> AffiliatePartnerService::createDraft(const dto::AffiliatePartnerDraftDto &dto) {
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<AffiliatePartners> mapper(dbClient);
+
+  try {
+    AffiliatePartners draftPartner;
+    
+    draftPartner.setName(dto.getName());
+
+    if (!dto.getContactName().empty()) {
+        draftPartner.setContactName(dto.getContactName());
+    }
+
+    if (!dto.getContactEmail().empty()) {
+        draftPartner.setContactEmail(dto.getContactEmail());
+    }
+
+    if (!dto.getContactPhone().empty()) {
+        draftPartner.setContactPhone(dto.getContactPhone());
+    }
+
+    draftPartner.setPartnershipType(dto.getPartnershipType());
+    draftPartner.setNotes(dto.getPartnershipType());
+
+
+    // Set location and currency
+    draftPartner.setCountry("Ghana");
+    draftPartner.setCurrency("GHS");
+    
+    // Set status to draft
+    draftPartner.setStatus("Draft");
+
+    // Set feature flags
+    draftPartner.setSubAccountEnabled(false);
+    draftPartner.setRequireTwoFactorAuth(false);
+    draftPartner.setRequiresApproval(false);
+
+    // Initialize financial counters (always start at zero)
+    draftPartner.setTotalTicketsSold(0);
+    draftPartner.setTotalRevenueGenerated("0.00");
+    draftPartner.setTotalCommissionEarned("0.00");
+
+    draftPartner.setKycVerified(false);
+
+    auto result = co_await mapper.insert(draftPartner);
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.message = "Affiliate partner draft created successfully";
+    response.result["id"] = result.getValueOfId();
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while creating affiliate partner draft.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
 drogon::Task<dto::BaseApiResponse> AffiliatePartnerService::update(const dto::AffiliatePartnerDto &dto, const std::string &partnerId) {
 
   auto dbClient = drogon::app().getDbClient();
@@ -422,12 +488,10 @@ drogon::Task<dto::BaseApiResponse> AffiliatePartnerService::update(const dto::Af
     if (!dto.getSettlementDetails().isNull()) {
         partner.setSettlementDetails(dto.getSettlementDetails().toStyledString());
     }
-    if (dto.getMaxRafflesPerDay() > 0) {
-        partner.setMaxRafflesPerDay(dto.getMaxRafflesPerDay());
-    }
-    if (!dto.getAllowedRaffleCategories().empty()) {
-        partner.setAllowedRaffleCategories(utils::DatabaseUtils::vectorToPgArray(dto.getAllowedRaffleCategories()));
-    }
+
+      partner.setMaxRafflesPerWeek(dto.getMaxRafflesPerWeek());
+
+
 
     partner.setRequiresApproval(dto.isRequiresApproval());
 
