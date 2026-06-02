@@ -54,8 +54,8 @@ namespace raffle::dto {
 
     inline void AffiliatePartnerDraftDto::fromJson(const Json::Value& json) {
 
-        if (json.isMember("name") && !json["name"].isNull()) {
-            name_ = json["name"].asString();
+        if (json.isMember("businessName") && !json["businessName"].isNull()) {
+            name_ = json["businessName"].asString();
         }
 
         if (json.isMember("contactName") && !json["contactName"].isNull()) {
@@ -83,7 +83,7 @@ namespace raffle::dto {
         }
 
         if (json.isMember("message") && !json["message"].isNull()) {
-            partnership_type_ = json["message"].asString();
+            notes_ = json["message"].asString();
         }
 
     }
