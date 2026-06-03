@@ -7,7 +7,6 @@
 #include "dto/BaseApiResponse.h"
 #include <drogon/drogon.h>
 #include <drogon/utils/coroutine.h>
-
 #include "dto/CreateRaffleDto.h"
 #include "dto/UpdateRaffleDto.h"
 
@@ -57,7 +56,12 @@ public:
 
   drogon::Task<dto::BaseApiResponse> closeRaffle(const std::string &raffleId);
 
+  drogon::Task<dto::BaseApiResponse> completeRaffle(const std::string &raffleId);
+
+   //USSD
   drogon::Task<dto::BaseApiResponse> getWeeklyRaffles();
+
+  drogon::Task<dto::BaseApiResponse> getRaffleSummary(const std::string &raffleId);
 };
 
 } // namespace raffle::services

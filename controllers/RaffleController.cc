@@ -300,6 +300,36 @@ Task<HttpResponsePtr> RaffleController::runClosure(HttpRequestPtr req) {
 }
 
 
+Task<HttpResponsePtr> RaffleController::runCompletion(HttpRequestPtr req) {
+
+  auto jsonBody = req->getJsonObject();
+
+  std::string raffleId;
+
+  if (jsonBody->isString()) {
+    raffleId = jsonBody->asString();
+  } else {
+    raffle::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Expected a string value for campaign ID";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  co_await raffleService.completeRaffle(raffleId);
+
+  raffle::dto::BaseApiResponse response;
+  response.success = true;
+  response.error["message"] = "Raffle completed successfully";
+  auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+  resp->setStatusCode(k400BadRequest);
+  co_return resp;
+}
+
 
 Task<HttpResponsePtr> RaffleController::executeDraw(HttpRequestPtr req) {
 

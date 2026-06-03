@@ -4,6 +4,7 @@
 #include "RaffleService.h"
 #include "Draws.h"
 #include "Raffles.h"
+#include "Winners.h"
 #include "constants/ErrorCodes.h"
 #include "dto/BaseApiResponse.h"
 #include <string>
@@ -869,6 +870,54 @@ drogon::Task<dto::BaseApiResponse> RaffleService::closeRaffle(const std::string 
   }
 }
 
+  drogon::Task<dto::BaseApiResponse> RaffleService::completeRaffle(const std::string &raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> mapper(dbClient);
+
+  try {
+    if (raffleId.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Raffle ID cannot be empty.";
+      co_return errorResponse;
+    }
+
+    auto raffle = co_await mapper.findByPrimaryKey(raffleId);
+    raffle.setStatus("COMPLETED");
+    co_await mapper.update(raffle);
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.message = "Raffle closed successfully";
+
+    // notify admin via email
+
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while activating raffle.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+
+
+
+
+
+
 drogon::Task<dto::BaseApiResponse> RaffleService::getDetails(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
@@ -1516,5 +1565,76 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffles() {
     co_return errorResponse;
   }
 }
+
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getRaffleSummary(const std::string &raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> raffleMapper(dbClient);
+
+  try {
+    auto raffle = co_await raffleMapper.findByPrimaryKey(raffleId);
+    std::string status = raffle.getValueOfStatus();
+    
+    dto::BaseApiResponse response;
+    response.success = true;
+    std::string message;
+
+    if (status == "COMPLETED" || status == "CLOSED") {
+      CoroMapper<Draws> drawMapper(dbClient);
+      auto draws = co_await drawMapper.findBy(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+      
+      if (!draws.empty()) {
+        std::string drawId = draws[0].getValueOfId();
+        
+        CoroMapper<Winners> winnerMapper(dbClient);
+        auto winners = co_await winnerMapper.findBy(Criteria(Winners::Cols::_draw_id, CompareOperator::EQ, drawId));
+        
+        if (!winners.empty()) {
+          std::string ticketId = winners[0].getValueOfTicketId();
+          
+          CoroMapper<Tickets> ticketMapper(dbClient);
+          auto ticket = co_await ticketMapper.findByPrimaryKey(ticketId);
+          
+          std::string phone = ticket.getValueOfCustomerPhone();
+          std::string maskedPhone = phone;
+          if (maskedPhone.length() > 6) {
+            maskedPhone = maskedPhone.substr(0, 3) + std::string(maskedPhone.length() - 6, '*') + maskedPhone.substr(maskedPhone.length() - 3);
+          }
+          
+          message = "Raffle is closed. Winner: Ticket " + ticket.getValueOfTicketNumber() + " (" + maskedPhone + ")";
+        } else {
+          message = "Raffle is closed. No winner found.";
+        }
+      } else {
+        message = "Raffle is closed. Draw pending.";
+      }
+    } else if (status == "ACTIVE") {
+      message = "1. Participate in today's raffle";
+    } else if (status == "SCHEDULED") {
+      message = "This raffle hasn't started yet. Check back on the raffle date.";
+    } else {
+      message = "Raffle status: " + status;
+    }
+
+    response.result["text"] = message;
+    co_return response;
+    
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while fetching raffle summary.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
 
 } // namespace raffle::services

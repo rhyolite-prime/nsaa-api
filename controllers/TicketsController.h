@@ -13,7 +13,7 @@ public:
   ADD_METHOD_TO(TicketsController::create, std::string(PREFIX) + "buy", Post, Options);
   METHOD_LIST_END
 
-  drogon::Task<HttpResponsePtr> getAll(HttpRequestPtr req);
-  drogon::Task<HttpResponsePtr> getStats(HttpRequestPtr req);
-  drogon::Task<HttpResponsePtr> create(HttpRequestPtr req);
+  Task<HttpResponsePtr> getAll(HttpRequestPtr req);
+  Task<HttpResponsePtr> getStats(HttpRequestPtr req);
+  Task<HttpResponsePtr> create(HttpRequestPtr req);
 };

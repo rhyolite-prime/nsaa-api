@@ -105,6 +105,9 @@ add_executable(${PROJECT_NAME} main.cc
         services/pages/PageService.cc
         utils/codecvt_helper.h
         dto/HeroSliderDto.h
+        dto/SupportTicketDto.h
+        services/support_ticket/SupportTicketService.h
+        services/support_ticket/SupportTicketService.cc
 
 )
 
