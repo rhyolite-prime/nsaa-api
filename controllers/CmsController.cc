@@ -178,6 +178,32 @@ Task<HttpResponsePtr> CmsController::getMediaAssets(HttpRequestPtr req) {
 
 }
 
+Task<HttpResponsePtr> CmsController::createContact(HttpRequestPtr req) {
+
+    auto jsonBody = req->getJsonObject();
+
+    if (!jsonBody) {
+        raffle::dto::BaseApiResponse response;
+        response.success = false;
+        response.error["message"] = "Invalid JSON body";
+        auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+        resp->setStatusCode(k400BadRequest);
+        co_return resp;
+    }
+
+    raffle::dto::SupportTicketDto dto;
+    dto.setCategory("contact");
+    dto.setSubject("Contact");
+    dto.fromJson(*jsonBody);
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &supportTicketService = plugin->getSupportTicketService();
+
+    auto result = co_await supportTicketService.create(dto);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
+
 
 //admin
 

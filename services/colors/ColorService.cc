@@ -94,6 +94,7 @@ drogon::Task<dto::BaseApiResponse> ColorService::getAll(int pageNo, int pageSize
 
 
 drogon::Task<dto::BaseApiResponse> ColorService::createAsync(const dto::CreateColorDto &dto) {
+
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Colours> mapper(dbClient);
 
