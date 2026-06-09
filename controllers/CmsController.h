@@ -13,7 +13,7 @@ class CmsController : public drogon::HttpController<CmsController>
     ADD_METHOD_TO(CmsController::getHeroSlides, std::string(PREFIX) + "hero-slides", Get, Options);
     ADD_METHOD_TO(CmsController::getPromotionalBanners, std::string(PREFIX) + "banners", Get, Options);
     ADD_METHOD_TO(CmsController::getPrizes, std::string(PREFIX) + "prizes", Get, Options);
-    ADD_METHOD_TO(CmsController::getFaqs, std::string(PREFIX) + "faq", Get, Options);
+    ADD_METHOD_TO(CmsController::getFaqs, std::string(PREFIX) + "faqs", Get, Options);
     ADD_METHOD_TO(CmsController::getPages, std::string(PREFIX) + "pages/{1}", Get, Options);
     ADD_METHOD_TO(CmsController::getMediaAssets, std::string(PREFIX) + "media-assets", Get, Options);
     ADD_METHOD_TO(CmsController::createContact, std::string(PREFIX) + "contact", Post, Options);

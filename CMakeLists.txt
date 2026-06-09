@@ -176,6 +176,9 @@ target_sources(${PROJECT_NAME}
 
 target_compile_options(${PROJECT_NAME} PRIVATE "-include" "${CMAKE_CURRENT_SOURCE_DIR}/utils/codecvt_helper.h" "-Wno-deprecated-declarations")
 
+set(JWT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(JWT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(test)
 add_subdirectory(external_deps/Bcrypt)
 add_subdirectory(external_deps/jwt-cpp)

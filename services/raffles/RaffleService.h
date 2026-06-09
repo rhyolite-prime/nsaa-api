@@ -62,6 +62,9 @@ public:
   drogon::Task<dto::BaseApiResponse> getWeeklyRaffles();
 
   drogon::Task<dto::BaseApiResponse> getRaffleSummary(const std::string &raffleId);
+
+    //public web
+    drogon::Task<dto::BaseApiResponse> getWeeklyRaffleSchedule();
 };
 
 } // namespace raffle::services
