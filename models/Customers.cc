@@ -19,17 +19,21 @@ const std::string Customers::Cols::_first_name = "\"first_name\"";
 const std::string Customers::Cols::_last_name = "\"last_name\"";
 const std::string Customers::Cols::_email = "\"email\"";
 const std::string Customers::Cols::_ghana_card_number = "\"ghana_card_number\"";
-const std::string Customers::Cols::_voter_id = "\"voter_id\"";
-const std::string Customers::Cols::_passport_number = "\"passport_number\"";
-const std::string Customers::Cols::_mobile_money_provider = "\"mobile_money_provider\"";
-const std::string Customers::Cols::_mobile_money_account = "\"mobile_money_account\"";
-const std::string Customers::Cols::_created_at = "\"created_at\"";
-const std::string Customers::Cols::_updated_at = "\"updated_at\"";
+const std::string Customers::Cols::_secret_pin = "\"secret_pin\"";
+const std::string Customers::Cols::_account_type = "\"account_type\"";
+const std::string Customers::Cols::_account_provider = "\"account_provider\"";
+const std::string Customers::Cols::_account_name = "\"account_name\"";
+const std::string Customers::Cols::_account_number = "\"account_number\"";
+const std::string Customers::Cols::_last_active = "\"last_active\"";
+const std::string Customers::Cols::_last_active_device = "\"last_active_device\"";
+const std::string Customers::Cols::_is_locked_out = "\"is_locked_out\"";
 const std::string Customers::Cols::_is_active = "\"is_active\"";
 const std::string Customers::Cols::_total_spent = "\"total_spent\"";
 const std::string Customers::Cols::_total_won = "\"total_won\"";
 const std::string Customers::Cols::_number_of_wins = "\"number_of_wins\"";
 const std::string Customers::Cols::_number_of_entries = "\"number_of_entries\"";
+const std::string Customers::Cols::_created_at = "\"created_at\"";
+const std::string Customers::Cols::_updated_at = "\"updated_at\"";
 const std::string Customers::primaryKeyName = "id";
 const bool Customers::hasPrimaryKey = true;
 const std::string Customers::tableName = "\"customers\"";
@@ -41,17 +45,21 @@ const std::vector<typename Customers::MetaData> Customers::metaData_={
 {"last_name","std::string","character varying",100,0,0,0},
 {"email","std::string","character varying",255,0,0,0},
 {"ghana_card_number","std::string","character varying",30,0,0,0},
-{"voter_id","std::string","character varying",30,0,0,0},
-{"passport_number","std::string","character varying",30,0,0,0},
-{"mobile_money_provider","std::string","character varying",20,0,0,0},
-{"mobile_money_account","std::string","character varying",20,0,0,0},
-{"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
-{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
+{"secret_pin","std::string","character varying",30,0,0,0},
+{"account_type","std::string","character varying",20,0,0,0},
+{"account_provider","std::string","character varying",50,0,0,0},
+{"account_name","std::string","character varying",150,0,0,0},
+{"account_number","std::string","character varying",50,0,0,0},
+{"last_active","::trantor::Date","timestamp with time zone",0,0,0,0},
+{"last_active_device","std::string","text",0,0,0,0},
+{"is_locked_out","bool","boolean",1,0,0,1},
 {"is_active","bool","boolean",1,0,0,0},
 {"total_spent","std::string","numeric",0,0,0,0},
 {"total_won","std::string","numeric",0,0,0,0},
 {"number_of_wins","int32_t","integer",4,0,0,0},
-{"number_of_entries","int32_t","integer",4,0,0,0}
+{"number_of_entries","int32_t","integer",4,0,0,0},
+{"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
+{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
 };
 const std::string &Customers::getColumnName(size_t index) noexcept(false)
 {
@@ -86,21 +94,75 @@ Customers::Customers(const Row &r, const ssize_t indexOffset) noexcept
         {
             ghanaCardNumber_=std::make_shared<std::string>(r["ghana_card_number"].as<std::string>());
         }
-        if(!r["voter_id"].isNull())
+        if(!r["secret_pin"].isNull())
         {
-            voterId_=std::make_shared<std::string>(r["voter_id"].as<std::string>());
+            secretPin_=std::make_shared<std::string>(r["secret_pin"].as<std::string>());
         }
-        if(!r["passport_number"].isNull())
+        if(!r["account_type"].isNull())
         {
-            passportNumber_=std::make_shared<std::string>(r["passport_number"].as<std::string>());
+            accountType_=std::make_shared<std::string>(r["account_type"].as<std::string>());
         }
-        if(!r["mobile_money_provider"].isNull())
+        if(!r["account_provider"].isNull())
         {
-            mobileMoneyProvider_=std::make_shared<std::string>(r["mobile_money_provider"].as<std::string>());
+            accountProvider_=std::make_shared<std::string>(r["account_provider"].as<std::string>());
         }
-        if(!r["mobile_money_account"].isNull())
+        if(!r["account_name"].isNull())
         {
-            mobileMoneyAccount_=std::make_shared<std::string>(r["mobile_money_account"].as<std::string>());
+            accountName_=std::make_shared<std::string>(r["account_name"].as<std::string>());
+        }
+        if(!r["account_number"].isNull())
+        {
+            accountNumber_=std::make_shared<std::string>(r["account_number"].as<std::string>());
+        }
+        if(!r["last_active"].isNull())
+        {
+            auto timeStr = r["last_active"].as<std::string>();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                lastActive_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
+        if(!r["last_active_device"].isNull())
+        {
+            lastActiveDevice_=std::make_shared<std::string>(r["last_active_device"].as<std::string>());
+        }
+        if(!r["is_locked_out"].isNull())
+        {
+            isLockedOut_=std::make_shared<bool>(r["is_locked_out"].as<bool>());
+        }
+        if(!r["is_active"].isNull())
+        {
+            isActive_=std::make_shared<bool>(r["is_active"].as<bool>());
+        }
+        if(!r["total_spent"].isNull())
+        {
+            totalSpent_=std::make_shared<std::string>(r["total_spent"].as<std::string>());
+        }
+        if(!r["total_won"].isNull())
+        {
+            totalWon_=std::make_shared<std::string>(r["total_won"].as<std::string>());
+        }
+        if(!r["number_of_wins"].isNull())
+        {
+            numberOfWins_=std::make_shared<int32_t>(r["number_of_wins"].as<int32_t>());
+        }
+        if(!r["number_of_entries"].isNull())
+        {
+            numberOfEntries_=std::make_shared<int32_t>(r["number_of_entries"].as<int32_t>());
         }
         if(!r["created_at"].isNull())
         {
@@ -146,31 +208,11 @@ Customers::Customers(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        if(!r["is_active"].isNull())
-        {
-            isActive_=std::make_shared<bool>(r["is_active"].as<bool>());
-        }
-        if(!r["total_spent"].isNull())
-        {
-            totalSpent_=std::make_shared<std::string>(r["total_spent"].as<std::string>());
-        }
-        if(!r["total_won"].isNull())
-        {
-            totalWon_=std::make_shared<std::string>(r["total_won"].as<std::string>());
-        }
-        if(!r["number_of_wins"].isNull())
-        {
-            numberOfWins_=std::make_shared<int32_t>(r["number_of_wins"].as<int32_t>());
-        }
-        if(!r["number_of_entries"].isNull())
-        {
-            numberOfEntries_=std::make_shared<int32_t>(r["number_of_entries"].as<int32_t>());
-        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 17 > r.size())
+        if(offset + 21 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -209,24 +251,87 @@ Customers::Customers(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 6;
         if(!r[index].isNull())
         {
-            voterId_=std::make_shared<std::string>(r[index].as<std::string>());
+            secretPin_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 7;
         if(!r[index].isNull())
         {
-            passportNumber_=std::make_shared<std::string>(r[index].as<std::string>());
+            accountType_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 8;
         if(!r[index].isNull())
         {
-            mobileMoneyProvider_=std::make_shared<std::string>(r[index].as<std::string>());
+            accountProvider_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 9;
         if(!r[index].isNull())
         {
-            mobileMoneyAccount_=std::make_shared<std::string>(r[index].as<std::string>());
+            accountName_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 10;
+        if(!r[index].isNull())
+        {
+            accountNumber_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 11;
+        if(!r[index].isNull())
+        {
+            auto timeStr = r[index].as<std::string>();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                lastActive_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
+        index = offset + 12;
+        if(!r[index].isNull())
+        {
+            lastActiveDevice_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 13;
+        if(!r[index].isNull())
+        {
+            isLockedOut_=std::make_shared<bool>(r[index].as<bool>());
+        }
+        index = offset + 14;
+        if(!r[index].isNull())
+        {
+            isActive_=std::make_shared<bool>(r[index].as<bool>());
+        }
+        index = offset + 15;
+        if(!r[index].isNull())
+        {
+            totalSpent_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 16;
+        if(!r[index].isNull())
+        {
+            totalWon_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 17;
+        if(!r[index].isNull())
+        {
+            numberOfWins_=std::make_shared<int32_t>(r[index].as<int32_t>());
+        }
+        index = offset + 18;
+        if(!r[index].isNull())
+        {
+            numberOfEntries_=std::make_shared<int32_t>(r[index].as<int32_t>());
+        }
+        index = offset + 19;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -249,7 +354,7 @@ Customers::Customers(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 11;
+        index = offset + 20;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -272,38 +377,13 @@ Customers::Customers(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 12;
-        if(!r[index].isNull())
-        {
-            isActive_=std::make_shared<bool>(r[index].as<bool>());
-        }
-        index = offset + 13;
-        if(!r[index].isNull())
-        {
-            totalSpent_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
-        index = offset + 14;
-        if(!r[index].isNull())
-        {
-            totalWon_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
-        index = offset + 15;
-        if(!r[index].isNull())
-        {
-            numberOfWins_=std::make_shared<int32_t>(r[index].as<int32_t>());
-        }
-        index = offset + 16;
-        if(!r[index].isNull())
-        {
-            numberOfEntries_=std::make_shared<int32_t>(r[index].as<int32_t>());
-        }
     }
 
 }
 
 Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 17)
+    if(pMasqueradingVector.size() != 21)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -361,7 +441,7 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            voterId_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
+            secretPin_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
@@ -369,7 +449,7 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
         dirtyFlag_[7] = true;
         if(!pJson[pMasqueradingVector[7]].isNull())
         {
-            passportNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
+            accountType_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
@@ -377,7 +457,7 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
         dirtyFlag_[8] = true;
         if(!pJson[pMasqueradingVector[8]].isNull())
         {
-            mobileMoneyProvider_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
+            accountProvider_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
@@ -385,7 +465,7 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
         dirtyFlag_[9] = true;
         if(!pJson[pMasqueradingVector[9]].isNull())
         {
-            mobileMoneyAccount_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
+            accountName_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
@@ -393,25 +473,7 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
         dirtyFlag_[10] = true;
         if(!pJson[pMasqueradingVector[10]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[10]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
+            accountNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
@@ -436,7 +498,7 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                lastActive_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -445,7 +507,7 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
         dirtyFlag_[12] = true;
         if(!pJson[pMasqueradingVector[12]].isNull())
         {
-            isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[12]].asBool());
+            lastActiveDevice_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
@@ -453,7 +515,7 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
         dirtyFlag_[13] = true;
         if(!pJson[pMasqueradingVector[13]].isNull())
         {
-            totalSpent_=std::make_shared<std::string>(pJson[pMasqueradingVector[13]].asString());
+            isLockedOut_=std::make_shared<bool>(pJson[pMasqueradingVector[13]].asBool());
         }
     }
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
@@ -461,7 +523,7 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
         dirtyFlag_[14] = true;
         if(!pJson[pMasqueradingVector[14]].isNull())
         {
-            totalWon_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
+            isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[14]].asBool());
         }
     }
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
@@ -469,7 +531,7 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
         dirtyFlag_[15] = true;
         if(!pJson[pMasqueradingVector[15]].isNull())
         {
-            numberOfWins_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[15]].asInt64());
+            totalSpent_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
         }
     }
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
@@ -477,7 +539,75 @@ Customers::Customers(const Json::Value &pJson, const std::vector<std::string> &p
         dirtyFlag_[16] = true;
         if(!pJson[pMasqueradingVector[16]].isNull())
         {
-            numberOfEntries_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[16]].asInt64());
+            totalWon_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
+        }
+    }
+    if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
+    {
+        dirtyFlag_[17] = true;
+        if(!pJson[pMasqueradingVector[17]].isNull())
+        {
+            numberOfWins_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[17]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
+    {
+        dirtyFlag_[18] = true;
+        if(!pJson[pMasqueradingVector[18]].isNull())
+        {
+            numberOfEntries_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[18]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
+    {
+        dirtyFlag_[19] = true;
+        if(!pJson[pMasqueradingVector[19]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[19]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
+    }
+    if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
+    {
+        dirtyFlag_[20] = true;
+        if(!pJson[pMasqueradingVector[20]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[20]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
     }
 }
@@ -532,41 +662,131 @@ Customers::Customers(const Json::Value &pJson) noexcept(false)
             ghanaCardNumber_=std::make_shared<std::string>(pJson["ghana_card_number"].asString());
         }
     }
-    if(pJson.isMember("voter_id"))
+    if(pJson.isMember("secret_pin"))
     {
         dirtyFlag_[6]=true;
-        if(!pJson["voter_id"].isNull())
+        if(!pJson["secret_pin"].isNull())
         {
-            voterId_=std::make_shared<std::string>(pJson["voter_id"].asString());
+            secretPin_=std::make_shared<std::string>(pJson["secret_pin"].asString());
         }
     }
-    if(pJson.isMember("passport_number"))
+    if(pJson.isMember("account_type"))
     {
         dirtyFlag_[7]=true;
-        if(!pJson["passport_number"].isNull())
+        if(!pJson["account_type"].isNull())
         {
-            passportNumber_=std::make_shared<std::string>(pJson["passport_number"].asString());
+            accountType_=std::make_shared<std::string>(pJson["account_type"].asString());
         }
     }
-    if(pJson.isMember("mobile_money_provider"))
+    if(pJson.isMember("account_provider"))
     {
         dirtyFlag_[8]=true;
-        if(!pJson["mobile_money_provider"].isNull())
+        if(!pJson["account_provider"].isNull())
         {
-            mobileMoneyProvider_=std::make_shared<std::string>(pJson["mobile_money_provider"].asString());
+            accountProvider_=std::make_shared<std::string>(pJson["account_provider"].asString());
         }
     }
-    if(pJson.isMember("mobile_money_account"))
+    if(pJson.isMember("account_name"))
     {
         dirtyFlag_[9]=true;
-        if(!pJson["mobile_money_account"].isNull())
+        if(!pJson["account_name"].isNull())
         {
-            mobileMoneyAccount_=std::make_shared<std::string>(pJson["mobile_money_account"].asString());
+            accountName_=std::make_shared<std::string>(pJson["account_name"].asString());
+        }
+    }
+    if(pJson.isMember("account_number"))
+    {
+        dirtyFlag_[10]=true;
+        if(!pJson["account_number"].isNull())
+        {
+            accountNumber_=std::make_shared<std::string>(pJson["account_number"].asString());
+        }
+    }
+    if(pJson.isMember("last_active"))
+    {
+        dirtyFlag_[11]=true;
+        if(!pJson["last_active"].isNull())
+        {
+            auto timeStr = pJson["last_active"].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                lastActive_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
+    }
+    if(pJson.isMember("last_active_device"))
+    {
+        dirtyFlag_[12]=true;
+        if(!pJson["last_active_device"].isNull())
+        {
+            lastActiveDevice_=std::make_shared<std::string>(pJson["last_active_device"].asString());
+        }
+    }
+    if(pJson.isMember("is_locked_out"))
+    {
+        dirtyFlag_[13]=true;
+        if(!pJson["is_locked_out"].isNull())
+        {
+            isLockedOut_=std::make_shared<bool>(pJson["is_locked_out"].asBool());
+        }
+    }
+    if(pJson.isMember("is_active"))
+    {
+        dirtyFlag_[14]=true;
+        if(!pJson["is_active"].isNull())
+        {
+            isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
+        }
+    }
+    if(pJson.isMember("total_spent"))
+    {
+        dirtyFlag_[15]=true;
+        if(!pJson["total_spent"].isNull())
+        {
+            totalSpent_=std::make_shared<std::string>(pJson["total_spent"].asString());
+        }
+    }
+    if(pJson.isMember("total_won"))
+    {
+        dirtyFlag_[16]=true;
+        if(!pJson["total_won"].isNull())
+        {
+            totalWon_=std::make_shared<std::string>(pJson["total_won"].asString());
+        }
+    }
+    if(pJson.isMember("number_of_wins"))
+    {
+        dirtyFlag_[17]=true;
+        if(!pJson["number_of_wins"].isNull())
+        {
+            numberOfWins_=std::make_shared<int32_t>((int32_t)pJson["number_of_wins"].asInt64());
+        }
+    }
+    if(pJson.isMember("number_of_entries"))
+    {
+        dirtyFlag_[18]=true;
+        if(!pJson["number_of_entries"].isNull())
+        {
+            numberOfEntries_=std::make_shared<int32_t>((int32_t)pJson["number_of_entries"].asInt64());
         }
     }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[10]=true;
+        dirtyFlag_[19]=true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -592,7 +812,7 @@ Customers::Customers(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("updated_at"))
     {
-        dirtyFlag_[11]=true;
+        dirtyFlag_[20]=true;
         if(!pJson["updated_at"].isNull())
         {
             auto timeStr = pJson["updated_at"].asString();
@@ -616,52 +836,12 @@ Customers::Customers(const Json::Value &pJson) noexcept(false)
             }
         }
     }
-    if(pJson.isMember("is_active"))
-    {
-        dirtyFlag_[12]=true;
-        if(!pJson["is_active"].isNull())
-        {
-            isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
-        }
-    }
-    if(pJson.isMember("total_spent"))
-    {
-        dirtyFlag_[13]=true;
-        if(!pJson["total_spent"].isNull())
-        {
-            totalSpent_=std::make_shared<std::string>(pJson["total_spent"].asString());
-        }
-    }
-    if(pJson.isMember("total_won"))
-    {
-        dirtyFlag_[14]=true;
-        if(!pJson["total_won"].isNull())
-        {
-            totalWon_=std::make_shared<std::string>(pJson["total_won"].asString());
-        }
-    }
-    if(pJson.isMember("number_of_wins"))
-    {
-        dirtyFlag_[15]=true;
-        if(!pJson["number_of_wins"].isNull())
-        {
-            numberOfWins_=std::make_shared<int32_t>((int32_t)pJson["number_of_wins"].asInt64());
-        }
-    }
-    if(pJson.isMember("number_of_entries"))
-    {
-        dirtyFlag_[16]=true;
-        if(!pJson["number_of_entries"].isNull())
-        {
-            numberOfEntries_=std::make_shared<int32_t>((int32_t)pJson["number_of_entries"].asInt64());
-        }
-    }
 }
 
 void Customers::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 17)
+    if(pMasqueradingVector.size() != 21)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -718,7 +898,7 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            voterId_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
+            secretPin_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
@@ -726,7 +906,7 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[7] = true;
         if(!pJson[pMasqueradingVector[7]].isNull())
         {
-            passportNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
+            accountType_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
@@ -734,7 +914,7 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[8] = true;
         if(!pJson[pMasqueradingVector[8]].isNull())
         {
-            mobileMoneyProvider_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
+            accountProvider_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
@@ -742,7 +922,7 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[9] = true;
         if(!pJson[pMasqueradingVector[9]].isNull())
         {
-            mobileMoneyAccount_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
+            accountName_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
@@ -750,25 +930,7 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[10] = true;
         if(!pJson[pMasqueradingVector[10]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[10]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
+            accountNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
@@ -793,7 +955,7 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                lastActive_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -802,7 +964,7 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[12] = true;
         if(!pJson[pMasqueradingVector[12]].isNull())
         {
-            isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[12]].asBool());
+            lastActiveDevice_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
@@ -810,7 +972,7 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[13] = true;
         if(!pJson[pMasqueradingVector[13]].isNull())
         {
-            totalSpent_=std::make_shared<std::string>(pJson[pMasqueradingVector[13]].asString());
+            isLockedOut_=std::make_shared<bool>(pJson[pMasqueradingVector[13]].asBool());
         }
     }
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
@@ -818,7 +980,7 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[14] = true;
         if(!pJson[pMasqueradingVector[14]].isNull())
         {
-            totalWon_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
+            isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[14]].asBool());
         }
     }
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
@@ -826,7 +988,7 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[15] = true;
         if(!pJson[pMasqueradingVector[15]].isNull())
         {
-            numberOfWins_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[15]].asInt64());
+            totalSpent_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
         }
     }
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
@@ -834,7 +996,75 @@ void Customers::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[16] = true;
         if(!pJson[pMasqueradingVector[16]].isNull())
         {
-            numberOfEntries_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[16]].asInt64());
+            totalWon_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
+        }
+    }
+    if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
+    {
+        dirtyFlag_[17] = true;
+        if(!pJson[pMasqueradingVector[17]].isNull())
+        {
+            numberOfWins_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[17]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
+    {
+        dirtyFlag_[18] = true;
+        if(!pJson[pMasqueradingVector[18]].isNull())
+        {
+            numberOfEntries_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[18]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
+    {
+        dirtyFlag_[19] = true;
+        if(!pJson[pMasqueradingVector[19]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[19]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
+    }
+    if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
+    {
+        dirtyFlag_[20] = true;
+        if(!pJson[pMasqueradingVector[20]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[20]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
     }
 }
@@ -888,41 +1118,131 @@ void Customers::updateByJson(const Json::Value &pJson) noexcept(false)
             ghanaCardNumber_=std::make_shared<std::string>(pJson["ghana_card_number"].asString());
         }
     }
-    if(pJson.isMember("voter_id"))
+    if(pJson.isMember("secret_pin"))
     {
         dirtyFlag_[6] = true;
-        if(!pJson["voter_id"].isNull())
+        if(!pJson["secret_pin"].isNull())
         {
-            voterId_=std::make_shared<std::string>(pJson["voter_id"].asString());
+            secretPin_=std::make_shared<std::string>(pJson["secret_pin"].asString());
         }
     }
-    if(pJson.isMember("passport_number"))
+    if(pJson.isMember("account_type"))
     {
         dirtyFlag_[7] = true;
-        if(!pJson["passport_number"].isNull())
+        if(!pJson["account_type"].isNull())
         {
-            passportNumber_=std::make_shared<std::string>(pJson["passport_number"].asString());
+            accountType_=std::make_shared<std::string>(pJson["account_type"].asString());
         }
     }
-    if(pJson.isMember("mobile_money_provider"))
+    if(pJson.isMember("account_provider"))
     {
         dirtyFlag_[8] = true;
-        if(!pJson["mobile_money_provider"].isNull())
+        if(!pJson["account_provider"].isNull())
         {
-            mobileMoneyProvider_=std::make_shared<std::string>(pJson["mobile_money_provider"].asString());
+            accountProvider_=std::make_shared<std::string>(pJson["account_provider"].asString());
         }
     }
-    if(pJson.isMember("mobile_money_account"))
+    if(pJson.isMember("account_name"))
     {
         dirtyFlag_[9] = true;
-        if(!pJson["mobile_money_account"].isNull())
+        if(!pJson["account_name"].isNull())
         {
-            mobileMoneyAccount_=std::make_shared<std::string>(pJson["mobile_money_account"].asString());
+            accountName_=std::make_shared<std::string>(pJson["account_name"].asString());
+        }
+    }
+    if(pJson.isMember("account_number"))
+    {
+        dirtyFlag_[10] = true;
+        if(!pJson["account_number"].isNull())
+        {
+            accountNumber_=std::make_shared<std::string>(pJson["account_number"].asString());
+        }
+    }
+    if(pJson.isMember("last_active"))
+    {
+        dirtyFlag_[11] = true;
+        if(!pJson["last_active"].isNull())
+        {
+            auto timeStr = pJson["last_active"].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                lastActive_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
+        }
+    }
+    if(pJson.isMember("last_active_device"))
+    {
+        dirtyFlag_[12] = true;
+        if(!pJson["last_active_device"].isNull())
+        {
+            lastActiveDevice_=std::make_shared<std::string>(pJson["last_active_device"].asString());
+        }
+    }
+    if(pJson.isMember("is_locked_out"))
+    {
+        dirtyFlag_[13] = true;
+        if(!pJson["is_locked_out"].isNull())
+        {
+            isLockedOut_=std::make_shared<bool>(pJson["is_locked_out"].asBool());
+        }
+    }
+    if(pJson.isMember("is_active"))
+    {
+        dirtyFlag_[14] = true;
+        if(!pJson["is_active"].isNull())
+        {
+            isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
+        }
+    }
+    if(pJson.isMember("total_spent"))
+    {
+        dirtyFlag_[15] = true;
+        if(!pJson["total_spent"].isNull())
+        {
+            totalSpent_=std::make_shared<std::string>(pJson["total_spent"].asString());
+        }
+    }
+    if(pJson.isMember("total_won"))
+    {
+        dirtyFlag_[16] = true;
+        if(!pJson["total_won"].isNull())
+        {
+            totalWon_=std::make_shared<std::string>(pJson["total_won"].asString());
+        }
+    }
+    if(pJson.isMember("number_of_wins"))
+    {
+        dirtyFlag_[17] = true;
+        if(!pJson["number_of_wins"].isNull())
+        {
+            numberOfWins_=std::make_shared<int32_t>((int32_t)pJson["number_of_wins"].asInt64());
+        }
+    }
+    if(pJson.isMember("number_of_entries"))
+    {
+        dirtyFlag_[18] = true;
+        if(!pJson["number_of_entries"].isNull())
+        {
+            numberOfEntries_=std::make_shared<int32_t>((int32_t)pJson["number_of_entries"].asInt64());
         }
     }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[10] = true;
+        dirtyFlag_[19] = true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -948,7 +1268,7 @@ void Customers::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("updated_at"))
     {
-        dirtyFlag_[11] = true;
+        dirtyFlag_[20] = true;
         if(!pJson["updated_at"].isNull())
         {
             auto timeStr = pJson["updated_at"].asString();
@@ -970,46 +1290,6 @@ void Customers::updateByJson(const Json::Value &pJson) noexcept(false)
                 }
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
-        }
-    }
-    if(pJson.isMember("is_active"))
-    {
-        dirtyFlag_[12] = true;
-        if(!pJson["is_active"].isNull())
-        {
-            isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
-        }
-    }
-    if(pJson.isMember("total_spent"))
-    {
-        dirtyFlag_[13] = true;
-        if(!pJson["total_spent"].isNull())
-        {
-            totalSpent_=std::make_shared<std::string>(pJson["total_spent"].asString());
-        }
-    }
-    if(pJson.isMember("total_won"))
-    {
-        dirtyFlag_[14] = true;
-        if(!pJson["total_won"].isNull())
-        {
-            totalWon_=std::make_shared<std::string>(pJson["total_won"].asString());
-        }
-    }
-    if(pJson.isMember("number_of_wins"))
-    {
-        dirtyFlag_[15] = true;
-        if(!pJson["number_of_wins"].isNull())
-        {
-            numberOfWins_=std::make_shared<int32_t>((int32_t)pJson["number_of_wins"].asInt64());
-        }
-    }
-    if(pJson.isMember("number_of_entries"))
-    {
-        dirtyFlag_[16] = true;
-        if(!pJson["number_of_entries"].isNull())
-        {
-            numberOfEntries_=std::make_shared<int32_t>((int32_t)pJson["number_of_entries"].asInt64());
         }
     }
 }
@@ -1171,156 +1451,205 @@ void Customers::setGhanaCardNumberToNull() noexcept
     dirtyFlag_[5] = true;
 }
 
-const std::string &Customers::getValueOfVoterId() const noexcept
+const std::string &Customers::getValueOfSecretPin() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(voterId_)
-        return *voterId_;
+    if(secretPin_)
+        return *secretPin_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Customers::getVoterId() const noexcept
+const std::shared_ptr<std::string> &Customers::getSecretPin() const noexcept
 {
-    return voterId_;
+    return secretPin_;
 }
-void Customers::setVoterId(const std::string &pVoterId) noexcept
+void Customers::setSecretPin(const std::string &pSecretPin) noexcept
 {
-    voterId_ = std::make_shared<std::string>(pVoterId);
+    secretPin_ = std::make_shared<std::string>(pSecretPin);
     dirtyFlag_[6] = true;
 }
-void Customers::setVoterId(std::string &&pVoterId) noexcept
+void Customers::setSecretPin(std::string &&pSecretPin) noexcept
 {
-    voterId_ = std::make_shared<std::string>(std::move(pVoterId));
+    secretPin_ = std::make_shared<std::string>(std::move(pSecretPin));
     dirtyFlag_[6] = true;
 }
-void Customers::setVoterIdToNull() noexcept
+void Customers::setSecretPinToNull() noexcept
 {
-    voterId_.reset();
+    secretPin_.reset();
     dirtyFlag_[6] = true;
 }
 
-const std::string &Customers::getValueOfPassportNumber() const noexcept
+const std::string &Customers::getValueOfAccountType() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(passportNumber_)
-        return *passportNumber_;
+    if(accountType_)
+        return *accountType_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Customers::getPassportNumber() const noexcept
+const std::shared_ptr<std::string> &Customers::getAccountType() const noexcept
 {
-    return passportNumber_;
+    return accountType_;
 }
-void Customers::setPassportNumber(const std::string &pPassportNumber) noexcept
+void Customers::setAccountType(const std::string &pAccountType) noexcept
 {
-    passportNumber_ = std::make_shared<std::string>(pPassportNumber);
+    accountType_ = std::make_shared<std::string>(pAccountType);
     dirtyFlag_[7] = true;
 }
-void Customers::setPassportNumber(std::string &&pPassportNumber) noexcept
+void Customers::setAccountType(std::string &&pAccountType) noexcept
 {
-    passportNumber_ = std::make_shared<std::string>(std::move(pPassportNumber));
+    accountType_ = std::make_shared<std::string>(std::move(pAccountType));
     dirtyFlag_[7] = true;
 }
-void Customers::setPassportNumberToNull() noexcept
+void Customers::setAccountTypeToNull() noexcept
 {
-    passportNumber_.reset();
+    accountType_.reset();
     dirtyFlag_[7] = true;
 }
 
-const std::string &Customers::getValueOfMobileMoneyProvider() const noexcept
+const std::string &Customers::getValueOfAccountProvider() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(mobileMoneyProvider_)
-        return *mobileMoneyProvider_;
+    if(accountProvider_)
+        return *accountProvider_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Customers::getMobileMoneyProvider() const noexcept
+const std::shared_ptr<std::string> &Customers::getAccountProvider() const noexcept
 {
-    return mobileMoneyProvider_;
+    return accountProvider_;
 }
-void Customers::setMobileMoneyProvider(const std::string &pMobileMoneyProvider) noexcept
+void Customers::setAccountProvider(const std::string &pAccountProvider) noexcept
 {
-    mobileMoneyProvider_ = std::make_shared<std::string>(pMobileMoneyProvider);
+    accountProvider_ = std::make_shared<std::string>(pAccountProvider);
     dirtyFlag_[8] = true;
 }
-void Customers::setMobileMoneyProvider(std::string &&pMobileMoneyProvider) noexcept
+void Customers::setAccountProvider(std::string &&pAccountProvider) noexcept
 {
-    mobileMoneyProvider_ = std::make_shared<std::string>(std::move(pMobileMoneyProvider));
+    accountProvider_ = std::make_shared<std::string>(std::move(pAccountProvider));
     dirtyFlag_[8] = true;
 }
-void Customers::setMobileMoneyProviderToNull() noexcept
+void Customers::setAccountProviderToNull() noexcept
 {
-    mobileMoneyProvider_.reset();
+    accountProvider_.reset();
     dirtyFlag_[8] = true;
 }
 
-const std::string &Customers::getValueOfMobileMoneyAccount() const noexcept
+const std::string &Customers::getValueOfAccountName() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(mobileMoneyAccount_)
-        return *mobileMoneyAccount_;
+    if(accountName_)
+        return *accountName_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Customers::getMobileMoneyAccount() const noexcept
+const std::shared_ptr<std::string> &Customers::getAccountName() const noexcept
 {
-    return mobileMoneyAccount_;
+    return accountName_;
 }
-void Customers::setMobileMoneyAccount(const std::string &pMobileMoneyAccount) noexcept
+void Customers::setAccountName(const std::string &pAccountName) noexcept
 {
-    mobileMoneyAccount_ = std::make_shared<std::string>(pMobileMoneyAccount);
+    accountName_ = std::make_shared<std::string>(pAccountName);
     dirtyFlag_[9] = true;
 }
-void Customers::setMobileMoneyAccount(std::string &&pMobileMoneyAccount) noexcept
+void Customers::setAccountName(std::string &&pAccountName) noexcept
 {
-    mobileMoneyAccount_ = std::make_shared<std::string>(std::move(pMobileMoneyAccount));
+    accountName_ = std::make_shared<std::string>(std::move(pAccountName));
     dirtyFlag_[9] = true;
 }
-void Customers::setMobileMoneyAccountToNull() noexcept
+void Customers::setAccountNameToNull() noexcept
 {
-    mobileMoneyAccount_.reset();
+    accountName_.reset();
     dirtyFlag_[9] = true;
 }
 
-const ::trantor::Date &Customers::getValueOfCreatedAt() const noexcept
+const std::string &Customers::getValueOfAccountNumber() const noexcept
 {
-    static const ::trantor::Date defaultValue = ::trantor::Date();
-    if(createdAt_)
-        return *createdAt_;
+    static const std::string defaultValue = std::string();
+    if(accountNumber_)
+        return *accountNumber_;
     return defaultValue;
 }
-const std::shared_ptr<::trantor::Date> &Customers::getCreatedAt() const noexcept
+const std::shared_ptr<std::string> &Customers::getAccountNumber() const noexcept
 {
-    return createdAt_;
+    return accountNumber_;
 }
-void Customers::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
+void Customers::setAccountNumber(const std::string &pAccountNumber) noexcept
 {
-    createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
+    accountNumber_ = std::make_shared<std::string>(pAccountNumber);
     dirtyFlag_[10] = true;
 }
-void Customers::setCreatedAtToNull() noexcept
+void Customers::setAccountNumber(std::string &&pAccountNumber) noexcept
 {
-    createdAt_.reset();
+    accountNumber_ = std::make_shared<std::string>(std::move(pAccountNumber));
+    dirtyFlag_[10] = true;
+}
+void Customers::setAccountNumberToNull() noexcept
+{
+    accountNumber_.reset();
     dirtyFlag_[10] = true;
 }
 
-const ::trantor::Date &Customers::getValueOfUpdatedAt() const noexcept
+const ::trantor::Date &Customers::getValueOfLastActive() const noexcept
 {
     static const ::trantor::Date defaultValue = ::trantor::Date();
-    if(updatedAt_)
-        return *updatedAt_;
+    if(lastActive_)
+        return *lastActive_;
     return defaultValue;
 }
-const std::shared_ptr<::trantor::Date> &Customers::getUpdatedAt() const noexcept
+const std::shared_ptr<::trantor::Date> &Customers::getLastActive() const noexcept
 {
-    return updatedAt_;
+    return lastActive_;
 }
-void Customers::setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept
+void Customers::setLastActive(const ::trantor::Date &pLastActive) noexcept
 {
-    updatedAt_ = std::make_shared<::trantor::Date>(pUpdatedAt);
+    lastActive_ = std::make_shared<::trantor::Date>(pLastActive);
     dirtyFlag_[11] = true;
 }
-void Customers::setUpdatedAtToNull() noexcept
+void Customers::setLastActiveToNull() noexcept
 {
-    updatedAt_.reset();
+    lastActive_.reset();
     dirtyFlag_[11] = true;
+}
+
+const std::string &Customers::getValueOfLastActiveDevice() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(lastActiveDevice_)
+        return *lastActiveDevice_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Customers::getLastActiveDevice() const noexcept
+{
+    return lastActiveDevice_;
+}
+void Customers::setLastActiveDevice(const std::string &pLastActiveDevice) noexcept
+{
+    lastActiveDevice_ = std::make_shared<std::string>(pLastActiveDevice);
+    dirtyFlag_[12] = true;
+}
+void Customers::setLastActiveDevice(std::string &&pLastActiveDevice) noexcept
+{
+    lastActiveDevice_ = std::make_shared<std::string>(std::move(pLastActiveDevice));
+    dirtyFlag_[12] = true;
+}
+void Customers::setLastActiveDeviceToNull() noexcept
+{
+    lastActiveDevice_.reset();
+    dirtyFlag_[12] = true;
+}
+
+const bool &Customers::getValueOfIsLockedOut() const noexcept
+{
+    static const bool defaultValue = bool();
+    if(isLockedOut_)
+        return *isLockedOut_;
+    return defaultValue;
+}
+const std::shared_ptr<bool> &Customers::getIsLockedOut() const noexcept
+{
+    return isLockedOut_;
+}
+void Customers::setIsLockedOut(const bool &pIsLockedOut) noexcept
+{
+    isLockedOut_ = std::make_shared<bool>(pIsLockedOut);
+    dirtyFlag_[13] = true;
 }
 
 const bool &Customers::getValueOfIsActive() const noexcept
@@ -1337,12 +1666,12 @@ const std::shared_ptr<bool> &Customers::getIsActive() const noexcept
 void Customers::setIsActive(const bool &pIsActive) noexcept
 {
     isActive_ = std::make_shared<bool>(pIsActive);
-    dirtyFlag_[12] = true;
+    dirtyFlag_[14] = true;
 }
 void Customers::setIsActiveToNull() noexcept
 {
     isActive_.reset();
-    dirtyFlag_[12] = true;
+    dirtyFlag_[14] = true;
 }
 
 const std::string &Customers::getValueOfTotalSpent() const noexcept
@@ -1359,17 +1688,17 @@ const std::shared_ptr<std::string> &Customers::getTotalSpent() const noexcept
 void Customers::setTotalSpent(const std::string &pTotalSpent) noexcept
 {
     totalSpent_ = std::make_shared<std::string>(pTotalSpent);
-    dirtyFlag_[13] = true;
+    dirtyFlag_[15] = true;
 }
 void Customers::setTotalSpent(std::string &&pTotalSpent) noexcept
 {
     totalSpent_ = std::make_shared<std::string>(std::move(pTotalSpent));
-    dirtyFlag_[13] = true;
+    dirtyFlag_[15] = true;
 }
 void Customers::setTotalSpentToNull() noexcept
 {
     totalSpent_.reset();
-    dirtyFlag_[13] = true;
+    dirtyFlag_[15] = true;
 }
 
 const std::string &Customers::getValueOfTotalWon() const noexcept
@@ -1386,17 +1715,17 @@ const std::shared_ptr<std::string> &Customers::getTotalWon() const noexcept
 void Customers::setTotalWon(const std::string &pTotalWon) noexcept
 {
     totalWon_ = std::make_shared<std::string>(pTotalWon);
-    dirtyFlag_[14] = true;
+    dirtyFlag_[16] = true;
 }
 void Customers::setTotalWon(std::string &&pTotalWon) noexcept
 {
     totalWon_ = std::make_shared<std::string>(std::move(pTotalWon));
-    dirtyFlag_[14] = true;
+    dirtyFlag_[16] = true;
 }
 void Customers::setTotalWonToNull() noexcept
 {
     totalWon_.reset();
-    dirtyFlag_[14] = true;
+    dirtyFlag_[16] = true;
 }
 
 const int32_t &Customers::getValueOfNumberOfWins() const noexcept
@@ -1413,12 +1742,12 @@ const std::shared_ptr<int32_t> &Customers::getNumberOfWins() const noexcept
 void Customers::setNumberOfWins(const int32_t &pNumberOfWins) noexcept
 {
     numberOfWins_ = std::make_shared<int32_t>(pNumberOfWins);
-    dirtyFlag_[15] = true;
+    dirtyFlag_[17] = true;
 }
 void Customers::setNumberOfWinsToNull() noexcept
 {
     numberOfWins_.reset();
-    dirtyFlag_[15] = true;
+    dirtyFlag_[17] = true;
 }
 
 const int32_t &Customers::getValueOfNumberOfEntries() const noexcept
@@ -1435,12 +1764,56 @@ const std::shared_ptr<int32_t> &Customers::getNumberOfEntries() const noexcept
 void Customers::setNumberOfEntries(const int32_t &pNumberOfEntries) noexcept
 {
     numberOfEntries_ = std::make_shared<int32_t>(pNumberOfEntries);
-    dirtyFlag_[16] = true;
+    dirtyFlag_[18] = true;
 }
 void Customers::setNumberOfEntriesToNull() noexcept
 {
     numberOfEntries_.reset();
-    dirtyFlag_[16] = true;
+    dirtyFlag_[18] = true;
+}
+
+const ::trantor::Date &Customers::getValueOfCreatedAt() const noexcept
+{
+    static const ::trantor::Date defaultValue = ::trantor::Date();
+    if(createdAt_)
+        return *createdAt_;
+    return defaultValue;
+}
+const std::shared_ptr<::trantor::Date> &Customers::getCreatedAt() const noexcept
+{
+    return createdAt_;
+}
+void Customers::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
+{
+    createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
+    dirtyFlag_[19] = true;
+}
+void Customers::setCreatedAtToNull() noexcept
+{
+    createdAt_.reset();
+    dirtyFlag_[19] = true;
+}
+
+const ::trantor::Date &Customers::getValueOfUpdatedAt() const noexcept
+{
+    static const ::trantor::Date defaultValue = ::trantor::Date();
+    if(updatedAt_)
+        return *updatedAt_;
+    return defaultValue;
+}
+const std::shared_ptr<::trantor::Date> &Customers::getUpdatedAt() const noexcept
+{
+    return updatedAt_;
+}
+void Customers::setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept
+{
+    updatedAt_ = std::make_shared<::trantor::Date>(pUpdatedAt);
+    dirtyFlag_[20] = true;
+}
+void Customers::setUpdatedAtToNull() noexcept
+{
+    updatedAt_.reset();
+    dirtyFlag_[20] = true;
 }
 
 void Customers::updateId(const uint64_t id)
@@ -1456,17 +1829,21 @@ const std::vector<std::string> &Customers::insertColumns() noexcept
         "last_name",
         "email",
         "ghana_card_number",
-        "voter_id",
-        "passport_number",
-        "mobile_money_provider",
-        "mobile_money_account",
-        "created_at",
-        "updated_at",
+        "secret_pin",
+        "account_type",
+        "account_provider",
+        "account_name",
+        "account_number",
+        "last_active",
+        "last_active_device",
+        "is_locked_out",
         "is_active",
         "total_spent",
         "total_won",
         "number_of_wins",
-        "number_of_entries"
+        "number_of_entries",
+        "created_at",
+        "updated_at"
     };
     return inCols;
 }
@@ -1541,9 +1918,9 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[6])
     {
-        if(getVoterId())
+        if(getSecretPin())
         {
-            binder << getValueOfVoterId();
+            binder << getValueOfSecretPin();
         }
         else
         {
@@ -1552,9 +1929,9 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[7])
     {
-        if(getPassportNumber())
+        if(getAccountType())
         {
-            binder << getValueOfPassportNumber();
+            binder << getValueOfAccountType();
         }
         else
         {
@@ -1563,9 +1940,9 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[8])
     {
-        if(getMobileMoneyProvider())
+        if(getAccountProvider())
         {
-            binder << getValueOfMobileMoneyProvider();
+            binder << getValueOfAccountProvider();
         }
         else
         {
@@ -1574,9 +1951,9 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[9])
     {
-        if(getMobileMoneyAccount())
+        if(getAccountName())
         {
-            binder << getValueOfMobileMoneyAccount();
+            binder << getValueOfAccountName();
         }
         else
         {
@@ -1585,9 +1962,9 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[10])
     {
-        if(getCreatedAt())
+        if(getAccountNumber())
         {
-            binder << getValueOfCreatedAt();
+            binder << getValueOfAccountNumber();
         }
         else
         {
@@ -1596,9 +1973,9 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[11])
     {
-        if(getUpdatedAt())
+        if(getLastActive())
         {
-            binder << getValueOfUpdatedAt();
+            binder << getValueOfLastActive();
         }
         else
         {
@@ -1606,6 +1983,28 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
         }
     }
     if(dirtyFlag_[12])
+    {
+        if(getLastActiveDevice())
+        {
+            binder << getValueOfLastActiveDevice();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[13])
+    {
+        if(getIsLockedOut())
+        {
+            binder << getValueOfIsLockedOut();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[14])
     {
         if(getIsActive())
         {
@@ -1616,7 +2015,7 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[13])
+    if(dirtyFlag_[15])
     {
         if(getTotalSpent())
         {
@@ -1627,7 +2026,7 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[14])
+    if(dirtyFlag_[16])
     {
         if(getTotalWon())
         {
@@ -1638,7 +2037,7 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[15])
+    if(dirtyFlag_[17])
     {
         if(getNumberOfWins())
         {
@@ -1649,11 +2048,33 @@ void Customers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[16])
+    if(dirtyFlag_[18])
     {
         if(getNumberOfEntries())
         {
             binder << getValueOfNumberOfEntries();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[19])
+    {
+        if(getCreatedAt())
+        {
+            binder << getValueOfCreatedAt();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[20])
+    {
+        if(getUpdatedAt())
+        {
+            binder << getValueOfUpdatedAt();
         }
         else
         {
@@ -1733,6 +2154,22 @@ const std::vector<std::string> Customers::updateColumns() const
     {
         ret.push_back(getColumnName(16));
     }
+    if(dirtyFlag_[17])
+    {
+        ret.push_back(getColumnName(17));
+    }
+    if(dirtyFlag_[18])
+    {
+        ret.push_back(getColumnName(18));
+    }
+    if(dirtyFlag_[19])
+    {
+        ret.push_back(getColumnName(19));
+    }
+    if(dirtyFlag_[20])
+    {
+        ret.push_back(getColumnName(20));
+    }
     return ret;
 }
 
@@ -1806,9 +2243,9 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[6])
     {
-        if(getVoterId())
+        if(getSecretPin())
         {
-            binder << getValueOfVoterId();
+            binder << getValueOfSecretPin();
         }
         else
         {
@@ -1817,9 +2254,9 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[7])
     {
-        if(getPassportNumber())
+        if(getAccountType())
         {
-            binder << getValueOfPassportNumber();
+            binder << getValueOfAccountType();
         }
         else
         {
@@ -1828,9 +2265,9 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[8])
     {
-        if(getMobileMoneyProvider())
+        if(getAccountProvider())
         {
-            binder << getValueOfMobileMoneyProvider();
+            binder << getValueOfAccountProvider();
         }
         else
         {
@@ -1839,9 +2276,9 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[9])
     {
-        if(getMobileMoneyAccount())
+        if(getAccountName())
         {
-            binder << getValueOfMobileMoneyAccount();
+            binder << getValueOfAccountName();
         }
         else
         {
@@ -1850,9 +2287,9 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[10])
     {
-        if(getCreatedAt())
+        if(getAccountNumber())
         {
-            binder << getValueOfCreatedAt();
+            binder << getValueOfAccountNumber();
         }
         else
         {
@@ -1861,9 +2298,9 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[11])
     {
-        if(getUpdatedAt())
+        if(getLastActive())
         {
-            binder << getValueOfUpdatedAt();
+            binder << getValueOfLastActive();
         }
         else
         {
@@ -1871,6 +2308,28 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
         }
     }
     if(dirtyFlag_[12])
+    {
+        if(getLastActiveDevice())
+        {
+            binder << getValueOfLastActiveDevice();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[13])
+    {
+        if(getIsLockedOut())
+        {
+            binder << getValueOfIsLockedOut();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[14])
     {
         if(getIsActive())
         {
@@ -1881,7 +2340,7 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[13])
+    if(dirtyFlag_[15])
     {
         if(getTotalSpent())
         {
@@ -1892,7 +2351,7 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[14])
+    if(dirtyFlag_[16])
     {
         if(getTotalWon())
         {
@@ -1903,7 +2362,7 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[15])
+    if(dirtyFlag_[17])
     {
         if(getNumberOfWins())
         {
@@ -1914,11 +2373,33 @@ void Customers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[16])
+    if(dirtyFlag_[18])
     {
         if(getNumberOfEntries())
         {
             binder << getValueOfNumberOfEntries();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[19])
+    {
+        if(getCreatedAt())
+        {
+            binder << getValueOfCreatedAt();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[20])
+    {
+        if(getUpdatedAt())
+        {
+            binder << getValueOfUpdatedAt();
         }
         else
         {
@@ -1977,53 +2458,69 @@ Json::Value Customers::toJson() const
     {
         ret["ghana_card_number"]=Json::Value();
     }
-    if(getVoterId())
+    if(getSecretPin())
     {
-        ret["voter_id"]=getValueOfVoterId();
+        ret["secret_pin"]=getValueOfSecretPin();
     }
     else
     {
-        ret["voter_id"]=Json::Value();
+        ret["secret_pin"]=Json::Value();
     }
-    if(getPassportNumber())
+    if(getAccountType())
     {
-        ret["passport_number"]=getValueOfPassportNumber();
-    }
-    else
-    {
-        ret["passport_number"]=Json::Value();
-    }
-    if(getMobileMoneyProvider())
-    {
-        ret["mobile_money_provider"]=getValueOfMobileMoneyProvider();
+        ret["account_type"]=getValueOfAccountType();
     }
     else
     {
-        ret["mobile_money_provider"]=Json::Value();
+        ret["account_type"]=Json::Value();
     }
-    if(getMobileMoneyAccount())
+    if(getAccountProvider())
     {
-        ret["mobile_money_account"]=getValueOfMobileMoneyAccount();
-    }
-    else
-    {
-        ret["mobile_money_account"]=Json::Value();
-    }
-    if(getCreatedAt())
-    {
-        ret["created_at"]=getCreatedAt()->toDbStringLocal();
+        ret["account_provider"]=getValueOfAccountProvider();
     }
     else
     {
-        ret["created_at"]=Json::Value();
+        ret["account_provider"]=Json::Value();
     }
-    if(getUpdatedAt())
+    if(getAccountName())
     {
-        ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+        ret["account_name"]=getValueOfAccountName();
     }
     else
     {
-        ret["updated_at"]=Json::Value();
+        ret["account_name"]=Json::Value();
+    }
+    if(getAccountNumber())
+    {
+        ret["account_number"]=getValueOfAccountNumber();
+    }
+    else
+    {
+        ret["account_number"]=Json::Value();
+    }
+    if(getLastActive())
+    {
+        ret["last_active"]=getLastActive()->toDbStringLocal();
+    }
+    else
+    {
+        ret["last_active"]=Json::Value();
+    }
+    if(getLastActiveDevice())
+    {
+        ret["last_active_device"]=getValueOfLastActiveDevice();
+    }
+    else
+    {
+        ret["last_active_device"]=Json::Value();
+    }
+    if(getIsLockedOut())
+    {
+        ret["is_locked_out"]=getValueOfIsLockedOut();
+    }
+    else
+    {
+        ret["is_locked_out"]=Json::Value();
     }
     if(getIsActive())
     {
@@ -2065,6 +2562,22 @@ Json::Value Customers::toJson() const
     {
         ret["number_of_entries"]=Json::Value();
     }
+    if(getCreatedAt())
+    {
+        ret["created_at"]=getCreatedAt()->toDbStringLocal();
+    }
+    else
+    {
+        ret["created_at"]=Json::Value();
+    }
+    if(getUpdatedAt())
+    {
+        ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+    }
+    else
+    {
+        ret["updated_at"]=Json::Value();
+    }
     return ret;
 }
 
@@ -2077,7 +2590,7 @@ Json::Value Customers::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 17)
+    if(pMasqueradingVector.size() == 21)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -2147,9 +2660,9 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[6].empty())
         {
-            if(getVoterId())
+            if(getSecretPin())
             {
-                ret[pMasqueradingVector[6]]=getValueOfVoterId();
+                ret[pMasqueradingVector[6]]=getValueOfSecretPin();
             }
             else
             {
@@ -2158,9 +2671,9 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[7].empty())
         {
-            if(getPassportNumber())
+            if(getAccountType())
             {
-                ret[pMasqueradingVector[7]]=getValueOfPassportNumber();
+                ret[pMasqueradingVector[7]]=getValueOfAccountType();
             }
             else
             {
@@ -2169,9 +2682,9 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[8].empty())
         {
-            if(getMobileMoneyProvider())
+            if(getAccountProvider())
             {
-                ret[pMasqueradingVector[8]]=getValueOfMobileMoneyProvider();
+                ret[pMasqueradingVector[8]]=getValueOfAccountProvider();
             }
             else
             {
@@ -2180,9 +2693,9 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[9].empty())
         {
-            if(getMobileMoneyAccount())
+            if(getAccountName())
             {
-                ret[pMasqueradingVector[9]]=getValueOfMobileMoneyAccount();
+                ret[pMasqueradingVector[9]]=getValueOfAccountName();
             }
             else
             {
@@ -2191,9 +2704,9 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[10].empty())
         {
-            if(getCreatedAt())
+            if(getAccountNumber())
             {
-                ret[pMasqueradingVector[10]]=getCreatedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[10]]=getValueOfAccountNumber();
             }
             else
             {
@@ -2202,9 +2715,9 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[11].empty())
         {
-            if(getUpdatedAt())
+            if(getLastActive())
             {
-                ret[pMasqueradingVector[11]]=getUpdatedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[11]]=getLastActive()->toDbStringLocal();
             }
             else
             {
@@ -2213,9 +2726,9 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[12].empty())
         {
-            if(getIsActive())
+            if(getLastActiveDevice())
             {
-                ret[pMasqueradingVector[12]]=getValueOfIsActive();
+                ret[pMasqueradingVector[12]]=getValueOfLastActiveDevice();
             }
             else
             {
@@ -2224,9 +2737,9 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[13].empty())
         {
-            if(getTotalSpent())
+            if(getIsLockedOut())
             {
-                ret[pMasqueradingVector[13]]=getValueOfTotalSpent();
+                ret[pMasqueradingVector[13]]=getValueOfIsLockedOut();
             }
             else
             {
@@ -2235,9 +2748,9 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[14].empty())
         {
-            if(getTotalWon())
+            if(getIsActive())
             {
-                ret[pMasqueradingVector[14]]=getValueOfTotalWon();
+                ret[pMasqueradingVector[14]]=getValueOfIsActive();
             }
             else
             {
@@ -2246,9 +2759,9 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[15].empty())
         {
-            if(getNumberOfWins())
+            if(getTotalSpent())
             {
-                ret[pMasqueradingVector[15]]=getValueOfNumberOfWins();
+                ret[pMasqueradingVector[15]]=getValueOfTotalSpent();
             }
             else
             {
@@ -2257,13 +2770,57 @@ Json::Value Customers::toMasqueradedJson(
         }
         if(!pMasqueradingVector[16].empty())
         {
-            if(getNumberOfEntries())
+            if(getTotalWon())
             {
-                ret[pMasqueradingVector[16]]=getValueOfNumberOfEntries();
+                ret[pMasqueradingVector[16]]=getValueOfTotalWon();
             }
             else
             {
                 ret[pMasqueradingVector[16]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[17].empty())
+        {
+            if(getNumberOfWins())
+            {
+                ret[pMasqueradingVector[17]]=getValueOfNumberOfWins();
+            }
+            else
+            {
+                ret[pMasqueradingVector[17]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[18].empty())
+        {
+            if(getNumberOfEntries())
+            {
+                ret[pMasqueradingVector[18]]=getValueOfNumberOfEntries();
+            }
+            else
+            {
+                ret[pMasqueradingVector[18]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[19].empty())
+        {
+            if(getCreatedAt())
+            {
+                ret[pMasqueradingVector[19]]=getCreatedAt()->toDbStringLocal();
+            }
+            else
+            {
+                ret[pMasqueradingVector[19]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[20].empty())
+        {
+            if(getUpdatedAt())
+            {
+                ret[pMasqueradingVector[20]]=getUpdatedAt()->toDbStringLocal();
+            }
+            else
+            {
+                ret[pMasqueradingVector[20]]=Json::Value();
             }
         }
         return ret;
@@ -2317,53 +2874,69 @@ Json::Value Customers::toMasqueradedJson(
     {
         ret["ghana_card_number"]=Json::Value();
     }
-    if(getVoterId())
+    if(getSecretPin())
     {
-        ret["voter_id"]=getValueOfVoterId();
+        ret["secret_pin"]=getValueOfSecretPin();
     }
     else
     {
-        ret["voter_id"]=Json::Value();
+        ret["secret_pin"]=Json::Value();
     }
-    if(getPassportNumber())
+    if(getAccountType())
     {
-        ret["passport_number"]=getValueOfPassportNumber();
-    }
-    else
-    {
-        ret["passport_number"]=Json::Value();
-    }
-    if(getMobileMoneyProvider())
-    {
-        ret["mobile_money_provider"]=getValueOfMobileMoneyProvider();
+        ret["account_type"]=getValueOfAccountType();
     }
     else
     {
-        ret["mobile_money_provider"]=Json::Value();
+        ret["account_type"]=Json::Value();
     }
-    if(getMobileMoneyAccount())
+    if(getAccountProvider())
     {
-        ret["mobile_money_account"]=getValueOfMobileMoneyAccount();
-    }
-    else
-    {
-        ret["mobile_money_account"]=Json::Value();
-    }
-    if(getCreatedAt())
-    {
-        ret["created_at"]=getCreatedAt()->toDbStringLocal();
+        ret["account_provider"]=getValueOfAccountProvider();
     }
     else
     {
-        ret["created_at"]=Json::Value();
+        ret["account_provider"]=Json::Value();
     }
-    if(getUpdatedAt())
+    if(getAccountName())
     {
-        ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+        ret["account_name"]=getValueOfAccountName();
     }
     else
     {
-        ret["updated_at"]=Json::Value();
+        ret["account_name"]=Json::Value();
+    }
+    if(getAccountNumber())
+    {
+        ret["account_number"]=getValueOfAccountNumber();
+    }
+    else
+    {
+        ret["account_number"]=Json::Value();
+    }
+    if(getLastActive())
+    {
+        ret["last_active"]=getLastActive()->toDbStringLocal();
+    }
+    else
+    {
+        ret["last_active"]=Json::Value();
+    }
+    if(getLastActiveDevice())
+    {
+        ret["last_active_device"]=getValueOfLastActiveDevice();
+    }
+    else
+    {
+        ret["last_active_device"]=Json::Value();
+    }
+    if(getIsLockedOut())
+    {
+        ret["is_locked_out"]=getValueOfIsLockedOut();
+    }
+    else
+    {
+        ret["is_locked_out"]=Json::Value();
     }
     if(getIsActive())
     {
@@ -2405,6 +2978,22 @@ Json::Value Customers::toMasqueradedJson(
     {
         ret["number_of_entries"]=Json::Value();
     }
+    if(getCreatedAt())
+    {
+        ret["created_at"]=getCreatedAt()->toDbStringLocal();
+    }
+    else
+    {
+        ret["created_at"]=Json::Value();
+    }
+    if(getUpdatedAt())
+    {
+        ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+    }
+    else
+    {
+        ret["updated_at"]=Json::Value();
+    }
     return ret;
 }
 
@@ -2445,59 +3034,79 @@ bool Customers::validateJsonForCreation(const Json::Value &pJson, std::string &e
         if(!validJsonOfField(5, "ghana_card_number", pJson["ghana_card_number"], err, true))
             return false;
     }
-    if(pJson.isMember("voter_id"))
+    if(pJson.isMember("secret_pin"))
     {
-        if(!validJsonOfField(6, "voter_id", pJson["voter_id"], err, true))
+        if(!validJsonOfField(6, "secret_pin", pJson["secret_pin"], err, true))
             return false;
     }
-    if(pJson.isMember("passport_number"))
+    if(pJson.isMember("account_type"))
     {
-        if(!validJsonOfField(7, "passport_number", pJson["passport_number"], err, true))
+        if(!validJsonOfField(7, "account_type", pJson["account_type"], err, true))
             return false;
     }
-    if(pJson.isMember("mobile_money_provider"))
+    if(pJson.isMember("account_provider"))
     {
-        if(!validJsonOfField(8, "mobile_money_provider", pJson["mobile_money_provider"], err, true))
+        if(!validJsonOfField(8, "account_provider", pJson["account_provider"], err, true))
             return false;
     }
-    if(pJson.isMember("mobile_money_account"))
+    if(pJson.isMember("account_name"))
     {
-        if(!validJsonOfField(9, "mobile_money_account", pJson["mobile_money_account"], err, true))
+        if(!validJsonOfField(9, "account_name", pJson["account_name"], err, true))
             return false;
     }
-    if(pJson.isMember("created_at"))
+    if(pJson.isMember("account_number"))
     {
-        if(!validJsonOfField(10, "created_at", pJson["created_at"], err, true))
+        if(!validJsonOfField(10, "account_number", pJson["account_number"], err, true))
             return false;
     }
-    if(pJson.isMember("updated_at"))
+    if(pJson.isMember("last_active"))
     {
-        if(!validJsonOfField(11, "updated_at", pJson["updated_at"], err, true))
+        if(!validJsonOfField(11, "last_active", pJson["last_active"], err, true))
+            return false;
+    }
+    if(pJson.isMember("last_active_device"))
+    {
+        if(!validJsonOfField(12, "last_active_device", pJson["last_active_device"], err, true))
+            return false;
+    }
+    if(pJson.isMember("is_locked_out"))
+    {
+        if(!validJsonOfField(13, "is_locked_out", pJson["is_locked_out"], err, true))
             return false;
     }
     if(pJson.isMember("is_active"))
     {
-        if(!validJsonOfField(12, "is_active", pJson["is_active"], err, true))
+        if(!validJsonOfField(14, "is_active", pJson["is_active"], err, true))
             return false;
     }
     if(pJson.isMember("total_spent"))
     {
-        if(!validJsonOfField(13, "total_spent", pJson["total_spent"], err, true))
+        if(!validJsonOfField(15, "total_spent", pJson["total_spent"], err, true))
             return false;
     }
     if(pJson.isMember("total_won"))
     {
-        if(!validJsonOfField(14, "total_won", pJson["total_won"], err, true))
+        if(!validJsonOfField(16, "total_won", pJson["total_won"], err, true))
             return false;
     }
     if(pJson.isMember("number_of_wins"))
     {
-        if(!validJsonOfField(15, "number_of_wins", pJson["number_of_wins"], err, true))
+        if(!validJsonOfField(17, "number_of_wins", pJson["number_of_wins"], err, true))
             return false;
     }
     if(pJson.isMember("number_of_entries"))
     {
-        if(!validJsonOfField(16, "number_of_entries", pJson["number_of_entries"], err, true))
+        if(!validJsonOfField(18, "number_of_entries", pJson["number_of_entries"], err, true))
+            return false;
+    }
+    if(pJson.isMember("created_at"))
+    {
+        if(!validJsonOfField(19, "created_at", pJson["created_at"], err, true))
+            return false;
+    }
+    if(pJson.isMember("updated_at"))
+    {
+        if(!validJsonOfField(20, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
     return true;
@@ -2506,7 +3115,7 @@ bool Customers::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                    const std::vector<std::string> &pMasqueradingVector,
                                                    std::string &err)
 {
-    if(pMasqueradingVector.size() != 17)
+    if(pMasqueradingVector.size() != 21)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2653,6 +3262,38 @@ bool Customers::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                   return false;
           }
       }
+      if(!pMasqueradingVector[17].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[17]))
+          {
+              if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[18].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[18]))
+          {
+              if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[19].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[19]))
+          {
+              if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[20].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[20]))
+          {
+              if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, true))
+                  return false;
+          }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -2698,59 +3339,79 @@ bool Customers::validateJsonForUpdate(const Json::Value &pJson, std::string &err
         if(!validJsonOfField(5, "ghana_card_number", pJson["ghana_card_number"], err, false))
             return false;
     }
-    if(pJson.isMember("voter_id"))
+    if(pJson.isMember("secret_pin"))
     {
-        if(!validJsonOfField(6, "voter_id", pJson["voter_id"], err, false))
+        if(!validJsonOfField(6, "secret_pin", pJson["secret_pin"], err, false))
             return false;
     }
-    if(pJson.isMember("passport_number"))
+    if(pJson.isMember("account_type"))
     {
-        if(!validJsonOfField(7, "passport_number", pJson["passport_number"], err, false))
+        if(!validJsonOfField(7, "account_type", pJson["account_type"], err, false))
             return false;
     }
-    if(pJson.isMember("mobile_money_provider"))
+    if(pJson.isMember("account_provider"))
     {
-        if(!validJsonOfField(8, "mobile_money_provider", pJson["mobile_money_provider"], err, false))
+        if(!validJsonOfField(8, "account_provider", pJson["account_provider"], err, false))
             return false;
     }
-    if(pJson.isMember("mobile_money_account"))
+    if(pJson.isMember("account_name"))
     {
-        if(!validJsonOfField(9, "mobile_money_account", pJson["mobile_money_account"], err, false))
+        if(!validJsonOfField(9, "account_name", pJson["account_name"], err, false))
             return false;
     }
-    if(pJson.isMember("created_at"))
+    if(pJson.isMember("account_number"))
     {
-        if(!validJsonOfField(10, "created_at", pJson["created_at"], err, false))
+        if(!validJsonOfField(10, "account_number", pJson["account_number"], err, false))
             return false;
     }
-    if(pJson.isMember("updated_at"))
+    if(pJson.isMember("last_active"))
     {
-        if(!validJsonOfField(11, "updated_at", pJson["updated_at"], err, false))
+        if(!validJsonOfField(11, "last_active", pJson["last_active"], err, false))
+            return false;
+    }
+    if(pJson.isMember("last_active_device"))
+    {
+        if(!validJsonOfField(12, "last_active_device", pJson["last_active_device"], err, false))
+            return false;
+    }
+    if(pJson.isMember("is_locked_out"))
+    {
+        if(!validJsonOfField(13, "is_locked_out", pJson["is_locked_out"], err, false))
             return false;
     }
     if(pJson.isMember("is_active"))
     {
-        if(!validJsonOfField(12, "is_active", pJson["is_active"], err, false))
+        if(!validJsonOfField(14, "is_active", pJson["is_active"], err, false))
             return false;
     }
     if(pJson.isMember("total_spent"))
     {
-        if(!validJsonOfField(13, "total_spent", pJson["total_spent"], err, false))
+        if(!validJsonOfField(15, "total_spent", pJson["total_spent"], err, false))
             return false;
     }
     if(pJson.isMember("total_won"))
     {
-        if(!validJsonOfField(14, "total_won", pJson["total_won"], err, false))
+        if(!validJsonOfField(16, "total_won", pJson["total_won"], err, false))
             return false;
     }
     if(pJson.isMember("number_of_wins"))
     {
-        if(!validJsonOfField(15, "number_of_wins", pJson["number_of_wins"], err, false))
+        if(!validJsonOfField(17, "number_of_wins", pJson["number_of_wins"], err, false))
             return false;
     }
     if(pJson.isMember("number_of_entries"))
     {
-        if(!validJsonOfField(16, "number_of_entries", pJson["number_of_entries"], err, false))
+        if(!validJsonOfField(18, "number_of_entries", pJson["number_of_entries"], err, false))
+            return false;
+    }
+    if(pJson.isMember("created_at"))
+    {
+        if(!validJsonOfField(19, "created_at", pJson["created_at"], err, false))
+            return false;
+    }
+    if(pJson.isMember("updated_at"))
+    {
+        if(!validJsonOfField(20, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
     return true;
@@ -2759,7 +3420,7 @@ bool Customers::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                  const std::vector<std::string> &pMasqueradingVector,
                                                  std::string &err)
 {
-    if(pMasqueradingVector.size() != 17)
+    if(pMasqueradingVector.size() != 21)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2853,6 +3514,26 @@ bool Customers::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
       {
           if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
+      {
+          if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
+      {
+          if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
+      {
+          if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
+      {
+          if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, false))
               return false;
       }
     }
@@ -3009,11 +3690,11 @@ bool Customers::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 30)
+                .from_bytes(pJson.asCString()).size() > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 30)";
+                    " field (the maximum value is 20)";
                 return false;
             }
             break;
@@ -3028,11 +3709,11 @@ bool Customers::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+                .from_bytes(pJson.asCString()).size() > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 20)";
+                    " field (the maximum value is 50)";
                 return false;
             }
             break;
@@ -3047,11 +3728,11 @@ bool Customers::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+                .from_bytes(pJson.asCString()).size() > 150)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 20)";
+                    " field (the maximum value is 150)";
                 return false;
             }
             break;
@@ -3063,6 +3744,14 @@ bool Customers::validJsonOfField(size_t index,
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 50)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 50)";
                 return false;
             }
             break;
@@ -3082,7 +3771,7 @@ bool Customers::validJsonOfField(size_t index,
             {
                 return true;
             }
-            if(!pJson.isBool())
+            if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -3091,9 +3780,10 @@ bool Customers::validJsonOfField(size_t index,
         case 13:
             if(pJson.isNull())
             {
-                return true;
+                err="The " + fieldName + " column cannot be null";
+                return false;
             }
-            if(!pJson.isString())
+            if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -3104,7 +3794,7 @@ bool Customers::validJsonOfField(size_t index,
             {
                 return true;
             }
-            if(!pJson.isString())
+            if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -3115,7 +3805,7 @@ bool Customers::validJsonOfField(size_t index,
             {
                 return true;
             }
-            if(!pJson.isInt())
+            if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -3126,7 +3816,51 @@ bool Customers::validJsonOfField(size_t index,
             {
                 return true;
             }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 17:
+            if(pJson.isNull())
+            {
+                return true;
+            }
             if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 18:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 19:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 20:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;

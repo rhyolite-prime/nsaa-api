@@ -16,11 +16,13 @@
 #include "services/draws/DrawService.h"
 #include "services/faqs/FaqService.h"
 #include "services/hero_sliders/HeroSliderService.h"
+#include "services/hubtel_api/HubtelApi.h"
 #include "services/media_library/MediaLibraryService.h"
 #include "services/pages/PageService.h"
 #include "services/price_tiers/PriceTierService.h"
 #include "services/quartz/QuartzApi.h"
 #include "services/raffles/RaffleService.h"
+#include "services/redis/RedisCacheManager.h"
 #include "services/rng_logs/RngLogService.h"
 #include "services/roles/RoleService.h"
 #include "services/settings/SettingService.h"
@@ -44,6 +46,8 @@ namespace raffle::plugins {
         /// It must be implemented by the user.
         void shutdown() override;
 
+        services::RedisCacheManager &getRedisCacheManager() { return redisCacheService_; }
+        services::HubtelApi &getHubtelApi() { return hubtelApi_; }
         services::ColorService &getColorService() { return colorService_; }
         services::CustomerService &getCustomerService() { return customerService_; }
         services::DashboardService &getDashboardService() { return dashboardService_; }
@@ -66,6 +70,8 @@ namespace raffle::plugins {
         services::SupportTicketService &getSupportTicketService() { return supportTicketService_; }
 
     private:
+        services::RedisCacheManager redisCacheService_;
+        services::HubtelApi hubtelApi_;
         services::DrawService drawService_;
         services::RaffleService raffleService_;
         services::ColorService colorService_;

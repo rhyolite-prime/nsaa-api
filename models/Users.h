@@ -53,6 +53,7 @@ class Users
         static const std::string _last_active_device;
         static const std::string _profile_image_url;
         static const std::string _phone_number;
+        static const std::string _partner_id;
         static const std::string _phone_verified_at;
         static const std::string _is_locked_out;
         static const std::string _is_active;
@@ -206,6 +207,16 @@ class Users
     void setPhoneNumber(const std::string &pPhoneNumber) noexcept;
     void setPhoneNumber(std::string &&pPhoneNumber) noexcept;
 
+    /**  For column partner_id  */
+    ///Get the value of the column partner_id, returns the default value if the column is null
+    const std::string &getValueOfPartnerId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPartnerId() const noexcept;
+    ///Set the value of the column partner_id
+    void setPartnerId(const std::string &pPartnerId) noexcept;
+    void setPartnerId(std::string &&pPartnerId) noexcept;
+    void setPartnerIdToNull() noexcept;
+
     /**  For column phone_verified_at  */
     ///Get the value of the column phone_verified_at, returns the default value if the column is null
     const ::trantor::Date &getValueOfPhoneVerifiedAt() const noexcept;
@@ -341,7 +352,7 @@ class Users
     void setRolesToNull() noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 23;  }
+    static size_t getColumnNumber() noexcept {  return 24;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -372,6 +383,7 @@ class Users
     std::shared_ptr<std::string> lastActiveDevice_;
     std::shared_ptr<std::string> profileImageUrl_;
     std::shared_ptr<std::string> phoneNumber_;
+    std::shared_ptr<std::string> partnerId_;
     std::shared_ptr<::trantor::Date> phoneVerifiedAt_;
     std::shared_ptr<bool> isLockedOut_;
     std::shared_ptr<bool> isActive_;
@@ -397,7 +409,7 @@ class Users
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[23]={ false };
+    bool dirtyFlag_[24]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -463,76 +475,81 @@ class Users
         }
         if(dirtyFlag_[9])
         {
+            sql += "partner_id,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[10])
+        {
             sql += "phone_verified_at,";
             ++parametersCount;
         }
         sql += "is_locked_out,";
         ++parametersCount;
-        if(!dirtyFlag_[10])
+        if(!dirtyFlag_[11])
         {
             needSelection=true;
         }
         sql += "is_active,";
         ++parametersCount;
-        if(!dirtyFlag_[11])
+        if(!dirtyFlag_[12])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[12])
+        if(dirtyFlag_[13])
         {
             sql += "created_at,";
             ++parametersCount;
         }
-        if(dirtyFlag_[13])
+        if(dirtyFlag_[14])
         {
             sql += "updated_at,";
             ++parametersCount;
         }
         sql += "is_admin_user,";
         ++parametersCount;
-        if(!dirtyFlag_[14])
+        if(!dirtyFlag_[15])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[15])
+        if(dirtyFlag_[16])
         {
             sql += "credential_id,";
             ++parametersCount;
         }
-        if(dirtyFlag_[16])
+        if(dirtyFlag_[17])
         {
             sql += "public_key,";
             ++parametersCount;
         }
-        if(dirtyFlag_[17])
+        if(dirtyFlag_[18])
         {
             sql += "public_key_algorithm,";
             ++parametersCount;
         }
         sql += "sign_count,";
         ++parametersCount;
-        if(!dirtyFlag_[18])
+        if(!dirtyFlag_[19])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[19])
+        if(dirtyFlag_[20])
         {
             sql += "user_handle,";
             ++parametersCount;
         }
-        if(dirtyFlag_[20])
+        if(dirtyFlag_[21])
         {
             sql += "transports,";
             ++parametersCount;
         }
-        if(dirtyFlag_[21])
+        if(dirtyFlag_[22])
         {
             sql += "credential_type,";
             ++parametersCount;
         }
         sql += "roles,";
         ++parametersCount;
-        if(!dirtyFlag_[22])
+        if(!dirtyFlag_[23])
         {
             needSelection=true;
         }
@@ -606,10 +623,6 @@ class Users
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[11])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -624,6 +637,10 @@ class Users
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[13])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -634,14 +651,14 @@ class Users
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[15])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
         }
         if(dirtyFlag_[16])
         {
@@ -658,14 +675,14 @@ class Users
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[19])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
         }
         if(dirtyFlag_[20])
         {
@@ -678,6 +695,11 @@ class Users
             sql.append(placeholderStr, n);
         }
         if(dirtyFlag_[22])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[23])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);

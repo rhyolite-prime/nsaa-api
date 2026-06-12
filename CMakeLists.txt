@@ -108,6 +108,14 @@ add_executable(${PROJECT_NAME} main.cc
         dto/SupportTicketDto.h
         services/support_ticket/SupportTicketService.h
         services/support_ticket/SupportTicketService.cc
+        constants/RewardTypes.h
+        dto/CustomerAuthDto.h
+        utils/PasswordUtils.h
+        utils/PasswordUtils.cc
+        services/redis/RedisCacheManager.h
+        services/redis/RedisCacheManager.cc
+        dto/CustomerOtpDto.h
+        dto/CustomerVerifyOtpDto.h
 
 )
 

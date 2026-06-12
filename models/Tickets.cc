@@ -6,9 +6,6 @@
  */
 
 #include "Tickets.h"
-#include "Colours.h"
-#include "Customers.h"
-#include "Draws.h"
 #include <drogon/utils/Utilities.h>
 #include <string>
 
@@ -34,7 +31,7 @@ const std::string Tickets::Cols::_updated_at = "\"updated_at\"";
 const std::string Tickets::Cols::_customer_phone = "\"customer_phone\"";
 const std::string Tickets::Cols::_colour_name = "\"colour_name\"";
 const std::string Tickets::Cols::_raffle_id = "\"raffle_id\"";
-const std::string Tickets::Cols::_ticket_id = "\"ticket_id\"";
+const std::string Tickets::Cols::_ticket_alias = "\"ticket_alias\"";
 const std::string Tickets::primaryKeyName = "id";
 const bool Tickets::hasPrimaryKey = true;
 const std::string Tickets::tableName = "\"tickets\"";
@@ -58,7 +55,7 @@ const std::vector<typename Tickets::MetaData> Tickets::metaData_={
 {"customer_phone","std::string","character varying",20,0,0,0},
 {"colour_name","std::string","character varying",20,0,0,0},
 {"raffle_id","std::string","uuid",0,0,0,1},
-{"ticket_id","std::string","character varying",10,0,0,0}
+{"ticket_alias","std::string","character varying",10,0,0,0}
 };
 const std::string &Tickets::getColumnName(size_t index) noexcept(false)
 {
@@ -177,9 +174,9 @@ Tickets::Tickets(const Row &r, const ssize_t indexOffset) noexcept
         {
             raffleId_=std::make_shared<std::string>(r["raffle_id"].as<std::string>());
         }
-        if(!r["ticket_id"].isNull())
+        if(!r["ticket_alias"].isNull())
         {
-            ticketId_=std::make_shared<std::string>(r["ticket_id"].as<std::string>());
+            ticketAlias_=std::make_shared<std::string>(r["ticket_alias"].as<std::string>());
         }
     }
     else
@@ -320,7 +317,7 @@ Tickets::Tickets(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 18;
         if(!r[index].isNull())
         {
-            ticketId_=std::make_shared<std::string>(r[index].as<std::string>());
+            ticketAlias_=std::make_shared<std::string>(r[index].as<std::string>());
         }
     }
 
@@ -518,7 +515,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[18] = true;
         if(!pJson[pMasqueradingVector[18]].isNull())
         {
-            ticketId_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
+            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
         }
     }
 }
@@ -705,12 +702,12 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             raffleId_=std::make_shared<std::string>(pJson["raffle_id"].asString());
         }
     }
-    if(pJson.isMember("ticket_id"))
+    if(pJson.isMember("ticket_alias"))
     {
         dirtyFlag_[18]=true;
-        if(!pJson["ticket_id"].isNull())
+        if(!pJson["ticket_alias"].isNull())
         {
-            ticketId_=std::make_shared<std::string>(pJson["ticket_id"].asString());
+            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
         }
     }
 }
@@ -907,7 +904,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[18] = true;
         if(!pJson[pMasqueradingVector[18]].isNull())
         {
-            ticketId_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
+            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
         }
     }
 }
@@ -1093,12 +1090,12 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             raffleId_=std::make_shared<std::string>(pJson["raffle_id"].asString());
         }
     }
-    if(pJson.isMember("ticket_id"))
+    if(pJson.isMember("ticket_alias"))
     {
         dirtyFlag_[18] = true;
-        if(!pJson["ticket_id"].isNull())
+        if(!pJson["ticket_alias"].isNull())
         {
-            ticketId_=std::make_shared<std::string>(pJson["ticket_id"].asString());
+            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
         }
     }
 }
@@ -1529,30 +1526,30 @@ void Tickets::setRaffleId(std::string &&pRaffleId) noexcept
     dirtyFlag_[17] = true;
 }
 
-const std::string &Tickets::getValueOfTicketId() const noexcept
+const std::string &Tickets::getValueOfTicketAlias() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(ticketId_)
-        return *ticketId_;
+    if(ticketAlias_)
+        return *ticketAlias_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Tickets::getTicketId() const noexcept
+const std::shared_ptr<std::string> &Tickets::getTicketAlias() const noexcept
 {
-    return ticketId_;
+    return ticketAlias_;
 }
-void Tickets::setTicketId(const std::string &pTicketId) noexcept
+void Tickets::setTicketAlias(const std::string &pTicketAlias) noexcept
 {
-    ticketId_ = std::make_shared<std::string>(pTicketId);
+    ticketAlias_ = std::make_shared<std::string>(pTicketAlias);
     dirtyFlag_[18] = true;
 }
-void Tickets::setTicketId(std::string &&pTicketId) noexcept
+void Tickets::setTicketAlias(std::string &&pTicketAlias) noexcept
 {
-    ticketId_ = std::make_shared<std::string>(std::move(pTicketId));
+    ticketAlias_ = std::make_shared<std::string>(std::move(pTicketAlias));
     dirtyFlag_[18] = true;
 }
-void Tickets::setTicketIdToNull() noexcept
+void Tickets::setTicketAliasToNull() noexcept
 {
-    ticketId_.reset();
+    ticketAlias_.reset();
     dirtyFlag_[18] = true;
 }
 
@@ -1581,7 +1578,7 @@ const std::vector<std::string> &Tickets::insertColumns() noexcept
         "customer_phone",
         "colour_name",
         "raffle_id",
-        "ticket_id"
+        "ticket_alias"
     };
     return inCols;
 }
@@ -1788,9 +1785,9 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[18])
     {
-        if(getTicketId())
+        if(getTicketAlias())
         {
-            binder << getValueOfTicketId();
+            binder << getValueOfTicketAlias();
         }
         else
         {
@@ -2083,9 +2080,9 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[18])
     {
-        if(getTicketId())
+        if(getTicketAlias())
         {
-            binder << getValueOfTicketId();
+            binder << getValueOfTicketAlias();
         }
         else
         {
@@ -2240,13 +2237,13 @@ Json::Value Tickets::toJson() const
     {
         ret["raffle_id"]=Json::Value();
     }
-    if(getTicketId())
+    if(getTicketAlias())
     {
-        ret["ticket_id"]=getValueOfTicketId();
+        ret["ticket_alias"]=getValueOfTicketAlias();
     }
     else
     {
-        ret["ticket_id"]=Json::Value();
+        ret["ticket_alias"]=Json::Value();
     }
     return ret;
 }
@@ -2462,9 +2459,9 @@ Json::Value Tickets::toMasqueradedJson(
         }
         if(!pMasqueradingVector[18].empty())
         {
-            if(getTicketId())
+            if(getTicketAlias())
             {
-                ret[pMasqueradingVector[18]]=getValueOfTicketId();
+                ret[pMasqueradingVector[18]]=getValueOfTicketAlias();
             }
             else
             {
@@ -2618,13 +2615,13 @@ Json::Value Tickets::toMasqueradedJson(
     {
         ret["raffle_id"]=Json::Value();
     }
-    if(getTicketId())
+    if(getTicketAlias())
     {
-        ret["ticket_id"]=getValueOfTicketId();
+        ret["ticket_alias"]=getValueOfTicketAlias();
     }
     else
     {
-        ret["ticket_id"]=Json::Value();
+        ret["ticket_alias"]=Json::Value();
     }
     return ret;
 }
@@ -2751,9 +2748,9 @@ bool Tickets::validateJsonForCreation(const Json::Value &pJson, std::string &err
         err="The raffle_id column cannot be null";
         return false;
     }
-    if(pJson.isMember("ticket_id"))
+    if(pJson.isMember("ticket_alias"))
     {
-        if(!validJsonOfField(18, "ticket_id", pJson["ticket_id"], err, true))
+        if(!validJsonOfField(18, "ticket_alias", pJson["ticket_alias"], err, true))
             return false;
     }
     return true;
@@ -3055,9 +3052,9 @@ bool Tickets::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(17, "raffle_id", pJson["raffle_id"], err, false))
             return false;
     }
-    if(pJson.isMember("ticket_id"))
+    if(pJson.isMember("ticket_alias"))
     {
-        if(!validJsonOfField(18, "ticket_id", pJson["ticket_id"], err, false))
+        if(!validJsonOfField(18, "ticket_alias", pJson["ticket_alias"], err, false))
             return false;
     }
     return true;
@@ -3475,133 +3472,4 @@ bool Tickets::validJsonOfField(size_t index,
             return false;
     }
     return true;
-}
-Draws Tickets::getDraws(const DbClientPtr &clientPtr) const {
-    static const std::string sql = "select * from draws where id = $1";
-    Result r(nullptr);
-    {
-        auto binder = *clientPtr << sql;
-        binder << *drawId_ << Mode::Blocking >>
-            [&r](const Result &result) { r = result; };
-        binder.exec();
-    }
-    if (r.size() == 0)
-    {
-        throw UnexpectedRows("0 rows found");
-    }
-    else if (r.size() > 1)
-    {
-        throw UnexpectedRows("Found more than one row");
-    }
-    return Draws(r[0]);
-}
-
-void Tickets::getDraws(const DbClientPtr &clientPtr,
-                       const std::function<void(Draws)> &rcb,
-                       const ExceptionCallback &ecb) const
-{
-    static const std::string sql = "select * from draws where id = $1";
-    *clientPtr << sql
-               << *drawId_
-               >> [rcb = std::move(rcb), ecb](const Result &r){
-                    if (r.size() == 0)
-                    {
-                        ecb(UnexpectedRows("0 rows found"));
-                    }
-                    else if (r.size() > 1)
-                    {
-                        ecb(UnexpectedRows("Found more than one row"));
-                    }
-                    else
-                    {
-                        rcb(Draws(r[0]));
-                    }
-               }
-               >> ecb;
-}
-Customers Tickets::getCustomers(const DbClientPtr &clientPtr) const {
-    static const std::string sql = "select * from customers where id = $1";
-    Result r(nullptr);
-    {
-        auto binder = *clientPtr << sql;
-        binder << *customerId_ << Mode::Blocking >>
-            [&r](const Result &result) { r = result; };
-        binder.exec();
-    }
-    if (r.size() == 0)
-    {
-        throw UnexpectedRows("0 rows found");
-    }
-    else if (r.size() > 1)
-    {
-        throw UnexpectedRows("Found more than one row");
-    }
-    return Customers(r[0]);
-}
-
-void Tickets::getCustomers(const DbClientPtr &clientPtr,
-                           const std::function<void(Customers)> &rcb,
-                           const ExceptionCallback &ecb) const
-{
-    static const std::string sql = "select * from customers where id = $1";
-    *clientPtr << sql
-               << *customerId_
-               >> [rcb = std::move(rcb), ecb](const Result &r){
-                    if (r.size() == 0)
-                    {
-                        ecb(UnexpectedRows("0 rows found"));
-                    }
-                    else if (r.size() > 1)
-                    {
-                        ecb(UnexpectedRows("Found more than one row"));
-                    }
-                    else
-                    {
-                        rcb(Customers(r[0]));
-                    }
-               }
-               >> ecb;
-}
-Colours Tickets::getColours(const DbClientPtr &clientPtr) const {
-    static const std::string sql = "select * from colours where id = $1";
-    Result r(nullptr);
-    {
-        auto binder = *clientPtr << sql;
-        binder << *colourId_ << Mode::Blocking >>
-            [&r](const Result &result) { r = result; };
-        binder.exec();
-    }
-    if (r.size() == 0)
-    {
-        throw UnexpectedRows("0 rows found");
-    }
-    else if (r.size() > 1)
-    {
-        throw UnexpectedRows("Found more than one row");
-    }
-    return Colours(r[0]);
-}
-
-void Tickets::getColours(const DbClientPtr &clientPtr,
-                         const std::function<void(Colours)> &rcb,
-                         const ExceptionCallback &ecb) const
-{
-    static const std::string sql = "select * from colours where id = $1";
-    *clientPtr << sql
-               << *colourId_
-               >> [rcb = std::move(rcb), ecb](const Result &r){
-                    if (r.size() == 0)
-                    {
-                        ecb(UnexpectedRows("0 rows found"));
-                    }
-                    else if (r.size() > 1)
-                    {
-                        ecb(UnexpectedRows("Found more than one row"));
-                    }
-                    else
-                    {
-                        rcb(Colours(r[0]));
-                    }
-               }
-               >> ecb;
 }

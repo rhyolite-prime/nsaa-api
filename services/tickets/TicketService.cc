@@ -33,8 +33,7 @@ using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
 
-drogon::Task<dto::BaseApiResponse>
-TicketService::getAll(int pageNo, int pageSize, const std::string &query) {
+drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> mapper(dbClient);
 
@@ -74,9 +73,7 @@ TicketService::getAll(int pageNo, int pageSize, const std::string &query) {
     response.result["pageSize"] = pageSize;
     response.result["totalPages"] = (int)totalPages;
     response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
-    response.result["upperBound"] = (int)totalPages == pageNo
-                                        ? (Json::UInt64)totalCount
-                                        : (Json::UInt64)(pageNo * pageSize);
+    response.result["upperBound"] = (int)totalPages == pageNo ? (Json::UInt64)totalCount : (Json::UInt64)(pageNo * pageSize);
 
     Json::Value data = Json::arrayValue;
     for (const auto &ticket : result) {
@@ -178,8 +175,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::getStats() {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-TicketService::create(const dto::CreateTicketDto &dto) {
+drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicketDto &dto) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
   CoroMapper<Draws> drawMapper(dbClient);
@@ -428,8 +424,7 @@ TicketService::create(const dto::CreateTicketDto &dto) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-TicketService::activate(const std::string &paymentReference) {
+drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &paymentReference) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> ticketMapper(dbClient);
   CoroMapper<Raffles> raffleMapper(dbClient);

@@ -6,11 +6,6 @@
  */
 
 #include "Winners.h"
-#include "Colours.h"
-#include "Customers.h"
-#include "Draws.h"
-#include "PrizeTiers.h"
-#include "Tickets.h"
 #include <drogon/utils/Utilities.h>
 #include <string>
 
@@ -38,6 +33,9 @@ const std::string Winners::Cols::_payout_date = "\"payout_date\"";
 const std::string Winners::Cols::_notified_at = "\"notified_at\"";
 const std::string Winners::Cols::_created_at = "\"created_at\"";
 const std::string Winners::Cols::_updated_at = "\"updated_at\"";
+const std::string Winners::Cols::_ticket_alias = "\"ticket_alias\"";
+const std::string Winners::Cols::_colour_name = "\"colour_name\"";
+const std::string Winners::Cols::_phone_number = "\"phone_number\"";
 const std::string Winners::primaryKeyName = "id";
 const bool Winners::hasPrimaryKey = true;
 const std::string Winners::tableName = "\"winners\"";
@@ -62,7 +60,10 @@ const std::vector<typename Winners::MetaData> Winners::metaData_={
 {"payout_date","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"notified_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
-{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
+{"ticket_alias","std::string","character varying",10,0,0,0},
+{"colour_name","std::string","character varying",50,0,0,0},
+{"phone_number","std::string","character varying",20,0,0,0}
 };
 const std::string &Winners::getColumnName(size_t index) noexcept(false)
 {
@@ -243,11 +244,23 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        if(!r["ticket_alias"].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(r["ticket_alias"].as<std::string>());
+        }
+        if(!r["colour_name"].isNull())
+        {
+            colourName_=std::make_shared<std::string>(r["colour_name"].as<std::string>());
+        }
+        if(!r["phone_number"].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(r["phone_number"].as<std::string>());
+        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 20 > r.size())
+        if(offset + 23 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -443,13 +456,28 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        index = offset + 20;
+        if(!r[index].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 21;
+        if(!r[index].isNull())
+        {
+            colourName_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 22;
+        if(!r[index].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
     }
 
 }
 
 Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 20)
+    if(pMasqueradingVector.size() != 23)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -702,6 +730,30 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
                 }
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
+        }
+    }
+    if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
+    {
+        dirtyFlag_[20] = true;
+        if(!pJson[pMasqueradingVector[20]].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
+        }
+    }
+    if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
+    {
+        dirtyFlag_[21] = true;
+        if(!pJson[pMasqueradingVector[21]].isNull())
+        {
+            colourName_=std::make_shared<std::string>(pJson[pMasqueradingVector[21]].asString());
+        }
+    }
+    if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
+    {
+        dirtyFlag_[22] = true;
+        if(!pJson[pMasqueradingVector[22]].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[22]].asString());
         }
     }
 }
@@ -958,12 +1010,36 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+    if(pJson.isMember("ticket_alias"))
+    {
+        dirtyFlag_[20]=true;
+        if(!pJson["ticket_alias"].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
+        }
+    }
+    if(pJson.isMember("colour_name"))
+    {
+        dirtyFlag_[21]=true;
+        if(!pJson["colour_name"].isNull())
+        {
+            colourName_=std::make_shared<std::string>(pJson["colour_name"].asString());
+        }
+    }
+    if(pJson.isMember("phone_number"))
+    {
+        dirtyFlag_[22]=true;
+        if(!pJson["phone_number"].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
+        }
+    }
 }
 
 void Winners::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 20)
+    if(pMasqueradingVector.size() != 23)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -1217,6 +1293,30 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+    if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
+    {
+        dirtyFlag_[20] = true;
+        if(!pJson[pMasqueradingVector[20]].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
+        }
+    }
+    if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
+    {
+        dirtyFlag_[21] = true;
+        if(!pJson[pMasqueradingVector[21]].isNull())
+        {
+            colourName_=std::make_shared<std::string>(pJson[pMasqueradingVector[21]].asString());
+        }
+    }
+    if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
+    {
+        dirtyFlag_[22] = true;
+        if(!pJson[pMasqueradingVector[22]].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[22]].asString());
+        }
+    }
 }
 
 void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
@@ -1468,6 +1568,30 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
                 }
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
+        }
+    }
+    if(pJson.isMember("ticket_alias"))
+    {
+        dirtyFlag_[20] = true;
+        if(!pJson["ticket_alias"].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
+        }
+    }
+    if(pJson.isMember("colour_name"))
+    {
+        dirtyFlag_[21] = true;
+        if(!pJson["colour_name"].isNull())
+        {
+            colourName_=std::make_shared<std::string>(pJson["colour_name"].asString());
+        }
+    }
+    if(pJson.isMember("phone_number"))
+    {
+        dirtyFlag_[22] = true;
+        if(!pJson["phone_number"].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
         }
     }
 }
@@ -1957,6 +2081,87 @@ void Winners::setUpdatedAtToNull() noexcept
     dirtyFlag_[19] = true;
 }
 
+const std::string &Winners::getValueOfTicketAlias() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(ticketAlias_)
+        return *ticketAlias_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Winners::getTicketAlias() const noexcept
+{
+    return ticketAlias_;
+}
+void Winners::setTicketAlias(const std::string &pTicketAlias) noexcept
+{
+    ticketAlias_ = std::make_shared<std::string>(pTicketAlias);
+    dirtyFlag_[20] = true;
+}
+void Winners::setTicketAlias(std::string &&pTicketAlias) noexcept
+{
+    ticketAlias_ = std::make_shared<std::string>(std::move(pTicketAlias));
+    dirtyFlag_[20] = true;
+}
+void Winners::setTicketAliasToNull() noexcept
+{
+    ticketAlias_.reset();
+    dirtyFlag_[20] = true;
+}
+
+const std::string &Winners::getValueOfColourName() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(colourName_)
+        return *colourName_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Winners::getColourName() const noexcept
+{
+    return colourName_;
+}
+void Winners::setColourName(const std::string &pColourName) noexcept
+{
+    colourName_ = std::make_shared<std::string>(pColourName);
+    dirtyFlag_[21] = true;
+}
+void Winners::setColourName(std::string &&pColourName) noexcept
+{
+    colourName_ = std::make_shared<std::string>(std::move(pColourName));
+    dirtyFlag_[21] = true;
+}
+void Winners::setColourNameToNull() noexcept
+{
+    colourName_.reset();
+    dirtyFlag_[21] = true;
+}
+
+const std::string &Winners::getValueOfPhoneNumber() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(phoneNumber_)
+        return *phoneNumber_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Winners::getPhoneNumber() const noexcept
+{
+    return phoneNumber_;
+}
+void Winners::setPhoneNumber(const std::string &pPhoneNumber) noexcept
+{
+    phoneNumber_ = std::make_shared<std::string>(pPhoneNumber);
+    dirtyFlag_[22] = true;
+}
+void Winners::setPhoneNumber(std::string &&pPhoneNumber) noexcept
+{
+    phoneNumber_ = std::make_shared<std::string>(std::move(pPhoneNumber));
+    dirtyFlag_[22] = true;
+}
+void Winners::setPhoneNumberToNull() noexcept
+{
+    phoneNumber_.reset();
+    dirtyFlag_[22] = true;
+}
+
 void Winners::updateId(const uint64_t id)
 {
 }
@@ -1983,7 +2188,10 @@ const std::vector<std::string> &Winners::insertColumns() noexcept
         "payout_date",
         "notified_at",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "ticket_alias",
+        "colour_name",
+        "phone_number"
     };
     return inCols;
 }
@@ -2210,6 +2418,39 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[20])
+    {
+        if(getTicketAlias())
+        {
+            binder << getValueOfTicketAlias();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[21])
+    {
+        if(getColourName())
+        {
+            binder << getValueOfColourName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[22])
+    {
+        if(getPhoneNumber())
+        {
+            binder << getValueOfPhoneNumber();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 
 const std::vector<std::string> Winners::updateColumns() const
@@ -2294,6 +2535,18 @@ const std::vector<std::string> Winners::updateColumns() const
     if(dirtyFlag_[19])
     {
         ret.push_back(getColumnName(19));
+    }
+    if(dirtyFlag_[20])
+    {
+        ret.push_back(getColumnName(20));
+    }
+    if(dirtyFlag_[21])
+    {
+        ret.push_back(getColumnName(21));
+    }
+    if(dirtyFlag_[22])
+    {
+        ret.push_back(getColumnName(22));
     }
     return ret;
 }
@@ -2520,6 +2773,39 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+    if(dirtyFlag_[20])
+    {
+        if(getTicketAlias())
+        {
+            binder << getValueOfTicketAlias();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[21])
+    {
+        if(getColourName())
+        {
+            binder << getValueOfColourName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[22])
+    {
+        if(getPhoneNumber())
+        {
+            binder << getValueOfPhoneNumber();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 Json::Value Winners::toJson() const
 {
@@ -2684,6 +2970,30 @@ Json::Value Winners::toJson() const
     {
         ret["updated_at"]=Json::Value();
     }
+    if(getTicketAlias())
+    {
+        ret["ticket_alias"]=getValueOfTicketAlias();
+    }
+    else
+    {
+        ret["ticket_alias"]=Json::Value();
+    }
+    if(getColourName())
+    {
+        ret["colour_name"]=getValueOfColourName();
+    }
+    else
+    {
+        ret["colour_name"]=Json::Value();
+    }
+    if(getPhoneNumber())
+    {
+        ret["phone_number"]=getValueOfPhoneNumber();
+    }
+    else
+    {
+        ret["phone_number"]=Json::Value();
+    }
     return ret;
 }
 
@@ -2696,7 +3006,7 @@ Json::Value Winners::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 20)
+    if(pMasqueradingVector.size() == 23)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -2918,6 +3228,39 @@ Json::Value Winners::toMasqueradedJson(
                 ret[pMasqueradingVector[19]]=Json::Value();
             }
         }
+        if(!pMasqueradingVector[20].empty())
+        {
+            if(getTicketAlias())
+            {
+                ret[pMasqueradingVector[20]]=getValueOfTicketAlias();
+            }
+            else
+            {
+                ret[pMasqueradingVector[20]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[21].empty())
+        {
+            if(getColourName())
+            {
+                ret[pMasqueradingVector[21]]=getValueOfColourName();
+            }
+            else
+            {
+                ret[pMasqueradingVector[21]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[22].empty())
+        {
+            if(getPhoneNumber())
+            {
+                ret[pMasqueradingVector[22]]=getValueOfPhoneNumber();
+            }
+            else
+            {
+                ret[pMasqueradingVector[22]]=Json::Value();
+            }
+        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
@@ -3081,6 +3424,30 @@ Json::Value Winners::toMasqueradedJson(
     {
         ret["updated_at"]=Json::Value();
     }
+    if(getTicketAlias())
+    {
+        ret["ticket_alias"]=getValueOfTicketAlias();
+    }
+    else
+    {
+        ret["ticket_alias"]=Json::Value();
+    }
+    if(getColourName())
+    {
+        ret["colour_name"]=getValueOfColourName();
+    }
+    else
+    {
+        ret["colour_name"]=Json::Value();
+    }
+    if(getPhoneNumber())
+    {
+        ret["phone_number"]=getValueOfPhoneNumber();
+    }
+    else
+    {
+        ret["phone_number"]=Json::Value();
+    }
     return ret;
 }
 
@@ -3216,13 +3583,28 @@ bool Winners::validateJsonForCreation(const Json::Value &pJson, std::string &err
         if(!validJsonOfField(19, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+    if(pJson.isMember("ticket_alias"))
+    {
+        if(!validJsonOfField(20, "ticket_alias", pJson["ticket_alias"], err, true))
+            return false;
+    }
+    if(pJson.isMember("colour_name"))
+    {
+        if(!validJsonOfField(21, "colour_name", pJson["colour_name"], err, true))
+            return false;
+    }
+    if(pJson.isMember("phone_number"))
+    {
+        if(!validJsonOfField(22, "phone_number", pJson["phone_number"], err, true))
+            return false;
+    }
     return true;
 }
 bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                  const std::vector<std::string> &pMasqueradingVector,
                                                  std::string &err)
 {
-    if(pMasqueradingVector.size() != 20)
+    if(pMasqueradingVector.size() != 23)
     {
         err = "Bad masquerading vector";
         return false;
@@ -3418,6 +3800,30 @@ bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                   return false;
           }
       }
+      if(!pMasqueradingVector[20].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[20]))
+          {
+              if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[21].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[21]))
+          {
+              if(!validJsonOfField(21, pMasqueradingVector[21], pJson[pMasqueradingVector[21]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[22].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[22]))
+          {
+              if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, true))
+                  return false;
+          }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -3533,13 +3939,28 @@ bool Winners::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(19, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+    if(pJson.isMember("ticket_alias"))
+    {
+        if(!validJsonOfField(20, "ticket_alias", pJson["ticket_alias"], err, false))
+            return false;
+    }
+    if(pJson.isMember("colour_name"))
+    {
+        if(!validJsonOfField(21, "colour_name", pJson["colour_name"], err, false))
+            return false;
+    }
+    if(pJson.isMember("phone_number"))
+    {
+        if(!validJsonOfField(22, "phone_number", pJson["phone_number"], err, false))
+            return false;
+    }
     return true;
 }
 bool Winners::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 20)
+    if(pMasqueradingVector.size() != 23)
     {
         err = "Bad masquerading vector";
         return false;
@@ -3648,6 +4069,21 @@ bool Winners::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
       {
           if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
+      {
+          if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
+      {
+          if(!validJsonOfField(21, pMasqueradingVector[21], pJson[pMasqueradingVector[21]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
+      {
+          if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, false))
               return false;
       }
     }
@@ -3949,224 +4385,66 @@ bool Winners::validJsonOfField(size_t index,
                 return false;
             }
             break;
+        case 20:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 10)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 10)";
+                return false;
+            }
+            break;
+        case 21:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 50)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 50)";
+                return false;
+            }
+            break;
+        case 22:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 20)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 20)";
+                return false;
+            }
+            break;
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
-}
-Draws Winners::getDraws(const DbClientPtr &clientPtr) const {
-    static const std::string sql = "select * from draws where id = $1";
-    Result r(nullptr);
-    {
-        auto binder = *clientPtr << sql;
-        binder << *drawId_ << Mode::Blocking >>
-            [&r](const Result &result) { r = result; };
-        binder.exec();
-    }
-    if (r.size() == 0)
-    {
-        throw UnexpectedRows("0 rows found");
-    }
-    else if (r.size() > 1)
-    {
-        throw UnexpectedRows("Found more than one row");
-    }
-    return Draws(r[0]);
-}
-
-void Winners::getDraws(const DbClientPtr &clientPtr,
-                       const std::function<void(Draws)> &rcb,
-                       const ExceptionCallback &ecb) const
-{
-    static const std::string sql = "select * from draws where id = $1";
-    *clientPtr << sql
-               << *drawId_
-               >> [rcb = std::move(rcb), ecb](const Result &r){
-                    if (r.size() == 0)
-                    {
-                        ecb(UnexpectedRows("0 rows found"));
-                    }
-                    else if (r.size() > 1)
-                    {
-                        ecb(UnexpectedRows("Found more than one row"));
-                    }
-                    else
-                    {
-                        rcb(Draws(r[0]));
-                    }
-               }
-               >> ecb;
-}
-Tickets Winners::getTickets(const DbClientPtr &clientPtr) const {
-    static const std::string sql = "select * from tickets where id = $1";
-    Result r(nullptr);
-    {
-        auto binder = *clientPtr << sql;
-        binder << *ticketId_ << Mode::Blocking >>
-            [&r](const Result &result) { r = result; };
-        binder.exec();
-    }
-    if (r.size() == 0)
-    {
-        throw UnexpectedRows("0 rows found");
-    }
-    else if (r.size() > 1)
-    {
-        throw UnexpectedRows("Found more than one row");
-    }
-    return Tickets(r[0]);
-}
-
-void Winners::getTickets(const DbClientPtr &clientPtr,
-                         const std::function<void(Tickets)> &rcb,
-                         const ExceptionCallback &ecb) const
-{
-    static const std::string sql = "select * from tickets where id = $1";
-    *clientPtr << sql
-               << *ticketId_
-               >> [rcb = std::move(rcb), ecb](const Result &r){
-                    if (r.size() == 0)
-                    {
-                        ecb(UnexpectedRows("0 rows found"));
-                    }
-                    else if (r.size() > 1)
-                    {
-                        ecb(UnexpectedRows("Found more than one row"));
-                    }
-                    else
-                    {
-                        rcb(Tickets(r[0]));
-                    }
-               }
-               >> ecb;
-}
-Customers Winners::getCustomers(const DbClientPtr &clientPtr) const {
-    static const std::string sql = "select * from customers where id = $1";
-    Result r(nullptr);
-    {
-        auto binder = *clientPtr << sql;
-        binder << *customerId_ << Mode::Blocking >>
-            [&r](const Result &result) { r = result; };
-        binder.exec();
-    }
-    if (r.size() == 0)
-    {
-        throw UnexpectedRows("0 rows found");
-    }
-    else if (r.size() > 1)
-    {
-        throw UnexpectedRows("Found more than one row");
-    }
-    return Customers(r[0]);
-}
-
-void Winners::getCustomers(const DbClientPtr &clientPtr,
-                           const std::function<void(Customers)> &rcb,
-                           const ExceptionCallback &ecb) const
-{
-    static const std::string sql = "select * from customers where id = $1";
-    *clientPtr << sql
-               << *customerId_
-               >> [rcb = std::move(rcb), ecb](const Result &r){
-                    if (r.size() == 0)
-                    {
-                        ecb(UnexpectedRows("0 rows found"));
-                    }
-                    else if (r.size() > 1)
-                    {
-                        ecb(UnexpectedRows("Found more than one row"));
-                    }
-                    else
-                    {
-                        rcb(Customers(r[0]));
-                    }
-               }
-               >> ecb;
-}
-PrizeTiers Winners::getPrizeTiers(const DbClientPtr &clientPtr) const {
-    static const std::string sql = "select * from prize_tiers where id = $1";
-    Result r(nullptr);
-    {
-        auto binder = *clientPtr << sql;
-        binder << *prizeTierId_ << Mode::Blocking >>
-            [&r](const Result &result) { r = result; };
-        binder.exec();
-    }
-    if (r.size() == 0)
-    {
-        throw UnexpectedRows("0 rows found");
-    }
-    else if (r.size() > 1)
-    {
-        throw UnexpectedRows("Found more than one row");
-    }
-    return PrizeTiers(r[0]);
-}
-
-void Winners::getPrizeTiers(const DbClientPtr &clientPtr,
-                            const std::function<void(PrizeTiers)> &rcb,
-                            const ExceptionCallback &ecb) const
-{
-    static const std::string sql = "select * from prize_tiers where id = $1";
-    *clientPtr << sql
-               << *prizeTierId_
-               >> [rcb = std::move(rcb), ecb](const Result &r){
-                    if (r.size() == 0)
-                    {
-                        ecb(UnexpectedRows("0 rows found"));
-                    }
-                    else if (r.size() > 1)
-                    {
-                        ecb(UnexpectedRows("Found more than one row"));
-                    }
-                    else
-                    {
-                        rcb(PrizeTiers(r[0]));
-                    }
-               }
-               >> ecb;
-}
-Colours Winners::getColours(const DbClientPtr &clientPtr) const {
-    static const std::string sql = "select * from colours where id = $1";
-    Result r(nullptr);
-    {
-        auto binder = *clientPtr << sql;
-        binder << *colourId_ << Mode::Blocking >>
-            [&r](const Result &result) { r = result; };
-        binder.exec();
-    }
-    if (r.size() == 0)
-    {
-        throw UnexpectedRows("0 rows found");
-    }
-    else if (r.size() > 1)
-    {
-        throw UnexpectedRows("Found more than one row");
-    }
-    return Colours(r[0]);
-}
-
-void Winners::getColours(const DbClientPtr &clientPtr,
-                         const std::function<void(Colours)> &rcb,
-                         const ExceptionCallback &ecb) const
-{
-    static const std::string sql = "select * from colours where id = $1";
-    *clientPtr << sql
-               << *colourId_
-               >> [rcb = std::move(rcb), ecb](const Result &r){
-                    if (r.size() == 0)
-                    {
-                        ecb(UnexpectedRows("0 rows found"));
-                    }
-                    else if (r.size() > 1)
-                    {
-                        ecb(UnexpectedRows("Found more than one row"));
-                    }
-                    else
-                    {
-                        rcb(Colours(r[0]));
-                    }
-               }
-               >> ecb;
 }

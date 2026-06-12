@@ -38,9 +38,6 @@ namespace drogon_model
 {
 namespace ChopMoneyRaffle
 {
-class Colours;
-class Customers;
-class Draws;
 
 class Tickets
 {
@@ -65,7 +62,7 @@ class Tickets
         static const std::string _customer_phone;
         static const std::string _colour_name;
         static const std::string _raffle_id;
-        static const std::string _ticket_id;
+        static const std::string _ticket_alias;
     };
 
     static const int primaryKeyNumber;
@@ -284,15 +281,15 @@ class Tickets
     void setRaffleId(const std::string &pRaffleId) noexcept;
     void setRaffleId(std::string &&pRaffleId) noexcept;
 
-    /**  For column ticket_id  */
-    ///Get the value of the column ticket_id, returns the default value if the column is null
-    const std::string &getValueOfTicketId() const noexcept;
+    /**  For column ticket_alias  */
+    ///Get the value of the column ticket_alias, returns the default value if the column is null
+    const std::string &getValueOfTicketAlias() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getTicketId() const noexcept;
-    ///Set the value of the column ticket_id
-    void setTicketId(const std::string &pTicketId) noexcept;
-    void setTicketId(std::string &&pTicketId) noexcept;
-    void setTicketIdToNull() noexcept;
+    const std::shared_ptr<std::string> &getTicketAlias() const noexcept;
+    ///Set the value of the column ticket_alias
+    void setTicketAlias(const std::string &pTicketAlias) noexcept;
+    void setTicketAlias(std::string &&pTicketAlias) noexcept;
+    void setTicketAliasToNull() noexcept;
 
 
     static size_t getColumnNumber() noexcept {  return 19;  }
@@ -302,18 +299,6 @@ class Tickets
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
-    Draws getDraws(const drogon::orm::DbClientPtr &clientPtr) const;
-    void getDraws(const drogon::orm::DbClientPtr &clientPtr,
-                  const std::function<void(Draws)> &rcb,
-                  const drogon::orm::ExceptionCallback &ecb) const;
-    Customers getCustomers(const drogon::orm::DbClientPtr &clientPtr) const;
-    void getCustomers(const drogon::orm::DbClientPtr &clientPtr,
-                      const std::function<void(Customers)> &rcb,
-                      const drogon::orm::ExceptionCallback &ecb) const;
-    Colours getColours(const drogon::orm::DbClientPtr &clientPtr) const;
-    void getColours(const drogon::orm::DbClientPtr &clientPtr,
-                    const std::function<void(Colours)> &rcb,
-                    const drogon::orm::ExceptionCallback &ecb) const;
   private:
     friend drogon::orm::Mapper<Tickets>;
     friend drogon::orm::BaseBuilder<Tickets, true, true>;
@@ -347,7 +332,7 @@ class Tickets
     std::shared_ptr<std::string> customerPhone_;
     std::shared_ptr<std::string> colourName_;
     std::shared_ptr<std::string> raffleId_;
-    std::shared_ptr<std::string> ticketId_;
+    std::shared_ptr<std::string> ticketAlias_;
     struct MetaData
     {
         const std::string colName_;
@@ -477,7 +462,7 @@ class Tickets
         }
         if(dirtyFlag_[18])
         {
-            sql += "ticket_id,";
+            sql += "ticket_alias,";
             ++parametersCount;
         }
         if(parametersCount > 0)
