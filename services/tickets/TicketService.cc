@@ -195,18 +195,17 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     }
 
     auto activeRaffle = activeRaffles[0];
-    std::string raffleSlug = activeRaffle.getValueOfSlug();
+    std::string raffleId = activeRaffle.getValueOfId();
 
     // 2. Find the corresponding Draw using the raffle's slug (alias in Draws)
     auto draws = co_await drawMapper.findBy(
-        Criteria(Draws::Cols::_alias, CompareOperator::EQ, raffleSlug));
+        Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
 
     if (draws.empty()) {
       dto::BaseApiResponse errorResponse;
       errorResponse.success = false;
       errorResponse.error["code"] = constants::ERR_VALIDATION;
-      errorResponse.error["message"] =
-          "No corresponding draw found for the active raffle.";
+      errorResponse.error["message"] = "No corresponding draw found for the active raffle.";
       co_return errorResponse;
     }
 

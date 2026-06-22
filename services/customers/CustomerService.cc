@@ -219,7 +219,6 @@ namespace raffle::services {
     }
   }
 
-
   drogon::Task<dto::BaseApiResponse> CustomerService::validateCredentials(const dto::CustomerAuthDto &dto) {
 
     auto dbClient = drogon::app().getDbClient();
@@ -257,10 +256,8 @@ namespace raffle::services {
                          .set_issuer(jwtIssuer)
                          .set_type("JWT")
                          .set_issued_at(std::chrono::system_clock::now())
-                         .set_expires_at(std::chrono::system_clock::now() +
-                                         std::chrono::hours(24 * 120))
-                         .set_payload_claim("customerId",
-                                            jwt::claim(customer.getValueOfId()))
+                         .set_expires_at(std::chrono::system_clock::now() + std::chrono::hours(24 * 120))
+                         .set_payload_claim("customerId", jwt::claim(customer.getValueOfId()))
                          .sign(jwt::algorithm::hs256{jwtSecurityKey});
 
         response.success = true;
@@ -305,20 +302,15 @@ namespace raffle::services {
       co_return response;
     }
 
-    // 2. Generate a 6-digit OTP and persist it in Redis for 5 minutes (300 s).
-    const std::string otp = utils::IdGeneratorUtils::generateRandomSixDigit();
-    const std::string otpKey = "otp:" + dto.getRequestId();
-
-    co_await redisCacheManager.setValueWithTtl(otpKey, otp, 300);
+    const std::string defaultPin = utils::IdGeneratorUtils::generateRandomDigit(4);
 
     // 3. Build the SMS message and deliver it via Hubtel.
-    const std::string message = "Your login verification code is: " + otp + ". Valid for 5 minutes. Do not share this code with anyone.";
+    const std::string message = "Your ChopMoney account has been created successfully. Your default PIN is: " + defaultPin + ". Do not share this PIN with anyone.";
 
-    LOG_INFO << " OTP => " << otp;
+    LOG_INFO << " Default PIN => " << defaultPin;
 
     auto &hubtelApi = plugin->getHubtelApi();
-    //bool smsSent = co_await hubtelApi.SendSms(storedPhone, message);
-    bool smsSent = true;
+    bool smsSent = co_await hubtelApi.SendSms(storedPhone, message);
 
     if (!smsSent)
     {
@@ -336,8 +328,12 @@ namespace raffle::services {
 
     //create the customer in database
 
+
+    const std::string hashedDefaultPin = bcrypt::generateHash(defaultPin);
+
     Customers customer;
     customer.setMsisdn(storedPhone);
+    customer.setSecretPin(hashedDefaultPin);
     customer.setIsActive(true);
     customer.setCreatedAt(trantor::Date::now());
     customer.setLastActive(trantor::Date::now());
@@ -412,4 +408,26 @@ namespace raffle::services {
     co_return response;
 
   }
-} // namespace raffle::services
+
+
+  drogon::Task<dto::BaseApiResponse> CustomerService::getTransactionHistory(const std::string &customerId) {
+
+
+
+  }
+
+
+  drogon::Task<dto::BaseApiResponse> CustomerService::getStats(const std::string &customerId) {
+
+
+
+  }
+
+  drogon::Task<dto::BaseApiResponse> CustomerService::getProfileDetails(const std::string &customerId) {
+
+
+
+  }
+
+}
+// namespace raffle::services

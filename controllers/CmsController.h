@@ -46,6 +46,12 @@ class CmsController : public drogon::HttpController<CmsController>
     ADD_METHOD_TO(CmsController::updateMediaLibraryAsset, std::string(PREFIX) + "media-library/update-asset/{1}", Put, Options);
     ADD_METHOD_TO(CmsController::deleteMediaLibraryAsset, std::string(PREFIX) + "media-library/delete-asset/{1}", Delete, Options);
 
+    //colors
+    ADD_METHOD_TO(CmsController::getColors, std::string(PREFIX) + "colours/list-all", Get, Options);
+
+    //ticket collections
+    ADD_METHOD_TO(CmsController::getTicketCollection, std::string(PREFIX) + "ticket/get-collection", Get, Options);
+
     METHOD_LIST_END
 
     //public
@@ -88,4 +94,9 @@ class CmsController : public drogon::HttpController<CmsController>
     Task<HttpResponsePtr> updateMediaLibraryAsset(HttpRequestPtr req, std::string id);
     Task<HttpResponsePtr> deleteMediaLibraryAsset(HttpRequestPtr req, std::string id);
 
+    //colors
+    Task<HttpResponsePtr> getColors(HttpRequestPtr req);
+    Task<HttpResponsePtr> getTicketCollection(HttpRequestPtr req);
+
 };
+

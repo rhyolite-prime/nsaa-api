@@ -17,6 +17,54 @@ Task<HttpResponsePtr> AuthController::checkAccountStatus(HttpRequestPtr req)
 
 }
 
+Task<HttpResponsePtr> AuthController::checkPartnerAccountStatus(HttpRequestPtr req)
+{
+    raffle::dto::BaseApiResponse response;
+    response.success = true;
+
+    response.message = "Customers retrieved successfully";
+
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    co_return resp;
+
+}
+
+Task<HttpResponsePtr> AuthController::generatePartnerAuth(HttpRequestPtr req)
+{
+    raffle::dto::BaseApiResponse response;
+    response.success = true;
+
+    response.message = "Customers retrieved successfully";
+
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    co_return resp;
+
+}
+
+Task<HttpResponsePtr> AuthController::sendPartnerOtp(HttpRequestPtr req)
+{
+    raffle::dto::BaseApiResponse response;
+    response.success = true;
+
+    response.message = "Customers retrieved successfully";
+
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    co_return resp;
+
+}
+
+Task<HttpResponsePtr> AuthController::verifyPartnerOtp(HttpRequestPtr req)
+{
+    raffle::dto::BaseApiResponse response;
+    response.success = true;
+
+    response.message = "Customers retrieved successfully";
+
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    co_return resp;
+
+}
+
 Task<HttpResponsePtr> AuthController::checkCustomerAccountStatus(HttpRequestPtr req)
 {
     std::string phoneNumber = req->getParameter("phoneNumber");
@@ -57,6 +105,7 @@ Task<HttpResponsePtr> AuthController::generateCustomerAuth(HttpRequestPtr req)
 }
 
 
+
 drogon::Task<HttpResponsePtr> AuthController::sendCustomerOtp(HttpRequestPtr req) {
 
     auto jsonBody = req->getJsonObject();
@@ -80,6 +129,8 @@ drogon::Task<HttpResponsePtr> AuthController::sendCustomerOtp(HttpRequestPtr req
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
 }
+
+
 
 drogon::Task<HttpResponsePtr> AuthController::verifyCustomerOtp(HttpRequestPtr req) {
 
@@ -106,6 +157,55 @@ drogon::Task<HttpResponsePtr> AuthController::verifyCustomerOtp(HttpRequestPtr r
 }
 
 
+
+drogon::Task<HttpResponsePtr> AuthController::setCustomerPin(HttpRequestPtr req) {
+
+    auto jsonBody = req->getJsonObject();
+
+    if (!jsonBody) {
+        raffle::dto::BaseApiResponse response;
+        response.success = false;
+        response.error["message"] = "Invalid JSON body";
+        auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+        resp->setStatusCode(k400BadRequest);
+        co_return resp;
+    }
+
+    raffle::dto::CustomerVerifyOtpDto dto;
+    dto.fromJson(*jsonBody);
+
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &customerService = plugin->getCustomerService();
+
+    auto result = co_await customerService.verifyOtp(dto);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
+
+
+drogon::Task<HttpResponsePtr> AuthController::resetCustomerPin(HttpRequestPtr req) {
+
+    auto jsonBody = req->getJsonObject();
+
+    if (!jsonBody) {
+        raffle::dto::BaseApiResponse response;
+        response.success = false;
+        response.error["message"] = "Invalid JSON body";
+        auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+        resp->setStatusCode(k400BadRequest);
+        co_return resp;
+    }
+
+    raffle::dto::CustomerVerifyOtpDto dto;
+    dto.fromJson(*jsonBody);
+
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &customerService = plugin->getCustomerService();
+
+    auto result = co_await customerService.verifyOtp(dto);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
 
 
 Task<HttpResponsePtr> AuthController::sendOtp(HttpRequestPtr req)

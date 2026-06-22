@@ -81,7 +81,6 @@ Task<HttpResponsePtr> RolesController::update(HttpRequestPtr req)
     co_return resp;
 }
 
-
 Task<HttpResponsePtr> RolesController::deleteRole(HttpRequestPtr req)
 {
     auto roleId = req->getParameter("id");

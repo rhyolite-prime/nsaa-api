@@ -26,6 +26,12 @@ namespace raffle::utils {
         static std::string generateRandomSixDigit();
 
         /**
+         * @brief Generates a random 6-digit number as a string
+         * @return A random N-digit number string
+         */
+        static std::string generateRandomDigit(int length);
+
+        /**
          * @brief Generates a random alphanumeric string of a given length
          * @param length The length of the string to generate
          * @return A random alphanumeric string

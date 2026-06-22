@@ -450,6 +450,204 @@ curl --location 'http://localhost:5044/api/v1/auth/customer/verify-otp' \
 
 ---
 
+## 11. Customer Token (PIN Login)
+
+**POST** `/auth/customer/token`
+
+### Description
+
+Authenticates a customer using their phone number and PIN. Returns a signed JWT token on success. Use this endpoint for returning customers who have already set a PIN.
+
+
+### Request Body
+
+| Field       | Type   | Required | Description                                                   |
+| ----------- | ------ | -------- | ------------------------------------------------------------- |
+| phoneNumber | string | ✅ Yes   | Customer's phone number                                       |
+| requestId   | string | ✅ Yes   | The `requestId` from `/auth/customer/check-account-status`    |
+| pin         | string | ✅ Yes   | The customer's 6-digit PIN                                    |
+
+### Example Request
+
+```bash
+curl --location 'http://localhost:5044/api/v1/auth/customer/token' \
+--header 'Content-Type: application/json' \
+--data '{
+    "phoneNumber": "0553859517",
+    "requestId": "3d194304-4ef8-8650-964b-02ccf927d0df",
+    "pin": "310964"
+}'
+```
+
+### Response
+
+```json
+{
+    "error": null,
+    "message": "Authentication successful",
+    "result": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiOGU5Yzg4MTUtNmFmZC00ZGM5LTgzYzItOGQyNTNjMDk3MTQyIiwiZXhwIjoxNzkxNjM4OTgwLCJpYXQiOjE3ODEyNzA5ODAsImlzcyI6Ik5TQUFfUExBWSJ9.AAZincU7M2IUtijaHySo7Naiuf7cT75HG2fkVU0iaos",
+        "requestId": "88343",
+        "phoneNumber": "0503344544"
+    },
+    "success": true,
+    "targetUrl": ""
+}
+```
+
+## 12. Set Customer PIN
+
+**POST** `/auth/customer/set-pin`
+
+### Description
+
+Sets a PIN for a customer account. Used during initial registration or PIN reset flows, after OTP verification has been completed.
+
+
+### Request Body
+
+| Field       | Type   | Required | Description                                                   |
+| ----------- | ------ | -------- | ------------------------------------------------------------- |
+| phoneNumber | string | ✅ Yes   | Customer's phone number                                       |
+| requestId   | string | ✅ Yes   | The `requestId` from the preceding OTP verification step      |
+| pin         | string | ✅ Yes   | The 6-digit PIN to set for the account                        |
+
+### Example Request
+
+```bash
+curl --location 'http://localhost:5044/api/v1/auth/customer/set-pin' \
+--header 'Content-Type: application/json' \
+--data '{
+    "phoneNumber": "0553859517",
+    "requestId": "3d194304-4ef8-8650-964b-02ccf927d0df",
+    "pin": "310964"
+}'
+```
+
+### Example Request
+
+```json
+{
+    "error": null,
+    "message": "PIN set successfully.",
+    "result": null,
+    "success": true,
+    "targetUrl": ""
+}
+```
+
+
+## 13. Reset Customer PIN
+
+**POST** `/auth/customer/reset-pin`
+
+### Description
+
+Sets a PIN for a customer account. Used during initial registration or PIN reset flows, after OTP verification has been completed.
+
+
+### Request Body
+
+| Field       | Type   | Required | Description                                                   |
+| ----------- | ------ | -------- | ------------------------------------------------------------- |
+| phoneNumber | string | ✅ Yes   | Customer's phone number                                       |
+| requestId   | string | ✅ Yes   | The `requestId` from the preceding OTP verification step      |
+| pin         | string | ✅ Yes   | The 6-digit PIN to set for the account                        |
+
+### Example Request
+
+```bash
+curl --location 'http://localhost:5044/api/v1/auth/customer/set-pin' \
+--header 'Content-Type: application/json' \
+--data '{
+    "phoneNumber": "0553859517",
+    "requestId": "3d194304-4ef8-8650-964b-02ccf927d0df",
+    "oldPin": "310964",
+    "newPin": "310964",
+    
+}'
+```
+
+### Example Response
+
+```json
+{
+    "error": null,
+    "message": "Reset set successfully.",
+    "result": null,
+    "success": true,
+    "targetUrl": ""
+}
+```
+
+
+## 14. List Colors
+
+**POST** `/cms/colours/list-all`
+
+### Description
+
+Gets a list of all available colours.
+
+### Example Request
+
+```bash
+curl --location 'http://localhost:5044/api/v1/cms/colours/list-all'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "code": "RED",
+        "emoji": "🔴",
+        "id": "74dabff4-079e-5d0b-8ae9-1b2a536dbf11",
+        "name": "Red",
+        "sortOrder": 1
+      },
+      {
+        "code": "GOLD",
+        "emoji": "🟡",
+        "id": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
+        "name": "Gold",
+        "sortOrder": 2
+      },
+      {
+        "code": "GREEN",
+        "emoji": "🟢",
+        "id": "937a22c0-f7d5-57bd-9a98-71e44fc7b78a",
+        "name": "Green",
+        "sortOrder": 3
+      },
+      {
+        "code": "BLACK_STAR",
+        "emoji": "⭐",
+        "id": "9de57805-008a-5ec4-ae79-ec94b4818173",
+        "name": "Black Star",
+        "sortOrder": 4
+      }
+    ],
+    "lowerBound": 1,
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalCount": 4,
+    "totalPages": 1,
+    "upperBound": 4
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+
+
+
+
 # ⚠️ Error Handling
 
 

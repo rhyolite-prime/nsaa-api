@@ -25,6 +25,11 @@ namespace raffle::services {
         drogon::Task<dto::BaseApiResponse> sendOtp(const dto::CustomerOtpDto &dto);
         drogon::Task<dto::BaseApiResponse> verifyOtp(const dto::CustomerVerifyOtpDto &dto);
 
+        //customer dashboard related endpoints
+        drogon::Task<dto::BaseApiResponse> getTransactionHistory(const std::string &customerId);
+        drogon::Task<dto::BaseApiResponse> getStats(const std::string &customerId);
+        drogon::Task<dto::BaseApiResponse> getProfileDetails(const std::string &customerId);
+
     };
 
 }

@@ -43,6 +43,40 @@ namespace raffle::utils {
         return std::to_string(num);
     }
 
+    std::string IdGeneratorUtils::generateRandomDigit(int length) {
+        if (length <= 0) {
+            throw std::invalid_argument("Length must be greater than 0");
+        }
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+
+        // For lengths greater than 9, we need to handle larger numbers
+        if (length > 9) {
+            // Use string building for very large numbers
+            std::uniform_int_distribution<int> dist(0, 9);
+            std::string result;
+
+            // First digit cannot be zero
+            std::uniform_int_distribution<int> firstDist(1, 9);
+            result += std::to_string(firstDist(gen));
+
+            // Generate remaining digits
+            for (int i = 1; i < length; ++i) {
+                result += std::to_string(dist(gen));
+            }
+
+            return result;
+        }
+
+        // For lengths 1-9, use integer arithmetic
+        int minVal = std::pow(10, length - 1);
+        int maxVal = std::pow(10, length) - 1;
+
+        std::uniform_int_distribution<int> dist(minVal, maxVal);
+        int num = dist(gen);
+        return std::to_string(num);
+    }
     std::string IdGeneratorUtils::generateAlphanumericId(size_t length) {
         static const char charset[] = "0123456789"
                                       "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

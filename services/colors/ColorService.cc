@@ -13,6 +13,7 @@ using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
 
+
 drogon::Task<dto::BaseApiResponse> ColorService::getAll(int pageNo, int pageSize, const std::string &query) {
 
   auto dbClient = drogon::app().getDbClient();
@@ -69,6 +70,82 @@ drogon::Task<dto::BaseApiResponse> ColorService::getAll(int pageNo, int pageSize
       item["emoji"] = j["emoji"];
       item["sortOrder"] = j["sort_order"];
       item["createdAt"] = j["created_at"];
+      data.append(item);
+    }
+    response.result["data"] = data;
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while fetching colors.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+
+drogon::Task<dto::BaseApiResponse> ColorService::listAll(int pageNo, int pageSize, const std::string &query) {
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Colours> mapper(dbClient);
+
+  Criteria searchCriteria;
+  if (!query.empty()) {
+    std::string likeQuery = "%" + query + "%";
+    searchCriteria =
+        Criteria(Colours::Cols::_name, CompareOperator::Like, likeQuery) ||
+        Criteria(Colours::Cols::_code, CompareOperator::Like, likeQuery) ||
+        Criteria(Colours::Cols::_hex_color, CompareOperator::Like, likeQuery);
+  }
+
+  try {
+    auto totalCount = co_await mapper.count(searchCriteria);
+
+    if (totalCount == 0) {
+      dto::BaseApiResponse response;
+      response.success = true;
+      response.result["data"] = Json::arrayValue;
+      response.result["totalCount"] = 0;
+      co_return response;
+    }
+
+    int offset = (pageNo - 1) * pageSize;
+    auto colors =
+        co_await mapper.orderBy(Colours::Cols::_created_at, SortOrder::DESC)
+            .limit(pageSize)
+            .offset(offset)
+            .findBy(searchCriteria);
+
+    auto totalPages = (totalCount + pageSize - 1) / pageSize;
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["totalCount"] = (Json::UInt64)totalCount;
+    response.result["pageNo"] = pageNo;
+    response.result["pageSize"] = pageSize;
+    response.result["totalPages"] = (int)totalPages;
+    response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
+    response.result["upperBound"] = (int)totalPages == pageNo ? (Json::UInt64)totalCount : (Json::UInt64)(pageNo * pageSize);
+
+    Json::Value data = Json::arrayValue;
+    for (const auto &color : colors) {
+      Json::Value j = color.toJson();
+      Json::Value item;
+      item["id"] = j["id"];
+      item["name"] = j["name"];
+      item["code"] = j["code"];
+      item["emoji"] = j["emoji"];
+      item["sortOrder"] = j["sort_order"];
+
       data.append(item);
     }
     response.result["data"] = data;

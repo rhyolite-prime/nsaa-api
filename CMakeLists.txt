@@ -116,6 +116,8 @@ add_executable(${PROJECT_NAME} main.cc
         services/redis/RedisCacheManager.cc
         dto/CustomerOtpDto.h
         dto/CustomerVerifyOtpDto.h
+        services/ticket_collection/TicketCollectionService.h
+        dto/TicketCollectionDto.h
 
 )
 

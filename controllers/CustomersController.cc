@@ -39,3 +39,21 @@ Task<HttpResponsePtr> CustomersController::getStats(HttpRequestPtr req) {
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }
+
+//customer dashboard
+
+drogon::Task<HttpResponsePtr> CustomersController::getProfileDetails(HttpRequestPtr req) {
+
+
+}
+
+
+drogon::Task<HttpResponsePtr> CustomersController::getCustomerStats(HttpRequestPtr req) {
+
+
+}
+
+drogon::Task<HttpResponsePtr> CustomersController::getTransactionHistory(HttpRequestPtr req) {
+
+
+}

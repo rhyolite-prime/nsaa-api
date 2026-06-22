@@ -18,6 +18,8 @@ namespace raffle::services {
 
         drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
 
+        drogon::Task<dto::BaseApiResponse> listAll(int pageNo, int pageSize, const std::string &query);
+
         drogon::Task<dto::BaseApiResponse> createAsync(const dto::CreateColorDto &dto);
 
         drogon::Task<dto::BaseApiResponse> updateAsync(const dto::UpdateColorDto &dto);

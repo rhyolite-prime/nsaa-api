@@ -399,6 +399,7 @@ Task<HttpResponsePtr> CmsController::deleteBanner(HttpRequestPtr req, std::strin
 
 }
 
+
 Task<HttpResponsePtr> CmsController::getAllFaqs(HttpRequestPtr req) {
 
     int pageNo = 1;
@@ -428,6 +429,7 @@ Task<HttpResponsePtr> CmsController::getAllFaqs(HttpRequestPtr req) {
     co_return resp;
 
 }
+
 
 Task<HttpResponsePtr> CmsController::createFaqs(HttpRequestPtr req) {
 
@@ -479,6 +481,7 @@ Task<HttpResponsePtr> CmsController::updateFaqs(HttpRequestPtr req, std::string 
 
 }
 
+
 Task<HttpResponsePtr> CmsController::deleteFaqs(HttpRequestPtr req, std::string id) {
 
     auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
@@ -490,6 +493,7 @@ Task<HttpResponsePtr> CmsController::deleteFaqs(HttpRequestPtr req, std::string 
     co_return resp;
 
 }
+
 
 Task<HttpResponsePtr> CmsController::getAllPages(HttpRequestPtr req) {
 
@@ -675,4 +679,44 @@ Task<HttpResponsePtr> CmsController::deleteMediaLibraryAsset(HttpRequestPtr req,
     resp->setStatusCode(result.success ? k200OK : (result.error.isMember("code") && result.error["code"].asInt() == raffle::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
     co_return resp;
 
+}
+
+
+Task<HttpResponsePtr> CmsController::getColors(HttpRequestPtr req) {
+
+    int pageNo = 1;
+    int pageSize = 10;
+
+    auto pageNoStr = req->getParameter("pageNo");
+    if (!pageNoStr.empty()) {
+        pageNo = std::stoi(pageNoStr);
+    }
+
+    auto pageSizeStr = req->getParameter("pageSize");
+    if (!pageSizeStr.empty()) {
+        pageSize = std::stoi(pageSizeStr);
+    }
+
+    std::string query = req->getParameter("query");
+    if (query.empty()) {
+        query = "";
+    }
+
+
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &colorService = plugin->getColorService();
+
+    auto result = co_await colorService.listAll(pageNo, pageSize, query);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
+
+Task<HttpResponsePtr> CmsController::getTicketCollection(HttpRequestPtr req) {
+
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &ticketCollectionService = plugin->getTicketCollectionService();
+
+    auto result = co_await ticketCollectionService.listAll();
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
 }
