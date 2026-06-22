@@ -305,7 +305,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
       webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());
       webCheckoutDto.setReturnUrl(hubtelConfig["ReturnUrl"].asString());
       webCheckoutDto.setTotalAmount(totalAmount);
-      webCheckoutDto.setDescription("Ticket Purchase - " + raffleSlug);
+      webCheckoutDto.setDescription("Ticket Purchase - " + activeRaffle.getValueOfSlug());
       webCheckoutDto.setClientReference(clientReference);
 
       auto hubtelResult =
@@ -364,7 +364,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
       directReceiveDto.setChannel(provider);
       directReceiveDto.setClientReference(clientReference);
-      directReceiveDto.setDescription("Ticket Purchase - " + raffleSlug);
+      directReceiveDto.setDescription("Ticket Purchase - " + activeRaffle.getValueOfSlug());
       directReceiveDto.setPrimaryCallbackUrl(hubtelConfig["DirectReceiveMoneyCallBackUrl"].asString());
 
       auto hubtelResult =  co_await hubtelApi.QueueReceiveMoneyRequest(directReceiveDto);

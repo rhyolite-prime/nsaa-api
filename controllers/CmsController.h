@@ -50,7 +50,7 @@ class CmsController : public drogon::HttpController<CmsController>
     ADD_METHOD_TO(CmsController::getColors, std::string(PREFIX) + "colours/list-all", Get, Options);
 
     //ticket collections
-    ADD_METHOD_TO(CmsController::getTicketCollection, std::string(PREFIX) + "ticket/get-collection", Get, Options);
+    //ADD_METHOD_TO(CmsController::getTicketCollection, std::string(PREFIX) + "ticket/get-collection", Get, Options);
 
     METHOD_LIST_END
 
@@ -96,7 +96,7 @@ class CmsController : public drogon::HttpController<CmsController>
 
     //colors
     Task<HttpResponsePtr> getColors(HttpRequestPtr req);
-    Task<HttpResponsePtr> getTicketCollection(HttpRequestPtr req);
+    //Task<HttpResponsePtr> getTicketCollection(HttpRequestPtr req);
 
 };
 

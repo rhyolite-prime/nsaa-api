@@ -711,12 +711,12 @@ Task<HttpResponsePtr> CmsController::getColors(HttpRequestPtr req) {
     co_return resp;
 }
 
-Task<HttpResponsePtr> CmsController::getTicketCollection(HttpRequestPtr req) {
-
-    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &ticketCollectionService = plugin->getTicketCollectionService();
-
-    auto result = co_await ticketCollectionService.listAll();
-    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-    co_return resp;
-}
+// Task<HttpResponsePtr> CmsController::getTicketCollection(HttpRequestPtr req) {
+//
+//     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+//     auto &ticketCollectionService = plugin->getTicketCollectionService();
+//
+//     auto result = co_await ticketCollectionService.listAll();
+//     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+//     co_return resp;
+// }
