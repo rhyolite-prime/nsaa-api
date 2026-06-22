@@ -181,10 +181,18 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
   CoroMapper<Draws> drawMapper(dbClient);
   CoroMapper<Tickets> ticketMapper(dbClient);
 
+  LOG_INFO << "CreateTicketDto request:"
+            << " customerPhone=" << dto.getCustomerPhone()
+            << " colourId=" << dto.getColourId()
+            << " quantity=" << dto.getQuantity()
+            << " paymentMethod=" << dto.getPaymentMethod()
+            << " purchaseChannel=" << dto.getPurchaseChannel()
+            << " provider=" << dto.getProvider();
+
+
   try {
     // 1. Find the currently ACTIVE raffle
-    auto activeRaffles = co_await raffleMapper.findBy(
-        Criteria(Raffles::Cols::_status, CompareOperator::EQ, "ACTIVE"));
+    auto activeRaffles = co_await raffleMapper.findBy(Criteria(Raffles::Cols::_status, CompareOperator::EQ, "ACTIVE"));
 
     if (activeRaffles.empty()) {
       dto::BaseApiResponse errorResponse;
