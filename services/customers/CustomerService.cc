@@ -4,6 +4,7 @@
 
 #include "CustomerService.h"
 #include "Customers.h"
+#include "Tickets.h"
 #include "constants/ErrorCodes.h"
 #include "dto/BaseApiResponse.h"
 #include "plugins/RaffleServicePlugin.h"
@@ -411,22 +412,132 @@ namespace raffle::services {
 
 
   drogon::Task<dto::BaseApiResponse> CustomerService::getTransactionHistory(const std::string &customerId) {
+    auto dbClient = drogon::app().getDbClient();
+    CoroMapper<Tickets> mapper(dbClient);
 
+    try {
+      auto tickets = co_await mapper.orderBy(Tickets::Cols::_created_at, SortOrder::DESC)
+                                    .findBy(Criteria(Tickets::Cols::_customer_id, CompareOperator::EQ, customerId));
 
-
+      dto::BaseApiResponse response;
+      response.success = true;
+      Json::Value data = Json::arrayValue;
+      for (const auto &ticket : tickets) {
+        Json::Value item;
+        item["id"] = ticket.getValueOfId();
+        item["ticketNumber"] = ticket.getValueOfTicketNumber();
+        item["drawId"] = ticket.getValueOfDrawId();
+        item["raffleId"] = ticket.getValueOfRaffleId();
+        item["colourId"] = ticket.getValueOfColourId();
+        item["colourName"] = ticket.getValueOfColourName();
+        item["entryFee"] = ticket.getValueOfEntryFee();
+        item["quantity"] = ticket.getValueOfQuantity();
+        item["totalAmount"] = ticket.getValueOfTotalAmount();
+        item["paymentStatus"] = ticket.getValueOfPaymentStatus();
+        item["createdAt"] = ticket.getValueOfCreatedAt().toDbStringLocal();
+        item["ticketAlias"] = ticket.getValueOfTicketAlias();
+        data.append(item);
+      }
+      response.result["data"] = data;
+      co_return response;
+    } catch (const drogon::orm::DrogonDbException &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_DB_QUERY;
+      errorResponse.error["message"] = "Database error while fetching transaction history.";
+      errorResponse.error["detail"] = e.base().what();
+      co_return errorResponse;
+    } catch (const std::exception &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_INTERNAL;
+      errorResponse.error["message"] = "Internal error.";
+      errorResponse.error["detail"] = e.what();
+      co_return errorResponse;
+    }
   }
 
 
   drogon::Task<dto::BaseApiResponse> CustomerService::getStats(const std::string &customerId) {
+    auto dbClient = drogon::app().getDbClient();
+    CoroMapper<Customers> mapper(dbClient);
 
-
-
+    try {
+      auto customer = co_await mapper.findByPrimaryKey(customerId);
+      dto::BaseApiResponse response;
+      response.success = true;
+      response.result["totalSpent"] = customer.getValueOfTotalSpent();
+      response.result["totalWon"] = customer.getValueOfTotalWon();
+      response.result["numberOfWins"] = customer.getValueOfNumberOfWins();
+      response.result["numberOfEntries"] = customer.getValueOfNumberOfEntries();
+      co_return response;
+    } catch (const drogon::orm::UnexpectedRows &) {
+      dto::BaseApiResponse response;
+      response.success = false;
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+      response.error["message"] = "Customer not found.";
+      co_return response;
+    } catch (const drogon::orm::DrogonDbException &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_DB_QUERY;
+      errorResponse.error["message"] = "Database error while fetching customer stats.";
+      errorResponse.error["detail"] = e.base().what();
+      co_return errorResponse;
+    } catch (const std::exception &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_INTERNAL;
+      errorResponse.error["message"] = "Internal error.";
+      errorResponse.error["detail"] = e.what();
+      co_return errorResponse;
+    }
   }
 
   drogon::Task<dto::BaseApiResponse> CustomerService::getProfileDetails(const std::string &customerId) {
+    auto dbClient = drogon::app().getDbClient();
+    CoroMapper<Customers> mapper(dbClient);
 
-
-
+    try {
+      auto customer = co_await mapper.findByPrimaryKey(customerId);
+      dto::BaseApiResponse response;
+      response.success = true;
+      Json::Value profile;
+      profile["id"] = customer.getValueOfId();
+      profile["firstName"] = customer.getValueOfFirstName();
+      profile["lastName"] = customer.getValueOfLastName();
+      profile["msisdn"] = customer.getValueOfMsisdn();
+      profile["email"] = customer.getValueOfEmail();
+      profile["ghanaCardNumber"] = customer.getValueOfGhanaCardNumber();
+      profile["accountType"] = customer.getValueOfAccountType();
+      profile["accountProvider"] = customer.getValueOfAccountProvider();
+      profile["accountName"] = customer.getValueOfAccountName();
+      profile["accountNumber"] = customer.getValueOfAccountNumber();
+      profile["isActive"] = customer.getValueOfIsActive();
+      profile["createdAt"] = customer.getValueOfCreatedAt().toDbStringLocal();
+      response.result["profile"] = profile;
+      co_return response;
+    } catch (const drogon::orm::UnexpectedRows &) {
+      dto::BaseApiResponse response;
+      response.success = false;
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+      response.error["message"] = "Customer not found.";
+      co_return response;
+    } catch (const drogon::orm::DrogonDbException &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_DB_QUERY;
+      errorResponse.error["message"] = "Database error while fetching profile details.";
+      errorResponse.error["detail"] = e.base().what();
+      co_return errorResponse;
+    } catch (const std::exception &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_INTERNAL;
+      errorResponse.error["message"] = "Internal error.";
+      errorResponse.error["detail"] = e.what();
+      co_return errorResponse;
+    }
   }
 
 }

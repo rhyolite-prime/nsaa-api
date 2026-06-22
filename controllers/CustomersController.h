@@ -11,7 +11,7 @@ public:
   ADD_METHOD_TO(CustomersController::getAll, std::string(PREFIX) + "get-all", Get, Options);
   ADD_METHOD_TO(CustomersController::getStats, std::string(PREFIX) + "get-stats", Get, Options);
 
-  ADD_METHOD_TO(CustomersController::getProfileDetails, std::string(PREFIX) + "{1}", Get, Options);
+  ADD_METHOD_TO(CustomersController::getProfileDetails, std::string(PREFIX) + "profile-details", Get, Options);
   ADD_METHOD_TO(CustomersController::getStats, std::string(PREFIX) + "get-stats", Get, Options);
   ADD_METHOD_TO(CustomersController::getTransactionHistory, std::string(PREFIX) + "get-transaction-history", Get, Options);
   METHOD_LIST_END
