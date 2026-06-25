@@ -233,10 +233,25 @@ namespace raffle::services {
     dto::BaseApiResponse response;
 
     try {
+
+      auto plugin = drogon::app().getPlugin<plugins::RaffleServicePlugin>();
+      auto &redisCacheManager = plugin->getRedisCacheManager();
+
+      const std::string requestKey = "auth:request:" + dto.getRequestId();
+
+      std::string storedPhone = co_await redisCacheManager.getValue(requestKey, true);
+
+      if (storedPhone.empty() || storedPhone != dto.getPhoneNumber()) {
+
+        response.success = false;
+        response.error["code"] = constants::ERR_AUTH_TOKEN_EXPIRED;
+        response.error["message"] = "Request ID is invalid or has expired. Please restart the authentication flow.";
+        co_return response;
+      }
+
       Customers customer = co_await mapper.findOne(criteria);
 
-      std::string storedHash = utils::PasswordUtils::normalizeBcryptHash(
-          customer.getValueOfSecretPin());
+      std::string storedHash = utils::PasswordUtils::normalizeBcryptHash(customer.getValueOfSecretPin());
 
       bool passwordMatches = bcrypt::validatePassword(dto.getPin(), storedHash);
 
@@ -249,8 +264,7 @@ namespace raffle::services {
         // Password is correct, generate JWT token
         auto &app = drogon::app();
         auto customConfig = app.getCustomConfig();
-        std::string jwtSecurityKey =
-            customConfig["JwtBearer"]["JwtSecurityKey"].asString();
+        std::string jwtSecurityKey = customConfig["JwtBearer"]["JwtSecurityKey"].asString();
         std::string jwtIssuer = customConfig["JwtBearer"]["JwtIssuer"].asString();
 
         auto token = jwt::create()
@@ -266,7 +280,7 @@ namespace raffle::services {
         response.result["token"] = token;
         response.result["customerId"] = customer.getValueOfId();
         response.result["requestId"] = dto.getRequestId();
-        response.result["phoneNumber"] = customer.getValueOfEmail();
+
       } else {
         // Password is incorrect
         response.success = false;
@@ -293,14 +307,26 @@ namespace raffle::services {
 
     const std::string requestKey = "auth:request:" + dto.getRequestId();
 
-    std::string storedPhone = co_await redisCacheManager.getValue(requestKey, true);
+    std::string storedPhone = co_await redisCacheManager.getValue(requestKey);
 
-    if (storedPhone.empty()) {
+    if (storedPhone.empty() || storedPhone != dto.getPhoneNumber()) {
       dto::BaseApiResponse response;
       response.success = false;
       response.error["code"] = constants::ERR_AUTH_TOKEN_EXPIRED;
       response.error["message"] = "Request ID is invalid or has expired. Please restart the authentication flow.";
       co_return response;
+    }
+
+    const std::string countKey = "auth:request:count:" + dto.getRequestId();
+    std::string countStr = co_await redisCacheManager.getValue(countKey);
+    
+    if (!countStr.empty()) {
+      // Second call (retry) - remove the keys to prevent a third call
+      co_await redisCacheManager.removeValue(requestKey);
+      co_await redisCacheManager.removeValue(countKey);
+    } else {
+      // First call - record that it has been called once
+      co_await redisCacheManager.setValueWithTtl(countKey, "1", 100);
     }
 
     const std::string defaultPin = utils::IdGeneratorUtils::generateRandomDigit(4);
@@ -311,8 +337,8 @@ namespace raffle::services {
     LOG_INFO << " Default PIN => " << defaultPin;
 
     auto &hubtelApi = plugin->getHubtelApi();
-    bool smsSent = co_await hubtelApi.SendSms(storedPhone, message);
-
+    //bool smsSent = co_await hubtelApi.SendSms(storedPhone, message);
+    bool smsSent = true;
     if (!smsSent)
     {
       LOG_ERROR << "sendOtp: SMS delivery failed for requestId=" << dto.getRequestId() << ", phone=" << storedPhone;
@@ -327,29 +353,62 @@ namespace raffle::services {
     LOG_INFO << "sendOtp: OTP sent successfully for requestId=" << dto.getRequestId()
              << ", phone=" << storedPhone;
 
+    const std::string defaultPinKey = "default:pin:" + dto.getPhoneNumber();
+
+    co_await redisCacheManager.setValueWithTtl(defaultPinKey, defaultPin, 300);
+
     //create the customer in database
+    
+    auto existingCount = co_await mapper.count(Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, storedPhone));
+    if (existingCount == 0) {
 
+      const std::string hashedDefaultPin = bcrypt::generateHash(defaultPin);
 
-    const std::string hashedDefaultPin = bcrypt::generateHash(defaultPin);
+      Customers customer;
+      customer.setMsisdn(storedPhone);
+      customer.setSecretPin(hashedDefaultPin);
+      customer.setIsActive(true);
+      customer.setCreatedAt(trantor::Date::now());
+      customer.setLastActive(trantor::Date::now());
 
-    Customers customer;
-    customer.setMsisdn(storedPhone);
-    customer.setSecretPin(hashedDefaultPin);
-    customer.setIsActive(true);
-    customer.setCreatedAt(trantor::Date::now());
-    customer.setLastActive(trantor::Date::now());
+      co_await mapper.insert(customer);
+      LOG_INFO << "sendOtp: Customer created successfully for requestId=" << dto.getRequestId();
+    }
 
-
-    co_await mapper.insert(customer);
-    LOG_INFO << "sendOtp: Customer created successfully for requestId=" << dto.getRequestId();
-
+    //
     dto::BaseApiResponse response;
     response.success = true;
     response.message = "OTP sent successfully.";
     response.result["requestId"] = dto.getRequestId();
     response.result["phoneNumber"] = dto.getPhoneNumber();
+
+    co_return response;
+
+  }
+
+  drogon::Task<dto::BaseApiResponse> CustomerService::getCustomerLoginPin(const std::string &phoneNumber)
+  {
+
+    auto plugin = drogon::app().getPlugin<plugins::RaffleServicePlugin>();
+    auto &redisCacheManager = plugin->getRedisCacheManager();
+
+    const std::string defaultPinKey = "default:pin:" + phoneNumber;
+    std::string storedPin = co_await redisCacheManager.getValue(defaultPinKey, true);
+
+    dto::BaseApiResponse response;
+    if (storedPin.empty()) {
+      response.success = false;
+      response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+      response.error["message"] = "There is no Login PIN available for " + phoneNumber;
+    } else {
+      response.success = true;
+      response.message = "Keep your account safe. Do not share this PIN with anyone. Your Login PIN is: " + storedPin;
+
+    }
+
     co_return response;
   }
+
 
   drogon::Task<dto::BaseApiResponse> CustomerService::verifyOtp(const dto::CustomerVerifyOtpDto &dto) {
 

@@ -258,8 +258,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     newTicket.setCustomerPhone(dto.getCustomerPhone());
     newTicket.setRaffleId(activeRaffle.getValueOfId());
 
-    std::string clientReference =
-        raffle::utils::IdGeneratorUtils::generateGuid();
+    std::string clientReference = utils::IdGeneratorUtils::generateGuid();
 
     newTicket.setPaymentReference(clientReference);
     newTicket.setCustomerId(customerId);
@@ -275,8 +274,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
     auto &app = drogon::app();
     auto customConfig = app.getCustomConfig();
-    std::string ticketFee =
-        customConfig["TicketConfiguration"]["Price"].asString();
+    std::string ticketFee = customConfig["TicketConfiguration"]["Price"].asString();
 
     // Placeholder for entry fee
     newTicket.setEntryFee(ticketFee);
@@ -302,22 +300,16 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     if (dto.getPurchaseChannel() == "WSSD") {
 
       raffle::dto::WebCheckoutDto webCheckoutDto;
-      std::string callbackUrl =
-          hubtelConfig["WebCheckoutCallBackUrl"].asString();
+      std::string callbackUrl = hubtelConfig["WebCheckoutCallBackUrl"].asString();
 
-      webCheckoutDto.setCallbackUrl(
-          hubtelConfig.isMember("WebCheckoutCallBackUrl")
-              ? hubtelConfig["WebCheckoutCallBackUrl"].asString()
-              : "https://nsaa-api.rhyoliteprime.com/api/v1/"
-                "hubtel-callback-processor/web-checkout");
+      webCheckoutDto.setCallbackUrl(hubtelConfig.isMember("WebCheckoutCallBackUrl") ? hubtelConfig["WebCheckoutCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
       webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());
       webCheckoutDto.setReturnUrl(hubtelConfig["ReturnUrl"].asString());
       webCheckoutDto.setTotalAmount(totalAmount);
       webCheckoutDto.setDescription("Ticket Purchase - " + activeRaffle.getValueOfSlug());
       webCheckoutDto.setClientReference(clientReference);
 
-      auto hubtelResult =
-          co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
+      auto hubtelResult = co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
 
       LOG_INFO << "Hubtel WebCheckout result for clientReference="
                << clientReference
@@ -327,8 +319,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
       if (hubtelResult.responseCode == "0000") {
         response.success = true;
-        response.message =
-            "Ticket created successfully. Please complete payment.";
+        response.message = "Ticket created successfully. Please complete payment.";
         response.result["ticketId"] = result.getValueOfId();
         response.result["ticketNumber"] = result.getValueOfTicketNumber();
         response.result["paymentReference"] = clientReference;
@@ -345,8 +336,6 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     } else {
 
       std::string provider = dto.getProvider();
-
-
 
       // convert to lowercase
       std::transform(provider.begin(), provider.end(), provider.begin(),
@@ -401,7 +390,6 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
         response.result["ticketId"] = result.getValueOfId();
         response.result["ticketNumber"] = result.getValueOfTicketNumber();
         response.result["paymentReference"] = clientReference;
-        response.result["transactionId"] = hubtelResult.data.transactionId;
         response.result["selectedColour"] = colourName;
       } else {
         response.success = false;

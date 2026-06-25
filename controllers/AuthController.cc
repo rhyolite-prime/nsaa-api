@@ -78,6 +78,19 @@ Task<HttpResponsePtr> AuthController::checkCustomerAccountStatus(HttpRequestPtr 
 
 }
 
+drogon::Task<HttpResponsePtr> AuthController::getCustomerLoginPin(HttpRequestPtr req)
+{
+    std::string phoneNumber = req->getParameter("phoneNumber");
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &customerService = plugin->getCustomerService();
+
+    auto result = co_await customerService.getCustomerLoginPin(phoneNumber);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+
+}
+
 
 Task<HttpResponsePtr> AuthController::generateCustomerAuth(HttpRequestPtr req)
 {

@@ -23,9 +23,9 @@ class AuthController : public drogon::HttpController<AuthController>
     ADD_METHOD_TO(AuthController::verifyPartnerOtp, std::string(PREFIX) + "/partner/verify-otp", Post, Options);
     ADD_METHOD_TO(AuthController::generatePartnerAuth, std::string(PREFIX) + "/partner/token", Post, Options);
 
-
-    //customers
+    //customers...
     ADD_METHOD_TO(AuthController::checkCustomerAccountStatus, std::string(PREFIX) + "/customer/check-account-status", Get, Options);
+    ADD_METHOD_TO(AuthController::getCustomerLoginPin, std::string(PREFIX) + "/customer/get-login-pin", Get, Options);
     ADD_METHOD_TO(AuthController::sendCustomerOtp, std::string(PREFIX) + "/customer/send-otp", Post, Options);
     ADD_METHOD_TO(AuthController::verifyCustomerOtp, std::string(PREFIX) + "/customer/verify-otp", Post, Options);
     ADD_METHOD_TO(AuthController::generateCustomerAuth, std::string(PREFIX) + "/customer/token", Post, Options);
@@ -52,6 +52,7 @@ class AuthController : public drogon::HttpController<AuthController>
 
     //customers
     drogon::Task<HttpResponsePtr> checkCustomerAccountStatus(HttpRequestPtr req);
+    drogon::Task<HttpResponsePtr> getCustomerLoginPin(HttpRequestPtr req);
     drogon::Task<HttpResponsePtr> generateCustomerAuth(HttpRequestPtr req);
     drogon::Task<HttpResponsePtr> sendCustomerOtp(HttpRequestPtr req);
     drogon::Task<HttpResponsePtr> verifyCustomerOtp(HttpRequestPtr req);

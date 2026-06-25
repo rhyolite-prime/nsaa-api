@@ -21,6 +21,7 @@ namespace raffle::services {
         drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
         drogon::Task<dto::BaseApiResponse> getStats();
         drogon::Task<dto::BaseApiResponse> verifyAccountStatus(const std::string &phoneNumber);
+        drogon::Task<dto::BaseApiResponse> getCustomerLoginPin(const std::string &phoneNumber);
         drogon::Task<dto::BaseApiResponse> validateCredentials(const dto::CustomerAuthDto &dto);
         drogon::Task<dto::BaseApiResponse> sendOtp(const dto::CustomerOtpDto &dto);
         drogon::Task<dto::BaseApiResponse> verifyOtp(const dto::CustomerVerifyOtpDto &dto);
