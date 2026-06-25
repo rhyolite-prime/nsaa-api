@@ -45,13 +45,18 @@ class Prizes
     struct Cols
     {
         static const std::string _id;
-        static const std::string _type;
+        static const std::string _category_id;
         static const std::string _name;
+        static const std::string _description;
         static const std::string _value;
-        static const std::string _image_url;
-        static const std::string _terms;
-        static const std::string _quantity_available;
-        static const std::string _is_active;
+        static const std::string _currency;
+        static const std::string _quantity;
+        static const std::string _rank;
+        static const std::string _remaining_quantity;
+        static const std::string _probability;
+        static const std::string _start_date;
+        static const std::string _end_date;
+        static const std::string _metadata;
         static const std::string _created_at;
         static const std::string _updated_at;
     };
@@ -114,14 +119,15 @@ class Prizes
     void setId(const std::string &pId) noexcept;
     void setId(std::string &&pId) noexcept;
 
-    /**  For column type  */
-    ///Get the value of the column type, returns the default value if the column is null
-    const std::string &getValueOfType() const noexcept;
+    /**  For column category_id  */
+    ///Get the value of the column category_id, returns the default value if the column is null
+    const std::string &getValueOfCategoryId() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getType() const noexcept;
-    ///Set the value of the column type
-    void setType(const std::string &pType) noexcept;
-    void setType(std::string &&pType) noexcept;
+    const std::shared_ptr<std::string> &getCategoryId() const noexcept;
+    ///Set the value of the column category_id
+    void setCategoryId(const std::string &pCategoryId) noexcept;
+    void setCategoryId(std::string &&pCategoryId) noexcept;
+    void setCategoryIdToNull() noexcept;
 
     /**  For column name  */
     ///Get the value of the column name, returns the default value if the column is null
@@ -131,6 +137,16 @@ class Prizes
     ///Set the value of the column name
     void setName(const std::string &pName) noexcept;
     void setName(std::string &&pName) noexcept;
+
+    /**  For column description  */
+    ///Get the value of the column description, returns the default value if the column is null
+    const std::string &getValueOfDescription() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getDescription() const noexcept;
+    ///Set the value of the column description
+    void setDescription(const std::string &pDescription) noexcept;
+    void setDescription(std::string &&pDescription) noexcept;
+    void setDescriptionToNull() noexcept;
 
     /**  For column value  */
     ///Get the value of the column value, returns the default value if the column is null
@@ -142,42 +158,80 @@ class Prizes
     void setValue(std::string &&pValue) noexcept;
     void setValueToNull() noexcept;
 
-    /**  For column image_url  */
-    ///Get the value of the column image_url, returns the default value if the column is null
-    const std::string &getValueOfImageUrl() const noexcept;
+    /**  For column currency  */
+    ///Get the value of the column currency, returns the default value if the column is null
+    const std::string &getValueOfCurrency() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getImageUrl() const noexcept;
-    ///Set the value of the column image_url
-    void setImageUrl(const std::string &pImageUrl) noexcept;
-    void setImageUrl(std::string &&pImageUrl) noexcept;
-    void setImageUrlToNull() noexcept;
+    const std::shared_ptr<std::string> &getCurrency() const noexcept;
+    ///Set the value of the column currency
+    void setCurrency(const std::string &pCurrency) noexcept;
+    void setCurrency(std::string &&pCurrency) noexcept;
+    void setCurrencyToNull() noexcept;
 
-    /**  For column terms  */
-    ///Get the value of the column terms, returns the default value if the column is null
-    const std::string &getValueOfTerms() const noexcept;
+    /**  For column quantity  */
+    ///Get the value of the column quantity, returns the default value if the column is null
+    const int32_t &getValueOfQuantity() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getTerms() const noexcept;
-    ///Set the value of the column terms
-    void setTerms(const std::string &pTerms) noexcept;
-    void setTerms(std::string &&pTerms) noexcept;
-    void setTermsToNull() noexcept;
+    const std::shared_ptr<int32_t> &getQuantity() const noexcept;
+    ///Set the value of the column quantity
+    void setQuantity(const int32_t &pQuantity) noexcept;
+    void setQuantityToNull() noexcept;
 
-    /**  For column quantity_available  */
-    ///Get the value of the column quantity_available, returns the default value if the column is null
-    const int32_t &getValueOfQuantityAvailable() const noexcept;
+    /**  For column rank  */
+    ///Get the value of the column rank, returns the default value if the column is null
+    const int32_t &getValueOfRank() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<int32_t> &getQuantityAvailable() const noexcept;
-    ///Set the value of the column quantity_available
-    void setQuantityAvailable(const int32_t &pQuantityAvailable) noexcept;
-    void setQuantityAvailableToNull() noexcept;
+    const std::shared_ptr<int32_t> &getRank() const noexcept;
+    ///Set the value of the column rank
+    void setRank(const int32_t &pRank) noexcept;
+    void setRankToNull() noexcept;
 
-    /**  For column is_active  */
-    ///Get the value of the column is_active, returns the default value if the column is null
-    const bool &getValueOfIsActive() const noexcept;
+    /**  For column remaining_quantity  */
+    ///Get the value of the column remaining_quantity, returns the default value if the column is null
+    const int32_t &getValueOfRemainingQuantity() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<bool> &getIsActive() const noexcept;
-    ///Set the value of the column is_active
-    void setIsActive(const bool &pIsActive) noexcept;
+    const std::shared_ptr<int32_t> &getRemainingQuantity() const noexcept;
+    ///Set the value of the column remaining_quantity
+    void setRemainingQuantity(const int32_t &pRemainingQuantity) noexcept;
+    void setRemainingQuantityToNull() noexcept;
+
+    /**  For column probability  */
+    ///Get the value of the column probability, returns the default value if the column is null
+    const std::string &getValueOfProbability() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getProbability() const noexcept;
+    ///Set the value of the column probability
+    void setProbability(const std::string &pProbability) noexcept;
+    void setProbability(std::string &&pProbability) noexcept;
+    void setProbabilityToNull() noexcept;
+
+    /**  For column start_date  */
+    ///Get the value of the column start_date, returns the default value if the column is null
+    const ::trantor::Date &getValueOfStartDate() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getStartDate() const noexcept;
+    ///Set the value of the column start_date
+    void setStartDate(const ::trantor::Date &pStartDate) noexcept;
+    void setStartDateToNull() noexcept;
+
+    /**  For column end_date  */
+    ///Get the value of the column end_date, returns the default value if the column is null
+    const ::trantor::Date &getValueOfEndDate() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getEndDate() const noexcept;
+    ///Set the value of the column end_date
+    void setEndDate(const ::trantor::Date &pEndDate) noexcept;
+    void setEndDateToNull() noexcept;
+
+    /**  For column metadata  */
+    ///Get the value of the column metadata, returns the default value if the column is null
+    const std::string &getValueOfMetadata() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getMetadata() const noexcept;
+    ///Set the value of the column metadata
+    void setMetadata(const std::string &pMetadata) noexcept;
+    void setMetadata(std::string &&pMetadata) noexcept;
+    void setMetadataToNull() noexcept;
 
     /**  For column created_at  */
     ///Get the value of the column created_at, returns the default value if the column is null
@@ -186,6 +240,7 @@ class Prizes
     const std::shared_ptr<::trantor::Date> &getCreatedAt() const noexcept;
     ///Set the value of the column created_at
     void setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept;
+    void setCreatedAtToNull() noexcept;
 
     /**  For column updated_at  */
     ///Get the value of the column updated_at, returns the default value if the column is null
@@ -197,7 +252,7 @@ class Prizes
     void setUpdatedAtToNull() noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 10;  }
+    static size_t getColumnNumber() noexcept {  return 15;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -220,13 +275,18 @@ class Prizes
     ///For mysql or sqlite3
     void updateId(const uint64_t id);
     std::shared_ptr<std::string> id_;
-    std::shared_ptr<std::string> type_;
+    std::shared_ptr<std::string> categoryId_;
     std::shared_ptr<std::string> name_;
+    std::shared_ptr<std::string> description_;
     std::shared_ptr<std::string> value_;
-    std::shared_ptr<std::string> imageUrl_;
-    std::shared_ptr<std::string> terms_;
-    std::shared_ptr<int32_t> quantityAvailable_;
-    std::shared_ptr<bool> isActive_;
+    std::shared_ptr<std::string> currency_;
+    std::shared_ptr<int32_t> quantity_;
+    std::shared_ptr<int32_t> rank_;
+    std::shared_ptr<int32_t> remainingQuantity_;
+    std::shared_ptr<std::string> probability_;
+    std::shared_ptr<::trantor::Date> startDate_;
+    std::shared_ptr<::trantor::Date> endDate_;
+    std::shared_ptr<std::string> metadata_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
     struct MetaData
@@ -240,7 +300,7 @@ class Prizes
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[10]={ false };
+    bool dirtyFlag_[15]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -266,7 +326,7 @@ class Prizes
         }
         if(dirtyFlag_[1])
         {
-            sql += "type,";
+            sql += "category_id,";
             ++parametersCount;
         }
         if(dirtyFlag_[2])
@@ -276,26 +336,26 @@ class Prizes
         }
         if(dirtyFlag_[3])
         {
-            sql += "value,";
+            sql += "description,";
             ++parametersCount;
         }
         if(dirtyFlag_[4])
         {
-            sql += "image_url,";
+            sql += "value,";
             ++parametersCount;
         }
         if(dirtyFlag_[5])
         {
-            sql += "terms,";
+            sql += "currency,";
             ++parametersCount;
         }
-        sql += "quantity_available,";
+        sql += "quantity,";
         ++parametersCount;
         if(!dirtyFlag_[6])
         {
             needSelection=true;
         }
-        sql += "is_active,";
+        sql += "rank,";
         ++parametersCount;
         if(!dirtyFlag_[7])
         {
@@ -303,13 +363,40 @@ class Prizes
         }
         if(dirtyFlag_[8])
         {
-            sql += "created_at,";
+            sql += "remaining_quantity,";
             ++parametersCount;
         }
         if(dirtyFlag_[9])
         {
-            sql += "updated_at,";
+            sql += "probability,";
             ++parametersCount;
+        }
+        if(dirtyFlag_[10])
+        {
+            sql += "start_date,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[11])
+        {
+            sql += "end_date,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[12])
+        {
+            sql += "metadata,";
+            ++parametersCount;
+        }
+        sql += "created_at,";
+        ++parametersCount;
+        if(!dirtyFlag_[13])
+        {
+            needSelection=true;
+        }
+        sql += "updated_at,";
+        ++parametersCount;
+        if(!dirtyFlag_[14])
+        {
+            needSelection=true;
         }
         if(parametersCount > 0)
         {
@@ -383,6 +470,39 @@ class Prizes
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[10])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[11])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[12])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[13])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[14])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
         }
         if(parametersCount > 0)
         {

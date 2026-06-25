@@ -35,7 +35,51 @@ Task<HttpResponsePtr> CustomersController::getStats(HttpRequestPtr req) {
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &customerService = plugin->getCustomerService();
 
-    auto result = co_await customerService.getStats();
+  auto result = co_await customerService.getStats();
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
+}
+
+//customer dashboard
+
+drogon::Task<HttpResponsePtr> CustomersController::getProfileDetails(HttpRequestPtr req) {
+
+
+  auto customerId = req->attributes()->get<std::string>("customerId");
+
+  auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &customerService = plugin->getCustomerService();
+
+  auto result = co_await customerService.getProfileDetails(customerId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
+
+}
+
+
+drogon::Task<HttpResponsePtr> CustomersController::getCustomerStats(HttpRequestPtr req) {
+
+  auto customerId = req->attributes()->get<std::string>("customerId");
+
+  auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &customerService = plugin->getCustomerService();
+
+  auto result = co_await customerService.getStats(customerId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
+}
+
+drogon::Task<HttpResponsePtr> CustomersController::getTransactionHistory(HttpRequestPtr req) {
+
+  auto customerId = req->attributes()->get<std::string>("customerId");
+
+  auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &customerService = plugin->getCustomerService();
+
+  auto result = co_await customerService.getTransactionHistory(customerId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
 }

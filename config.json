@@ -207,7 +207,7 @@
             //display_local_time: false by default, if true, the log time is displayed in local time
             "display_local_time": false,
             "log_path": "./logs",
-            "log_file": "cmr.log",
+            "log_file": "nsaa.log",
             "log_async": true,
             "log_flush_interval": 1
         },
@@ -318,21 +318,22 @@
                 // "custom_time_format": "",
                 // "use_real_ip": false
             }
+        },
+        {
+            "name": "raffle::plugins::RaffleServicePlugin",
+            "dependencies": [],
+            "config": {}
         }
     ],
     //custom_config: custom configuration for users. This object can be get by the app().getCustomConfig() method.
     "custom_config": {
         "JwtBearer": {
-            "JwtSecurityKey" : "Gnp_ca01ca76-4866-4d54-9882-d9e365b81473",
+            "JwtSecurityKey" : "Nsaa_cb01ca86-4866-5d53-9983-d9e365b82473",
             "JwtIssuer" : "NSAA_PLAY",
             "JwtAudience" : "NSAA_PLAY_Users",
             "JwtExpirationTime" : 3600
         },
         "PrivateKey": "ca11ca76-3876-4d45-9882-b9e365b81474",
-        "PayStackApi": {
-            "BaseUrl" : "https://api.paystack.co",
-            "SecretKey" : "sk_live_844f99e0b5acfff9b8b52bde395bb6fd39e4e346"
-        },
         "AuthMailConfiguration": {
             "Host": "smtp.zoho.com",
             "Port": 465,
@@ -362,6 +363,10 @@
             "WebCheckoutCallBackUrl": "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout",
             "DirectReceiveMoneyCallBackUrl": "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/direct-receive-money",
             "ReturnUrl": "https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3"
+        },
+        "HubtelSmsApi":{
+            "ClientId": "cmgfmxdp",
+            "ClientSecret": "qkggakvr"
         },
         "TicketConfiguration": {
             "Price": 0.2

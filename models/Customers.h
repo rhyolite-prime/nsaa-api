@@ -50,17 +50,21 @@ class Customers
         static const std::string _last_name;
         static const std::string _email;
         static const std::string _ghana_card_number;
-        static const std::string _voter_id;
-        static const std::string _passport_number;
-        static const std::string _mobile_money_provider;
-        static const std::string _mobile_money_account;
-        static const std::string _created_at;
-        static const std::string _updated_at;
+        static const std::string _secret_pin;
+        static const std::string _account_type;
+        static const std::string _account_provider;
+        static const std::string _account_name;
+        static const std::string _account_number;
+        static const std::string _last_active;
+        static const std::string _last_active_device;
+        static const std::string _is_locked_out;
         static const std::string _is_active;
         static const std::string _total_spent;
         static const std::string _total_won;
         static const std::string _number_of_wins;
         static const std::string _number_of_entries;
+        static const std::string _created_at;
+        static const std::string _updated_at;
     };
 
     static const int primaryKeyNumber;
@@ -170,63 +174,82 @@ class Customers
     void setGhanaCardNumber(std::string &&pGhanaCardNumber) noexcept;
     void setGhanaCardNumberToNull() noexcept;
 
-    /**  For column voter_id  */
-    ///Get the value of the column voter_id, returns the default value if the column is null
-    const std::string &getValueOfVoterId() const noexcept;
+    /**  For column secret_pin  */
+    ///Get the value of the column secret_pin, returns the default value if the column is null
+    const std::string &getValueOfSecretPin() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getVoterId() const noexcept;
-    ///Set the value of the column voter_id
-    void setVoterId(const std::string &pVoterId) noexcept;
-    void setVoterId(std::string &&pVoterId) noexcept;
-    void setVoterIdToNull() noexcept;
+    const std::shared_ptr<std::string> &getSecretPin() const noexcept;
+    ///Set the value of the column secret_pin
+    void setSecretPin(const std::string &pSecretPin) noexcept;
+    void setSecretPin(std::string &&pSecretPin) noexcept;
+    void setSecretPinToNull() noexcept;
 
-    /**  For column passport_number  */
-    ///Get the value of the column passport_number, returns the default value if the column is null
-    const std::string &getValueOfPassportNumber() const noexcept;
+    /**  For column account_type  */
+    ///Get the value of the column account_type, returns the default value if the column is null
+    const std::string &getValueOfAccountType() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getPassportNumber() const noexcept;
-    ///Set the value of the column passport_number
-    void setPassportNumber(const std::string &pPassportNumber) noexcept;
-    void setPassportNumber(std::string &&pPassportNumber) noexcept;
-    void setPassportNumberToNull() noexcept;
+    const std::shared_ptr<std::string> &getAccountType() const noexcept;
+    ///Set the value of the column account_type
+    void setAccountType(const std::string &pAccountType) noexcept;
+    void setAccountType(std::string &&pAccountType) noexcept;
+    void setAccountTypeToNull() noexcept;
 
-    /**  For column mobile_money_provider  */
-    ///Get the value of the column mobile_money_provider, returns the default value if the column is null
-    const std::string &getValueOfMobileMoneyProvider() const noexcept;
+    /**  For column account_provider  */
+    ///Get the value of the column account_provider, returns the default value if the column is null
+    const std::string &getValueOfAccountProvider() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getMobileMoneyProvider() const noexcept;
-    ///Set the value of the column mobile_money_provider
-    void setMobileMoneyProvider(const std::string &pMobileMoneyProvider) noexcept;
-    void setMobileMoneyProvider(std::string &&pMobileMoneyProvider) noexcept;
-    void setMobileMoneyProviderToNull() noexcept;
+    const std::shared_ptr<std::string> &getAccountProvider() const noexcept;
+    ///Set the value of the column account_provider
+    void setAccountProvider(const std::string &pAccountProvider) noexcept;
+    void setAccountProvider(std::string &&pAccountProvider) noexcept;
+    void setAccountProviderToNull() noexcept;
 
-    /**  For column mobile_money_account  */
-    ///Get the value of the column mobile_money_account, returns the default value if the column is null
-    const std::string &getValueOfMobileMoneyAccount() const noexcept;
+    /**  For column account_name  */
+    ///Get the value of the column account_name, returns the default value if the column is null
+    const std::string &getValueOfAccountName() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getMobileMoneyAccount() const noexcept;
-    ///Set the value of the column mobile_money_account
-    void setMobileMoneyAccount(const std::string &pMobileMoneyAccount) noexcept;
-    void setMobileMoneyAccount(std::string &&pMobileMoneyAccount) noexcept;
-    void setMobileMoneyAccountToNull() noexcept;
+    const std::shared_ptr<std::string> &getAccountName() const noexcept;
+    ///Set the value of the column account_name
+    void setAccountName(const std::string &pAccountName) noexcept;
+    void setAccountName(std::string &&pAccountName) noexcept;
+    void setAccountNameToNull() noexcept;
 
-    /**  For column created_at  */
-    ///Get the value of the column created_at, returns the default value if the column is null
-    const ::trantor::Date &getValueOfCreatedAt() const noexcept;
+    /**  For column account_number  */
+    ///Get the value of the column account_number, returns the default value if the column is null
+    const std::string &getValueOfAccountNumber() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<::trantor::Date> &getCreatedAt() const noexcept;
-    ///Set the value of the column created_at
-    void setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept;
-    void setCreatedAtToNull() noexcept;
+    const std::shared_ptr<std::string> &getAccountNumber() const noexcept;
+    ///Set the value of the column account_number
+    void setAccountNumber(const std::string &pAccountNumber) noexcept;
+    void setAccountNumber(std::string &&pAccountNumber) noexcept;
+    void setAccountNumberToNull() noexcept;
 
-    /**  For column updated_at  */
-    ///Get the value of the column updated_at, returns the default value if the column is null
-    const ::trantor::Date &getValueOfUpdatedAt() const noexcept;
+    /**  For column last_active  */
+    ///Get the value of the column last_active, returns the default value if the column is null
+    const ::trantor::Date &getValueOfLastActive() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<::trantor::Date> &getUpdatedAt() const noexcept;
-    ///Set the value of the column updated_at
-    void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
-    void setUpdatedAtToNull() noexcept;
+    const std::shared_ptr<::trantor::Date> &getLastActive() const noexcept;
+    ///Set the value of the column last_active
+    void setLastActive(const ::trantor::Date &pLastActive) noexcept;
+    void setLastActiveToNull() noexcept;
+
+    /**  For column last_active_device  */
+    ///Get the value of the column last_active_device, returns the default value if the column is null
+    const std::string &getValueOfLastActiveDevice() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getLastActiveDevice() const noexcept;
+    ///Set the value of the column last_active_device
+    void setLastActiveDevice(const std::string &pLastActiveDevice) noexcept;
+    void setLastActiveDevice(std::string &&pLastActiveDevice) noexcept;
+    void setLastActiveDeviceToNull() noexcept;
+
+    /**  For column is_locked_out  */
+    ///Get the value of the column is_locked_out, returns the default value if the column is null
+    const bool &getValueOfIsLockedOut() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<bool> &getIsLockedOut() const noexcept;
+    ///Set the value of the column is_locked_out
+    void setIsLockedOut(const bool &pIsLockedOut) noexcept;
 
     /**  For column is_active  */
     ///Get the value of the column is_active, returns the default value if the column is null
@@ -275,8 +298,26 @@ class Customers
     void setNumberOfEntries(const int32_t &pNumberOfEntries) noexcept;
     void setNumberOfEntriesToNull() noexcept;
 
+    /**  For column created_at  */
+    ///Get the value of the column created_at, returns the default value if the column is null
+    const ::trantor::Date &getValueOfCreatedAt() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getCreatedAt() const noexcept;
+    ///Set the value of the column created_at
+    void setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept;
+    void setCreatedAtToNull() noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 17;  }
+    /**  For column updated_at  */
+    ///Get the value of the column updated_at, returns the default value if the column is null
+    const ::trantor::Date &getValueOfUpdatedAt() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getUpdatedAt() const noexcept;
+    ///Set the value of the column updated_at
+    void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
+    void setUpdatedAtToNull() noexcept;
+
+
+    static size_t getColumnNumber() noexcept {  return 21;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -304,17 +345,21 @@ class Customers
     std::shared_ptr<std::string> lastName_;
     std::shared_ptr<std::string> email_;
     std::shared_ptr<std::string> ghanaCardNumber_;
-    std::shared_ptr<std::string> voterId_;
-    std::shared_ptr<std::string> passportNumber_;
-    std::shared_ptr<std::string> mobileMoneyProvider_;
-    std::shared_ptr<std::string> mobileMoneyAccount_;
-    std::shared_ptr<::trantor::Date> createdAt_;
-    std::shared_ptr<::trantor::Date> updatedAt_;
+    std::shared_ptr<std::string> secretPin_;
+    std::shared_ptr<std::string> accountType_;
+    std::shared_ptr<std::string> accountProvider_;
+    std::shared_ptr<std::string> accountName_;
+    std::shared_ptr<std::string> accountNumber_;
+    std::shared_ptr<::trantor::Date> lastActive_;
+    std::shared_ptr<std::string> lastActiveDevice_;
+    std::shared_ptr<bool> isLockedOut_;
     std::shared_ptr<bool> isActive_;
     std::shared_ptr<std::string> totalSpent_;
     std::shared_ptr<std::string> totalWon_;
     std::shared_ptr<int32_t> numberOfWins_;
     std::shared_ptr<int32_t> numberOfEntries_;
+    std::shared_ptr<::trantor::Date> createdAt_;
+    std::shared_ptr<::trantor::Date> updatedAt_;
     struct MetaData
     {
         const std::string colName_;
@@ -326,7 +371,7 @@ class Customers
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[17]={ false };
+    bool dirtyFlag_[21]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -377,65 +422,85 @@ class Customers
         }
         if(dirtyFlag_[6])
         {
-            sql += "voter_id,";
+            sql += "secret_pin,";
             ++parametersCount;
         }
         if(dirtyFlag_[7])
         {
-            sql += "passport_number,";
+            sql += "account_type,";
             ++parametersCount;
         }
         if(dirtyFlag_[8])
         {
-            sql += "mobile_money_provider,";
+            sql += "account_provider,";
             ++parametersCount;
         }
         if(dirtyFlag_[9])
         {
-            sql += "mobile_money_account,";
+            sql += "account_name,";
             ++parametersCount;
         }
-        sql += "created_at,";
-        ++parametersCount;
-        if(!dirtyFlag_[10])
+        if(dirtyFlag_[10])
         {
-            needSelection=true;
+            sql += "account_number,";
+            ++parametersCount;
         }
-        sql += "updated_at,";
-        ++parametersCount;
-        if(!dirtyFlag_[11])
+        if(dirtyFlag_[11])
         {
-            needSelection=true;
+            sql += "last_active,";
+            ++parametersCount;
         }
-        sql += "is_active,";
-        ++parametersCount;
-        if(!dirtyFlag_[12])
+        if(dirtyFlag_[12])
         {
-            needSelection=true;
+            sql += "last_active_device,";
+            ++parametersCount;
         }
-        sql += "total_spent,";
+        sql += "is_locked_out,";
         ++parametersCount;
         if(!dirtyFlag_[13])
         {
             needSelection=true;
         }
-        sql += "total_won,";
+        sql += "is_active,";
         ++parametersCount;
         if(!dirtyFlag_[14])
         {
             needSelection=true;
         }
-        sql += "number_of_wins,";
+        sql += "total_spent,";
         ++parametersCount;
         if(!dirtyFlag_[15])
         {
             needSelection=true;
         }
-        sql += "number_of_entries,";
+        sql += "total_won,";
         ++parametersCount;
         if(!dirtyFlag_[16])
         {
             needSelection=true;
+        }
+        sql += "number_of_wins,";
+        ++parametersCount;
+        if(!dirtyFlag_[17])
+        {
+            needSelection=true;
+        }
+        sql += "number_of_entries,";
+        ++parametersCount;
+        if(!dirtyFlag_[18])
+        {
+            needSelection=true;
+        }
+        sql += "created_at,";
+        ++parametersCount;
+        if(!dirtyFlag_[19])
+        {
+            needSelection=true;
+        }
+        if(dirtyFlag_[20])
+        {
+            sql += "updated_at,";
+            ++parametersCount;
         }
         if(parametersCount > 0)
         {
@@ -507,27 +572,15 @@ class Customers
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[11])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[12])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(dirtyFlag_[13])
         {
@@ -564,6 +617,38 @@ class Customers
         else
         {
             sql +="default,";
+        }
+        if(dirtyFlag_[17])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[18])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[19])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[20])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
         }
         if(parametersCount > 0)
         {

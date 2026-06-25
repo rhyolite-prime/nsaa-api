@@ -312,9 +312,9 @@ drogon::Task<bool> HubtelApi::SendSms(const std::string &phoneNumber, const std:
   // Construct the path with query parameters
   auto req = drogon::HttpRequest::newHttpRequest();
   req->setPath("/v1/messages/send");
-  req->setParameter("clientsecret", "sffrctup");
-  req->setParameter("clientid", "xfuqfoyu");
-  req->setParameter("from", "RHYOLITE");
+  req->setParameter("clientsecret", "qkggakvr");
+  req->setParameter("clientid", "cmgfmxdp");
+  req->setParameter("from", "ChopMoney");
   req->setParameter("to", phoneNumber);
   req->setParameter("content", messageContent);
   req->setMethod(drogon::Get);

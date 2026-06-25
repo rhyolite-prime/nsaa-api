@@ -108,6 +108,16 @@ add_executable(${PROJECT_NAME} main.cc
         dto/SupportTicketDto.h
         services/support_ticket/SupportTicketService.h
         services/support_ticket/SupportTicketService.cc
+        constants/RewardTypes.h
+        dto/CustomerAuthDto.h
+        utils/PasswordUtils.h
+        utils/PasswordUtils.cc
+        services/redis/RedisCacheManager.h
+        services/redis/RedisCacheManager.cc
+        dto/CustomerOtpDto.h
+        dto/CustomerVerifyOtpDto.h
+        services/ticket_collection/TicketCollectionService.h
+        dto/TicketCollectionDto.h
 
 )
 
@@ -175,6 +185,9 @@ target_sources(${PROJECT_NAME}
 # ##############################################################################
 
 target_compile_options(${PROJECT_NAME} PRIVATE "-include" "${CMAKE_CURRENT_SOURCE_DIR}/utils/codecvt_helper.h" "-Wno-deprecated-declarations")
+
+set(JWT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(JWT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(test)
 add_subdirectory(external_deps/Bcrypt)

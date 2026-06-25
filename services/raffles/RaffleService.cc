@@ -1477,6 +1477,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::runDraw(const std::string &raf
   }
 }
 
+
 drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffles() {
 
   auto dbClient = drogon::app().getDbClient();
@@ -1565,6 +1566,108 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffles() {
     co_return errorResponse;
   }
 }
+
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffleSchedule() {
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> mapper(dbClient);
+
+  try {
+    // 1. Calculate Sunday and Saturday bounds using the current local time
+    auto now = trantor::Date::now();
+    time_t seconds = static_cast<time_t>(now.microSecondsSinceEpoch() / 1000000);
+    struct tm tm_now;
+    localtime_r(&seconds, &tm_now);
+
+    struct tm tm_sun = tm_now;
+    tm_sun.tm_mday -= tm_now.tm_wday; // Subtract days to get to Sunday (wday: 0=Sun, ..., 6=Sat)
+    tm_sun.tm_hour = 0;
+    tm_sun.tm_min = 0;
+    tm_sun.tm_sec = 0;
+    tm_sun.tm_isdst = -1;
+    time_t sun_secs = std::mktime(&tm_sun);
+    trantor::Date sunday_date(sun_secs * 1000000);
+
+    struct tm tm_sat = tm_now;
+    tm_sat.tm_mday += (6 - tm_now.tm_wday); // Add days to get to Saturday
+    tm_sat.tm_hour = 23;
+    tm_sat.tm_min = 59;
+    tm_sat.tm_sec = 59;
+    tm_sat.tm_isdst = -1;
+    time_t sat_secs = std::mktime(&tm_sat);
+    trantor::Date saturday_date(sat_secs * 1000000 + 999999);
+
+    // 2. Query Raffles starting between Sunday 00:00:00 and Saturday 23:59:59
+    Criteria rangeCriteria =
+        Criteria(Raffles::Cols::_start_time, CompareOperator::GE, sunday_date) &&
+        Criteria(Raffles::Cols::_start_time, CompareOperator::LE, saturday_date);
+
+    auto raffles = co_await mapper.orderBy(Raffles::Cols::_start_time, SortOrder::ASC).findBy(rangeCriteria);
+
+    dto::BaseApiResponse response;
+    response.success = true;
+
+    Json::Value data = Json::arrayValue;
+    const char* DAYS_OF_WEEK[] = {
+        "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+    };
+
+    for (const auto &raffle : raffles) {
+      std::string formattedName = raffle.getValueOfName();
+      std::string status = raffle.getValueOfStatus();
+      std::string dayOfWeek;
+
+      // Resolve weekday from start_time (always, so it is always available)
+      auto startTime = raffle.getValueOfStartTime();
+      time_t start_secs = static_cast<time_t>(startTime.microSecondsSinceEpoch() / 1000000);
+      struct tm tm_start;
+      localtime_r(&start_secs, &tm_start);
+      dayOfWeek = DAYS_OF_WEEK[tm_start.tm_wday];
+
+      if (status == "COMPLETED" || status == "CLOSED") {
+        formattedName += " (Done)";
+      } else if (status == "ACTIVE") {
+        formattedName += " (Ongoing)";
+      } else {
+        formattedName += " (" + dayOfWeek + ")";
+      }
+
+      Json::Value raffleObj;
+      raffleObj["raffleId"]      = raffle.getValueOfId();
+      raffleObj["name"]          = formattedName;
+      raffleObj["slug"]          = raffle.getValueOfSlug();
+      raffleObj["status"]        = status;
+      raffleObj["dayOfWeek"]     = dayOfWeek;
+      raffleObj["prizePool"]     = raffle.getValueOfPrizePool();
+      raffleObj["totalEntries"]  = raffle.getValueOfTotalEntries();
+      raffleObj["winningColour"] = raffle.getValueOfWinningColour();
+      raffleObj["startsAt"]      = raffle.getValueOfStartTime().toDbStringLocal();
+      raffleObj["endsAt"]        = raffle.getValueOfEndTime().toDbStringLocal();
+      raffleObj["drawTime"]      = raffle.getValueOfDrawTime().toDbStringLocal();
+      data.append(raffleObj);
+    }
+
+    response.result = data;
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while fetching weekly raffles.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
 
 
 drogon::Task<dto::BaseApiResponse> RaffleService::getRaffleSummary(const std::string &raffleId) {

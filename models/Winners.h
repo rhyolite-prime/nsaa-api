@@ -38,11 +38,6 @@ namespace drogon_model
 {
 namespace ChopMoneyRaffle
 {
-class Colours;
-class Customers;
-class Draws;
-class PrizeTiers;
-class Tickets;
 
 class Winners
 {
@@ -69,6 +64,9 @@ class Winners
         static const std::string _notified_at;
         static const std::string _created_at;
         static const std::string _updated_at;
+        static const std::string _ticket_alias;
+        static const std::string _colour_name;
+        static const std::string _phone_number;
     };
 
     static const int primaryKeyNumber;
@@ -308,34 +306,44 @@ class Winners
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
+    /**  For column ticket_alias  */
+    ///Get the value of the column ticket_alias, returns the default value if the column is null
+    const std::string &getValueOfTicketAlias() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getTicketAlias() const noexcept;
+    ///Set the value of the column ticket_alias
+    void setTicketAlias(const std::string &pTicketAlias) noexcept;
+    void setTicketAlias(std::string &&pTicketAlias) noexcept;
+    void setTicketAliasToNull() noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 20;  }
+    /**  For column colour_name  */
+    ///Get the value of the column colour_name, returns the default value if the column is null
+    const std::string &getValueOfColourName() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getColourName() const noexcept;
+    ///Set the value of the column colour_name
+    void setColourName(const std::string &pColourName) noexcept;
+    void setColourName(std::string &&pColourName) noexcept;
+    void setColourNameToNull() noexcept;
+
+    /**  For column phone_number  */
+    ///Get the value of the column phone_number, returns the default value if the column is null
+    const std::string &getValueOfPhoneNumber() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPhoneNumber() const noexcept;
+    ///Set the value of the column phone_number
+    void setPhoneNumber(const std::string &pPhoneNumber) noexcept;
+    void setPhoneNumber(std::string &&pPhoneNumber) noexcept;
+    void setPhoneNumberToNull() noexcept;
+
+
+    static size_t getColumnNumber() noexcept {  return 23;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
-    Draws getDraws(const drogon::orm::DbClientPtr &clientPtr) const;
-    void getDraws(const drogon::orm::DbClientPtr &clientPtr,
-                  const std::function<void(Draws)> &rcb,
-                  const drogon::orm::ExceptionCallback &ecb) const;
-    Tickets getTickets(const drogon::orm::DbClientPtr &clientPtr) const;
-    void getTickets(const drogon::orm::DbClientPtr &clientPtr,
-                    const std::function<void(Tickets)> &rcb,
-                    const drogon::orm::ExceptionCallback &ecb) const;
-    Customers getCustomers(const drogon::orm::DbClientPtr &clientPtr) const;
-    void getCustomers(const drogon::orm::DbClientPtr &clientPtr,
-                      const std::function<void(Customers)> &rcb,
-                      const drogon::orm::ExceptionCallback &ecb) const;
-    PrizeTiers getPrizeTiers(const drogon::orm::DbClientPtr &clientPtr) const;
-    void getPrizeTiers(const drogon::orm::DbClientPtr &clientPtr,
-                       const std::function<void(PrizeTiers)> &rcb,
-                       const drogon::orm::ExceptionCallback &ecb) const;
-    Colours getColours(const drogon::orm::DbClientPtr &clientPtr) const;
-    void getColours(const drogon::orm::DbClientPtr &clientPtr,
-                    const std::function<void(Colours)> &rcb,
-                    const drogon::orm::ExceptionCallback &ecb) const;
   private:
     friend drogon::orm::Mapper<Winners>;
     friend drogon::orm::BaseBuilder<Winners, true, true>;
@@ -371,6 +379,9 @@ class Winners
     std::shared_ptr<::trantor::Date> notifiedAt_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+    std::shared_ptr<std::string> ticketAlias_;
+    std::shared_ptr<std::string> colourName_;
+    std::shared_ptr<std::string> phoneNumber_;
     struct MetaData
     {
         const std::string colName_;
@@ -382,7 +393,7 @@ class Winners
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[20]={ false };
+    bool dirtyFlag_[23]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -503,6 +514,21 @@ class Winners
         if(!dirtyFlag_[19])
         {
             needSelection=true;
+        }
+        if(dirtyFlag_[20])
+        {
+            sql += "ticket_alias,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[21])
+        {
+            sql += "colour_name,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[22])
+        {
+            sql += "phone_number,";
+            ++parametersCount;
         }
         if(parametersCount > 0)
         {
@@ -630,6 +656,21 @@ class Winners
         else
         {
             sql +="default,";
+        }
+        if(dirtyFlag_[20])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[21])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[22])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
         }
         if(parametersCount > 0)
         {
