@@ -365,7 +365,15 @@ namespace raffle::services {
       const std::string hashedDefaultPin = bcrypt::generateHash(defaultPin);
 
       Customers customer;
-      customer.setMsisdn(storedPhone);
+
+      //if the phone number starts from zero, replace zero with 233
+
+      std::string normalizedPhone = storedPhone;
+      if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+        normalizedPhone = "233" + normalizedPhone.substr(1);
+      }
+
+      customer.setMsisdn(normalizedPhone);
       customer.setSecretPin(hashedDefaultPin);
       customer.setIsActive(true);
       customer.setCreatedAt(trantor::Date::now());

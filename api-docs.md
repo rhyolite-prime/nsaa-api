@@ -391,66 +391,7 @@ curl --location 'http://localhost:5044/api/v1/auth/customer/send-otp' \
 
 ---
 
-## 10. Verify OTP
-
-**POST** `/auth/customer/verify-otp`
-
-### Description
-
-Validates the OTP that was sent via **Send OTP**. On success, returns a signed JWT token that must be included in all subsequent authenticated requests. The `requestId` links this call back to the original authentication attempt.
-
-### Request Body
-
-| Field       | Type   | Required | Description                                                        |
-| ----------- | ------ | -------- | ------------------------------------------------------------------ |
-| phoneNumber | string | ✅ Yes   | Customer's phone number                                            |
-| requestId   | string | ✅ Yes   | The `requestId` returned by `/auth/customer/send-otp`              |
-| otp         | string | ✅ Yes   | The 6-digit one-time password delivered to the customer's phone    |
-
-### Example Request
-
-```bash
-curl --location 'http://localhost:5044/api/v1/auth/customer/verify-otp' \
---header 'Content-Type: application/json' \
---data '{
-    "phoneNumber": "0553859517",
-    "requestId": "3d194304-4ef8-8650-964b-02ccf927d0df",
-    "otp": "310964"
-}'
-```
-
-### Response
-
-```json
-{
-    "error": null,
-    "message": "Authentication successful",
-    "result": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiOGU5Yzg4MTUtNmFmZC00ZGM5LTgzYzItOGQyNTNjMDk3MTQyIiwiZXhwIjoxNzkxNjM4OTgwLCJpYXQiOjE3ODEyNzA5ODAsImlzcyI6Ik5TQUFfUExBWSJ9.AAZincU7M2IUtijaHySo7Naiuf7cT75HG2fkVU0iaos"
-    },
-    "success": true,
-    "targetUrl": ""
-}
-```
-
-### Response Fields
-
-| Field     | Type    | Description                                                                           |
-| --------- | ------- | ------------------------------------------------------------------------------------- |
-| `token`   | string  | Signed JWT bearer token. Include as `Authorization: Bearer <token>` in future calls  |
-| `success` | boolean | `true` when OTP is valid and authentication completed                                 |
-| `message` | string  | Human-readable status message                                                         |
-
-### Response Codes
-
-* `200 OK` – OTP verified; JWT token returned
-* `400 Bad Request` – Missing or malformed request body
-* `401 Unauthorized` – OTP is incorrect, expired, or `requestId` is invalid
-* `500 Internal Server Error` – Server error
-
----
-
-## 11. Customer Token (PIN Login)
+## 10. Customer Token (PIN Login)
 
 **POST** `/auth/customer/token`
 
@@ -495,7 +436,7 @@ curl --location 'http://localhost:5044/api/v1/auth/customer/token' \
 }
 ```
 
-## 12. Set Customer PIN
+## 11. Set Customer PIN
 
 **POST** `/auth/customer/set-pin`
 
