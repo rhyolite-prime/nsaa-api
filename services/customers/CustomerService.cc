@@ -363,7 +363,7 @@ namespace raffle::services {
     LOG_INFO << "sendOtp: OTP sent successfully for requestId=" << dto.getRequestId()
              << ", phone=" << storedPhone;
 
-    const std::string defaultPinKey = "default:pin:" + dto.getPhoneNumber();
+    const std::string defaultPinKey = "default:pin:" + normalizedPhone;
 
     co_await redisCacheManager.setValueWithTtl(defaultPinKey, defaultPin, 300);
 
@@ -405,7 +405,12 @@ namespace raffle::services {
     auto plugin = drogon::app().getPlugin<plugins::RaffleServicePlugin>();
     auto &redisCacheManager = plugin->getRedisCacheManager();
 
-    const std::string defaultPinKey = "default:pin:" + phoneNumber;
+    std::string normalizedPhone = phoneNumber;
+    if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+      normalizedPhone = "233" + normalizedPhone.substr(1);
+    }
+
+    const std::string defaultPinKey = "default:pin:" + normalizedPhone;
     std::string storedPin = co_await redisCacheManager.getValue(defaultPinKey, true);
 
     dto::BaseApiResponse response;
@@ -413,6 +418,7 @@ namespace raffle::services {
       response.success = false;
       response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
       response.error["message"] = "There is no Login PIN available for " + phoneNumber;
+      response.message = "There is no Login PIN available for " + phoneNumber;
     } else {
       response.success = true;
       response.message = "Keep your account safe. Do not share this PIN with anyone. Your Login PIN is: " + storedPin;
