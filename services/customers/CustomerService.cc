@@ -169,7 +169,12 @@ namespace raffle::services {
     auto dbClient = drogon::app().getDbClient();
     CoroMapper<Customers> mp(dbClient);
 
-    Criteria searchCriteria = Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, phoneNumber) && Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true) && Criteria(Customers::Cols::_is_locked_out, CompareOperator::EQ, false);
+    std::string normalizedPhone = phoneNumber;
+    if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+      normalizedPhone = "233" + normalizedPhone.substr(1);
+    }
+
+    Criteria searchCriteria = Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, normalizedPhone) && Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true) && Criteria(Customers::Cols::_is_locked_out, CompareOperator::EQ, false);
 
     std::string requestId = utils::IdGeneratorUtils::generateGuid();
 
@@ -178,7 +183,7 @@ namespace raffle::services {
 
     std::string authRequestRedisKey = "auth:request:" + requestId;
 
-    co_await redisCacheManager.setValueWithTtl(authRequestRedisKey, phoneNumber, 60);
+    co_await redisCacheManager.setValueWithTtl(authRequestRedisKey, normalizedPhone, 180);
 
     try {
       auto customer = co_await mp.findOne(searchCriteria);
@@ -305,11 +310,16 @@ namespace raffle::services {
     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
     auto &redisCacheManager = plugin->getRedisCacheManager();
 
+    std::string normalizedPhone = dto.getPhoneNumber();
+    if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+      normalizedPhone = "233" + normalizedPhone.substr(1);
+    }
+
     const std::string requestKey = "auth:request:" + dto.getRequestId();
 
     std::string storedPhone = co_await redisCacheManager.getValue(requestKey);
 
-    if (storedPhone.empty() || storedPhone != dto.getPhoneNumber()) {
+    if (storedPhone.empty() || storedPhone != normalizedPhone) {
       dto::BaseApiResponse response;
       response.success = false;
       response.error["code"] = constants::ERR_AUTH_TOKEN_EXPIRED;
@@ -368,11 +378,6 @@ namespace raffle::services {
 
       //if the phone number starts from zero, replace zero with 233
 
-      std::string normalizedPhone = storedPhone;
-      if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
-        normalizedPhone = "233" + normalizedPhone.substr(1);
-      }
-
       customer.setMsisdn(normalizedPhone);
       customer.setSecretPin(hashedDefaultPin);
       customer.setIsActive(true);
@@ -383,7 +388,7 @@ namespace raffle::services {
       LOG_INFO << "sendOtp: Customer created successfully for requestId=" << dto.getRequestId();
     }
 
-    //
+
     dto::BaseApiResponse response;
     response.success = true;
     response.message = "OTP sent successfully.";
