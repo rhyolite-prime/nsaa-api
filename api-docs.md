@@ -338,7 +338,9 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/auth/customer/check-a
 
 ### Description
 
-Generates a one-time password (OTP) and sends it to the customer's phone number via SMS. Requires a valid `requestId` obtained from the **Check Customer Account Status** endpoint. The `requestId` is short-lived (60 seconds) and single-use.
+Generates a one-time password (OTP) and sends it to the customer's phone number via SMS. Requires a valid `requestId` obtained from the **Check Customer Account Status** endpoint. The `requestId` is short-lived (180 seconds) and single-use.
+
+The User will dial *2727# -> Account -> Get Login PIN , to retrieve the Login PIN
 
 ### Request Body
 

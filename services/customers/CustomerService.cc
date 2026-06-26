@@ -230,8 +230,13 @@ namespace raffle::services {
     auto dbClient = drogon::app().getDbClient();
     CoroMapper<Customers> mapper(dbClient);
 
+    std::string normalizedPhone = dto.getPhoneNumber();
+    if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+      normalizedPhone = "233" + normalizedPhone.substr(1);
+    }
+
     Criteria criteria =
-        (Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, dto.getPhoneNumber()) &&
+        (Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, normalizedPhone) &&
          Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true) &&
          Criteria(Customers::Cols::_is_locked_out, CompareOperator::EQ, false));
 
@@ -246,7 +251,7 @@ namespace raffle::services {
 
       std::string storedPhone = co_await redisCacheManager.getValue(requestKey, true);
 
-      if (storedPhone.empty() || storedPhone != dto.getPhoneNumber()) {
+      if (storedPhone.empty() || storedPhone != normalizedPhone) {
 
         response.success = false;
         response.error["code"] = constants::ERR_AUTH_TOKEN_EXPIRED;
