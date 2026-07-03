@@ -28,6 +28,8 @@ endif ()
 
 add_executable(${PROJECT_NAME} main.cc
         plugins/RaffleServicePlugin.h
+        filters/CustomerJwtAuthFilter.h
+        filters/CustomerJwtAuthFilter.cc
         controllers/AuthController.h
         services/colors/ColorService.h
         dto/BaseApiResponse.h

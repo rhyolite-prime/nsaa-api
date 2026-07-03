@@ -238,18 +238,12 @@ Task<HttpResponsePtr> RaffleController::getRngLogs(HttpRequestPtr req) {
 
 }
 
-Task<HttpResponsePtr> RaffleController::runDraw(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::runDraw(HttpRequestPtr req, std::string raffleId) {
 
-  auto jsonBody = req->getJsonObject();
-
-  std::string raffleId;
-
-  if (jsonBody->isString()) {
-    raffleId = jsonBody->asString();
-  } else {
+  if (raffleId.empty()) {
     raffle::dto::BaseApiResponse response;
     response.success = false;
-    response.error["message"] = "Expected a string value for campaign ID";
+    response.error["message"] = "Raffle ID is required";
     auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
     resp->setStatusCode(k400BadRequest);
     co_return resp;
@@ -269,18 +263,12 @@ Task<HttpResponsePtr> RaffleController::runDraw(HttpRequestPtr req) {
 
 }
 
-Task<HttpResponsePtr> RaffleController::runClosure(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::runClosure(HttpRequestPtr req, std::string raffleId) {
 
-  auto jsonBody = req->getJsonObject();
-
-  std::string raffleId;
-
-  if (jsonBody->isString()) {
-    raffleId = jsonBody->asString();
-  } else {
+  if (raffleId.empty()) {
     raffle::dto::BaseApiResponse response;
     response.success = false;
-    response.error["message"] = "Expected a string value for campaign ID";
+    response.error["message"] = "Raffle ID is required";
     auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
     resp->setStatusCode(k400BadRequest);
     co_return resp;
@@ -300,18 +288,12 @@ Task<HttpResponsePtr> RaffleController::runClosure(HttpRequestPtr req) {
 }
 
 
-Task<HttpResponsePtr> RaffleController::runCompletion(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::runCompletion(HttpRequestPtr req, std::string raffleId) {
 
-  auto jsonBody = req->getJsonObject();
-
-  std::string raffleId;
-
-  if (jsonBody->isString()) {
-    raffleId = jsonBody->asString();
-  } else {
+  if (raffleId.empty()) {
     raffle::dto::BaseApiResponse response;
     response.success = false;
-    response.error["message"] = "Expected a string value for campaign ID";
+    response.error["message"] = "Raffle ID is required";
     auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
     resp->setStatusCode(k400BadRequest);
     co_return resp;
@@ -342,17 +324,13 @@ Task<HttpResponsePtr> RaffleController::executeDraw(HttpRequestPtr req) {
 
 }
 
-Task<HttpResponsePtr> RaffleController::activate(HttpRequestPtr req) {
-  auto jsonBody = req->getJsonObject();
+Task<HttpResponsePtr> RaffleController::activate(HttpRequestPtr req,  std::string raffleId) {
 
-  std::string raffleId;
 
-  if (jsonBody->isString()) {
-    raffleId = jsonBody->asString();
-  } else {
+  if (raffleId.empty()) {
     raffle::dto::BaseApiResponse response;
     response.success = false;
-    response.error["message"] = "Expected a string value for campaign ID";
+    response.error["message"] = "Raffle ID is required";
     auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
     resp->setStatusCode(k400BadRequest);
     co_return resp;

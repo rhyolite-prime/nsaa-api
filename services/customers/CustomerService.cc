@@ -598,7 +598,7 @@ namespace raffle::services {
       profile["accountNumber"] = customer.getValueOfAccountNumber();
       profile["isActive"] = customer.getValueOfIsActive();
       profile["createdAt"] = customer.getValueOfCreatedAt().toDbStringLocal();
-      response.result["profile"] = profile;
+      response.result = profile;
       co_return response;
     } catch (const drogon::orm::UnexpectedRows &) {
       dto::BaseApiResponse response;

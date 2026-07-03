@@ -312,7 +312,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       raffleActivationQuartzJobDto.description = "Activates raffle at scheduled start time";
       raffleActivationQuartzJobDto.customData.uniqueId = newDrawResult.getValueOfId();
       // Default or empty callbackUrl as not specified by user context
-      raffleActivationQuartzJobDto.customData.callbackUrl = raffleActivationCallBackUrl;
+      raffleActivationQuartzJobDto.customData.callbackUrl = raffleActivationCallBackUrl +  newRaffle.getValueOfId();
 
       const auto& activationStartTime = result.getValueOfStartTime();
       auto activationEndTime = activationStartTime.after(5 * 60);  // 5 mins apart
@@ -331,7 +331,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       raffleClosureQuartzJobDto.description = "Closes raffle at scheduled start time";
       raffleClosureQuartzJobDto.customData.uniqueId = newDrawResult.getValueOfId();
       // Default or empty callbackUrl as not specified by user context
-      raffleClosureQuartzJobDto.customData.callbackUrl = raffleClosureCallBackUrl;
+      raffleClosureQuartzJobDto.customData.callbackUrl = raffleClosureCallBackUrl + newRaffle.getValueOfId();
 
 
       const auto& closureStartTime = result.getValueOfEndTime();
@@ -351,7 +351,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       raffleDrawQuartzJobDto.description = "Initiates raffle draw at scheduled start time";
       raffleDrawQuartzJobDto.customData.uniqueId = newDrawResult.getValueOfId();
       // Default or empty callbackUrl as not specified by user context
-      raffleDrawQuartzJobDto.customData.callbackUrl = raffleDrawCallBackUrl;
+      raffleDrawQuartzJobDto.customData.callbackUrl = raffleDrawCallBackUrl +  newRaffle.getValueOfId() ;
 
       const auto& drawStartTime = result.getValueOfDrawTime();
       auto drawEndTime = drawStartTime.after(5 * 60);
@@ -459,14 +459,11 @@ drogon::Task<dto::BaseApiResponse> RaffleService::updateAsync(const dto::UpdateR
 
         if (drawTimeChanged) {
           auto drawTimeDate = existingRaffle.getValueOfDrawTime();
-          time_t seconds = static_cast<time_t>(
-              drawTimeDate.microSecondsSinceEpoch() / 1000000);
+          time_t seconds = static_cast<time_t>(drawTimeDate.microSecondsSinceEpoch() / 1000000);
           struct tm tm_time;
           localtime_r(&seconds, &tm_time);
           char buf[32];
-          snprintf(buf, sizeof(buf), "%04d%02d%02d-%02d%02d",
-                   tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
-                   tm_time.tm_hour, tm_time.tm_min);
+          snprintf(buf, sizeof(buf), "%04d%02d%02d-%02d%02d", tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour, tm_time.tm_min);
           draw.setDrawCode(std::string(buf));
           draw.setDrawDate(drawTimeDate);
         }
@@ -537,8 +534,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::deleteRaffle(const std::string
       co_await drawMapper.deleteBy(
           Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
     } catch (const std::exception &e) {
-      LOG_ERROR << "Failed to delete associated draw for raffle " << raffleId
-                << ": " << e.what();
+      LOG_ERROR << "Failed to delete associated draw for raffle " << raffleId  << ": " << e.what();
       // Continue with raffle deletion even if draw deletion fails (or should we
       // fail?) Given the requirement, let's proceed but log the error.
     }

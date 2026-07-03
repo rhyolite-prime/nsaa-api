@@ -44,7 +44,6 @@ Task<HttpResponsePtr> CustomersController::getStats(HttpRequestPtr req) {
 
 drogon::Task<HttpResponsePtr> CustomersController::getProfileDetails(HttpRequestPtr req) {
 
-
   auto customerId = req->attributes()->get<std::string>("customerId");
 
   auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
