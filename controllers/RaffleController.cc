@@ -256,9 +256,9 @@ Task<HttpResponsePtr> RaffleController::runDraw(HttpRequestPtr req, std::string 
 
   raffle::dto::BaseApiResponse response;
   response.success = true;
-  response.error["message"] = "Raffle draw executed successfully";
+  response.message = "Raffle draw executed successfully";
   auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-  resp->setStatusCode(k400BadRequest);
+  resp->setStatusCode(k200OK);
   co_return resp;
 
 }
@@ -281,9 +281,9 @@ Task<HttpResponsePtr> RaffleController::runClosure(HttpRequestPtr req, std::stri
 
   raffle::dto::BaseApiResponse response;
   response.success = true;
-  response.error["message"] = "Raffle closed successfully";
+  response.message = "Raffle closed successfully";
   auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-  resp->setStatusCode(k400BadRequest);
+  resp->setStatusCode(k200OK);
   co_return resp;
 }
 
@@ -306,9 +306,9 @@ Task<HttpResponsePtr> RaffleController::runCompletion(HttpRequestPtr req, std::s
 
   raffle::dto::BaseApiResponse response;
   response.success = true;
-  response.error["message"] = "Raffle completed successfully";
+  response.message = "Raffle completed successfully";
   auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-  resp->setStatusCode(k400BadRequest);
+  resp->setStatusCode(k200OK);
   co_return resp;
 }
 
@@ -343,9 +343,9 @@ Task<HttpResponsePtr> RaffleController::activate(HttpRequestPtr req,  std::strin
 
   raffle::dto::BaseApiResponse response;
   response.success = true;
-  response.error["message"] = "Raffle activated successfully";
+  response.message = "Raffle activated successfully";
   auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-  resp->setStatusCode(k400BadRequest);
+  resp->setStatusCode(k200OK);
   co_return resp;
 }
 
