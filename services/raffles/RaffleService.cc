@@ -264,7 +264,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
     // Ensure total_entries has a default if not set automatically
     newRaffle.setTotalEntries(0);
 
-    auto result = co_await mapper.insert(newRaffle);
+    auto newRaffleResult = co_await mapper.insert(newRaffle);
 
     // Create a corresponding Draw in PENDING state
     try {
@@ -272,7 +272,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       CoroMapper<Draws> drawMapper(dbClient);
       Draws newDraw;
 
-      auto drawTimeDate = result.getValueOfDrawTime();
+      auto drawTimeDate = newRaffleResult.getValueOfDrawTime();
       time_t seconds =
           static_cast<time_t>(drawTimeDate.microSecondsSinceEpoch() / 1000000);
       struct tm tm_time;
@@ -282,11 +282,11 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       std::string drawCode(buf);
       newDraw.setDrawCode(drawCode);
       newDraw.setAlias(dto.getSlug());
-      newDraw.setRaffleId(result.getValueOfId());
+      newDraw.setRaffleId(newRaffleResult.getValueOfId());
       newDraw.setStatus("SCHEDULED");
 
       // Set draw date and time from raffle's drawTime
-      newDraw.setDrawDate(result.getValueOfDrawTime());
+      newDraw.setDrawDate(newRaffleResult.getValueOfDrawTime());
 
       // For draw_time (string in Draws model, but it's a timestamp without time
       // zone in DB) Wait, Draws.h says drawTime_ is shared_ptr<string>? Let's
@@ -308,13 +308,13 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       std::string raffleActivationCallBackUrl = customConfig["QuartzSchedulerApi"]["RaffleActivationCallBackUrl"].asString();
 
       dto::QuartzJobDto raffleActivationQuartzJobDto;
-      raffleActivationQuartzJobDto.name = "raffle-activation-" + result.getValueOfId();
+      raffleActivationQuartzJobDto.name = "raffle-activation-" + newRaffleResult.getValueOfId();
       raffleActivationQuartzJobDto.description = "Activates raffle at scheduled start time";
-      raffleActivationQuartzJobDto.customData.uniqueId = newDrawResult.getValueOfId();
+      raffleActivationQuartzJobDto.customData.uniqueId = newRaffleResult.getValueOfId();
       // Default or empty callbackUrl as not specified by user context
-      raffleActivationQuartzJobDto.customData.callbackUrl = raffleActivationCallBackUrl;
+      raffleActivationQuartzJobDto.customData.callbackUrl = raffleActivationCallBackUrl +  newRaffleResult.getValueOfId();
 
-      const auto& activationStartTime = result.getValueOfStartTime();
+      const auto& activationStartTime = newRaffleResult.getValueOfStartTime();
       auto activationEndTime = activationStartTime.after(5 * 60);  // 5 mins apart
 
       raffleActivationQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(activationStartTime);
@@ -327,17 +327,17 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       std::string raffleClosureCallBackUrl = customConfig["QuartzSchedulerApi"]["RaffleClosureCallBackUrl"].asString();
 
       dto::QuartzJobDto raffleClosureQuartzJobDto;
-      raffleClosureQuartzJobDto.name = "raffle-closure-" + result.getValueOfId();
+      raffleClosureQuartzJobDto.name = "raffle-closure-" + newRaffleResult.getValueOfId();
       raffleClosureQuartzJobDto.description = "Closes raffle at scheduled start time";
-      raffleClosureQuartzJobDto.customData.uniqueId = newDrawResult.getValueOfId();
+      raffleClosureQuartzJobDto.customData.uniqueId = newRaffleResult.getValueOfId();
       // Default or empty callbackUrl as not specified by user context
-      raffleClosureQuartzJobDto.customData.callbackUrl = raffleClosureCallBackUrl;
+      raffleClosureQuartzJobDto.customData.callbackUrl = raffleClosureCallBackUrl + newRaffleResult.getValueOfId();
 
 
-      const auto& closureStartTime = result.getValueOfEndTime();
+      const auto& closureStartTime = newRaffleResult.getValueOfEndTime();
       auto closureEndTime = closureStartTime.after(5 * 60);
 
-      raffleClosureQuartzJobDto.schedule = raffle::utils::CronUtils::buildCronExpression(closureStartTime);
+      raffleClosureQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(closureStartTime);
       raffleClosureQuartzJobDto.startDate = closureStartTime.after(-5 * 60).toDbStringLocal();
       raffleClosureQuartzJobDto.endDate = closureEndTime.toDbStringLocal();
 
@@ -347,13 +347,13 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       std::string raffleDrawCallBackUrl = customConfig["QuartzSchedulerApi"]["RaffleDrawCallBackUrl"].asString();
 
       dto::QuartzJobDto raffleDrawQuartzJobDto;
-      raffleDrawQuartzJobDto.name = "raffle-draw-" + result.getValueOfId();
+      raffleDrawQuartzJobDto.name = "raffle-draw-" + newRaffleResult.getValueOfId();
       raffleDrawQuartzJobDto.description = "Initiates raffle draw at scheduled start time";
-      raffleDrawQuartzJobDto.customData.uniqueId = newDrawResult.getValueOfId();
+      raffleDrawQuartzJobDto.customData.uniqueId = newRaffleResult.getValueOfId();
       // Default or empty callbackUrl as not specified by user context
-      raffleDrawQuartzJobDto.customData.callbackUrl = raffleDrawCallBackUrl;
+      raffleDrawQuartzJobDto.customData.callbackUrl = raffleDrawCallBackUrl +  newRaffleResult.getValueOfId() ;
 
-      const auto& drawStartTime = result.getValueOfDrawTime();
+      const auto& drawStartTime = newRaffleResult.getValueOfDrawTime();
       auto drawEndTime = drawStartTime.after(5 * 60);
 
       raffleDrawQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(drawStartTime);
@@ -373,7 +373,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
     response.success = true;
     response.message = "Raffle created successfully";
     response.targetUrl = "";
-    response.result = result.getValueOfId();
+    response.result = newRaffleResult.getValueOfId();
 
     co_return response;
 
@@ -459,14 +459,11 @@ drogon::Task<dto::BaseApiResponse> RaffleService::updateAsync(const dto::UpdateR
 
         if (drawTimeChanged) {
           auto drawTimeDate = existingRaffle.getValueOfDrawTime();
-          time_t seconds = static_cast<time_t>(
-              drawTimeDate.microSecondsSinceEpoch() / 1000000);
+          time_t seconds = static_cast<time_t>(drawTimeDate.microSecondsSinceEpoch() / 1000000);
           struct tm tm_time;
           localtime_r(&seconds, &tm_time);
           char buf[32];
-          snprintf(buf, sizeof(buf), "%04d%02d%02d-%02d%02d",
-                   tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
-                   tm_time.tm_hour, tm_time.tm_min);
+          snprintf(buf, sizeof(buf), "%04d%02d%02d-%02d%02d", tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour, tm_time.tm_min);
           draw.setDrawCode(std::string(buf));
           draw.setDrawDate(drawTimeDate);
         }
@@ -537,8 +534,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::deleteRaffle(const std::string
       co_await drawMapper.deleteBy(
           Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
     } catch (const std::exception &e) {
-      LOG_ERROR << "Failed to delete associated draw for raffle " << raffleId
-                << ": " << e.what();
+      LOG_ERROR << "Failed to delete associated draw for raffle " << raffleId  << ": " << e.what();
       // Continue with raffle deletion even if draw deletion fails (or should we
       // fail?) Given the requirement, let's proceed but log the error.
     }

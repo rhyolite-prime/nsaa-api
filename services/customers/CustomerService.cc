@@ -169,7 +169,12 @@ namespace raffle::services {
     auto dbClient = drogon::app().getDbClient();
     CoroMapper<Customers> mp(dbClient);
 
-    Criteria searchCriteria = Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, phoneNumber) && Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true) && Criteria(Customers::Cols::_is_locked_out, CompareOperator::EQ, false);
+    std::string normalizedPhone = phoneNumber;
+    if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+      normalizedPhone = "233" + normalizedPhone.substr(1);
+    }
+
+    Criteria searchCriteria = Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, normalizedPhone) && Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true) && Criteria(Customers::Cols::_is_locked_out, CompareOperator::EQ, false);
 
     std::string requestId = utils::IdGeneratorUtils::generateGuid();
 
@@ -178,7 +183,7 @@ namespace raffle::services {
 
     std::string authRequestRedisKey = "auth:request:" + requestId;
 
-    co_await redisCacheManager.setValueWithTtl(authRequestRedisKey, phoneNumber, 60);
+    co_await redisCacheManager.setValueWithTtl(authRequestRedisKey, normalizedPhone, 180);
 
     try {
       auto customer = co_await mp.findOne(searchCriteria);
@@ -225,8 +230,13 @@ namespace raffle::services {
     auto dbClient = drogon::app().getDbClient();
     CoroMapper<Customers> mapper(dbClient);
 
+    std::string normalizedPhone = dto.getPhoneNumber();
+    if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+      normalizedPhone = "233" + normalizedPhone.substr(1);
+    }
+
     Criteria criteria =
-        (Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, dto.getPhoneNumber()) &&
+        (Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, normalizedPhone) &&
          Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true) &&
          Criteria(Customers::Cols::_is_locked_out, CompareOperator::EQ, false));
 
@@ -241,7 +251,7 @@ namespace raffle::services {
 
       std::string storedPhone = co_await redisCacheManager.getValue(requestKey, true);
 
-      if (storedPhone.empty() || storedPhone != dto.getPhoneNumber()) {
+      if (storedPhone.empty() || storedPhone != normalizedPhone) {
 
         response.success = false;
         response.error["code"] = constants::ERR_AUTH_TOKEN_EXPIRED;
@@ -305,11 +315,16 @@ namespace raffle::services {
     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
     auto &redisCacheManager = plugin->getRedisCacheManager();
 
+    std::string normalizedPhone = dto.getPhoneNumber();
+    if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+      normalizedPhone = "233" + normalizedPhone.substr(1);
+    }
+
     const std::string requestKey = "auth:request:" + dto.getRequestId();
 
     std::string storedPhone = co_await redisCacheManager.getValue(requestKey);
 
-    if (storedPhone.empty() || storedPhone != dto.getPhoneNumber()) {
+    if (storedPhone.empty() || storedPhone != normalizedPhone) {
       dto::BaseApiResponse response;
       response.success = false;
       response.error["code"] = constants::ERR_AUTH_TOKEN_EXPIRED;
@@ -353,7 +368,7 @@ namespace raffle::services {
     LOG_INFO << "sendOtp: OTP sent successfully for requestId=" << dto.getRequestId()
              << ", phone=" << storedPhone;
 
-    const std::string defaultPinKey = "default:pin:" + dto.getPhoneNumber();
+    const std::string defaultPinKey = "default:pin:" + normalizedPhone;
 
     co_await redisCacheManager.setValueWithTtl(defaultPinKey, defaultPin, 300);
 
@@ -365,7 +380,10 @@ namespace raffle::services {
       const std::string hashedDefaultPin = bcrypt::generateHash(defaultPin);
 
       Customers customer;
-      customer.setMsisdn(storedPhone);
+
+      //if the phone number starts from zero, replace zero with 233
+
+      customer.setMsisdn(normalizedPhone);
       customer.setSecretPin(hashedDefaultPin);
       customer.setIsActive(true);
       customer.setCreatedAt(trantor::Date::now());
@@ -375,7 +393,7 @@ namespace raffle::services {
       LOG_INFO << "sendOtp: Customer created successfully for requestId=" << dto.getRequestId();
     }
 
-    //
+
     dto::BaseApiResponse response;
     response.success = true;
     response.message = "OTP sent successfully.";
@@ -392,7 +410,12 @@ namespace raffle::services {
     auto plugin = drogon::app().getPlugin<plugins::RaffleServicePlugin>();
     auto &redisCacheManager = plugin->getRedisCacheManager();
 
-    const std::string defaultPinKey = "default:pin:" + phoneNumber;
+    std::string normalizedPhone = phoneNumber;
+    if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+      normalizedPhone = "233" + normalizedPhone.substr(1);
+    }
+
+    const std::string defaultPinKey = "default:pin:" + normalizedPhone;
     std::string storedPin = co_await redisCacheManager.getValue(defaultPinKey, true);
 
     dto::BaseApiResponse response;
@@ -400,6 +423,7 @@ namespace raffle::services {
       response.success = false;
       response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
       response.error["message"] = "There is no Login PIN available for " + phoneNumber;
+      response.message = "There is no Login PIN available for " + phoneNumber;
     } else {
       response.success = true;
       response.message = "Keep your account safe. Do not share this PIN with anyone. Your Login PIN is: " + storedPin;
@@ -574,7 +598,7 @@ namespace raffle::services {
       profile["accountNumber"] = customer.getValueOfAccountNumber();
       profile["isActive"] = customer.getValueOfIsActive();
       profile["createdAt"] = customer.getValueOfCreatedAt().toDbStringLocal();
-      response.result["profile"] = profile;
+      response.result = profile;
       co_return response;
     } catch (const drogon::orm::UnexpectedRows &) {
       dto::BaseApiResponse response;

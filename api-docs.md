@@ -338,7 +338,9 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/auth/customer/check-a
 
 ### Description
 
-Generates a one-time password (OTP) and sends it to the customer's phone number via SMS. Requires a valid `requestId` obtained from the **Check Customer Account Status** endpoint. The `requestId` is short-lived (60 seconds) and single-use.
+Generates a one-time password (OTP) and sends it to the customer's phone number via SMS. Requires a valid `requestId` obtained from the **Check Customer Account Status** endpoint. The `requestId` is short-lived (180 seconds) and single-use.
+
+The User will dial *2727# -> Account -> Get Login PIN , to retrieve the Login PIN
 
 ### Request Body
 
@@ -391,66 +393,7 @@ curl --location 'http://localhost:5044/api/v1/auth/customer/send-otp' \
 
 ---
 
-## 10. Verify OTP
-
-**POST** `/auth/customer/verify-otp`
-
-### Description
-
-Validates the OTP that was sent via **Send OTP**. On success, returns a signed JWT token that must be included in all subsequent authenticated requests. The `requestId` links this call back to the original authentication attempt.
-
-### Request Body
-
-| Field       | Type   | Required | Description                                                        |
-| ----------- | ------ | -------- | ------------------------------------------------------------------ |
-| phoneNumber | string | ✅ Yes   | Customer's phone number                                            |
-| requestId   | string | ✅ Yes   | The `requestId` returned by `/auth/customer/send-otp`              |
-| otp         | string | ✅ Yes   | The 6-digit one-time password delivered to the customer's phone    |
-
-### Example Request
-
-```bash
-curl --location 'http://localhost:5044/api/v1/auth/customer/verify-otp' \
---header 'Content-Type: application/json' \
---data '{
-    "phoneNumber": "0553859517",
-    "requestId": "3d194304-4ef8-8650-964b-02ccf927d0df",
-    "otp": "310964"
-}'
-```
-
-### Response
-
-```json
-{
-    "error": null,
-    "message": "Authentication successful",
-    "result": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiOGU5Yzg4MTUtNmFmZC00ZGM5LTgzYzItOGQyNTNjMDk3MTQyIiwiZXhwIjoxNzkxNjM4OTgwLCJpYXQiOjE3ODEyNzA5ODAsImlzcyI6Ik5TQUFfUExBWSJ9.AAZincU7M2IUtijaHySo7Naiuf7cT75HG2fkVU0iaos"
-    },
-    "success": true,
-    "targetUrl": ""
-}
-```
-
-### Response Fields
-
-| Field     | Type    | Description                                                                           |
-| --------- | ------- | ------------------------------------------------------------------------------------- |
-| `token`   | string  | Signed JWT bearer token. Include as `Authorization: Bearer <token>` in future calls  |
-| `success` | boolean | `true` when OTP is valid and authentication completed                                 |
-| `message` | string  | Human-readable status message                                                         |
-
-### Response Codes
-
-* `200 OK` – OTP verified; JWT token returned
-* `400 Bad Request` – Missing or malformed request body
-* `401 Unauthorized` – OTP is incorrect, expired, or `requestId` is invalid
-* `500 Internal Server Error` – Server error
-
----
-
-## 11. Customer Token (PIN Login)
+## 10. Customer Token (PIN Login)
 
 **POST** `/auth/customer/token`
 
@@ -461,11 +404,11 @@ Authenticates a customer using their phone number and PIN. Returns a signed JWT 
 
 ### Request Body
 
-| Field       | Type   | Required | Description                                                   |
-| ----------- | ------ | -------- | ------------------------------------------------------------- |
-| phoneNumber | string | ✅ Yes   | Customer's phone number                                       |
-| requestId   | string | ✅ Yes   | The `requestId` from `/auth/customer/check-account-status`    |
-| pin         | string | ✅ Yes   | The customer's 6-digit PIN                                    |
+| Field       | Type   | Required | Description                                                |
+| ----------- | ------ | -------- |------------------------------------------------------------|
+| phoneNumber | string | ✅ Yes   | Customer's phone number                                    |
+| requestId   | string | ✅ Yes   | The `requestId` from `/auth/customer/check-account-status` |
+| pin         | string | ✅ Yes   | The customer's 4-6 digit PIN                               |
 
 ### Example Request
 
@@ -495,49 +438,8 @@ curl --location 'http://localhost:5044/api/v1/auth/customer/token' \
 }
 ```
 
-## 12. Set Customer PIN
 
-**POST** `/auth/customer/set-pin`
-
-### Description
-
-Sets a PIN for a customer account. Used during initial registration or PIN reset flows, after OTP verification has been completed.
-
-
-### Request Body
-
-| Field       | Type   | Required | Description                                                   |
-| ----------- | ------ | -------- | ------------------------------------------------------------- |
-| phoneNumber | string | ✅ Yes   | Customer's phone number                                       |
-| requestId   | string | ✅ Yes   | The `requestId` from the preceding OTP verification step      |
-| pin         | string | ✅ Yes   | The 6-digit PIN to set for the account                        |
-
-### Example Request
-
-```bash
-curl --location 'http://localhost:5044/api/v1/auth/customer/set-pin' \
---header 'Content-Type: application/json' \
---data '{
-    "phoneNumber": "0553859517",
-    "requestId": "3d194304-4ef8-8650-964b-02ccf927d0df",
-    "pin": "310964"
-}'
-```
-
-### Example Request
-
-```json
-{
-    "error": null,
-    "message": "PIN set successfully.",
-    "result": null,
-    "success": true,
-    "targetUrl": ""
-}
-```
-
-
-## 13. Reset Customer PIN
+## 11. Reset Customer PIN
 
 **POST** `/auth/customer/reset-pin`
 
@@ -548,11 +450,12 @@ Sets a PIN for a customer account. Used during initial registration or PIN reset
 
 ### Request Body
 
-| Field       | Type   | Required | Description                                                   |
-| ----------- | ------ | -------- | ------------------------------------------------------------- |
-| phoneNumber | string | ✅ Yes   | Customer's phone number                                       |
-| requestId   | string | ✅ Yes   | The `requestId` from the preceding OTP verification step      |
-| pin         | string | ✅ Yes   | The 6-digit PIN to set for the account                        |
+| Field       | Type   | Required | Description                                              |
+|-------------| ------ | -------- |----------------------------------------------------------|
+| phoneNumber | string | ✅ Yes   | Customer's phone number                                  |
+| requestId   | string | ✅ Yes   | The `requestId` from the preceding OTP verification step |
+| oldPin      | string | ✅ Yes   | The 4-6 digit Old PIN to set for the account             |
+| newPin      | string | ✅ Yes   | The 4-6 digit New PIN to set for the account             |
 
 ### Example Request
 
@@ -580,6 +483,137 @@ curl --location 'http://localhost:5044/api/v1/auth/customer/set-pin' \
 }
 ```
 
+## 13. Get Customer Transactions History
+
+**GET** `/customers/get-transaction-history`
+
+### Description
+
+Gets a paginated list of transactions for a customer.
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/get-transaction-history' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiMzExYzg4MDQtMmE1My00Yjg5LWE3OWUtMDE4NDc0N2FjZTA1IiwiZXhwIjoxNzkzMTk5NTcxLCJpYXQiOjE3ODI4MzE1NzEsImlzcyI6Ik5TQUFfUExBWSJ9.onHw4U5Wdktwe2ZQLmdN8fjpZ1WRiDYXaOhe3eVLhOs'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "id": "311c8804-2a53-4b89-a79e-0184747ace05",
+        "ticketNumber": "CM-2024-001",
+        "drawId": "draw_123",
+        "raffleId": "raffle_456",
+        "colourId": "311c8804-2a53-4b89-a79e-0184747ace02",
+        "colourName": "Red",
+        "entryFee": 10.50,
+        "quantity": 2,
+        "totalAmount": 21.00,
+        "paymentStatus": "Paid",
+        "createdAt": "2024-01-15 14:30:00",
+        "ticketAlias": "G87"
+      },
+      {
+        "id": "311c8804-2a53-4b89-a79e-0184747ace09",
+        "ticketNumber": "TK-2024-002",
+        "drawId": "draw_123",
+        "raffleId": "raffle_456",
+        "colourId": "col_blue",
+        "colourName": "Gold",
+        "entryFee": 10.50,
+        "quantity": 1,
+        "totalAmount": 10.50,
+        "paymentStatus": "Pending",
+        "createdAt": "2024-01-15 15:45:00",
+        "ticketAlias": "G98"
+      }
+    ]
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+
+## 14. Get Customer Stats
+
+**GET** `/customers/get-stats`
+
+### Description
+
+Gets basic customer statistics.
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/get-stats' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiMzExYzg4MDQtMmE1My00Yjg5LWE3OWUtMDE4NDc0N2FjZTA1IiwiZXhwIjoxNzkzMTk5NTcxLCJpYXQiOjE3ODI4MzE1NzEsImlzcyI6Ik5TQUFfUExBWSJ9.onHw4U5Wdktwe2ZQLmdN8fjpZ1WRiDYXaOhe3eVLhOs'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "numberOfEntries": 0,
+    "numberOfWins": 0,
+    "totalSpent": "0.00",
+    "totalWon": "0.00"
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+
+## 15. Get Customer Profile Details
+
+**GET** `/customers/profile-details`
+
+### Description
+
+Gets customer profile details.
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/profile-details' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiMzExYzg4MDQtMmE1My00Yjg5LWE3OWUtMDE4NDc0N2FjZTA1IiwiZXhwIjoxNzkzMTk5NTcxLCJpYXQiOjE3ODI4MzE1NzEsImlzcyI6Ik5TQUFfUExBWSJ9.onHw4U5Wdktwe2ZQLmdN8fjpZ1WRiDYXaOhe3eVLhOs'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "accountName": "",
+    "accountNumber": "",
+    "accountProvider": "",
+    "accountType": "",
+    "createdAt": "2026-06-30 14:59:15.261228",
+    "email": "",
+    "firstName": "",
+    "ghanaCardNumber": "",
+    "id": "311c8804-2a53-4b89-a79e-0184747ace05",
+    "isActive": true,
+    "lastName": "",
+    "msisdn": "233503789505"
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
 
 ## 14. List Colors
 
