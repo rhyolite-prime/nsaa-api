@@ -8,9 +8,11 @@
 #include <drogon/drogon.h>
 #include <drogon/utils/coroutine.h>
 
+#include "dto/ChangeCustomerPinDto.h"
 #include "dto/CustomerAuthDto.h"
 #include "dto/CustomerOtpDto.h"
 #include "dto/CustomerVerifyOtpDto.h"
+#include "dto/InitializeTicketPurchaseDto.h"
 
 
 namespace raffle::services {
@@ -25,12 +27,17 @@ namespace raffle::services {
         drogon::Task<dto::BaseApiResponse> validateCredentials(const dto::CustomerAuthDto &dto);
         drogon::Task<dto::BaseApiResponse> sendOtp(const dto::CustomerOtpDto &dto);
         drogon::Task<dto::BaseApiResponse> verifyOtp(const dto::CustomerVerifyOtpDto &dto);
+        drogon::Task<dto::BaseApiResponse> resetPin(const std::string &phoneNumber);
+        drogon::Task<dto::BaseApiResponse> changePin(const dto::ChangeCustomerPinDto &dto);
+
 
         //customer dashboard related endpoints
         drogon::Task<dto::BaseApiResponse> getTransactionHistory(const std::string &customerId);
         drogon::Task<dto::BaseApiResponse> getStats(const std::string &customerId);
         drogon::Task<dto::BaseApiResponse> getProfileDetails(const std::string &customerId);
-
+        drogon::Task<dto::BaseApiResponse> initTicketPurchase(const dto::InitializeTicketPurchaseDto &dto, const std::string &customerId);
+        drogon::Task<dto::BaseApiResponse> getTickets(const std::string &customerId, int pageNo, int pageSize, const std::string &query);
+        drogon::Task<dto::BaseApiResponse> getRaffleHistory(const std::string &customerId, int pageNo, int pageSize, const std::string &query);
     };
 
 }

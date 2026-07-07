@@ -222,8 +222,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     // 3. Customer Management
     CoroMapper<Customers> customerMapper(dbClient);
     std::string customerId;
-    auto existingCustomers = co_await customerMapper.findBy(Criteria(
-        Customers::Cols::_msisdn, CompareOperator::EQ, dto.getCustomerPhone()));
+    auto existingCustomers = co_await customerMapper.findBy(Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, dto.getCustomerPhone()));
 
     if (!existingCustomers.empty()) {
       customerId = existingCustomers[0].getValueOfId();
@@ -271,6 +270,23 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     std::ostringstream ticketNumberStream;
     ticketNumberStream << std::put_time(&localTime, "%Y%m%d%H%M%S");
     newTicket.setTicketNumber(ticketNumberStream.str());
+
+    std::string raffleName = activeRaffle.getValueOfName();
+    std::string initials = "";
+    bool newWord = true;
+    for (char c : raffleName) {
+        if (std::isspace(c)) {
+            newWord = true;
+        } else if (newWord && std::isalpha(c)) {
+            initials += std::toupper(c);
+            newWord = false;
+        }
+    }
+
+    auto ticketCount = co_await ticketMapper.count(Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ, activeRaffle.getValueOfId()));
+    std::ostringstream aliasStream;
+    aliasStream << initials << "-" << std::setfill('0') << std::setw(3) << (ticketCount + 1);
+    newTicket.setTicketAlias(aliasStream.str());
 
     auto &app = drogon::app();
     auto customConfig = app.getCustomConfig();
@@ -322,6 +338,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
         response.message = "Ticket created successfully. Please complete payment.";
         response.result["ticketId"] = result.getValueOfId();
         response.result["ticketNumber"] = result.getValueOfTicketNumber();
+        response.result["ticketAlias"] = result.getValueOfTicketAlias();
         response.result["paymentReference"] = clientReference;
         response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
         response.result["selectedColour"] = colourName;
@@ -389,6 +406,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
         response.message = promptMessage;
         response.result["ticketId"] = result.getValueOfId();
         response.result["ticketNumber"] = result.getValueOfTicketNumber();
+        response.result["ticketAlias"] = result.getValueOfTicketNumber();
         response.result["paymentReference"] = clientReference;
         response.result["selectedColour"] = colourName;
       } else {
