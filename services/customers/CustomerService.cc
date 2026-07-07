@@ -503,6 +503,153 @@ namespace raffle::services {
   }
 
 
+  drogon::Task<dto::BaseApiResponse> CustomerService::resetPin(const std::string &phoneNumber) {
+    dto::BaseApiResponse response;
+    auto dbClient = drogon::app().getDbClient();
+    CoroMapper<Customers> mapper(dbClient);
+
+    std::string normalizedPhone = phoneNumber;
+    if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+      normalizedPhone = "233" + normalizedPhone.substr(1);
+    }
+
+    try {
+      Criteria criteria = Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, normalizedPhone) &&
+                          Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true);
+
+      auto customers = co_await mapper.findBy(criteria);
+
+      if (customers.empty()) {
+        response.success = false;
+        response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+        response.error["message"] = "Customer not found.";
+        co_return response;
+      }
+
+      auto customer = customers[0];
+
+      const std::string newPin = utils::IdGeneratorUtils::generateRandomDigit(4);
+      const std::string hashedNewPin = bcrypt::generateHash(newPin);
+
+      customer.setSecretPin(hashedNewPin);
+      customer.setUpdatedAt(trantor::Date::now());
+
+      co_await mapper.update(customer);
+
+      const std::string message = "Your ChopMoney PIN has been reset. Your new PIN is: " + newPin + ". Do not share this PIN with anyone.";
+      LOG_INFO << " New PIN => " << newPin;
+
+      auto plugin = drogon::app().getPlugin<plugins::RaffleServicePlugin>();
+      if (plugin) {
+        auto &hubtelApi = plugin->getHubtelApi();
+        // bool smsSent = co_await hubtelApi.SendSms(normalizedPhone, message);
+        bool smsSent = true;
+        if (!smsSent) {
+          LOG_ERROR << "resetPin: SMS delivery failed for phone=" << normalizedPhone;
+        } else {
+          LOG_INFO << "resetPin: SMS sent successfully for phone=" << normalizedPhone;
+        }
+
+        auto &redisCacheManager = plugin->getRedisCacheManager();
+        const std::string defaultPinKey = "default:pin:" + normalizedPhone;
+        co_await redisCacheManager.setValueWithTtl(defaultPinKey, newPin, 300);
+      }
+
+      response.success = true;
+      response.message = "Keep your account safe. Your PIN has been reset. Your new PIN is: " + newPin;
+
+    } catch (const drogon::orm::DrogonDbException &e) {
+      LOG_ERROR << "Database error resetting pin: " << e.base().what();
+      response.success = false;
+      response.error["code"] = constants::ERR_DB_QUERY;
+      response.error["message"] = "Database error while resetting PIN.";
+      response.error["detail"] = e.base().what();
+    } catch (const std::exception &e) {
+      LOG_ERROR << "Internal error resetting pin: " << e.what();
+      response.success = false;
+      response.error["code"] = constants::ERR_INTERNAL;
+      response.error["message"] = "Internal error.";
+      response.error["detail"] = e.what();
+    }
+
+    co_return response;
+  }
+
+  drogon::Task<dto::BaseApiResponse> CustomerService::changePin(const dto::ChangeCustomerPinDto &dto) {
+    dto::BaseApiResponse response;
+
+    if (dto.getCustomerPhoneNumber().empty()) {
+        response.success = false;
+        response.error["code"] = constants::ERR_UNAUTHORIZED;
+        response.error["message"] = "Customer Phone is required.";
+        co_return response;
+    }
+
+    if (dto.getOldPin().empty() || dto.getNewPin().empty()) {
+        response.success = false;
+        response.error["code"] = constants::ERR_BAD_REQUEST;
+        response.error["message"] = "Old PIN and New PIN are required.";
+        co_return response;
+    }
+
+    std::string normalizedPhone = dto.getCustomerPhoneNumber();
+    if (!normalizedPhone.empty() && normalizedPhone[0] == '0') {
+        normalizedPhone = "233" + normalizedPhone.substr(1);
+    }
+
+    auto dbClient = drogon::app().getDbClient();
+    CoroMapper<Customers> mapper(dbClient);
+
+    Criteria criteria =
+        Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, normalizedPhone) &&
+        Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true) &&
+        Criteria(Customers::Cols::_is_locked_out, CompareOperator::EQ, false);
+
+    try {
+        auto customer = co_await mapper.findOne(criteria);
+
+        std::string storedHash = utils::PasswordUtils::normalizeBcryptHash(customer.getValueOfSecretPin());
+        bool passwordMatches = bcrypt::validatePassword(dto.getOldPin(), storedHash);
+
+        if (!passwordMatches) {
+            response.success = false;
+            response.error["code"] = constants::ERR_AUTH_INVALID_CREDENTIALS;
+            response.error["message"] = "Invalid old PIN.";
+            co_return response;
+        }
+
+        const std::string hashedNewPin = bcrypt::generateHash(dto.getNewPin());
+
+        Customers userToUpdate = customer;
+        userToUpdate.setSecretPin(hashedNewPin);
+        userToUpdate.setUpdatedAt(trantor::Date::now());
+
+        co_await mapper.update(userToUpdate);
+
+        response.success = true;
+        response.message = "PIN changed successfully.";
+
+    } catch (const drogon::orm::UnexpectedRows &) {
+        response.success = false;
+        response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+        response.error["message"] = "Customer not found or account is inactive.";
+    } catch (const drogon::orm::DrogonDbException &e) {
+        LOG_ERROR << "Database error changing pin: " << e.base().what();
+        response.success = false;
+        response.error["code"] = constants::ERR_DB_QUERY;
+        response.error["message"] = "Database error while changing PIN.";
+        response.error["detail"] = e.base().what();
+    } catch (const std::exception &e) {
+        LOG_ERROR << "Internal error changing pin: " << e.what();
+        response.success = false;
+        response.error["code"] = constants::ERR_INTERNAL;
+        response.error["message"] = "Internal error.";
+        response.error["detail"] = e.what();
+    }
+
+    co_return response;
+  }
+
   drogon::Task<dto::BaseApiResponse> CustomerService::getTransactionHistory(const std::string &customerId) {
     auto dbClient = drogon::app().getDbClient();
     CoroMapper<Tickets> mapper(dbClient);

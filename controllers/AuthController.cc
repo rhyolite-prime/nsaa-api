@@ -1,6 +1,7 @@
 #include "AuthController.h"
 
 #include "dto/BaseApiResponse.h"
+#include "dto/ChangeCustomerPinDto.h"
 #include "dto/CustomerAuthDto.h"
 #include "plugins/RaffleServicePlugin.h"
 
@@ -170,33 +171,20 @@ drogon::Task<HttpResponsePtr> AuthController::verifyCustomerOtp(HttpRequestPtr r
 }
 
 
+drogon::Task<HttpResponsePtr> AuthController::resetCustomerPin(HttpRequestPtr req) {
 
-drogon::Task<HttpResponsePtr> AuthController::setCustomerPin(HttpRequestPtr req) {
-
-    auto jsonBody = req->getJsonObject();
-
-    if (!jsonBody) {
-        raffle::dto::BaseApiResponse response;
-        response.success = false;
-        response.error["message"] = "Invalid JSON body";
-        auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-        resp->setStatusCode(k400BadRequest);
-        co_return resp;
-    }
-
-    raffle::dto::CustomerVerifyOtpDto dto;
-    dto.fromJson(*jsonBody);
+    std::string phoneNumber = req->getParameter("phoneNumber");
 
     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
     auto &customerService = plugin->getCustomerService();
 
-    auto result = co_await customerService.verifyOtp(dto);
+    auto result = co_await customerService.resetPin(phoneNumber);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
 }
 
 
-drogon::Task<HttpResponsePtr> AuthController::resetCustomerPin(HttpRequestPtr req) {
+drogon::Task<HttpResponsePtr> AuthController::changeCustomerPin(HttpRequestPtr req) {
 
     auto jsonBody = req->getJsonObject();
 
@@ -209,15 +197,18 @@ drogon::Task<HttpResponsePtr> AuthController::resetCustomerPin(HttpRequestPtr re
         co_return resp;
     }
 
-    raffle::dto::CustomerVerifyOtpDto dto;
+    raffle::dto::ChangeCustomerPinDto dto;
     dto.fromJson(*jsonBody);
+
 
     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
     auto &customerService = plugin->getCustomerService();
 
-    auto result = co_await customerService.verifyOtp(dto);
+    auto result = co_await customerService.changePin(dto);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
+
+
 }
 
 

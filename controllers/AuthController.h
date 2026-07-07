@@ -29,8 +29,8 @@ class AuthController : public drogon::HttpController<AuthController>
     ADD_METHOD_TO(AuthController::sendCustomerOtp, std::string(PREFIX) + "/customer/send-otp", Post, Options);
     ADD_METHOD_TO(AuthController::verifyCustomerOtp, std::string(PREFIX) + "/customer/verify-otp", Post, Options);
     ADD_METHOD_TO(AuthController::generateCustomerAuth, std::string(PREFIX) + "/customer/token", Post, Options);
-    ADD_METHOD_TO(AuthController::setCustomerPin, std::string(PREFIX) + "/customer/set-pin", Post, Options);
-    ADD_METHOD_TO(AuthController::resetCustomerPin, std::string(PREFIX) + "/customer/reset-pin", Post, Options);
+    ADD_METHOD_TO(AuthController::resetCustomerPin, std::string(PREFIX) + "/customer/reset-pin", Get, Options);
+    ADD_METHOD_TO(AuthController::changeCustomerPin, std::string(PREFIX) + "/customer/change-pin", Post, Options);
 
 
 
@@ -56,8 +56,8 @@ class AuthController : public drogon::HttpController<AuthController>
     drogon::Task<HttpResponsePtr> generateCustomerAuth(HttpRequestPtr req);
     drogon::Task<HttpResponsePtr> sendCustomerOtp(HttpRequestPtr req);
     drogon::Task<HttpResponsePtr> verifyCustomerOtp(HttpRequestPtr req);
-    drogon::Task<HttpResponsePtr> setCustomerPin(HttpRequestPtr req);
     drogon::Task<HttpResponsePtr> resetCustomerPin(HttpRequestPtr req);
+    drogon::Task<HttpResponsePtr> changeCustomerPin(HttpRequestPtr req);
 
 
 };

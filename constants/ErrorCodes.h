@@ -22,7 +22,8 @@ namespace raffle::constants {
         ERR_UNAUTHORIZED = 1501,          // Unauthorized access
         ERR_PERMISSION_DENIED = 1401,     // Insufficient permissions
         ERR_MISSING_PARAMETER = 1102,     // Required parameter is missing
-        ERR_UNSUPPORTED_OPERATION = 1601  // Operation not supported
+        ERR_UNSUPPORTED_OPERATION = 1601,  // Operation not supported
+        ERR_BAD_REQUEST = 1701
     };
 }
 #endif //CHOPMONEYRAFFLEAPI_ERRORCODES_H

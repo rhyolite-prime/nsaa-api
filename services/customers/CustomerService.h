@@ -8,6 +8,7 @@
 #include <drogon/drogon.h>
 #include <drogon/utils/coroutine.h>
 
+#include "dto/ChangeCustomerPinDto.h"
 #include "dto/CustomerAuthDto.h"
 #include "dto/CustomerOtpDto.h"
 #include "dto/CustomerVerifyOtpDto.h"
@@ -26,6 +27,9 @@ namespace raffle::services {
         drogon::Task<dto::BaseApiResponse> validateCredentials(const dto::CustomerAuthDto &dto);
         drogon::Task<dto::BaseApiResponse> sendOtp(const dto::CustomerOtpDto &dto);
         drogon::Task<dto::BaseApiResponse> verifyOtp(const dto::CustomerVerifyOtpDto &dto);
+        drogon::Task<dto::BaseApiResponse> resetPin(const std::string &phoneNumber);
+        drogon::Task<dto::BaseApiResponse> changePin(const dto::ChangeCustomerPinDto &dto);
+
 
         //customer dashboard related endpoints
         drogon::Task<dto::BaseApiResponse> getTransactionHistory(const std::string &customerId);
