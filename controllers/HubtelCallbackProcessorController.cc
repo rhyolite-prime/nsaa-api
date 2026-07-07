@@ -31,6 +31,9 @@ Task<HttpResponsePtr> HubtelCallbackProcessorController::processWebCheckout(Http
         auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
         co_return resp;
     } else {
+
+        //send an email to admin
+
         LOG_WARN << "Payment failed for client reference: " << clientReference << " with response code: " << responseCode;
         raffle::dto::BaseApiResponse response;
         response.success = true; // Still return success to Hubtel to acknowledge the callback

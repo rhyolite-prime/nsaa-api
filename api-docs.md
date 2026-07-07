@@ -615,7 +615,86 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/profile-det
 }
 ```
 
-## 14. List Colors
+## 16. Buy Ticket (Authenticated Customer)
+
+**GET** `/customers/buy-ticket`
+
+### Description
+
+Buys a ticket for a customer. Returns a checkout URL and ticket details.
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/buy-ticket' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiMzExYzg4MDQtMmE1My00Yjg5LWE3OWUtMDE4NDc0N2FjZTA1IiwiZXhwIjoxNzkzMTk5NTcxLCJpYXQiOjE3ODI4MzE1NzEsImlzcyI6Ik5TQUFfUExBWSJ9.onHw4U5Wdktwe2ZQLmdN8fjpZ1WRiDYXaOhe3eVLhOs'
+```
+
+### Example Response
+
+```json
+ {
+  "error": null,
+  "message": "Ticket created successfully. Please complete payment.",
+  "result": {
+    "checkoutUrl": "https://pay.hubtel.com/f3fda1ca4a27424786034b7174d83467",
+    "paymentReference": "690864ea-a3c9-0d95-85c9-56fddd5197a3",
+    "selectedColour": "Gold",
+    "ticketId": "7f6361c7-76dd-4c2c-b86f-8c0e52352893",
+    "ticketNumber": "20260707083625",
+    "ticketAlias": "WDW-004"
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+
+## 17. Get Customer Raffle History
+
+### GET `/customers/get-raffle-history`
+
+### Description
+
+Gets a paginated list of raffle entries a customer has participated in.
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/get-raffle-history' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiMzExYzg4MDQtMmE1My00Yjg5LWE3OWUtMDE4NDc0N2FjZTA1IiwiZXhwIjoxNzkzMTk5NTcxLCJpYXQiOjE3ODI4MzE1NzEsImlzcyI6Ik5TQUFfUExBWSJ9.onHw4U5Wdktwe2ZQLmdN8fjpZ1WRiDYXaOhe3eVLhOs'
+```
+
+### Example Response
+
+```json
+ {
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "drawTime": "2026-06-03 17:10:00",
+        "raffleId": "68afb58b-1e8c-42de-9065-4e8c92fe9629",
+        "raffleName": "Wealth Drop Wednesday",
+        "status": "ACTIVE",
+        "ticketsBought": 4,
+        "totalSpent": "2.40"
+      }
+    ],
+    "lowerBound": 1,
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalCount": 1,
+    "totalPages": 1,
+    "upperBound": 1
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+## 18. List Colors
 
 **POST** `/cms/colours/list-all`
 

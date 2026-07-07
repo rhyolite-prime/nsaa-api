@@ -18,11 +18,20 @@
 #include "jwt-cpp/jwt.h"
 #include "utils/IdGeneratorUtils.h"
 #include "utils/PasswordUtils.h"
+#include "Colours.h"
+#include "Draws.h"
+#include "Raffles.h"
+#include "dto/CheckoutResponse.h"
+#include "dto/WebCheckoutDto.h"
+#include "dto/InitializeTicketPurchaseDto.h"
+#include <iomanip>
+#include <sstream>
 
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
+
   drogon::Task<dto::BaseApiResponse> CustomerService::getAll(int pageNo, int pageSize, const std::string &query) {
 
     auto dbClient = drogon::app().getDbClient();
@@ -577,6 +586,7 @@ namespace raffle::services {
     }
   }
 
+
   drogon::Task<dto::BaseApiResponse> CustomerService::getProfileDetails(const std::string &customerId) {
     auto dbClient = drogon::app().getDbClient();
     CoroMapper<Customers> mapper(dbClient);
@@ -611,6 +621,353 @@ namespace raffle::services {
       errorResponse.success = false;
       errorResponse.error["code"] = constants::ERR_DB_QUERY;
       errorResponse.error["message"] = "Database error while fetching profile details.";
+      errorResponse.error["detail"] = e.base().what();
+      co_return errorResponse;
+    } catch (const std::exception &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_INTERNAL;
+      errorResponse.error["message"] = "Internal error.";
+      errorResponse.error["detail"] = e.what();
+      co_return errorResponse;
+    }
+  }
+
+
+  drogon::Task<dto::BaseApiResponse> CustomerService::initTicketPurchase(const dto::InitializeTicketPurchaseDto &dto, const std::string &customerId) {
+    auto dbClient = drogon::app().getDbClient();
+    CoroMapper<Tickets> ticketMapper(dbClient);
+    CoroMapper<Raffles> raffleMapper(dbClient);
+    CoroMapper<Draws> drawMapper(dbClient);
+    CoroMapper<Customers> customerMapper(dbClient);
+    CoroMapper<Colours> colourMapper(dbClient);
+
+    LOG_INFO << "InitializeTicketPurchase request:"
+             << " customerId=" << customerId
+             << " colourId=" << dto.getColourId()
+             << " quantity=" << dto.getQuantity();
+
+    try {
+      // 1. Fetch customer
+      auto customer = co_await customerMapper.findByPrimaryKey(customerId);
+
+      // 2. Find active raffle
+      auto activeRaffles = co_await raffleMapper.findBy(Criteria(Raffles::Cols::_status, CompareOperator::EQ, "ACTIVE"));
+
+      if (activeRaffles.empty()) {
+        dto::BaseApiResponse errorResponse;
+        errorResponse.success = false;
+        errorResponse.error["code"] = constants::ERR_VALIDATION;
+        errorResponse.error["message"] = "No active raffle found.";
+        co_return errorResponse;
+      }
+
+      auto activeRaffle = activeRaffles[0];
+      std::string raffleId = activeRaffle.getValueOfId();
+
+      // 3. Find draw
+      auto draws = co_await drawMapper.findBy(
+          Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+
+      if (draws.empty()) {
+        dto::BaseApiResponse errorResponse;
+        errorResponse.success = false;
+        errorResponse.error["code"] = constants::ERR_VALIDATION;
+        errorResponse.error["message"] = "No corresponding draw found for the active raffle.";
+        co_return errorResponse;
+      }
+
+      auto activeDraw = draws[0];
+
+      // 4. Color Management
+      std::string colourName;
+      try {
+        auto colour = co_await colourMapper.findByPrimaryKey(dto.getColourId());
+        colourName = colour.getValueOfName();
+      } catch (const drogon::orm::DrogonDbException &e) {
+        dto::BaseApiResponse errorResponse;
+        errorResponse.success = false;
+        errorResponse.error["code"] = constants::ERR_VALIDATION;
+        errorResponse.error["message"] = "Invalid colour ID.";
+        co_return errorResponse;
+      }
+
+      // 5. Create the ticket
+      Tickets newTicket;
+      newTicket.setDrawId(activeDraw.getValueOfId());
+      newTicket.setColourId(dto.getColourId());
+      newTicket.setColourName(colourName);
+      newTicket.setQuantity(dto.getQuantity());
+      newTicket.setCustomerPhone(customer.getValueOfMsisdn());
+      newTicket.setRaffleId(activeRaffle.getValueOfId());
+
+      std::string clientReference = utils::IdGeneratorUtils::generateGuid();
+      newTicket.setPaymentReference(clientReference);
+      newTicket.setCustomerId(customerId);
+
+      auto now = std::chrono::system_clock::now();
+      std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
+      std::tm localTime{};
+      localtime_r(&nowTime, &localTime);
+
+      std::ostringstream ticketNumberStream;
+      ticketNumberStream << std::put_time(&localTime, "%Y%m%d%H%M%S");
+      newTicket.setTicketNumber(ticketNumberStream.str());
+
+      std::string raffleName = activeRaffle.getValueOfName();
+      std::string initials = "";
+      bool newWord = true;
+      for (char c : raffleName) {
+          if (std::isspace(c)) {
+              newWord = true;
+          } else if (newWord && std::isalpha(c)) {
+              initials += std::toupper(c);
+              newWord = false;
+          }
+      }
+
+      auto ticketCount = co_await ticketMapper.count(Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ, activeRaffle.getValueOfId()));
+      std::ostringstream aliasStream;
+      aliasStream << initials << "-" << std::setfill('0') << std::setw(3) << (ticketCount + 1);
+      newTicket.setTicketAlias(aliasStream.str());
+
+      auto &app = drogon::app();
+      auto customConfig = app.getCustomConfig();
+      std::string ticketFee = customConfig["TicketConfiguration"]["Price"].asString();
+
+      newTicket.setEntryFee(ticketFee);
+      double entryFee = std::stod(ticketFee);
+      double totalAmount = entryFee * dto.getQuantity();
+      newTicket.setTotalAmount(std::to_string(totalAmount));
+
+      newTicket.setPaymentStatus("PENDING");
+      newTicket.setPurchaseChannel("WEB");
+      newTicket.setPaymentMethod("HUBTEL CHECKOUT");
+      newTicket.setIsActive(false);
+
+      auto result = co_await ticketMapper.insert(newTicket);
+
+      // 6. Initialize WebCheckout payment
+      const auto &hubtelConfig = customConfig["HubtelPaymentApi"];
+      raffle::services::HubtelApi hubtelApi;
+
+      raffle::dto::WebCheckoutDto webCheckoutDto;
+      webCheckoutDto.setCallbackUrl(hubtelConfig.isMember("WebCheckoutCallBackUrl") ? hubtelConfig["WebCheckoutCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
+      webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());
+      webCheckoutDto.setReturnUrl(hubtelConfig["ReturnUrl"].asString());
+      webCheckoutDto.setTotalAmount(totalAmount);
+      webCheckoutDto.setDescription("Ticket Purchase - " + activeRaffle.getValueOfSlug());
+      webCheckoutDto.setClientReference(clientReference);
+
+      auto hubtelResult = co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
+
+      LOG_INFO << "Hubtel WebCheckout result for clientReference="
+               << clientReference
+               << " responseCode=" << hubtelResult.responseCode
+               << " status=" << hubtelResult.status
+               << " checkoutUrl=" << hubtelResult.data.checkoutUrl;
+
+      dto::BaseApiResponse response;
+      if (hubtelResult.responseCode == "0000") {
+        response.success = true;
+        response.message = "Ticket created successfully. Please complete payment.";
+        response.result["ticketId"] = result.getValueOfId();
+        response.result["ticketNumber"] = result.getValueOfTicketNumber();
+        response.result["ticketAlias"] = result.getValueOfTicketAlias();
+        response.result["paymentReference"] = clientReference;
+        response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
+        response.result["selectedColour"] = colourName;
+      } else {
+        response.success = false;
+        response.message = "Ticket created but failed to initialize payment. " + hubtelResult.status;
+        response.error["code"] = constants::ERR_INTERNAL;
+        response.error["message"] = "Payment initialization failed.";
+        response.result["ticketId"] = result.getValueOfId();
+      }
+
+      co_return response;
+
+    } catch (const drogon::orm::UnexpectedRows &) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+      errorResponse.error["message"] = "Customer not found.";
+      co_return errorResponse;
+    } catch (const drogon::orm::DrogonDbException &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_DB_QUERY;
+      errorResponse.error["message"] = "Database error while initializing ticket purchase.";
+      errorResponse.error["detail"] = e.base().what();
+      co_return errorResponse;
+    } catch (const std::exception &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_INTERNAL;
+      errorResponse.error["message"] = "Internal error.";
+      errorResponse.error["detail"] = e.what();
+      co_return errorResponse;
+    }
+  }
+
+
+  drogon::Task<dto::BaseApiResponse> CustomerService::getTickets(const std::string &customerId, int pageNo, int pageSize, const std::string &query) {
+    auto dbClient = drogon::app().getDbClient();
+    CoroMapper<Tickets> mapper(dbClient);
+
+    Criteria searchCriteria = Criteria(Tickets::Cols::_customer_id, CompareOperator::EQ, customerId);
+
+    if (!query.empty()) {
+      std::string likeQuery = "%" + query + "%";
+      searchCriteria = searchCriteria && Criteria(Tickets::Cols::_ticket_number, CompareOperator::Like, likeQuery);
+    }
+
+    try {
+      auto totalCount = co_await mapper.count(searchCriteria);
+
+      if (totalCount == 0) {
+        dto::BaseApiResponse response;
+        response.success = true;
+        response.result["data"] = Json::arrayValue;
+        response.result["totalCount"] = 0;
+        co_return response;
+      }
+
+      int offset = (pageNo - 1) * pageSize;
+      auto result =
+          co_await mapper.orderBy(Tickets::Cols::_created_at, SortOrder::DESC)
+              .limit(pageSize)
+              .offset(offset)
+              .findBy(searchCriteria);
+
+      auto totalPages = (totalCount + pageSize - 1) / pageSize;
+
+      dto::BaseApiResponse response;
+      response.success = true;
+      response.result["totalCount"] = (Json::UInt64)totalCount;
+      response.result["pageNo"] = pageNo;
+      response.result["pageSize"] = pageSize;
+      response.result["totalPages"] = (int)totalPages;
+      response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
+      response.result["upperBound"] = (int)totalPages == pageNo ? (Json::UInt64)totalCount : (Json::UInt64)(pageNo * pageSize);
+
+      Json::Value data = Json::arrayValue;
+      for (const auto &ticket : result) {
+        Json::Value ticketJson;
+        ticketJson["id"] = ticket.getValueOfId();
+        ticketJson["ticketNumber"] = ticket.getValueOfTicketNumber();
+        ticketJson["ticketAlias"] = ticket.getValueOfTicketAlias();
+        ticketJson["drawId"] = ticket.getValueOfDrawId();
+        ticketJson["customerId"] = ticket.getValueOfCustomerId();
+        ticketJson["colourId"] = ticket.getValueOfColourId();
+        ticketJson["entryFee"] = ticket.getValueOfEntryFee();
+        ticketJson["quantity"] = ticket.getValueOfQuantity();
+        ticketJson["totalAmount"] = ticket.getValueOfTotalAmount();
+        ticketJson["paymentReference"] = ticket.getValueOfPaymentReference();
+        ticketJson["paymentStatus"] = ticket.getValueOfPaymentStatus();
+        ticketJson["paymentMethod"] = ticket.getValueOfPaymentMethod();
+        ticketJson["purchaseChannel"] = ticket.getValueOfPurchaseChannel();
+        ticketJson["isActive"] = ticket.getValueOfIsActive();
+        ticketJson["createdAt"] = ticket.getValueOfCreatedAt().toDbStringLocal();
+        ticketJson["updatedAt"] = ticket.getValueOfUpdatedAt().toDbStringLocal();
+        ticketJson["customerPhone"] = ticket.getValueOfCustomerPhone();
+        ticketJson["colourName"] = ticket.getValueOfColourName();
+        ticketJson["raffleId"] = ticket.getValueOfRaffleId();
+
+        data.append(ticketJson);
+      }
+      response.result["data"] = data;
+      co_return response;
+
+    } catch (const drogon::orm::DrogonDbException &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_DB_QUERY;
+      errorResponse.error["message"] = "Database error while fetching tickets.";
+      errorResponse.error["detail"] = e.base().what();
+      co_return errorResponse;
+    } catch (const std::exception &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_INTERNAL;
+      errorResponse.error["message"] = "Internal error.";
+      errorResponse.error["detail"] = e.what();
+      co_return errorResponse;
+    }
+  }
+
+
+  drogon::Task<dto::BaseApiResponse> CustomerService::getRaffleHistory(const std::string &customerId, int pageNo, int pageSize, const std::string &query) {
+    auto dbClient = drogon::app().getDbClient();
+
+    try {
+      std::string likeQuery = "%" + query + "%";
+
+      auto countResult = co_await dbClient->execSqlCoro(
+          "SELECT COUNT(DISTINCT r.id) as total_count "
+          "FROM raffles r "
+          "JOIN tickets t ON r.id = t.raffle_id "
+          "WHERE t.customer_id = $1 AND r.name ILIKE $2",
+          customerId, likeQuery);
+
+      uint64_t totalCount = 0;
+      if (!countResult.empty()) {
+        totalCount = countResult[0]["total_count"].as<uint64_t>();
+      }
+
+      if (totalCount == 0) {
+        dto::BaseApiResponse response;
+        response.success = true;
+        response.result["data"] = Json::arrayValue;
+        response.result["totalCount"] = 0;
+        co_return response;
+      }
+
+      int offset = (pageNo - 1) * pageSize;
+
+      auto result = co_await dbClient->execSqlCoro(
+          "SELECT r.id, r.name, r.status, r.draw_time, "
+          "COUNT(t.id) as tickets_bought, "
+          "COALESCE(SUM(CAST(t.total_amount AS NUMERIC)), 0) as total_spent "
+          "FROM raffles r "
+          "JOIN tickets t ON r.id = t.raffle_id "
+          "WHERE t.customer_id = $1 AND r.name ILIKE $2 "
+          "GROUP BY r.id, r.name, r.status, r.draw_time "
+          "ORDER BY r.draw_time DESC "
+          "LIMIT $3 OFFSET $4",
+          customerId, likeQuery, (long long)pageSize, (long long)offset);
+
+      auto totalPages = (totalCount + pageSize - 1) / pageSize;
+
+      dto::BaseApiResponse response;
+      response.success = true;
+      response.result["totalCount"] = (Json::UInt64)totalCount;
+      response.result["pageNo"] = pageNo;
+      response.result["pageSize"] = pageSize;
+      response.result["totalPages"] = (int)totalPages;
+      response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
+      response.result["upperBound"] = (int)totalPages == pageNo ? (Json::UInt64)totalCount : (Json::UInt64)(pageNo * pageSize);
+
+      Json::Value data = Json::arrayValue;
+      for (const auto &row : result) {
+        Json::Value item;
+        item["raffleId"] = row["id"].as<std::string>();
+        item["raffleName"] = row["name"].as<std::string>();
+        item["status"] = row["status"].as<std::string>();
+        item["drawTime"] = row["draw_time"].as<std::string>();
+        item["ticketsBought"] = row["tickets_bought"].as<int>();
+        item["totalSpent"] = row["total_spent"].as<std::string>();
+        data.append(item);
+      }
+      
+      response.result["data"] = data;
+      co_return response;
+
+    } catch (const drogon::orm::DrogonDbException &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_DB_QUERY;
+      errorResponse.error["message"] = "Database error while fetching raffle history.";
       errorResponse.error["detail"] = e.base().what();
       co_return errorResponse;
     } catch (const std::exception &e) {

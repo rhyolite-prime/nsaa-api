@@ -12,6 +12,7 @@ int main() {
             "http://localhost:3008",
             "https://nsaa.rhyoliteprime.com",
             "https://pos.rhyoliteprime.com",
+            "https://chopmoneygh.com",
             "https://www.rhyoliteprime.com"
         };
 

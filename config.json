@@ -355,14 +355,14 @@
             "RaffleDrawCallBackUrl": "https://nsaa-api.rhyoliteprime.com/api/v1/raffle/run-draw/"
         },
         "HubtelPaymentApi":{
-            "ApiIdOrUsername": "R8LRQXV",
-            "ApiKeyOrPassword": "ccde554e08d64e7c93c9ed9c83c3a13d",
+            "ApiIdOrUsername": "3yy5BXn",
+            "ApiKeyOrPassword": "35934d4469e847069d9991093da0f6ef",
             "PosSalesAccountId": "2039129",
             "PrepaidAccountId": "2025287",
             "MerchantAccountNumber": "2039129",
             "WebCheckoutCallBackUrl": "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout",
             "DirectReceiveMoneyCallBackUrl": "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/direct-receive-money",
-            "ReturnUrl": "https://wssd.rhyoliteprime.com/019c4d8c-58be-73a9-80e9-2a44d4e556f3"
+            "ReturnUrl": "https://chopmoneygh.com"
         },
         "HubtelSmsApi":{
             "ClientId": "cmgfmxdp",
