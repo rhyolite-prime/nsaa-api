@@ -112,6 +112,31 @@ drogon::Task<HttpResponsePtr> CustomersController::buyTicket(HttpRequestPtr req)
 }
 
 
+drogon::Task<HttpResponsePtr> CustomersController::buyGuestTicket(HttpRequestPtr req) {
+
+  auto jsonBody = req->getJsonObject();
+
+  if (!jsonBody) {
+    raffle::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["message"] = "Invalid JSON body";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
+  raffle::dto::InitializeTicketPurchaseDto dto;
+  dto.fromJson(*jsonBody);
+
+  auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &customerService = plugin->getCustomerService();
+
+  auto result = co_await customerService.buyGuestTicket(dto);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
+}
+
 drogon::Task<HttpResponsePtr> CustomersController::getTickets(HttpRequestPtr req) {
 
   auto customerId = req->attributes()->get<std::string>("customerId");

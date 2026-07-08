@@ -36,6 +36,7 @@ namespace raffle::services {
         drogon::Task<dto::BaseApiResponse> getStats(const std::string &customerId);
         drogon::Task<dto::BaseApiResponse> getProfileDetails(const std::string &customerId);
         drogon::Task<dto::BaseApiResponse> initTicketPurchase(const dto::InitializeTicketPurchaseDto &dto, const std::string &customerId);
+        drogon::Task<dto::BaseApiResponse> buyGuestTicket(const dto::InitializeTicketPurchaseDto &dto);
         drogon::Task<dto::BaseApiResponse> getTickets(const std::string &customerId, int pageNo, int pageSize, const std::string &query);
         drogon::Task<dto::BaseApiResponse> getRaffleHistory(const std::string &customerId, int pageNo, int pageSize, const std::string &query);
     };

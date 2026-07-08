@@ -694,7 +694,47 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/get-raffle-
 }
 ```
 
-## 18. List Colors
+## 18. Buy Ticket (Guest Customer)
+
+**POST** `/customers/buy-guest-ticket`
+
+### Description
+
+Buys a ticket for a guest customer. Returns a checkout URL and ticket details. Automatically creates an account for the guest and return a JWT for login.
+
+### Example Request
+
+```bash
+curl --location 'http://localhost:5044/api/v1/customers/buy-guest-ticket' \
+--header 'Content-Type: application/json' \
+--data '{
+    "colourId": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
+    "quantity": 1,
+    "phoneNumber": "0245444123"
+}'
+```
+
+### Example Response
+
+```json
+ {
+  "error": null,
+  "message": "Ticket created successfully. Please complete payment.",
+  "result": {
+    "checkoutUrl": "https://pay.hubtel.com/f3fda1ca4a27424786034b7174d83467",
+    "paymentReference": "690864ea-a3c9-0d95-85c9-56fddd5197a3",
+    "selectedColour": "Gold",
+    "ticketId": "7f6361c7-76dd-4c2c-b86f-8c0e52352893",
+    "ticketNumber": "20260707083625",
+    "ticketAlias": "WDW-004",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiZDQyYzk5YTgtZDdkYi00NmI1LTlhZGMtMmIxYzUwMmFkZTcxIiwiZXhwIjoxNzkzODk2NzIwLCJpYXQiOjE3ODM1Mjg3MjAsImlzcyI6Ik5TQUFfUExBWSJ9.Ka6LdjUIQQHGiC54Es5IaVTiZBnpOAkYgJ5WG66yCIY"
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+## 19. List Colors
 
 **POST** `/cms/colours/list-all`
 
