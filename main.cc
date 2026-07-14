@@ -30,6 +30,11 @@ int main() {
         resp->addHeader("Access-Control-Allow-Headers",
                         "Content-Type, Authorization, Referer, User-Agent, "
                         "Accept, X-Requested-With, Origin");
+
+        resp->addHeader("Access-Control-Allow-Origin", origin);
+
+        resp->addHeader("Access-Control-Allow-Credentials", "true");
+
       });
 
     drogon::app().run();

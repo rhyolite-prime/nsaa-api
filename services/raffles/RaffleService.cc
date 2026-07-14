@@ -333,7 +333,6 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       // Default or empty callbackUrl as not specified by user context
       raffleClosureQuartzJobDto.customData.callbackUrl = raffleClosureCallBackUrl + newRaffleResult.getValueOfId();
 
-
       const auto& closureStartTime = newRaffleResult.getValueOfEndTime();
       auto closureEndTime = closureStartTime.after(5 * 60);
 

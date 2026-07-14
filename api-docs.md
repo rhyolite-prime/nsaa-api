@@ -617,7 +617,7 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/profile-det
 
 ## 16. Buy Ticket (Authenticated Customer)
 
-**GET** `/customers/buy-ticket`
+**POST** `/customers/buy-ticket`
 
 ### Description
 
@@ -626,8 +626,14 @@ Buys a ticket for a customer. Returns a checkout URL and ticket details.
 ### Example Request
 
 ```bash
-curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/buy-ticket' \
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiMzExYzg4MDQtMmE1My00Yjg5LWE3OWUtMDE4NDc0N2FjZTA1IiwiZXhwIjoxNzkzMTk5NTcxLCJpYXQiOjE3ODI4MzE1NzEsImlzcyI6Ik5TQUFfUExBWSJ9.onHw4U5Wdktwe2ZQLmdN8fjpZ1WRiDYXaOhe3eVLhOs'
+curl --location 'http://localhost:5044/api/v1/customers/buy-ticket' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiNTM0YzYxMjctYTcxZS00ZmEwLWExODctM2ZlYzFkZTIwMDJhIiwiZXhwIjoxNzkzNzgzODk3LCJpYXQiOjE3ODM0MTU4OTcsImlzcyI6Ik5TQUFfUExBWSJ9.fZUlOVquCmzh1CPHZgnMo_wmESknTkYpBRzZdYJWxAs' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndlaS56aGFuZ0BleGFtcGxlLmNvbSIsImV4cCI6MTc4MTY1MTQwOSwiaWF0IjoxNzc5MDU5NDA5LCJpc3MiOiJOb3MiLCJ1c2VySWQiOiJjMDY2YTZlYy0xZmQxLTQ0NzctOTY0MC02NjQyMjM4Y2JlMzAiLCJ1c2VybmFtZSI6IndlaXpoYW5nIn0.vwUVS8kDZmL-b7fdysv-URy-r5voL8tv9i3YAiA_gIU' \
+--data '{
+    "colourId": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
+    "quantity": 5
+}'
 ```
 
 ### Example Response
