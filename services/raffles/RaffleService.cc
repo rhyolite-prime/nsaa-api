@@ -110,6 +110,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSiz
       item["id"] = j["id"];
       item["name"] = j["name"];
       item["slug"] = j["slug"];
+      item["options"] = j["options"];
       item["totalEntries"] = j["total_entries"];
       item["prizePool"] = j["prize_pool"];
       item["winningColour"] = j["winning_colour"];
@@ -165,6 +166,24 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffle() {
     raffleJson["name"] = raffle.getValueOfName();
     raffleJson["slug"] = raffle.getValueOfSlug();
     raffleJson["status"] = raffle.getValueOfStatus();
+
+    Json::Value optionsArray(Json::arrayValue);
+    const auto optionsText = raffle.getValueOfOptions();
+    if (!optionsText.empty()) {
+      Json::Value permissionsParsed;
+      Json::CharReaderBuilder readerBuilder;
+      std::string errs;
+      std::istringstream inputStream(optionsText);
+      if (Json::parseFromStream(readerBuilder, inputStream, &permissionsParsed, &errs) &&
+          permissionsParsed.isArray()) {
+        optionsArray = permissionsParsed;
+          }
+    }
+
+    //if there are no specific options set or configured for this raffle, pull from the default and set it.
+
+    raffleJson["options"] = optionsArray;
+
     raffleJson["totalEntries"] = raffle.getValueOfTotalEntries();
     raffleJson["createdAt"] = raffle.getValueOfCreatedAt().toDbStringLocal();
     raffleJson["prizePool"] = raffle.getValueOfPrizePool();
@@ -263,6 +282,21 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
 
     // Ensure total_entries has a default if not set automatically
     newRaffle.setTotalEntries(0);
+
+    Json::StreamWriterBuilder writerBuilder;
+    writerBuilder["indentation"] = "";
+
+    if (!dto.getOptions().isNull() && dto.getOptions().isArray()) {
+        newRaffle.setOptions(Json::writeString(writerBuilder, dto.getOptions()));
+    } else {
+        newRaffle.setOptions("[]");
+    }
+
+    Json::Value exemptedPartnersJson(Json::arrayValue);
+    for (const auto& partner : dto.getExemptedPartners()) {
+        exemptedPartnersJson.append(partner);
+    }
+    newRaffle.setExemptedPartners(Json::writeString(writerBuilder, exemptedPartnersJson));
 
     auto newRaffleResult = co_await mapper.insert(newRaffle);
 
@@ -446,6 +480,21 @@ drogon::Task<dto::BaseApiResponse> RaffleService::updateAsync(const dto::UpdateR
         existingRaffle.setDrawTime(newDrawTime);
         drawTimeChanged = true;
       }
+    }
+
+    Json::StreamWriterBuilder writerBuilder;
+    writerBuilder["indentation"] = "";
+
+    if (!dto.getOptions().isNull() && dto.getOptions().isArray()) {
+        existingRaffle.setOptions(Json::writeString(writerBuilder, dto.getOptions()));
+    }
+
+    if (!dto.getExemptedPartners().empty()) {
+        Json::Value exemptedPartnersJson(Json::arrayValue);
+        for (const auto& partner : dto.getExemptedPartners()) {
+            exemptedPartnersJson.append(partner);
+        }
+        existingRaffle.setExemptedPartners(Json::writeString(writerBuilder, exemptedPartnersJson));
     }
 
     auto result = co_await mapper.update(existingRaffle);

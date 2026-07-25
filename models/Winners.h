@@ -48,8 +48,8 @@ class Winners
         static const std::string _draw_id;
         static const std::string _ticket_id;
         static const std::string _customer_id;
-        static const std::string _prize_tier_id;
-        static const std::string _colour_id;
+        static const std::string _selected_option_id;
+        static const std::string _selected_option_label;
         static const std::string _prize_amount;
         static const std::string _actual_payout;
         static const std::string _status;
@@ -62,11 +62,10 @@ class Winners
         static const std::string _payout_reference;
         static const std::string _payout_date;
         static const std::string _notified_at;
+        static const std::string _ticket_alias;
+        static const std::string _phone_number;
         static const std::string _created_at;
         static const std::string _updated_at;
-        static const std::string _ticket_alias;
-        static const std::string _colour_name;
-        static const std::string _phone_number;
     };
 
     static const int primaryKeyNumber;
@@ -154,23 +153,24 @@ class Winners
     void setCustomerId(const std::string &pCustomerId) noexcept;
     void setCustomerId(std::string &&pCustomerId) noexcept;
 
-    /**  For column prize_tier_id  */
-    ///Get the value of the column prize_tier_id, returns the default value if the column is null
-    const std::string &getValueOfPrizeTierId() const noexcept;
+    /**  For column selected_option_id  */
+    ///Get the value of the column selected_option_id, returns the default value if the column is null
+    const std::string &getValueOfSelectedOptionId() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getPrizeTierId() const noexcept;
-    ///Set the value of the column prize_tier_id
-    void setPrizeTierId(const std::string &pPrizeTierId) noexcept;
-    void setPrizeTierId(std::string &&pPrizeTierId) noexcept;
+    const std::shared_ptr<std::string> &getSelectedOptionId() const noexcept;
+    ///Set the value of the column selected_option_id
+    void setSelectedOptionId(const std::string &pSelectedOptionId) noexcept;
+    void setSelectedOptionId(std::string &&pSelectedOptionId) noexcept;
 
-    /**  For column colour_id  */
-    ///Get the value of the column colour_id, returns the default value if the column is null
-    const std::string &getValueOfColourId() const noexcept;
+    /**  For column selected_option_label  */
+    ///Get the value of the column selected_option_label, returns the default value if the column is null
+    const std::string &getValueOfSelectedOptionLabel() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getColourId() const noexcept;
-    ///Set the value of the column colour_id
-    void setColourId(const std::string &pColourId) noexcept;
-    void setColourId(std::string &&pColourId) noexcept;
+    const std::shared_ptr<std::string> &getSelectedOptionLabel() const noexcept;
+    ///Set the value of the column selected_option_label
+    void setSelectedOptionLabel(const std::string &pSelectedOptionLabel) noexcept;
+    void setSelectedOptionLabel(std::string &&pSelectedOptionLabel) noexcept;
+    void setSelectedOptionLabelToNull() noexcept;
 
     /**  For column prize_amount  */
     ///Get the value of the column prize_amount, returns the default value if the column is null
@@ -288,6 +288,26 @@ class Winners
     void setNotifiedAt(const ::trantor::Date &pNotifiedAt) noexcept;
     void setNotifiedAtToNull() noexcept;
 
+    /**  For column ticket_alias  */
+    ///Get the value of the column ticket_alias, returns the default value if the column is null
+    const std::string &getValueOfTicketAlias() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getTicketAlias() const noexcept;
+    ///Set the value of the column ticket_alias
+    void setTicketAlias(const std::string &pTicketAlias) noexcept;
+    void setTicketAlias(std::string &&pTicketAlias) noexcept;
+    void setTicketAliasToNull() noexcept;
+
+    /**  For column phone_number  */
+    ///Get the value of the column phone_number, returns the default value if the column is null
+    const std::string &getValueOfPhoneNumber() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPhoneNumber() const noexcept;
+    ///Set the value of the column phone_number
+    void setPhoneNumber(const std::string &pPhoneNumber) noexcept;
+    void setPhoneNumber(std::string &&pPhoneNumber) noexcept;
+    void setPhoneNumberToNull() noexcept;
+
     /**  For column created_at  */
     ///Get the value of the column created_at, returns the default value if the column is null
     const ::trantor::Date &getValueOfCreatedAt() const noexcept;
@@ -306,38 +326,8 @@ class Winners
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
-    /**  For column ticket_alias  */
-    ///Get the value of the column ticket_alias, returns the default value if the column is null
-    const std::string &getValueOfTicketAlias() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getTicketAlias() const noexcept;
-    ///Set the value of the column ticket_alias
-    void setTicketAlias(const std::string &pTicketAlias) noexcept;
-    void setTicketAlias(std::string &&pTicketAlias) noexcept;
-    void setTicketAliasToNull() noexcept;
 
-    /**  For column colour_name  */
-    ///Get the value of the column colour_name, returns the default value if the column is null
-    const std::string &getValueOfColourName() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getColourName() const noexcept;
-    ///Set the value of the column colour_name
-    void setColourName(const std::string &pColourName) noexcept;
-    void setColourName(std::string &&pColourName) noexcept;
-    void setColourNameToNull() noexcept;
-
-    /**  For column phone_number  */
-    ///Get the value of the column phone_number, returns the default value if the column is null
-    const std::string &getValueOfPhoneNumber() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getPhoneNumber() const noexcept;
-    ///Set the value of the column phone_number
-    void setPhoneNumber(const std::string &pPhoneNumber) noexcept;
-    void setPhoneNumber(std::string &&pPhoneNumber) noexcept;
-    void setPhoneNumberToNull() noexcept;
-
-
-    static size_t getColumnNumber() noexcept {  return 23;  }
+    static size_t getColumnNumber() noexcept {  return 22;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -363,8 +353,8 @@ class Winners
     std::shared_ptr<std::string> drawId_;
     std::shared_ptr<std::string> ticketId_;
     std::shared_ptr<std::string> customerId_;
-    std::shared_ptr<std::string> prizeTierId_;
-    std::shared_ptr<std::string> colourId_;
+    std::shared_ptr<std::string> selectedOptionId_;
+    std::shared_ptr<std::string> selectedOptionLabel_;
     std::shared_ptr<std::string> prizeAmount_;
     std::shared_ptr<std::string> actualPayout_;
     std::shared_ptr<std::string> status_;
@@ -377,11 +367,10 @@ class Winners
     std::shared_ptr<std::string> payoutReference_;
     std::shared_ptr<::trantor::Date> payoutDate_;
     std::shared_ptr<::trantor::Date> notifiedAt_;
+    std::shared_ptr<std::string> ticketAlias_;
+    std::shared_ptr<std::string> phoneNumber_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
-    std::shared_ptr<std::string> ticketAlias_;
-    std::shared_ptr<std::string> colourName_;
-    std::shared_ptr<std::string> phoneNumber_;
     struct MetaData
     {
         const std::string colName_;
@@ -393,7 +382,7 @@ class Winners
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[23]={ false };
+    bool dirtyFlag_[22]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -434,12 +423,12 @@ class Winners
         }
         if(dirtyFlag_[4])
         {
-            sql += "prize_tier_id,";
+            sql += "selected_option_id,";
             ++parametersCount;
         }
         if(dirtyFlag_[5])
         {
-            sql += "colour_id,";
+            sql += "selected_option_label,";
             ++parametersCount;
         }
         if(dirtyFlag_[6])
@@ -503,32 +492,27 @@ class Winners
             sql += "notified_at,";
             ++parametersCount;
         }
+        if(dirtyFlag_[18])
+        {
+            sql += "ticket_alias,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[19])
+        {
+            sql += "phone_number,";
+            ++parametersCount;
+        }
         sql += "created_at,";
         ++parametersCount;
-        if(!dirtyFlag_[18])
+        if(!dirtyFlag_[20])
         {
             needSelection=true;
         }
         sql += "updated_at,";
         ++parametersCount;
-        if(!dirtyFlag_[19])
+        if(!dirtyFlag_[21])
         {
             needSelection=true;
-        }
-        if(dirtyFlag_[20])
-        {
-            sql += "ticket_alias,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[21])
-        {
-            sql += "colour_name,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[22])
-        {
-            sql += "phone_number,";
-            ++parametersCount;
         }
         if(parametersCount > 0)
         {
@@ -644,33 +628,28 @@ class Winners
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[19])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(dirtyFlag_[20])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[21])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        if(dirtyFlag_[22])
+        else
         {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
+            sql +="default,";
         }
         if(parametersCount > 0)
         {

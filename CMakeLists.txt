@@ -122,6 +122,7 @@ add_executable(${PROJECT_NAME} main.cc
         dto/TicketCollectionDto.h
         dto/InitializeTicketPurchaseDto.h
         dto/ChangeCustomerPinDto.h
+        services/ticket_collection/TicketCollectionService.cc
 
 )
 

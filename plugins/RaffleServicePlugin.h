@@ -28,6 +28,7 @@
 #include "services/settings/SettingService.h"
 #include "services/support_ticket/SupportTicketService.h"
 #include "services/tickets/TicketService.h"
+#include "services/ticket_collection/TicketCollectionService.h"
 #include "services/transaction_audit/TransactionAuditService.h"
 #include "services/users/UserService.h"
 
@@ -68,6 +69,7 @@ namespace raffle::plugins {
         services::MediaLibraryService &getMediaLibraryService() { return mediaLibraryService_; }
         services::PageService &getPageService() { return pageService_; }
         services::SupportTicketService &getSupportTicketService() { return supportTicketService_; }
+        services::TicketCollectionService &getTicketCollectionService() { return ticketCollectionService_; }
 
     private:
         services::RedisCacheManager redisCacheService_;
@@ -92,6 +94,7 @@ namespace raffle::plugins {
         services::MediaLibraryService mediaLibraryService_;
         services::PageService pageService_;
         services::SupportTicketService supportTicketService_;
+        services::TicketCollectionService ticketCollectionService_;
     };
 
 }

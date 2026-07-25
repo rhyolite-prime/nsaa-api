@@ -49,4 +49,5 @@ namespace raffle::dto {
     };
 
 }
+
 #endif //CHOPMONEYRAFFLEAPI_QUARTZJOBDTO_H

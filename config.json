@@ -368,9 +368,6 @@
             "ClientId": "cmgfmxdp",
             "ClientSecret": "qkggakvr"
         },
-        "TicketConfiguration": {
-            "Price": 0.2
-        },
         "Permissions": [
             {
                 "systemName": "colours.view",

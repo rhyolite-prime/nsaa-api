@@ -21,6 +21,7 @@
 #include "Colours.h"
 #include "Draws.h"
 #include "Raffles.h"
+#include "TicketCollections.h"
 #include "dto/CheckoutResponse.h"
 #include "dto/WebCheckoutDto.h"
 #include "dto/InitializeTicketPurchaseDto.h"
@@ -787,12 +788,13 @@ namespace raffle::services {
     CoroMapper<Raffles> raffleMapper(dbClient);
     CoroMapper<Draws> drawMapper(dbClient);
     CoroMapper<Customers> customerMapper(dbClient);
-    CoroMapper<Colours> colourMapper(dbClient);
+
+    CoroMapper<TicketCollections> ticketGroupMapper(dbClient);
 
     LOG_INFO << "InitializeTicketPurchase request:"
              << " customerId=" << customerId
-             << " colourId=" << dto.getColourId()
-             << " quantity=" << dto.getQuantity();
+             << " selectedOption=" << dto.getSelectedOption()
+             << " ticketGroupId=" << dto.getTicketGroupId();
 
     try {
       // 1. Fetch customer
@@ -826,25 +828,56 @@ namespace raffle::services {
 
       auto activeDraw = draws[0];
 
-      // 4. Color Management
-      std::string colourName;
+      // 4. Option Management
+      std::string optionName;
+      bool optionFound = false;
+
+      std::string raffleOptionsStr = activeRaffle.getValueOfOptions();
+
+      if (!raffleOptionsStr.empty()) {
+        Json::Value raffleOptions;
+        Json::Reader reader;
+        if (reader.parse(raffleOptionsStr, raffleOptions) && raffleOptions.isArray()) {
+          for (const auto& option : raffleOptions) {
+             if (option.isMember("id") && option["id"].asString() == dto.getSelectedOption()) {
+               optionName = option["name"].asString();
+               optionFound = true;
+               break;
+             }
+          }
+        }
+      }
+
+      if (!optionFound) {
+        dto::BaseApiResponse errorResponse;
+        errorResponse.success = false;
+        errorResponse.error["code"] = constants::ERR_VALIDATION;
+        errorResponse.error["message"] = "Invalid selected option ID.";
+        co_return errorResponse;
+      }
+
+      int quantity = 0;
+      double entryFee = 0.0;
+      std::string ticketFee;
       try {
-        auto colour = co_await colourMapper.findByPrimaryKey(dto.getColourId());
-        colourName = colour.getValueOfName();
+        auto ticketGroup = co_await ticketGroupMapper.findByPrimaryKey(dto.getTicketGroupId());
+        quantity = ticketGroup.getValueOfQuantity();
+        ticketFee = ticketGroup.getValueOfUnitPrice();
+        entryFee = std::stod(ticketFee);
       } catch (const drogon::orm::DrogonDbException &e) {
         dto::BaseApiResponse errorResponse;
         errorResponse.success = false;
         errorResponse.error["code"] = constants::ERR_VALIDATION;
-        errorResponse.error["message"] = "Invalid colour ID.";
+        errorResponse.error["message"] = "Invalid ticket group ID.";
         co_return errorResponse;
       }
 
       // 5. Create the ticket
       Tickets newTicket;
       newTicket.setDrawId(activeDraw.getValueOfId());
-      newTicket.setColourId(dto.getColourId());
-      newTicket.setColourName(colourName);
-      newTicket.setQuantity(dto.getQuantity());
+      newTicket.setColourId(dto.getSelectedOption());
+      newTicket.setColourName(optionName);
+      newTicket.setQuantity(quantity);
       newTicket.setCustomerPhone(customer.getValueOfMsisdn());
       newTicket.setRaffleId(activeRaffle.getValueOfId());
 
@@ -880,11 +913,9 @@ namespace raffle::services {
 
       auto &app = drogon::app();
       auto customConfig = app.getCustomConfig();
-      std::string ticketFee = customConfig["TicketConfiguration"]["Price"].asString();
 
       newTicket.setEntryFee(ticketFee);
-      double entryFee = std::stod(ticketFee);
-      double totalAmount = entryFee * dto.getQuantity();
+      double totalAmount = entryFee * quantity;
       newTicket.setTotalAmount(std::to_string(totalAmount));
 
       newTicket.setPaymentStatus("PENDING");
@@ -923,7 +954,7 @@ namespace raffle::services {
         response.result["ticketAlias"] = result.getValueOfTicketAlias();
         response.result["paymentReference"] = clientReference;
         response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
-        response.result["selectedColour"] = colourName;
+        response.result["selectedColour"] = optionName;
       } else {
         response.success = false;
         response.message = "Ticket created but failed to initialize payment. " + hubtelResult.status;
@@ -957,18 +988,20 @@ namespace raffle::services {
     }
   }
 
+
   drogon::Task<dto::BaseApiResponse> CustomerService::buyGuestTicket(const dto::InitializeTicketPurchaseDto &dto) {
     auto dbClient = drogon::app().getDbClient();
     CoroMapper<Tickets> ticketMapper(dbClient);
     CoroMapper<Raffles> raffleMapper(dbClient);
     CoroMapper<Draws> drawMapper(dbClient);
     CoroMapper<Customers> customerMapper(dbClient);
-    CoroMapper<Colours> colourMapper(dbClient);
+
+    CoroMapper<TicketCollections> ticketGroupMapper(dbClient);
 
     LOG_INFO << "buyGuestTicket request:"
              << " phoneNumber=" << dto.getPhoneNumber()
-             << " colourId=" << dto.getColourId()
-             << " quantity=" << dto.getQuantity();
+             << " selectedOption=" << dto.getSelectedOption()
+             << " ticketGroupId=" << dto.getTicketGroupId();
 
     std::string normalizedPhone = dto.getPhoneNumber();
     if (normalizedPhone.empty()) {
@@ -1058,25 +1091,55 @@ namespace raffle::services {
 
       auto activeDraw = draws[0];
 
-      // 4. Color Management
-      std::string colourName;
+      // 4. Option Management
+      std::string optionName;
+      bool optionFound = false;
+
+      std::string raffleOptionsStr = activeRaffle.getValueOfOptions();
+      if (!raffleOptionsStr.empty()) {
+        Json::Value raffleOptions;
+        Json::Reader reader;
+        if (reader.parse(raffleOptionsStr, raffleOptions) && raffleOptions.isArray()) {
+          for (const auto& option : raffleOptions) {
+             if (option.isMember("id") && option["id"].asString() == dto.getSelectedOption()) {
+               optionName = option["name"].asString();
+               optionFound = true;
+               break;
+             }
+          }
+        }
+      }
+
+      if (!optionFound) {
+        dto::BaseApiResponse errorResponse;
+        errorResponse.success = false;
+        errorResponse.error["code"] = constants::ERR_VALIDATION;
+        errorResponse.error["message"] = "Invalid selected option ID.";
+        co_return errorResponse;
+      }
+
+      int quantity = 0;
+      double entryFee = 0.0;
+      std::string ticketFee;
       try {
-        auto colour = co_await colourMapper.findByPrimaryKey(dto.getColourId());
-        colourName = colour.getValueOfName();
+        auto ticketGroup = co_await ticketGroupMapper.findByPrimaryKey(dto.getTicketGroupId());
+        quantity = ticketGroup.getValueOfQuantity();
+        ticketFee = ticketGroup.getValueOfUnitPrice();
+        entryFee = std::stod(ticketFee);
       } catch (const drogon::orm::DrogonDbException &e) {
         dto::BaseApiResponse errorResponse;
         errorResponse.success = false;
         errorResponse.error["code"] = constants::ERR_VALIDATION;
-        errorResponse.error["message"] = "Invalid colour ID.";
+        errorResponse.error["message"] = "Invalid ticket group ID.";
         co_return errorResponse;
       }
 
       // 5. Create the ticket
       Tickets newTicket;
       newTicket.setDrawId(activeDraw.getValueOfId());
-      newTicket.setColourId(dto.getColourId());
-      newTicket.setColourName(colourName);
-      newTicket.setQuantity(dto.getQuantity());
+      newTicket.setColourId(dto.getSelectedOption());
+      newTicket.setColourName(optionName);
+      newTicket.setQuantity(quantity);
       newTicket.setCustomerPhone(customer.getValueOfMsisdn());
       newTicket.setRaffleId(activeRaffle.getValueOfId());
 
@@ -1110,11 +1173,8 @@ namespace raffle::services {
       aliasStream << initials << "-" << std::setfill('0') << std::setw(3) << (ticketCount + 1);
       newTicket.setTicketAlias(aliasStream.str());
 
-      std::string ticketFee = customConfig["TicketConfiguration"]["Price"].asString();
-
       newTicket.setEntryFee(ticketFee);
-      double entryFee = std::stod(ticketFee);
-      double totalAmount = entryFee * dto.getQuantity();
+      double totalAmount = entryFee * quantity;
       newTicket.setTotalAmount(std::to_string(totalAmount));
 
       newTicket.setPaymentStatus("PENDING");
@@ -1155,7 +1215,7 @@ namespace raffle::services {
         response.result["ticketAlias"] = result.getValueOfTicketAlias();
         response.result["paymentReference"] = clientReference;
         response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
-        response.result["selectedColour"] = colourName;
+        response.result["selectedColour"] = optionName;
       } else {
         response.success = false;
         response.message = "Ticket created but failed to initialize payment. " + hubtelResult.status;

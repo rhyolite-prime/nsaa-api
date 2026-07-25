@@ -50,7 +50,12 @@ class CmsController : public drogon::HttpController<CmsController>
     ADD_METHOD_TO(CmsController::getColors, std::string(PREFIX) + "colours/list-all", Get, Options);
 
     //ticket collections
-    //ADD_METHOD_TO(CmsController::getTicketCollection, std::string(PREFIX) + "ticket/get-collection", Get, Options);
+    ADD_METHOD_TO(CmsController::getTicketGroups, std::string(PREFIX) + "tickets/get-groups", Get, Options);
+
+    // tickets and draws
+    ADD_METHOD_TO(CmsController::getRecentDraws, std::string(PREFIX) + "get-recent-draws", Get, Options);
+    ADD_METHOD_TO(CmsController::getRecentWinners, std::string(PREFIX) + "get-recent-winners", Get, Options);
+    ADD_METHOD_TO(CmsController::getActiveRaffle, std::string(PREFIX) + "get-active-raffle", Get, Options);
 
     METHOD_LIST_END
 
@@ -96,7 +101,11 @@ class CmsController : public drogon::HttpController<CmsController>
 
     //colors
     Task<HttpResponsePtr> getColors(HttpRequestPtr req);
-    //Task<HttpResponsePtr> getTicketCollection(HttpRequestPtr req);
+    Task<HttpResponsePtr> getTicketGroups(HttpRequestPtr req);
 
+    // tickets and draws
+    Task<HttpResponsePtr> getActiveRaffle(HttpRequestPtr req);
+    Task<HttpResponsePtr> getRecentDraws(HttpRequestPtr req);
+    Task<HttpResponsePtr> getRecentWinners(HttpRequestPtr req);
 };
 

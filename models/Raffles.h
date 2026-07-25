@@ -54,9 +54,11 @@ class Raffles
         static const std::string _start_time;
         static const std::string _end_time;
         static const std::string _draw_time;
+        static const std::string _options;
+        static const std::string _exempted_partners;
+        static const std::string _status;
         static const std::string _created_at;
         static const std::string _updated_at;
-        static const std::string _status;
     };
 
     static const int primaryKeyNumber;
@@ -198,6 +200,36 @@ class Raffles
     ///Set the value of the column draw_time
     void setDrawTime(const ::trantor::Date &pDrawTime) noexcept;
 
+    /**  For column options  */
+    ///Get the value of the column options, returns the default value if the column is null
+    const std::string &getValueOfOptions() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getOptions() const noexcept;
+    ///Set the value of the column options
+    void setOptions(const std::string &pOptions) noexcept;
+    void setOptions(std::string &&pOptions) noexcept;
+    void setOptionsToNull() noexcept;
+
+    /**  For column exempted_partners  */
+    ///Get the value of the column exempted_partners, returns the default value if the column is null
+    const std::string &getValueOfExemptedPartners() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getExemptedPartners() const noexcept;
+    ///Set the value of the column exempted_partners
+    void setExemptedPartners(const std::string &pExemptedPartners) noexcept;
+    void setExemptedPartners(std::string &&pExemptedPartners) noexcept;
+    void setExemptedPartnersToNull() noexcept;
+
+    /**  For column status  */
+    ///Get the value of the column status, returns the default value if the column is null
+    const std::string &getValueOfStatus() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getStatus() const noexcept;
+    ///Set the value of the column status
+    void setStatus(const std::string &pStatus) noexcept;
+    void setStatus(std::string &&pStatus) noexcept;
+    void setStatusToNull() noexcept;
+
     /**  For column created_at  */
     ///Get the value of the column created_at, returns the default value if the column is null
     const ::trantor::Date &getValueOfCreatedAt() const noexcept;
@@ -216,18 +248,8 @@ class Raffles
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
-    /**  For column status  */
-    ///Get the value of the column status, returns the default value if the column is null
-    const std::string &getValueOfStatus() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getStatus() const noexcept;
-    ///Set the value of the column status
-    void setStatus(const std::string &pStatus) noexcept;
-    void setStatus(std::string &&pStatus) noexcept;
-    void setStatusToNull() noexcept;
 
-
-    static size_t getColumnNumber() noexcept {  return 13;  }
+    static size_t getColumnNumber() noexcept {  return 15;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -259,9 +281,11 @@ class Raffles
     std::shared_ptr<::trantor::Date> startTime_;
     std::shared_ptr<::trantor::Date> endTime_;
     std::shared_ptr<::trantor::Date> drawTime_;
+    std::shared_ptr<std::string> options_;
+    std::shared_ptr<std::string> exemptedPartners_;
+    std::shared_ptr<std::string> status_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
-    std::shared_ptr<std::string> status_;
     struct MetaData
     {
         const std::string colName_;
@@ -273,7 +297,7 @@ class Raffles
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[13]={ false };
+    bool dirtyFlag_[15]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -345,13 +369,13 @@ class Raffles
             sql += "draw_time,";
             ++parametersCount;
         }
-        sql += "created_at,";
+        sql += "options,";
         ++parametersCount;
         if(!dirtyFlag_[10])
         {
             needSelection=true;
         }
-        sql += "updated_at,";
+        sql += "exempted_partners,";
         ++parametersCount;
         if(!dirtyFlag_[11])
         {
@@ -360,6 +384,18 @@ class Raffles
         sql += "status,";
         ++parametersCount;
         if(!dirtyFlag_[12])
+        {
+            needSelection=true;
+        }
+        sql += "created_at,";
+        ++parametersCount;
+        if(!dirtyFlag_[13])
+        {
+            needSelection=true;
+        }
+        sql += "updated_at,";
+        ++parametersCount;
+        if(!dirtyFlag_[14])
         {
             needSelection=true;
         }
@@ -459,6 +495,24 @@ class Raffles
             sql +="default,";
         }
         if(dirtyFlag_[12])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[13])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[14])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);

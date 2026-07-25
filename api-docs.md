@@ -631,8 +631,8 @@ curl --location 'http://localhost:5044/api/v1/customers/buy-ticket' \
 --header 'Content-Type: application/json' \
 --header 'Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndlaS56aGFuZ0BleGFtcGxlLmNvbSIsImV4cCI6MTc4MTY1MTQwOSwiaWF0IjoxNzc5MDU5NDA5LCJpc3MiOiJOb3MiLCJ1c2VySWQiOiJjMDY2YTZlYy0xZmQxLTQ0NzctOTY0MC02NjQyMjM4Y2JlMzAiLCJ1c2VybmFtZSI6IndlaXpoYW5nIn0.vwUVS8kDZmL-b7fdysv-URy-r5voL8tv9i3YAiA_gIU' \
 --data '{
-    "colourId": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
-    "quantity": 5
+    "selectedOption": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
+    "ticketGroupId" : "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde74"
 }'
 ```
 
@@ -711,12 +711,12 @@ Buys a ticket for a guest customer. Returns a checkout URL and ticket details. A
 ### Example Request
 
 ```bash
-curl --location 'http://localhost:5044/api/v1/customers/buy-guest-ticket' \
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/buy-guest-ticket' \
 --header 'Content-Type: application/json' \
 --data '{
-    "colourId": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
-    "quantity": 1,
-    "phoneNumber": "0245444123"
+    "selectedOption": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
+    "phoneNumber": "0245444123",
+    "ticketGroupId" : "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde74"
 }'
 ```
 
@@ -751,7 +751,7 @@ Gets a list of all available colours.
 ### Example Request
 
 ```bash
-curl --location 'http://localhost:5044/api/v1/cms/colours/list-all'
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/colours/list-all'
 ```
 
 ### Example Response
@@ -803,9 +803,298 @@ curl --location 'http://localhost:5044/api/v1/cms/colours/list-all'
 }
 ```
 
+## 20. Get Ticket Groups
+
+**POST** `/cms/tickets/get-groups`
+
+### Description
+
+Gets a list of all Ticket Groups & Prices  
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/tickets/get-groups'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "id": "e8036a4a-1879-4fdf-88d3-b65a53c42ed6",
+        "isActive": true,
+        "name": "10 Tickets",
+        "quantity": 10,
+        "unitPrice": "5.00"
+      },
+      {
+        "id": "961ae756-86e2-43c9-8667-c6c194f75526",
+        "isActive": true,
+        "name": "5 Tickets",
+        "quantity": 5,
+        "unitPrice": "5.00"
+      },
+      {
+        "id": "18439554-2a20-4c34-8f4b-95214b6cef41",
+        "isActive": true,
+        "name": "2 Tickets",
+        "quantity": 2,
+        "unitPrice": "5.00"
+      },
+      {
+        "id": "e51ff197-6831-4291-b490-d7cd0a9b027f",
+        "isActive": true,
+        "name": "1 Ticket",
+        "quantity": 1,
+        "unitPrice": "5.00"
+      }
+    ],
+    "lowerBound": 1,
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalCount": 4,
+    "totalPages": 1,
+    "upperBound": 4
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
 
 
 
+## 20. Get recent draws
+
+**POST** `/cms/get-recent-draws`
+
+### Description
+
+Gets a list of all Recent draws
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/get-recent-draws'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "alias": "tuesday-bliss",
+        "drawCode": "20260428-1830",
+        "drawDate": "2026-04-28 18:30:00",
+        "drawTime": null,
+        "id": "701a21f7-a711-482d-86ae-2d77a5697070",
+        "status": "COMPLETED",
+        "totalEntries": 35,
+        "totalPool": "7.00",
+        "totalPrices": "11000.00",
+        "winningColour": "Black Star",
+        "winningColourId": "9de57805-008a-5ec4-ae79-ec94b4818173"
+      },
+      {
+        "alias": "mabango-grand-2026",
+        "drawCode": "20250118-2005",
+        "drawDate": "2025-01-18 20:05:00",
+        "drawTime": null,
+        "id": "78653b5c-212c-4295-a55d-6b88b4be9e98",
+        "status": "COMPLETED",
+        "totalEntries": 0,
+        "totalPool": "0.00",
+        "totalPrices": "14000.00",
+        "winningColour": null,
+        "winningColourId": "937a22c0-f7d5-57bd-9a98-71e44fc7b78a"
+      },
+      {
+        "alias": "january-grand-2026",
+        "drawCode": "20260118-2005",
+        "drawDate": "2026-01-18 20:05:00",
+        "drawTime": null,
+        "id": "876e172c-2b44-440e-887b-0f51634dddf9",
+        "status": "COMPLETED",
+        "totalEntries": 105,
+        "totalPool": "0.00",
+        "totalPrices": "15001.56",
+        "winningColour": "Red",
+        "winningColourId": "74dabff4-079e-5d0b-8ae9-1b2a536dbf11"
+      },
+      {
+        "alias": "sunday-jackpot-2026",
+        "drawCode": "20260111-2105",
+        "drawDate": "2026-01-11 21:05:00",
+        "drawTime": null,
+        "id": "35c1c3f4-c3a5-4619-9007-1c32765c9940",
+        "status": "COMPLETED",
+        "totalEntries": 0,
+        "totalPool": "0.00",
+        "totalPrices": "15000.06",
+        "winningColour": "Red",
+        "winningColourId": "74dabff4-079e-5d0b-8ae9-1b2a536dbf11"
+      },
+      {
+        "alias": "friday-night-draw-2026",
+        "drawCode": "19691231-2359",
+        "drawDate": "1969-12-31 23:59:59",
+        "drawTime": null,
+        "id": "4dd647a4-75ca-487d-8e2c-eab0428d1021",
+        "status": "COMPLETED",
+        "totalEntries": 0,
+        "totalPool": "0.00",
+        "totalPrices": "14000.00",
+        "winningColour": "Gold",
+        "winningColourId": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73"
+      }
+    ],
+    "lowerBound": 1,
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalCount": 5,
+    "totalPages": 1,
+    "upperBound": 5
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+
+## 21. Get recent winners
+
+**POST** `/cms/get-recent-winners`
+
+### Description
+
+Gets a list of all Recent Winners
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/get-recent-winners'
+```
+
+### Example Response
+
+```json
+ {
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "actualPayout": "150.00",
+        "customerId": "c3d4e5f6-a7b8-9012-cdef-345678901234",
+        "drawId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "id": "cb311f8f-d8ac-42f6-a511-cce98af8cbac",
+        "phoneNumber": "+23*******890",
+        "prizeAmount": "150.00",
+        "ticketAlias": "T-001",
+        "ticketId": "b2c3d4e5-f6a7-8901-bcde-f23456789012"
+      },
+      {
+        "actualPayout": "300.00",
+        "customerId": "b8c9d0e1-f2a3-4567-a1b3-890123456789",
+        "drawId": "c3d4e5f6-a7b8-9012-cdef-345678901234",
+        "id": "ddfafc90-6ddf-44ed-8e10-b5231b077c77",
+        "phoneNumber": "+23*******111",
+        "prizeAmount": "300.00",
+        "ticketAlias": "T-006",
+        "ticketId": "a7b8c9d0-e1f2-3456-a0b2-789012345678"
+      },
+      {
+        "actualPayout": "500.00",
+        "customerId": "e5f6a7b8-c9d0-1234-ef00-567890123456",
+        "drawId": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+        "id": "eefdbcde-41c7-431e-a18f-b565c1c2756f",
+        "phoneNumber": "+23*******455",
+        "prizeAmount": "500.00",
+        "ticketAlias": "T-003",
+        "ticketId": "d4e5f6a7-b8c9-0123-def0-456789012345"
+      }
+    ],
+    "lowerBound": 1,
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalCount": 10,
+    "totalPages": 1,
+    "upperBound": 10
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+## 22. Get Active Raffle
+
+**POST** `/cms/get-active-raffle`
+
+### Description
+
+Gets active raffle
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/get-active-raffle'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "createdAt": "2026-06-15 10:00:00",
+    "drawTime": "2026-08-01 18:00:00",
+    "endsAt": "2026-07-31 23:59:59",
+    "id": "e16810df-9980-4da1-ad55-e12d6975ecde",
+    "name": "Summer Mega Raffle 2026",
+    "options": [
+      {
+        "code": "RED",
+        "hexcolor": "#FF0000",
+        "id": "e26810df-9980-4da1-ad55-e12d6975ecde",
+        "name": "Red(Liverpool)",
+        "sortOrder": 1
+      },
+      {
+        "code": "BLUE",
+        "hexcolor": "#16c8f5",
+        "id": "e26810df-9980-4da1-ad55-e12d6975ecde",
+        "name": "Blue(Manchester)",
+        "sortOrder": 2
+      },
+      {
+        "code": "RED",
+        "hexcolor": "#000000",
+        "id": "e26810df-9980-4da1-ad55-e12d6975ecde",
+        "name": "Black(DRAW)",
+        "sortOrder": 3
+      }
+    ],
+    "prizePool": "5000.00",
+    "slug": "summer-mega-raffle-2026",
+    "startsAt": "2026-07-27",
+    "status": "ACTIVE",
+    "totalEntries": 1250,
+    "winningColour": "Red"
+  },
+  "success": true,
+  "targetUrl": ""
+}
+
+```
 
 # ⚠️ Error Handling
 

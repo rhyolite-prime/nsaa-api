@@ -17,35 +17,36 @@ namespace raffle::dto {
         void fromJson(const Json::Value& json);
 
         // Getters
-        [[nodiscard]] const std::string &getColourId() const { return colour_id_; }
-        [[nodiscard]] int32_t getQuantity() const { return quantity_; }
+        [[nodiscard]] const std::string &getSelectedOption() const { return selected_option_; }
+        [[nodiscard]] const std::string &getTicketGroupId() const { return ticket_group_id_; }
         [[nodiscard]] const std::string &getPhoneNumber() const { return phone_number_; }
 
         // Setters
-        void setColourId(const std::string &value) { colour_id_ = value; }
-        void setQuantity(int32_t value) { quantity_ = value; }
+        void setSelectedOption(const std::string &value) { selected_option_ = value; }
+        void setTicketGroupId(const std::string &value) { ticket_group_id_ = value; }
         void setPhoneNumber(const std::string &value) { phone_number_ = value; }
 
 
     private:
 
-        std::string colour_id_;
+        std::string selected_option_;
+        std::string ticket_group_id_;
         std::string phone_number_;
-        int32_t quantity_ {1};
+
     };
 
     inline void InitializeTicketPurchaseDto::fromJson(const Json::Value& json) {
 
-        if (json.isMember("colourId") && !json["colourId"].isNull()) {
-            colour_id_ = json["colourId"].asString();
+        if (json.isMember("selectedOption") && !json["selectedOption"].isNull()) {
+           setSelectedOption(json["selectedOption"].asString());
         }
 
-        if (json.isMember("quantity") && !json["quantity"].isNull()) {
-            quantity_ = json["quantity"].asInt();
+        if (json.isMember("ticketGroupId") && !json["ticketGroupId"].isNull()) {
+            setTicketGroupId(json["ticketGroupId"].asString());
         }
 
         if (json.isMember("phoneNumber") && !json["phoneNumber"].isNull()) {
-            phone_number_ = json["phoneNumber"].asString();
+            setPhoneNumber(json["phoneNumber"].asString());
         }
 
     }

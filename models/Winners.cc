@@ -17,8 +17,8 @@ const std::string Winners::Cols::_id = "\"id\"";
 const std::string Winners::Cols::_draw_id = "\"draw_id\"";
 const std::string Winners::Cols::_ticket_id = "\"ticket_id\"";
 const std::string Winners::Cols::_customer_id = "\"customer_id\"";
-const std::string Winners::Cols::_prize_tier_id = "\"prize_tier_id\"";
-const std::string Winners::Cols::_colour_id = "\"colour_id\"";
+const std::string Winners::Cols::_selected_option_id = "\"selected_option_id\"";
+const std::string Winners::Cols::_selected_option_label = "\"selected_option_label\"";
 const std::string Winners::Cols::_prize_amount = "\"prize_amount\"";
 const std::string Winners::Cols::_actual_payout = "\"actual_payout\"";
 const std::string Winners::Cols::_status = "\"status\"";
@@ -31,11 +31,10 @@ const std::string Winners::Cols::_payout_method = "\"payout_method\"";
 const std::string Winners::Cols::_payout_reference = "\"payout_reference\"";
 const std::string Winners::Cols::_payout_date = "\"payout_date\"";
 const std::string Winners::Cols::_notified_at = "\"notified_at\"";
+const std::string Winners::Cols::_ticket_alias = "\"ticket_alias\"";
+const std::string Winners::Cols::_phone_number = "\"phone_number\"";
 const std::string Winners::Cols::_created_at = "\"created_at\"";
 const std::string Winners::Cols::_updated_at = "\"updated_at\"";
-const std::string Winners::Cols::_ticket_alias = "\"ticket_alias\"";
-const std::string Winners::Cols::_colour_name = "\"colour_name\"";
-const std::string Winners::Cols::_phone_number = "\"phone_number\"";
 const std::string Winners::primaryKeyName = "id";
 const bool Winners::hasPrimaryKey = true;
 const std::string Winners::tableName = "\"winners\"";
@@ -45,8 +44,8 @@ const std::vector<typename Winners::MetaData> Winners::metaData_={
 {"draw_id","std::string","uuid",0,0,0,1},
 {"ticket_id","std::string","uuid",0,0,0,1},
 {"customer_id","std::string","uuid",0,0,0,1},
-{"prize_tier_id","std::string","uuid",0,0,0,1},
-{"colour_id","std::string","uuid",0,0,0,1},
+{"selected_option_id","std::string","uuid",0,0,0,1},
+{"selected_option_label","std::string","character varying",50,0,0,0},
 {"prize_amount","std::string","numeric",0,0,0,1},
 {"actual_payout","std::string","numeric",0,0,0,0},
 {"status","std::string","character varying",20,0,0,0},
@@ -59,11 +58,10 @@ const std::vector<typename Winners::MetaData> Winners::metaData_={
 {"payout_reference","std::string","character varying",100,0,0,0},
 {"payout_date","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"notified_at","::trantor::Date","timestamp without time zone",0,0,0,0},
-{"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
-{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"ticket_alias","std::string","character varying",10,0,0,0},
-{"colour_name","std::string","character varying",50,0,0,0},
-{"phone_number","std::string","character varying",20,0,0,0}
+{"phone_number","std::string","character varying",20,0,0,0},
+{"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
+{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
 };
 const std::string &Winners::getColumnName(size_t index) noexcept(false)
 {
@@ -90,13 +88,13 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
         {
             customerId_=std::make_shared<std::string>(r["customer_id"].as<std::string>());
         }
-        if(!r["prize_tier_id"].isNull())
+        if(!r["selected_option_id"].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(r["prize_tier_id"].as<std::string>());
+            selectedOptionId_=std::make_shared<std::string>(r["selected_option_id"].as<std::string>());
         }
-        if(!r["colour_id"].isNull())
+        if(!r["selected_option_label"].isNull())
         {
-            colourId_=std::make_shared<std::string>(r["colour_id"].as<std::string>());
+            selectedOptionLabel_=std::make_shared<std::string>(r["selected_option_label"].as<std::string>());
         }
         if(!r["prize_amount"].isNull())
         {
@@ -200,6 +198,14 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 notifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        if(!r["ticket_alias"].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(r["ticket_alias"].as<std::string>());
+        }
+        if(!r["phone_number"].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(r["phone_number"].as<std::string>());
+        }
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
@@ -244,23 +250,11 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        if(!r["ticket_alias"].isNull())
-        {
-            ticketAlias_=std::make_shared<std::string>(r["ticket_alias"].as<std::string>());
-        }
-        if(!r["colour_name"].isNull())
-        {
-            colourName_=std::make_shared<std::string>(r["colour_name"].as<std::string>());
-        }
-        if(!r["phone_number"].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(r["phone_number"].as<std::string>());
-        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 23 > r.size())
+        if(offset + 22 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -289,12 +283,12 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 4;
         if(!r[index].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(r[index].as<std::string>());
+            selectedOptionId_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 5;
         if(!r[index].isNull())
         {
-            colourId_=std::make_shared<std::string>(r[index].as<std::string>());
+            selectedOptionLabel_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 6;
         if(!r[index].isNull())
@@ -413,6 +407,16 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 18;
         if(!r[index].isNull())
         {
+            ticketAlias_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 19;
+        if(!r[index].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 20;
+        if(!r[index].isNull())
+        {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
@@ -433,7 +437,7 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 19;
+        index = offset + 21;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -456,28 +460,13 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 20;
-        if(!r[index].isNull())
-        {
-            ticketAlias_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
-        index = offset + 21;
-        if(!r[index].isNull())
-        {
-            colourName_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
-        index = offset + 22;
-        if(!r[index].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
     }
 
 }
 
 Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 22)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -519,7 +508,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
+            selectedOptionId_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -527,7 +516,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            colourId_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
+            selectedOptionLabel_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -685,7 +674,23 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[18] = true;
         if(!pJson[pMasqueradingVector[18]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[18]].asString();
+            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
+        }
+    }
+    if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
+    {
+        dirtyFlag_[19] = true;
+        if(!pJson[pMasqueradingVector[19]].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[19]].asString());
+        }
+    }
+    if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
+    {
+        dirtyFlag_[20] = true;
+        if(!pJson[pMasqueradingVector[20]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[20]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -706,12 +711,12 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
             }
         }
     }
-    if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
+    if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
     {
-        dirtyFlag_[19] = true;
-        if(!pJson[pMasqueradingVector[19]].isNull())
+        dirtyFlag_[21] = true;
+        if(!pJson[pMasqueradingVector[21]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[19]].asString();
+            auto timeStr = pJson[pMasqueradingVector[21]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -730,30 +735,6 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
                 }
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
-        }
-    }
-    if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
-    {
-        dirtyFlag_[20] = true;
-        if(!pJson[pMasqueradingVector[20]].isNull())
-        {
-            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
-        }
-    }
-    if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
-    {
-        dirtyFlag_[21] = true;
-        if(!pJson[pMasqueradingVector[21]].isNull())
-        {
-            colourName_=std::make_shared<std::string>(pJson[pMasqueradingVector[21]].asString());
-        }
-    }
-    if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
-    {
-        dirtyFlag_[22] = true;
-        if(!pJson[pMasqueradingVector[22]].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[22]].asString());
         }
     }
 }
@@ -792,20 +773,20 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
             customerId_=std::make_shared<std::string>(pJson["customer_id"].asString());
         }
     }
-    if(pJson.isMember("prize_tier_id"))
+    if(pJson.isMember("selected_option_id"))
     {
         dirtyFlag_[4]=true;
-        if(!pJson["prize_tier_id"].isNull())
+        if(!pJson["selected_option_id"].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(pJson["prize_tier_id"].asString());
+            selectedOptionId_=std::make_shared<std::string>(pJson["selected_option_id"].asString());
         }
     }
-    if(pJson.isMember("colour_id"))
+    if(pJson.isMember("selected_option_label"))
     {
         dirtyFlag_[5]=true;
-        if(!pJson["colour_id"].isNull())
+        if(!pJson["selected_option_label"].isNull())
         {
-            colourId_=std::make_shared<std::string>(pJson["colour_id"].asString());
+            selectedOptionLabel_=std::make_shared<std::string>(pJson["selected_option_label"].asString());
         }
     }
     if(pJson.isMember("prize_amount"))
@@ -958,9 +939,25 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
             }
         }
     }
-    if(pJson.isMember("created_at"))
+    if(pJson.isMember("ticket_alias"))
     {
         dirtyFlag_[18]=true;
+        if(!pJson["ticket_alias"].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
+        }
+    }
+    if(pJson.isMember("phone_number"))
+    {
+        dirtyFlag_[19]=true;
+        if(!pJson["phone_number"].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
+        }
+    }
+    if(pJson.isMember("created_at"))
+    {
+        dirtyFlag_[20]=true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -986,7 +983,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("updated_at"))
     {
-        dirtyFlag_[19]=true;
+        dirtyFlag_[21]=true;
         if(!pJson["updated_at"].isNull())
         {
             auto timeStr = pJson["updated_at"].asString();
@@ -1010,36 +1007,12 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
             }
         }
     }
-    if(pJson.isMember("ticket_alias"))
-    {
-        dirtyFlag_[20]=true;
-        if(!pJson["ticket_alias"].isNull())
-        {
-            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
-        }
-    }
-    if(pJson.isMember("colour_name"))
-    {
-        dirtyFlag_[21]=true;
-        if(!pJson["colour_name"].isNull())
-        {
-            colourName_=std::make_shared<std::string>(pJson["colour_name"].asString());
-        }
-    }
-    if(pJson.isMember("phone_number"))
-    {
-        dirtyFlag_[22]=true;
-        if(!pJson["phone_number"].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
-        }
-    }
 }
 
 void Winners::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 22)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -1080,7 +1053,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
+            selectedOptionId_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -1088,7 +1061,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            colourId_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
+            selectedOptionLabel_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -1246,7 +1219,23 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[18] = true;
         if(!pJson[pMasqueradingVector[18]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[18]].asString();
+            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
+        }
+    }
+    if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
+    {
+        dirtyFlag_[19] = true;
+        if(!pJson[pMasqueradingVector[19]].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[19]].asString());
+        }
+    }
+    if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
+    {
+        dirtyFlag_[20] = true;
+        if(!pJson[pMasqueradingVector[20]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[20]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -1267,12 +1256,12 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
-    if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
+    if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
     {
-        dirtyFlag_[19] = true;
-        if(!pJson[pMasqueradingVector[19]].isNull())
+        dirtyFlag_[21] = true;
+        if(!pJson[pMasqueradingVector[21]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[19]].asString();
+            auto timeStr = pJson[pMasqueradingVector[21]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -1291,30 +1280,6 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
                 }
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
-        }
-    }
-    if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
-    {
-        dirtyFlag_[20] = true;
-        if(!pJson[pMasqueradingVector[20]].isNull())
-        {
-            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
-        }
-    }
-    if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
-    {
-        dirtyFlag_[21] = true;
-        if(!pJson[pMasqueradingVector[21]].isNull())
-        {
-            colourName_=std::make_shared<std::string>(pJson[pMasqueradingVector[21]].asString());
-        }
-    }
-    if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
-    {
-        dirtyFlag_[22] = true;
-        if(!pJson[pMasqueradingVector[22]].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[22]].asString());
         }
     }
 }
@@ -1352,20 +1317,20 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
             customerId_=std::make_shared<std::string>(pJson["customer_id"].asString());
         }
     }
-    if(pJson.isMember("prize_tier_id"))
+    if(pJson.isMember("selected_option_id"))
     {
         dirtyFlag_[4] = true;
-        if(!pJson["prize_tier_id"].isNull())
+        if(!pJson["selected_option_id"].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(pJson["prize_tier_id"].asString());
+            selectedOptionId_=std::make_shared<std::string>(pJson["selected_option_id"].asString());
         }
     }
-    if(pJson.isMember("colour_id"))
+    if(pJson.isMember("selected_option_label"))
     {
         dirtyFlag_[5] = true;
-        if(!pJson["colour_id"].isNull())
+        if(!pJson["selected_option_label"].isNull())
         {
-            colourId_=std::make_shared<std::string>(pJson["colour_id"].asString());
+            selectedOptionLabel_=std::make_shared<std::string>(pJson["selected_option_label"].asString());
         }
     }
     if(pJson.isMember("prize_amount"))
@@ -1518,9 +1483,25 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
-    if(pJson.isMember("created_at"))
+    if(pJson.isMember("ticket_alias"))
     {
         dirtyFlag_[18] = true;
+        if(!pJson["ticket_alias"].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
+        }
+    }
+    if(pJson.isMember("phone_number"))
+    {
+        dirtyFlag_[19] = true;
+        if(!pJson["phone_number"].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
+        }
+    }
+    if(pJson.isMember("created_at"))
+    {
+        dirtyFlag_[20] = true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -1546,7 +1527,7 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("updated_at"))
     {
-        dirtyFlag_[19] = true;
+        dirtyFlag_[21] = true;
         if(!pJson["updated_at"].isNull())
         {
             auto timeStr = pJson["updated_at"].asString();
@@ -1568,30 +1549,6 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
                 }
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
-        }
-    }
-    if(pJson.isMember("ticket_alias"))
-    {
-        dirtyFlag_[20] = true;
-        if(!pJson["ticket_alias"].isNull())
-        {
-            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
-        }
-    }
-    if(pJson.isMember("colour_name"))
-    {
-        dirtyFlag_[21] = true;
-        if(!pJson["colour_name"].isNull())
-        {
-            colourName_=std::make_shared<std::string>(pJson["colour_name"].asString());
-        }
-    }
-    if(pJson.isMember("phone_number"))
-    {
-        dirtyFlag_[22] = true;
-        if(!pJson["phone_number"].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
         }
     }
 }
@@ -1689,47 +1646,52 @@ void Winners::setCustomerId(std::string &&pCustomerId) noexcept
     dirtyFlag_[3] = true;
 }
 
-const std::string &Winners::getValueOfPrizeTierId() const noexcept
+const std::string &Winners::getValueOfSelectedOptionId() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(prizeTierId_)
-        return *prizeTierId_;
+    if(selectedOptionId_)
+        return *selectedOptionId_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Winners::getPrizeTierId() const noexcept
+const std::shared_ptr<std::string> &Winners::getSelectedOptionId() const noexcept
 {
-    return prizeTierId_;
+    return selectedOptionId_;
 }
-void Winners::setPrizeTierId(const std::string &pPrizeTierId) noexcept
+void Winners::setSelectedOptionId(const std::string &pSelectedOptionId) noexcept
 {
-    prizeTierId_ = std::make_shared<std::string>(pPrizeTierId);
+    selectedOptionId_ = std::make_shared<std::string>(pSelectedOptionId);
     dirtyFlag_[4] = true;
 }
-void Winners::setPrizeTierId(std::string &&pPrizeTierId) noexcept
+void Winners::setSelectedOptionId(std::string &&pSelectedOptionId) noexcept
 {
-    prizeTierId_ = std::make_shared<std::string>(std::move(pPrizeTierId));
+    selectedOptionId_ = std::make_shared<std::string>(std::move(pSelectedOptionId));
     dirtyFlag_[4] = true;
 }
 
-const std::string &Winners::getValueOfColourId() const noexcept
+const std::string &Winners::getValueOfSelectedOptionLabel() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(colourId_)
-        return *colourId_;
+    if(selectedOptionLabel_)
+        return *selectedOptionLabel_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Winners::getColourId() const noexcept
+const std::shared_ptr<std::string> &Winners::getSelectedOptionLabel() const noexcept
 {
-    return colourId_;
+    return selectedOptionLabel_;
 }
-void Winners::setColourId(const std::string &pColourId) noexcept
+void Winners::setSelectedOptionLabel(const std::string &pSelectedOptionLabel) noexcept
 {
-    colourId_ = std::make_shared<std::string>(pColourId);
+    selectedOptionLabel_ = std::make_shared<std::string>(pSelectedOptionLabel);
     dirtyFlag_[5] = true;
 }
-void Winners::setColourId(std::string &&pColourId) noexcept
+void Winners::setSelectedOptionLabel(std::string &&pSelectedOptionLabel) noexcept
 {
-    colourId_ = std::make_shared<std::string>(std::move(pColourId));
+    selectedOptionLabel_ = std::make_shared<std::string>(std::move(pSelectedOptionLabel));
+    dirtyFlag_[5] = true;
+}
+void Winners::setSelectedOptionLabelToNull() noexcept
+{
+    selectedOptionLabel_.reset();
     dirtyFlag_[5] = true;
 }
 
@@ -2037,50 +1999,6 @@ void Winners::setNotifiedAtToNull() noexcept
     dirtyFlag_[17] = true;
 }
 
-const ::trantor::Date &Winners::getValueOfCreatedAt() const noexcept
-{
-    static const ::trantor::Date defaultValue = ::trantor::Date();
-    if(createdAt_)
-        return *createdAt_;
-    return defaultValue;
-}
-const std::shared_ptr<::trantor::Date> &Winners::getCreatedAt() const noexcept
-{
-    return createdAt_;
-}
-void Winners::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
-{
-    createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
-    dirtyFlag_[18] = true;
-}
-void Winners::setCreatedAtToNull() noexcept
-{
-    createdAt_.reset();
-    dirtyFlag_[18] = true;
-}
-
-const ::trantor::Date &Winners::getValueOfUpdatedAt() const noexcept
-{
-    static const ::trantor::Date defaultValue = ::trantor::Date();
-    if(updatedAt_)
-        return *updatedAt_;
-    return defaultValue;
-}
-const std::shared_ptr<::trantor::Date> &Winners::getUpdatedAt() const noexcept
-{
-    return updatedAt_;
-}
-void Winners::setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept
-{
-    updatedAt_ = std::make_shared<::trantor::Date>(pUpdatedAt);
-    dirtyFlag_[19] = true;
-}
-void Winners::setUpdatedAtToNull() noexcept
-{
-    updatedAt_.reset();
-    dirtyFlag_[19] = true;
-}
-
 const std::string &Winners::getValueOfTicketAlias() const noexcept
 {
     static const std::string defaultValue = std::string();
@@ -2095,44 +2013,17 @@ const std::shared_ptr<std::string> &Winners::getTicketAlias() const noexcept
 void Winners::setTicketAlias(const std::string &pTicketAlias) noexcept
 {
     ticketAlias_ = std::make_shared<std::string>(pTicketAlias);
-    dirtyFlag_[20] = true;
+    dirtyFlag_[18] = true;
 }
 void Winners::setTicketAlias(std::string &&pTicketAlias) noexcept
 {
     ticketAlias_ = std::make_shared<std::string>(std::move(pTicketAlias));
-    dirtyFlag_[20] = true;
+    dirtyFlag_[18] = true;
 }
 void Winners::setTicketAliasToNull() noexcept
 {
     ticketAlias_.reset();
-    dirtyFlag_[20] = true;
-}
-
-const std::string &Winners::getValueOfColourName() const noexcept
-{
-    static const std::string defaultValue = std::string();
-    if(colourName_)
-        return *colourName_;
-    return defaultValue;
-}
-const std::shared_ptr<std::string> &Winners::getColourName() const noexcept
-{
-    return colourName_;
-}
-void Winners::setColourName(const std::string &pColourName) noexcept
-{
-    colourName_ = std::make_shared<std::string>(pColourName);
-    dirtyFlag_[21] = true;
-}
-void Winners::setColourName(std::string &&pColourName) noexcept
-{
-    colourName_ = std::make_shared<std::string>(std::move(pColourName));
-    dirtyFlag_[21] = true;
-}
-void Winners::setColourNameToNull() noexcept
-{
-    colourName_.reset();
-    dirtyFlag_[21] = true;
+    dirtyFlag_[18] = true;
 }
 
 const std::string &Winners::getValueOfPhoneNumber() const noexcept
@@ -2149,17 +2040,61 @@ const std::shared_ptr<std::string> &Winners::getPhoneNumber() const noexcept
 void Winners::setPhoneNumber(const std::string &pPhoneNumber) noexcept
 {
     phoneNumber_ = std::make_shared<std::string>(pPhoneNumber);
-    dirtyFlag_[22] = true;
+    dirtyFlag_[19] = true;
 }
 void Winners::setPhoneNumber(std::string &&pPhoneNumber) noexcept
 {
     phoneNumber_ = std::make_shared<std::string>(std::move(pPhoneNumber));
-    dirtyFlag_[22] = true;
+    dirtyFlag_[19] = true;
 }
 void Winners::setPhoneNumberToNull() noexcept
 {
     phoneNumber_.reset();
-    dirtyFlag_[22] = true;
+    dirtyFlag_[19] = true;
+}
+
+const ::trantor::Date &Winners::getValueOfCreatedAt() const noexcept
+{
+    static const ::trantor::Date defaultValue = ::trantor::Date();
+    if(createdAt_)
+        return *createdAt_;
+    return defaultValue;
+}
+const std::shared_ptr<::trantor::Date> &Winners::getCreatedAt() const noexcept
+{
+    return createdAt_;
+}
+void Winners::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
+{
+    createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
+    dirtyFlag_[20] = true;
+}
+void Winners::setCreatedAtToNull() noexcept
+{
+    createdAt_.reset();
+    dirtyFlag_[20] = true;
+}
+
+const ::trantor::Date &Winners::getValueOfUpdatedAt() const noexcept
+{
+    static const ::trantor::Date defaultValue = ::trantor::Date();
+    if(updatedAt_)
+        return *updatedAt_;
+    return defaultValue;
+}
+const std::shared_ptr<::trantor::Date> &Winners::getUpdatedAt() const noexcept
+{
+    return updatedAt_;
+}
+void Winners::setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept
+{
+    updatedAt_ = std::make_shared<::trantor::Date>(pUpdatedAt);
+    dirtyFlag_[21] = true;
+}
+void Winners::setUpdatedAtToNull() noexcept
+{
+    updatedAt_.reset();
+    dirtyFlag_[21] = true;
 }
 
 void Winners::updateId(const uint64_t id)
@@ -2173,8 +2108,8 @@ const std::vector<std::string> &Winners::insertColumns() noexcept
         "draw_id",
         "ticket_id",
         "customer_id",
-        "prize_tier_id",
-        "colour_id",
+        "selected_option_id",
+        "selected_option_label",
         "prize_amount",
         "actual_payout",
         "status",
@@ -2187,11 +2122,10 @@ const std::vector<std::string> &Winners::insertColumns() noexcept
         "payout_reference",
         "payout_date",
         "notified_at",
-        "created_at",
-        "updated_at",
         "ticket_alias",
-        "colour_name",
-        "phone_number"
+        "phone_number",
+        "created_at",
+        "updated_at"
     };
     return inCols;
 }
@@ -2244,9 +2178,9 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[4])
     {
-        if(getPrizeTierId())
+        if(getSelectedOptionId())
         {
-            binder << getValueOfPrizeTierId();
+            binder << getValueOfSelectedOptionId();
         }
         else
         {
@@ -2255,9 +2189,9 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getColourId())
+        if(getSelectedOptionLabel())
         {
-            binder << getValueOfColourId();
+            binder << getValueOfSelectedOptionLabel();
         }
         else
         {
@@ -2398,28 +2332,6 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[18])
     {
-        if(getCreatedAt())
-        {
-            binder << getValueOfCreatedAt();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[19])
-    {
-        if(getUpdatedAt())
-        {
-            binder << getValueOfUpdatedAt();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[20])
-    {
         if(getTicketAlias())
         {
             binder << getValueOfTicketAlias();
@@ -2429,22 +2341,33 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[21])
+    if(dirtyFlag_[19])
     {
-        if(getColourName())
+        if(getPhoneNumber())
         {
-            binder << getValueOfColourName();
+            binder << getValueOfPhoneNumber();
         }
         else
         {
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[22])
+    if(dirtyFlag_[20])
     {
-        if(getPhoneNumber())
+        if(getCreatedAt())
         {
-            binder << getValueOfPhoneNumber();
+            binder << getValueOfCreatedAt();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[21])
+    {
+        if(getUpdatedAt())
+        {
+            binder << getValueOfUpdatedAt();
         }
         else
         {
@@ -2544,10 +2467,6 @@ const std::vector<std::string> Winners::updateColumns() const
     {
         ret.push_back(getColumnName(21));
     }
-    if(dirtyFlag_[22])
-    {
-        ret.push_back(getColumnName(22));
-    }
     return ret;
 }
 
@@ -2599,9 +2518,9 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[4])
     {
-        if(getPrizeTierId())
+        if(getSelectedOptionId())
         {
-            binder << getValueOfPrizeTierId();
+            binder << getValueOfSelectedOptionId();
         }
         else
         {
@@ -2610,9 +2529,9 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getColourId())
+        if(getSelectedOptionLabel())
         {
-            binder << getValueOfColourId();
+            binder << getValueOfSelectedOptionLabel();
         }
         else
         {
@@ -2753,28 +2672,6 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[18])
     {
-        if(getCreatedAt())
-        {
-            binder << getValueOfCreatedAt();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[19])
-    {
-        if(getUpdatedAt())
-        {
-            binder << getValueOfUpdatedAt();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[20])
-    {
         if(getTicketAlias())
         {
             binder << getValueOfTicketAlias();
@@ -2784,22 +2681,33 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[21])
+    if(dirtyFlag_[19])
     {
-        if(getColourName())
+        if(getPhoneNumber())
         {
-            binder << getValueOfColourName();
+            binder << getValueOfPhoneNumber();
         }
         else
         {
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[22])
+    if(dirtyFlag_[20])
     {
-        if(getPhoneNumber())
+        if(getCreatedAt())
         {
-            binder << getValueOfPhoneNumber();
+            binder << getValueOfCreatedAt();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[21])
+    {
+        if(getUpdatedAt())
+        {
+            binder << getValueOfUpdatedAt();
         }
         else
         {
@@ -2842,21 +2750,21 @@ Json::Value Winners::toJson() const
     {
         ret["customer_id"]=Json::Value();
     }
-    if(getPrizeTierId())
+    if(getSelectedOptionId())
     {
-        ret["prize_tier_id"]=getValueOfPrizeTierId();
+        ret["selected_option_id"]=getValueOfSelectedOptionId();
     }
     else
     {
-        ret["prize_tier_id"]=Json::Value();
+        ret["selected_option_id"]=Json::Value();
     }
-    if(getColourId())
+    if(getSelectedOptionLabel())
     {
-        ret["colour_id"]=getValueOfColourId();
+        ret["selected_option_label"]=getValueOfSelectedOptionLabel();
     }
     else
     {
-        ret["colour_id"]=Json::Value();
+        ret["selected_option_label"]=Json::Value();
     }
     if(getPrizeAmount())
     {
@@ -2954,6 +2862,22 @@ Json::Value Winners::toJson() const
     {
         ret["notified_at"]=Json::Value();
     }
+    if(getTicketAlias())
+    {
+        ret["ticket_alias"]=getValueOfTicketAlias();
+    }
+    else
+    {
+        ret["ticket_alias"]=Json::Value();
+    }
+    if(getPhoneNumber())
+    {
+        ret["phone_number"]=getValueOfPhoneNumber();
+    }
+    else
+    {
+        ret["phone_number"]=Json::Value();
+    }
     if(getCreatedAt())
     {
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
@@ -2970,30 +2894,6 @@ Json::Value Winners::toJson() const
     {
         ret["updated_at"]=Json::Value();
     }
-    if(getTicketAlias())
-    {
-        ret["ticket_alias"]=getValueOfTicketAlias();
-    }
-    else
-    {
-        ret["ticket_alias"]=Json::Value();
-    }
-    if(getColourName())
-    {
-        ret["colour_name"]=getValueOfColourName();
-    }
-    else
-    {
-        ret["colour_name"]=Json::Value();
-    }
-    if(getPhoneNumber())
-    {
-        ret["phone_number"]=getValueOfPhoneNumber();
-    }
-    else
-    {
-        ret["phone_number"]=Json::Value();
-    }
     return ret;
 }
 
@@ -3006,7 +2906,7 @@ Json::Value Winners::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 23)
+    if(pMasqueradingVector.size() == 22)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -3054,9 +2954,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[4].empty())
         {
-            if(getPrizeTierId())
+            if(getSelectedOptionId())
             {
-                ret[pMasqueradingVector[4]]=getValueOfPrizeTierId();
+                ret[pMasqueradingVector[4]]=getValueOfSelectedOptionId();
             }
             else
             {
@@ -3065,9 +2965,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[5].empty())
         {
-            if(getColourId())
+            if(getSelectedOptionLabel())
             {
-                ret[pMasqueradingVector[5]]=getValueOfColourId();
+                ret[pMasqueradingVector[5]]=getValueOfSelectedOptionLabel();
             }
             else
             {
@@ -3208,9 +3108,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[18].empty())
         {
-            if(getCreatedAt())
+            if(getTicketAlias())
             {
-                ret[pMasqueradingVector[18]]=getCreatedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[18]]=getValueOfTicketAlias();
             }
             else
             {
@@ -3219,9 +3119,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[19].empty())
         {
-            if(getUpdatedAt())
+            if(getPhoneNumber())
             {
-                ret[pMasqueradingVector[19]]=getUpdatedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[19]]=getValueOfPhoneNumber();
             }
             else
             {
@@ -3230,9 +3130,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[20].empty())
         {
-            if(getTicketAlias())
+            if(getCreatedAt())
             {
-                ret[pMasqueradingVector[20]]=getValueOfTicketAlias();
+                ret[pMasqueradingVector[20]]=getCreatedAt()->toDbStringLocal();
             }
             else
             {
@@ -3241,24 +3141,13 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[21].empty())
         {
-            if(getColourName())
+            if(getUpdatedAt())
             {
-                ret[pMasqueradingVector[21]]=getValueOfColourName();
+                ret[pMasqueradingVector[21]]=getUpdatedAt()->toDbStringLocal();
             }
             else
             {
                 ret[pMasqueradingVector[21]]=Json::Value();
-            }
-        }
-        if(!pMasqueradingVector[22].empty())
-        {
-            if(getPhoneNumber())
-            {
-                ret[pMasqueradingVector[22]]=getValueOfPhoneNumber();
-            }
-            else
-            {
-                ret[pMasqueradingVector[22]]=Json::Value();
             }
         }
         return ret;
@@ -3296,21 +3185,21 @@ Json::Value Winners::toMasqueradedJson(
     {
         ret["customer_id"]=Json::Value();
     }
-    if(getPrizeTierId())
+    if(getSelectedOptionId())
     {
-        ret["prize_tier_id"]=getValueOfPrizeTierId();
+        ret["selected_option_id"]=getValueOfSelectedOptionId();
     }
     else
     {
-        ret["prize_tier_id"]=Json::Value();
+        ret["selected_option_id"]=Json::Value();
     }
-    if(getColourId())
+    if(getSelectedOptionLabel())
     {
-        ret["colour_id"]=getValueOfColourId();
+        ret["selected_option_label"]=getValueOfSelectedOptionLabel();
     }
     else
     {
-        ret["colour_id"]=Json::Value();
+        ret["selected_option_label"]=Json::Value();
     }
     if(getPrizeAmount())
     {
@@ -3408,6 +3297,22 @@ Json::Value Winners::toMasqueradedJson(
     {
         ret["notified_at"]=Json::Value();
     }
+    if(getTicketAlias())
+    {
+        ret["ticket_alias"]=getValueOfTicketAlias();
+    }
+    else
+    {
+        ret["ticket_alias"]=Json::Value();
+    }
+    if(getPhoneNumber())
+    {
+        ret["phone_number"]=getValueOfPhoneNumber();
+    }
+    else
+    {
+        ret["phone_number"]=Json::Value();
+    }
     if(getCreatedAt())
     {
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
@@ -3423,30 +3328,6 @@ Json::Value Winners::toMasqueradedJson(
     else
     {
         ret["updated_at"]=Json::Value();
-    }
-    if(getTicketAlias())
-    {
-        ret["ticket_alias"]=getValueOfTicketAlias();
-    }
-    else
-    {
-        ret["ticket_alias"]=Json::Value();
-    }
-    if(getColourName())
-    {
-        ret["colour_name"]=getValueOfColourName();
-    }
-    else
-    {
-        ret["colour_name"]=Json::Value();
-    }
-    if(getPhoneNumber())
-    {
-        ret["phone_number"]=getValueOfPhoneNumber();
-    }
-    else
-    {
-        ret["phone_number"]=Json::Value();
     }
     return ret;
 }
@@ -3488,25 +3369,20 @@ bool Winners::validateJsonForCreation(const Json::Value &pJson, std::string &err
         err="The customer_id column cannot be null";
         return false;
     }
-    if(pJson.isMember("prize_tier_id"))
+    if(pJson.isMember("selected_option_id"))
     {
-        if(!validJsonOfField(4, "prize_tier_id", pJson["prize_tier_id"], err, true))
+        if(!validJsonOfField(4, "selected_option_id", pJson["selected_option_id"], err, true))
             return false;
     }
     else
     {
-        err="The prize_tier_id column cannot be null";
+        err="The selected_option_id column cannot be null";
         return false;
     }
-    if(pJson.isMember("colour_id"))
+    if(pJson.isMember("selected_option_label"))
     {
-        if(!validJsonOfField(5, "colour_id", pJson["colour_id"], err, true))
+        if(!validJsonOfField(5, "selected_option_label", pJson["selected_option_label"], err, true))
             return false;
-    }
-    else
-    {
-        err="The colour_id column cannot be null";
-        return false;
     }
     if(pJson.isMember("prize_amount"))
     {
@@ -3573,29 +3449,24 @@ bool Winners::validateJsonForCreation(const Json::Value &pJson, std::string &err
         if(!validJsonOfField(17, "notified_at", pJson["notified_at"], err, true))
             return false;
     }
-    if(pJson.isMember("created_at"))
-    {
-        if(!validJsonOfField(18, "created_at", pJson["created_at"], err, true))
-            return false;
-    }
-    if(pJson.isMember("updated_at"))
-    {
-        if(!validJsonOfField(19, "updated_at", pJson["updated_at"], err, true))
-            return false;
-    }
     if(pJson.isMember("ticket_alias"))
     {
-        if(!validJsonOfField(20, "ticket_alias", pJson["ticket_alias"], err, true))
-            return false;
-    }
-    if(pJson.isMember("colour_name"))
-    {
-        if(!validJsonOfField(21, "colour_name", pJson["colour_name"], err, true))
+        if(!validJsonOfField(18, "ticket_alias", pJson["ticket_alias"], err, true))
             return false;
     }
     if(pJson.isMember("phone_number"))
     {
-        if(!validJsonOfField(22, "phone_number", pJson["phone_number"], err, true))
+        if(!validJsonOfField(19, "phone_number", pJson["phone_number"], err, true))
+            return false;
+    }
+    if(pJson.isMember("created_at"))
+    {
+        if(!validJsonOfField(20, "created_at", pJson["created_at"], err, true))
+            return false;
+    }
+    if(pJson.isMember("updated_at"))
+    {
+        if(!validJsonOfField(21, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
     return true;
@@ -3604,7 +3475,7 @@ bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                  const std::vector<std::string> &pMasqueradingVector,
                                                  std::string &err)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 22)
     {
         err = "Bad masquerading vector";
         return false;
@@ -3677,11 +3548,6 @@ bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[5] + " column cannot be null";
-            return false;
-        }
       }
       if(!pMasqueradingVector[6].empty())
       {
@@ -3816,14 +3682,6 @@ bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                   return false;
           }
       }
-      if(!pMasqueradingVector[22].empty())
-      {
-          if(pJson.isMember(pMasqueradingVector[22]))
-          {
-              if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, true))
-                  return false;
-          }
-      }
     }
     catch(const Json::LogicError &e)
     {
@@ -3859,14 +3717,14 @@ bool Winners::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(3, "customer_id", pJson["customer_id"], err, false))
             return false;
     }
-    if(pJson.isMember("prize_tier_id"))
+    if(pJson.isMember("selected_option_id"))
     {
-        if(!validJsonOfField(4, "prize_tier_id", pJson["prize_tier_id"], err, false))
+        if(!validJsonOfField(4, "selected_option_id", pJson["selected_option_id"], err, false))
             return false;
     }
-    if(pJson.isMember("colour_id"))
+    if(pJson.isMember("selected_option_label"))
     {
-        if(!validJsonOfField(5, "colour_id", pJson["colour_id"], err, false))
+        if(!validJsonOfField(5, "selected_option_label", pJson["selected_option_label"], err, false))
             return false;
     }
     if(pJson.isMember("prize_amount"))
@@ -3929,29 +3787,24 @@ bool Winners::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(17, "notified_at", pJson["notified_at"], err, false))
             return false;
     }
-    if(pJson.isMember("created_at"))
-    {
-        if(!validJsonOfField(18, "created_at", pJson["created_at"], err, false))
-            return false;
-    }
-    if(pJson.isMember("updated_at"))
-    {
-        if(!validJsonOfField(19, "updated_at", pJson["updated_at"], err, false))
-            return false;
-    }
     if(pJson.isMember("ticket_alias"))
     {
-        if(!validJsonOfField(20, "ticket_alias", pJson["ticket_alias"], err, false))
-            return false;
-    }
-    if(pJson.isMember("colour_name"))
-    {
-        if(!validJsonOfField(21, "colour_name", pJson["colour_name"], err, false))
+        if(!validJsonOfField(18, "ticket_alias", pJson["ticket_alias"], err, false))
             return false;
     }
     if(pJson.isMember("phone_number"))
     {
-        if(!validJsonOfField(22, "phone_number", pJson["phone_number"], err, false))
+        if(!validJsonOfField(19, "phone_number", pJson["phone_number"], err, false))
+            return false;
+    }
+    if(pJson.isMember("created_at"))
+    {
+        if(!validJsonOfField(20, "created_at", pJson["created_at"], err, false))
+            return false;
+    }
+    if(pJson.isMember("updated_at"))
+    {
+        if(!validJsonOfField(21, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
     return true;
@@ -3960,7 +3813,7 @@ bool Winners::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 22)
     {
         err = "Bad masquerading vector";
         return false;
@@ -4081,11 +3934,6 @@ bool Winners::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
           if(!validJsonOfField(21, pMasqueradingVector[21], pJson[pMasqueradingVector[21]], err, false))
               return false;
       }
-      if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
-      {
-          if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, false))
-              return false;
-      }
     }
     catch(const Json::LogicError &e)
     {
@@ -4165,12 +4013,19 @@ bool Winners::validJsonOfField(size_t index,
         case 5:
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 50)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 50)";
                 return false;
             }
             break;
@@ -4373,28 +4228,6 @@ bool Winners::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            break;
-        case 19:
-            if(pJson.isNull())
-            {
-                return true;
-            }
-            if(!pJson.isString())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            break;
-        case 20:
-            if(pJson.isNull())
-            {
-                return true;
-            }
-            if(!pJson.isString())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
                 .from_bytes(pJson.asCString()).size() > 10)
             {
@@ -4404,26 +4237,7 @@ bool Winners::validJsonOfField(size_t index,
                 return false;
             }
             break;
-        case 21:
-            if(pJson.isNull())
-            {
-                return true;
-            }
-            if(!pJson.isString())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
-            {
-                err="String length exceeds limit for the " +
-                    fieldName +
-                    " field (the maximum value is 50)";
-                return false;
-            }
-            break;
-        case 22:
+        case 19:
             if(pJson.isNull())
             {
                 return true;
@@ -4439,6 +4253,28 @@ bool Winners::validJsonOfField(size_t index,
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
+                return false;
+            }
+            break;
+        case 20:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 21:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
                 return false;
             }
             break;

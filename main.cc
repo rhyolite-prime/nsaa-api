@@ -1,7 +1,7 @@
 #include <drogon/drogon.h>
 int main() {
   // Set HTTP listener address and port
-  // drogon::app().loadConfigFile("../config.json");
+   //drogon::app().loadConfigFile("../config.json");
   drogon::app().loadConfigFile("config.json");
 
   drogon::app().registerPostHandlingAdvice(
@@ -30,7 +30,6 @@ int main() {
         resp->addHeader("Access-Control-Allow-Headers",
                         "Content-Type, Authorization, Referer, User-Agent, "
                         "Accept, X-Requested-With, Origin");
-
       });
 
   drogon::app().run();

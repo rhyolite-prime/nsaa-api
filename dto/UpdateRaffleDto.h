@@ -24,6 +24,8 @@ public:
   [[nodiscard]] const std::string &getDrawTime() const { return draw_time_; }
   [[nodiscard]] const std::string &getStatus() const { return status_; }
   [[nodiscard]] const std::string &getPrizePool() const { return prize_pool_; }
+  [[nodiscard]] const std::vector<std::string> &getExemptedPartners() const { return exempted_partner_ids_; }
+  [[nodiscard]] const Json::Value &getOptions() const { return options_; }
 
   // Setters
   void setId(const std::string &value) { id_ = value; }
@@ -34,6 +36,8 @@ public:
   void setDrawTime(const std::string &value) { draw_time_ = value; }
   void setStatus(const std::string &value) { status_ = value; }
   void setPrizePool(const std::string &value) { prize_pool_ = value; }
+  void setExemptedPartners(const std::vector<std::string> &value) { exempted_partner_ids_ = value; }
+  void setOptions(const Json::Value &value) { options_ = value; }
 
 private:
   std::string id_;
@@ -44,6 +48,8 @@ private:
   std::string draw_time_;
   std::string status_;
   std::string prize_pool_;
+  std::vector<std::string> exempted_partner_ids_;
+  Json::Value options_;
 };
 
 inline void UpdateRaffleDto::fromJson(const Json::Value &json) {
@@ -78,6 +84,19 @@ inline void UpdateRaffleDto::fromJson(const Json::Value &json) {
 
   if (json.isMember("prizePool") && !json["prizePool"].isNull()) {
     prize_pool_ = json["prizePool"].asString();
+  }
+
+  if (json.isMember("exemptedPartnerIds") && !json["exemptedPartnerIds"].isNull()) {
+    exempted_partner_ids_.clear();
+    for (const auto& partnerId : json["exemptedPartnerIds"]) {
+      if (!partnerId.isNull()) {
+        exempted_partner_ids_.push_back(partnerId.asString());
+      }
+    }
+  }
+
+  if (json.isMember("options") && !json["options"].isNull()) {
+    setOptions(json["options"]);
   }
 }
 

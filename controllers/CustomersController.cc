@@ -111,7 +111,6 @@ drogon::Task<HttpResponsePtr> CustomersController::buyTicket(HttpRequestPtr req)
 
 }
 
-
 drogon::Task<HttpResponsePtr> CustomersController::buyGuestTicket(HttpRequestPtr req) {
 
   auto jsonBody = req->getJsonObject();
