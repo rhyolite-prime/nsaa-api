@@ -17,6 +17,7 @@
 #include "Draws.h"
 #include "Raffles.h"
 #include "Tickets.h"
+#include "TicketCollections.h"
 #include <algorithm>
 #include <uuid/uuid.h>
 
@@ -184,7 +185,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
   LOG_INFO << "CreateTicketDto request:"
             << " customerPhone=" << dto.getCustomerPhone()
             << " colourId=" << dto.getColourId()
-            << " quantity=" << dto.getQuantity()
+            << " ticketGroupId=" << dto.getTicketGroupId()
             << " paymentMethod=" << dto.getPaymentMethod()
             << " purchaseChannel=" << dto.getPurchaseChannel()
             << " provider=" << dto.getProvider();
@@ -248,12 +249,30 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
       co_return errorResponse;
     }
 
+    // 4.5 Ticket Group Management
+    CoroMapper<TicketCollections> ticketGroupMapper(dbClient);
+    int quantity = 0;
+    double entryFee = 0.0;
+    std::string ticketFee;
+    try {
+      auto ticketGroup = co_await ticketGroupMapper.findByPrimaryKey(dto.getTicketGroupId());
+      quantity = ticketGroup.getValueOfQuantity();
+      ticketFee = ticketGroup.getValueOfUnitPrice();
+      entryFee = std::stod(ticketFee);
+    } catch (const drogon::orm::DrogonDbException &e) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Invalid ticket group ID.";
+      co_return errorResponse;
+    }
+
     // 5. Create the ticket
     Tickets newTicket;
     newTicket.setDrawId(activeDraw.getValueOfId());
     newTicket.setColourId(dto.getColourId());
     newTicket.setColourName(colourName);
-    newTicket.setQuantity(dto.getQuantity());
+    newTicket.setQuantity(quantity);
     newTicket.setCustomerPhone(dto.getCustomerPhone());
     newTicket.setRaffleId(activeRaffle.getValueOfId());
 
@@ -290,13 +309,10 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
     auto &app = drogon::app();
     auto customConfig = app.getCustomConfig();
-    std::string ticketFee = customConfig["TicketConfiguration"]["Price"].asString();
 
-    // Placeholder for entry fee
     newTicket.setEntryFee(ticketFee);
 
-    double entryFee = std::stod(newTicket.getValueOfEntryFee());
-    double totalAmount = entryFee * dto.getQuantity();
+    double totalAmount = entryFee * quantity;
     newTicket.setTotalAmount(std::to_string(totalAmount));
 
     newTicket.setPaymentStatus("PENDING");

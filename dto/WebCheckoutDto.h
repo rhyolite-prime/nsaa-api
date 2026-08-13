@@ -10,7 +10,7 @@
 
 namespace raffle::dto {
 
-class WebCheckoutDto {
+    class WebCheckoutDto {
 
 public:
     WebCheckoutDto() = default;

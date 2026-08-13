@@ -266,6 +266,7 @@ namespace raffle::services {
         response.success = false;
         response.error["code"] = constants::ERR_AUTH_TOKEN_EXPIRED;
         response.error["message"] = "Request ID is invalid or has expired. Please restart the authentication flow.";
+        response.message = "Request ID is invalid or has expired. Please restart the authentication flow.";
         co_return response;
       }
 
@@ -515,8 +516,7 @@ namespace raffle::services {
     }
 
     try {
-      Criteria criteria = Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, normalizedPhone) &&
-                          Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true);
+      Criteria criteria = Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, normalizedPhone) && Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true);
 
       auto customers = co_await mapper.findBy(criteria);
 
@@ -524,6 +524,7 @@ namespace raffle::services {
         response.success = false;
         response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
         response.error["message"] = "Customer not found.";
+        response.message = "Customer account not found.";
         co_return response;
       }
 
@@ -583,6 +584,7 @@ namespace raffle::services {
         response.success = false;
         response.error["code"] = constants::ERR_UNAUTHORIZED;
         response.error["message"] = "Customer Phone is required.";
+        response.message = "Customer Phone is required.";
         co_return response;
     }
 
@@ -590,6 +592,7 @@ namespace raffle::services {
         response.success = false;
         response.error["code"] = constants::ERR_BAD_REQUEST;
         response.error["message"] = "Old PIN and New PIN are required.";
+        response.message = "Old PIN and New PIN are required.";
         co_return response;
     }
 
@@ -616,6 +619,7 @@ namespace raffle::services {
             response.success = false;
             response.error["code"] = constants::ERR_AUTH_INVALID_CREDENTIALS;
             response.error["message"] = "Invalid old PIN.";
+            response.message = "Invalid old PIN.";
             co_return response;
         }
 
