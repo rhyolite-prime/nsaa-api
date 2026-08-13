@@ -268,7 +268,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::CreateR
       newRaffle.setStatus("SCHEDULED"); // Default status as per schema
     }
 
-    newRaffle.setPrizePool(dto.getPrizePool());
+    newRaffle.setPrizePool(dto.getPrizePool().empty() ? "0.00" : dto.getPrizePool());
     newRaffle.setTotalEntries(0);
 
     // Parse dates

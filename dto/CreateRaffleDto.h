@@ -78,8 +78,8 @@ inline void CreateRaffleDto::fromJson(const Json::Value &json) {
     status_ = json["status"].asString();
   }
 
-  if (json.isMember("status") && !json["status"].isNull()) {
-    status_ = json["status"].asString();
+  if (json.isMember("prizePool") && !json["prizePool"].isNull()) {
+    prize_pool_ = json["prizePool"].asString();
   }
 
   if (json.isMember("exemptedPartnerIds") && !json["exemptedPartnerIds"].isNull()) {
