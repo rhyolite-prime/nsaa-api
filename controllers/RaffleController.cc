@@ -352,6 +352,16 @@ Task<HttpResponsePtr> RaffleController::getWeeklyRaffles(HttpRequestPtr req) {
   co_return resp;
 }
 
+Task<HttpResponsePtr> RaffleController::getActiveRaffles(HttpRequestPtr req) {
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getActiveRaffles();
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
+
 Task<HttpResponsePtr> RaffleController::getWeeklyRaffleSchedule(HttpRequestPtr req) {
 
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();

@@ -143,7 +143,9 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSiz
 }
 
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffles() {
+
+
+  drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffles() {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -151,7 +153,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffles() {
   response.success = true;
 
   try {
-    // Search using Enum value
+    // Query active raffles using the enum value directly
     auto raffles = co_await mapper.findBy(
         Criteria(Raffles::Cols::_status, CompareOperator::EQ, std::to_string(constants::RaffleStatus::ACTIVE)));
 
@@ -162,18 +164,20 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffles() {
       raffleJson["id"] = raffle.getValueOfId();
       raffleJson["name"] = raffle.getValueOfName();
       raffleJson["slug"] = raffle.getValueOfSlug();
-      raffleJson["status"] = raffle.getValueOfStatus(); // Will now return the integer/string 0
+      raffleJson["status"] = raffle.getValueOfStatus();
 
-      // Option parsing logic
+      // Parse JSON options string back into a Json::Value array
       Json::Value optionsArray(Json::arrayValue);
-      const auto optionsText = raffle.getValueOfOptions();
+      const std::string &optionsText = raffle.getValueOfOptions();
+
       if (!optionsText.empty()) {
-        Json::Value permissionsParsed;
+        Json::Value parsedOptions;
         Json::CharReaderBuilder readerBuilder;
         std::string errs;
         std::istringstream inputStream(optionsText);
-        if (Json::parseFromStream(readerBuilder, inputStream, &permissionsParsed, &errs) && permissionsParsed.isArray()) {
-          optionsArray = permissionsParsed;
+
+        if (Json::parseFromStream(readerBuilder, inputStream, &parsedOptions, &errs) && parsedOptions.isArray()) {
+          optionsArray = parsedOptions;
         }
       }
 
@@ -193,17 +197,26 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffles() {
     co_return response;
 
   } catch (const drogon::orm::DrogonDbException &e) {
-
+    LOG_ERROR << "Database error in getActiveRaffles: " << e.base().what();
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while fetching active raffles.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    LOG_ERROR << "Error in getActiveRaffles: " << e.what();
     dto::BaseApiResponse errorResponse;
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_INTERNAL;
     errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
     co_return errorResponse;
-
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::RaffleDto &dto) {
+
+ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::RaffleDto &dto) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
@@ -214,47 +227,34 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::RaffleD
       dto::BaseApiResponse errorResponse;
       errorResponse.success = false;
       errorResponse.error["code"] = constants::ERR_VALIDATION;
-      errorResponse.error["message"] =  "Name, Start Time, End Time, and Draw Time are required.";
+      errorResponse.error["message"] = "Name, Start Time, End Time, and Draw Time are required.";
       co_return errorResponse;
     }
 
     Raffles newRaffle;
     newRaffle.setName(dto.getName());
+    newRaffle.setMaximumWinners(dto.getMaximumWinners());
+
+    auto now = trantor::Date::now();
+    time_t seconds = static_cast<time_t>(now.microSecondsSinceEpoch() / 1000000);
+    struct tm tm_now;
+    localtime_r(&seconds, &tm_now);
+
+    char dateBuf[32];
+    snprintf(dateBuf,
+             sizeof(dateBuf),
+             "%04d%02d%02d",
+             tm_now.tm_year + 1900,
+             tm_now.tm_mon + 1,
+             tm_now.tm_mday);
 
     if (!dto.getSlug().empty()) {
-      auto now = trantor::Date::now();
-      time_t seconds = static_cast<time_t>(now.microSecondsSinceEpoch() / 1000000);
-      struct tm tm_now;
-      localtime_r(&seconds, &tm_now);
-
-      char dateBuf[32];
-      snprintf(dateBuf,
-               sizeof(dateBuf),
-               "%04d%02d%02d",
-               tm_now.tm_year + 1900,
-               tm_now.tm_mon + 1,
-               tm_now.tm_mday);
-
       newRaffle.setSlug(dto.getSlug() + "-" + std::string(dateBuf));
     } else {
-      auto now = trantor::Date::now();
-      time_t seconds = static_cast<time_t>(now.microSecondsSinceEpoch() / 1000000);
-      struct tm tm_now;
-      localtime_r(&seconds, &tm_now);
-
-      char dateBuf[32];
-      snprintf(dateBuf,
-               sizeof(dateBuf),
-               "%04d%02d%02d",
-               tm_now.tm_year + 1900,
-               tm_now.tm_mon + 1,
-               tm_now.tm_mday);
-
       newRaffle.setSlug(dto.getName() + "-" + std::string(dateBuf));
     }
 
     newRaffle.setStatus(constants::RaffleStatus::SCHEDULED);
-
     newRaffle.setLiablity(std::to_string(dto.getLiability()));
     newRaffle.setExpectedRevenue(std::to_string(dto.getExpectedRevenue()));
     newRaffle.setTotalEntries(0);
@@ -268,131 +268,103 @@ drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::RaffleD
     newRaffle.setEndTime(endTime);
     newRaffle.setDrawTime(drawTime);
 
-    // Ensure total_entries has a default if not set automatically
-    newRaffle.setTotalEntries(0);
-
+    // Convert Json::Value to string for options & exempted partners
     Json::StreamWriterBuilder writerBuilder;
     writerBuilder["indentation"] = "";
 
     if (!dto.getOptions().isNull() && dto.getOptions().isArray()) {
-        newRaffle.setOptions(Json::writeString(writerBuilder, dto.getOptions()));
+      newRaffle.setOptions(Json::writeString(writerBuilder, dto.getOptions()));
     } else {
-        newRaffle.setOptions("[]");
+      newRaffle.setOptions("[]");
     }
 
     Json::Value exemptedPartnersJson(Json::arrayValue);
     for (const auto& partner : dto.getExemptedPartners()) {
-        exemptedPartnersJson.append(partner);
+      exemptedPartnersJson.append(partner);
     }
     newRaffle.setExemptedPartners(Json::writeString(writerBuilder, exemptedPartnersJson));
 
     auto newRaffleResult = co_await mapper.insert(newRaffle);
 
-    // Create a corresponding Draw in PENDING state
+    // Create corresponding Draw
     try {
-
       CoroMapper<Draws> drawMapper(dbClient);
       Draws newDraw;
 
       auto drawTimeDate = newRaffleResult.getValueOfDrawTime();
-      time_t seconds =
-          static_cast<time_t>(drawTimeDate.microSecondsSinceEpoch() / 1000000);
+      time_t drawSecs = static_cast<time_t>(drawTimeDate.microSecondsSinceEpoch() / 1000000);
       struct tm tm_time;
-      localtime_r(&seconds, &tm_time);
+      localtime_r(&drawSecs, &tm_time);
+
       char buf[32];
-      snprintf(buf, sizeof(buf), "%04d%02d%02d-%02d%02d",  tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour, tm_time.tm_min);
-      std::string drawCode(buf);
-      newDraw.setDrawCode(drawCode);
-      newDraw.setAlias(dto.getSlug());
+      snprintf(buf, sizeof(buf), "%04d%02d%02d-%02d%02d", tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour, tm_time.tm_min);
+
+      newDraw.setDrawCode(std::string(buf));
+      newDraw.setAlias(newRaffleResult.getValueOfSlug());
       newDraw.setRaffleId(newRaffleResult.getValueOfId());
       newDraw.setStatus(constants::DrawStatus::DRAW_SCHEDULED);
-
-      // Set draw date and time from raffle's drawTime
       newDraw.setDrawDate(newRaffleResult.getValueOfDrawTime());
-
-      // For draw_time (string in Draws model, but it's a timestamp without time
-      // zone in DB) Wait, Draws.h says drawTime_ is shared_ptr<string>? Let's
-      // check Draws.h again.
-
       newDraw.setTotalEntries(0);
 
+      co_await drawMapper.insert(newDraw);
 
-      auto newDrawResult =  co_await drawMapper.insert(newDraw);
-
-      //create a schedule on Quartz for raffle start, raffle end and raffle draw time
-
+      // Quartz Schedule Jobs
       auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
       auto &quartzApi = plugin->getQuartzApi();
+      auto customConfig = drogon::app().getCustomConfig();
 
-      auto &app = drogon::app();
-      auto customConfig = app.getCustomConfig();
+      // Activation Job
       std::string raffleActivationCallBackUrl = customConfig["QuartzSchedulerApi"]["RaffleActivationCallBackUrl"].asString();
-
       dto::QuartzJobDto raffleActivationQuartzJobDto;
       raffleActivationQuartzJobDto.name = "raffle-activation-" + newRaffleResult.getValueOfId();
       raffleActivationQuartzJobDto.description = "Activates raffle at scheduled start time";
       raffleActivationQuartzJobDto.customData.uniqueId = newRaffleResult.getValueOfId();
-      // Default or empty callbackUrl as not specified by user context
-      raffleActivationQuartzJobDto.customData.callbackUrl = raffleActivationCallBackUrl +  newRaffleResult.getValueOfId();
+      raffleActivationQuartzJobDto.customData.callbackUrl = raffleActivationCallBackUrl + newRaffleResult.getValueOfId();
 
       const auto& activationStartTime = newRaffleResult.getValueOfStartTime();
-      auto activationEndTime = activationStartTime.after(5 * 60);  // 5 mins apart
-
       raffleActivationQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(activationStartTime);
-      raffleActivationQuartzJobDto.startDate = activationStartTime.after(-5 * 60).toDbStringLocal(); // -5 mins earlier
-      raffleActivationQuartzJobDto.endDate = activationEndTime.toDbStringLocal();
+      raffleActivationQuartzJobDto.startDate = activationStartTime.after(-5 * 60).toDbStringLocal();
+      raffleActivationQuartzJobDto.endDate = activationStartTime.after(5 * 60).toDbStringLocal();
 
       co_await quartzApi.scheduleJob(raffleActivationQuartzJobDto);
 
-      // closure
+      // Closure Job
       std::string raffleClosureCallBackUrl = customConfig["QuartzSchedulerApi"]["RaffleClosureCallBackUrl"].asString();
-
       dto::QuartzJobDto raffleClosureQuartzJobDto;
       raffleClosureQuartzJobDto.name = "raffle-closure-" + newRaffleResult.getValueOfId();
-      raffleClosureQuartzJobDto.description = "Closes raffle at scheduled start time";
+      raffleClosureQuartzJobDto.description = "Closes raffle at scheduled end time";
       raffleClosureQuartzJobDto.customData.uniqueId = newRaffleResult.getValueOfId();
-      // Default or empty callbackUrl as not specified by user context
       raffleClosureQuartzJobDto.customData.callbackUrl = raffleClosureCallBackUrl + newRaffleResult.getValueOfId();
 
       const auto& closureStartTime = newRaffleResult.getValueOfEndTime();
-      auto closureEndTime = closureStartTime.after(5 * 60);
-
       raffleClosureQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(closureStartTime);
       raffleClosureQuartzJobDto.startDate = closureStartTime.after(-5 * 60).toDbStringLocal();
-      raffleClosureQuartzJobDto.endDate = closureEndTime.toDbStringLocal();
+      raffleClosureQuartzJobDto.endDate = closureStartTime.after(5 * 60).toDbStringLocal();
 
       co_await quartzApi.scheduleJob(raffleClosureQuartzJobDto);
 
-      // draw
+      // Draw Job
       std::string raffleDrawCallBackUrl = customConfig["QuartzSchedulerApi"]["RaffleDrawCallBackUrl"].asString();
-
       dto::QuartzJobDto raffleDrawQuartzJobDto;
       raffleDrawQuartzJobDto.name = "raffle-draw-" + newRaffleResult.getValueOfId();
-      raffleDrawQuartzJobDto.description = "Initiates raffle draw at scheduled start time";
+      raffleDrawQuartzJobDto.description = "Initiates raffle draw at scheduled draw time";
       raffleDrawQuartzJobDto.customData.uniqueId = newRaffleResult.getValueOfId();
-      // Default or empty callbackUrl as not specified by user context
-      raffleDrawQuartzJobDto.customData.callbackUrl = raffleDrawCallBackUrl +  newRaffleResult.getValueOfId() ;
+      raffleDrawQuartzJobDto.customData.callbackUrl = raffleDrawCallBackUrl + newRaffleResult.getValueOfId();
 
       const auto& drawStartTime = newRaffleResult.getValueOfDrawTime();
-      auto drawEndTime = drawStartTime.after(5 * 60);
-
       raffleDrawQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(drawStartTime);
       raffleDrawQuartzJobDto.startDate = drawStartTime.after(-5 * 60).toDbStringLocal();
-      raffleDrawQuartzJobDto.endDate = drawEndTime.toDbStringLocal();
+      raffleDrawQuartzJobDto.endDate = drawStartTime.after(5 * 60).toDbStringLocal();
 
       co_await quartzApi.scheduleJob(raffleDrawQuartzJobDto);
 
     } catch (const std::exception &e) {
-      LOG_ERROR << "Failed to create initial draw for raffle: " << e.what();
-      // We might want to decide if we should fail the raffle creation or just
-      // log it. For now, let's keep it robust and continue since the raffle is
-      // already created.
+      LOG_ERROR << "Failed to create initial draw or schedule Quartz jobs: " << e.what();
     }
 
     dto::BaseApiResponse response;
     response.success = true;
     response.message = "Raffle created successfully";
-    response.targetUrl = "";
     response.result = newRaffleResult.getValueOfId();
 
     co_return response;
@@ -432,37 +404,42 @@ drogon::Task<dto::BaseApiResponse> RaffleService::updateAsync(const dto::RaffleD
 
     bool drawTimeChanged = false;
     bool slugChanged = false;
+    bool scheduleDatesChanged = false;
 
     if (!dto.getName().empty()) {
       existingRaffle.setName(dto.getName());
     }
 
-    if (!dto.getSlug().empty() &&
-        existingRaffle.getValueOfSlug() != dto.getSlug()) {
+    if (!dto.getSlug().empty() && existingRaffle.getValueOfSlug() != dto.getSlug()) {
       existingRaffle.setSlug(dto.getSlug());
       slugChanged = true;
     }
 
     existingRaffle.setLiablity(std::to_string(dto.getLiability()));
-
-
+    existingRaffle.setExpectedRevenue(std::to_string(dto.getExpectedRevenue()));
 
     if (!dto.getStartTime().empty()) {
-      existingRaffle.setStartTime(trantor::Date::fromDbStringLocal(
-          utils::DateUtils::normalizeDateString(dto.getStartTime())));
+      auto newStartTime = trantor::Date::fromDbStringLocal(utils::DateUtils::normalizeDateString(dto.getStartTime()));
+      if (existingRaffle.getValueOfStartTime() != newStartTime) {
+        existingRaffle.setStartTime(newStartTime);
+        scheduleDatesChanged = true;
+      }
     }
 
     if (!dto.getEndTime().empty()) {
-      existingRaffle.setEndTime(trantor::Date::fromDbStringLocal(
-          utils::DateUtils::normalizeDateString(dto.getEndTime())));
+      auto newEndTime = trantor::Date::fromDbStringLocal(utils::DateUtils::normalizeDateString(dto.getEndTime()));
+      if (existingRaffle.getValueOfEndTime() != newEndTime) {
+        existingRaffle.setEndTime(newEndTime);
+        scheduleDatesChanged = true;
+      }
     }
 
     if (!dto.getDrawTime().empty()) {
-      auto newDrawTime = trantor::Date::fromDbStringLocal(
-          utils::DateUtils::normalizeDateString(dto.getDrawTime()));
+      auto newDrawTime = trantor::Date::fromDbStringLocal(utils::DateUtils::normalizeDateString(dto.getDrawTime()));
       if (existingRaffle.getValueOfDrawTime() != newDrawTime) {
         existingRaffle.setDrawTime(newDrawTime);
         drawTimeChanged = true;
+        scheduleDatesChanged = true;
       }
     }
 
@@ -470,52 +447,114 @@ drogon::Task<dto::BaseApiResponse> RaffleService::updateAsync(const dto::RaffleD
     writerBuilder["indentation"] = "";
 
     if (!dto.getOptions().isNull() && dto.getOptions().isArray()) {
-        existingRaffle.setOptions(Json::writeString(writerBuilder, dto.getOptions()));
+      existingRaffle.setOptions(Json::writeString(writerBuilder, dto.getOptions()));
     }
 
     if (!dto.getExemptedPartners().empty()) {
-        Json::Value exemptedPartnersJson(Json::arrayValue);
-        for (const auto& partner : dto.getExemptedPartners()) {
-            exemptedPartnersJson.append(partner);
-        }
-        existingRaffle.setExemptedPartners(Json::writeString(writerBuilder, exemptedPartnersJson));
+      Json::Value exemptedPartnersJson(Json::arrayValue);
+      for (const auto& partner : dto.getExemptedPartners()) {
+        exemptedPartnersJson.append(partner);
+      }
+      existingRaffle.setExemptedPartners(Json::writeString(writerBuilder, exemptedPartnersJson));
     }
 
     auto result = co_await mapper.update(existingRaffle);
 
+    // Update associated Draw
     if (drawTimeChanged || slugChanged) {
       try {
         CoroMapper<Draws> drawMapper(dbClient);
-        auto draw = co_await drawMapper.findOne(Criteria(
-            Draws::Cols::_raffle_id, CompareOperator::EQ, id));
+        auto draws = co_await drawMapper.findBy(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, id));
 
-        if (drawTimeChanged) {
-          auto drawTimeDate = existingRaffle.getValueOfDrawTime();
-          time_t seconds = static_cast<time_t>(drawTimeDate.microSecondsSinceEpoch() / 1000000);
-          struct tm tm_time;
-          localtime_r(&seconds, &tm_time);
-          char buf[32];
-          snprintf(buf, sizeof(buf), "%04d%02d%02d-%02d%02d", tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour, tm_time.tm_min);
-          draw.setDrawCode(std::string(buf));
-          draw.setDrawDate(drawTimeDate);
+        if (!draws.empty()) {
+          auto draw = draws[0];
+
+          if (drawTimeChanged) {
+            auto drawTimeDate = existingRaffle.getValueOfDrawTime();
+            time_t seconds = static_cast<time_t>(drawTimeDate.microSecondsSinceEpoch() / 1000000);
+            struct tm tm_time;
+            localtime_r(&seconds, &tm_time);
+
+            char buf[32];
+            snprintf(buf, sizeof(buf), "%04d%02d%02d-%02d%02d", tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday, tm_time.tm_hour, tm_time.tm_min);
+
+            draw.setDrawCode(std::string(buf));
+            draw.setDrawDate(drawTimeDate);
+          }
+
+          if (slugChanged) {
+            draw.setAlias(existingRaffle.getValueOfSlug());
+          }
+
+          co_await drawMapper.update(draw);
         }
-
-        if (slugChanged) {
-          draw.setAlias(existingRaffle.getValueOfSlug());
-        }
-
-        co_await drawMapper.update(draw);
       } catch (const std::exception &e) {
-        LOG_ERROR << "Failed to update associated draw for raffle "
-                  << id << ": " << e.what();
+        LOG_ERROR << "Failed to update associated draw for raffle " << id << ": " << e.what();
       }
     }
 
-    //delete quartz jobs and create new ones
+    // Update Quartz Jobs if dates were updated
+    if (scheduleDatesChanged) {
+      try {
+        auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+        auto &quartzApi = plugin->getQuartzApi();
+        auto customConfig = drogon::app().getCustomConfig();
+
+        // Activation Job Update
+        std::string raffleActivationCallBackUrl = customConfig["QuartzSchedulerApi"]["RaffleActivationCallBackUrl"].asString();
+        dto::QuartzJobDto raffleActivationQuartzJobDto;
+        raffleActivationQuartzJobDto.name = "raffle-activation-" + id;
+        raffleActivationQuartzJobDto.description = "Activates raffle at scheduled start time";
+        raffleActivationQuartzJobDto.customData.uniqueId = id;
+        raffleActivationQuartzJobDto.customData.callbackUrl = raffleActivationCallBackUrl + id;
+
+        const auto& activationStartTime = existingRaffle.getValueOfStartTime();
+        raffleActivationQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(activationStartTime);
+        raffleActivationQuartzJobDto.startDate = activationStartTime.after(-5 * 60).toDbStringLocal();
+        raffleActivationQuartzJobDto.endDate = activationStartTime.after(5 * 60).toDbStringLocal();
+
+        co_await quartzApi.scheduleJob(raffleActivationQuartzJobDto);
+
+        // Closure Job Update
+        std::string raffleClosureCallBackUrl = customConfig["QuartzSchedulerApi"]["RaffleClosureCallBackUrl"].asString();
+        dto::QuartzJobDto raffleClosureQuartzJobDto;
+        raffleClosureQuartzJobDto.name = "raffle-closure-" + id;
+        raffleClosureQuartzJobDto.description = "Closes raffle at scheduled end time";
+        raffleClosureQuartzJobDto.customData.uniqueId = id;
+        raffleClosureQuartzJobDto.customData.callbackUrl = raffleClosureCallBackUrl + id;
+
+        const auto& closureStartTime = existingRaffle.getValueOfEndTime();
+        raffleClosureQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(closureStartTime);
+        raffleClosureQuartzJobDto.startDate = closureStartTime.after(-5 * 60).toDbStringLocal();
+        raffleClosureQuartzJobDto.endDate = closureStartTime.after(5 * 60).toDbStringLocal();
+
+        co_await quartzApi.scheduleJob(raffleClosureQuartzJobDto);
+
+        // Draw Job Update
+        std::string raffleDrawCallBackUrl = customConfig["QuartzSchedulerApi"]["RaffleDrawCallBackUrl"].asString();
+        dto::QuartzJobDto raffleDrawQuartzJobDto;
+        raffleDrawQuartzJobDto.name = "raffle-draw-" + id;
+        raffleDrawQuartzJobDto.description = "Initiates raffle draw at scheduled draw time";
+        raffleDrawQuartzJobDto.customData.uniqueId = id;
+        raffleDrawQuartzJobDto.customData.callbackUrl = raffleDrawCallBackUrl + id;
+
+        const auto& drawStartTime = existingRaffle.getValueOfDrawTime();
+        raffleDrawQuartzJobDto.schedule = utils::CronUtils::buildCronExpression(drawStartTime);
+        raffleDrawQuartzJobDto.startDate = drawStartTime.after(-5 * 60).toDbStringLocal();
+        raffleDrawQuartzJobDto.endDate = drawStartTime.after(5 * 60).toDbStringLocal();
+
+        co_await quartzApi.scheduleJob(raffleDrawQuartzJobDto);
+
+      } catch (const std::exception &e) {
+        LOG_ERROR << "Failed to reschedule Quartz jobs for raffle " << id << ": " << e.what();
+      }
+    }
 
     dto::BaseApiResponse response;
     response.success = true;
     response.message = "Raffle updated successfully";
+    response.result = existingRaffle.getValueOfId();
+
     co_return response;
 
   } catch (const DrogonDbException &e) {
