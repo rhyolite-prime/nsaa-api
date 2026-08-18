@@ -18,7 +18,8 @@ public:
   void fromJson(const Json::Value &json);
 
   // Getters
-  [[nodiscard]] const std::string &getColourId() const { return colour_id_; }
+  [[nodiscard]] const std::string &getRaffleId() const { return raffle_id_; }
+  [[nodiscard]] const std::string &getSelectedOptionValue() const { return selected_option_value_; }
   [[nodiscard]] const std::string &getTicketGroupId() const { return ticket_group_id_; }
   [[nodiscard]] const std::string& getCustomerPhone() const { return customer_phone_; }
   [[nodiscard]] const std::string& getPaymentMethod() const { return payment_method_; }
@@ -26,7 +27,8 @@ public:
   [[nodiscard]] const std::string& getProvider() const { return provider_; }
 
   // Setters
-  void setColourId(const std::string &value) { colour_id_ = value; }
+  void setRaffleId(const std::string &value) { raffle_id_ = value; }
+  void setSelectedOptionValue(const std::string &value) { selected_option_value_ = value; }
   void setTicketGroupId(const std::string &value) { ticket_group_id_ = value; }
   void setCustomerPhone(const std::string &value) { customer_phone_ = value; }
   void setPaymentMethod(const std::string &value) { payment_method_ = value; }
@@ -35,7 +37,8 @@ public:
 
 
   private:
-    std::string colour_id_;
+    std::string raffle_id_;
+    std::string selected_option_value_;
     std::string ticket_group_id_;
     std::string payment_method_;
     std::string customer_phone_;
@@ -46,8 +49,12 @@ public:
 
 inline void CreateTicketDto::fromJson(const Json::Value &json) {
 
-  if (json.isMember("colourId") && !json["colourId"].isNull()) {
-    colour_id_ = json["colourId"].asString();
+  if (json.isMember("raffleId") && !json["raffleId"].isNull()) {
+    setRaffleId(json["raffleId"].asString());
+  }
+
+  if (json.isMember("selectedOptionValue") && !json["selectedOptionValue"].isNull()) {
+    setSelectedOptionValue(json["selectedOptionValue"].asString());
   }
 
   if (json.isMember("ticketGroupId") && !json["ticketGroupId"].isNull()) {
@@ -70,7 +77,6 @@ inline void CreateTicketDto::fromJson(const Json::Value &json) {
   if (json.isMember("provider") && !json["provider"].isNull()) {
     provider_ = json["provider"].asString();
   }
-
 
 }
 

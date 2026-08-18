@@ -12,7 +12,6 @@ class CmsController : public drogon::HttpController<CmsController>
     //public
     ADD_METHOD_TO(CmsController::getHeroSlides, std::string(PREFIX) + "hero-slides", Get, Options);
     ADD_METHOD_TO(CmsController::getPromotionalBanners, std::string(PREFIX) + "banners", Get, Options);
-    ADD_METHOD_TO(CmsController::getPrizes, std::string(PREFIX) + "prizes", Get, Options);
     ADD_METHOD_TO(CmsController::getFaqs, std::string(PREFIX) + "faqs", Get, Options);
     ADD_METHOD_TO(CmsController::getPages, std::string(PREFIX) + "pages/{1}", Get, Options);
     ADD_METHOD_TO(CmsController::getMediaAssets, std::string(PREFIX) + "media-assets", Get, Options);
@@ -55,14 +54,12 @@ class CmsController : public drogon::HttpController<CmsController>
     // tickets and draws
     ADD_METHOD_TO(CmsController::getRecentDraws, std::string(PREFIX) + "get-recent-draws", Get, Options);
     ADD_METHOD_TO(CmsController::getRecentWinners, std::string(PREFIX) + "get-recent-winners", Get, Options);
-    ADD_METHOD_TO(CmsController::getActiveRaffle, std::string(PREFIX) + "get-active-raffle", Get, Options);
 
     METHOD_LIST_END
 
     //public
     Task<HttpResponsePtr> getHeroSlides(HttpRequestPtr req);
     Task<HttpResponsePtr> getPromotionalBanners(HttpRequestPtr req);
-    Task<HttpResponsePtr> getPrizes(HttpRequestPtr req);
     Task<HttpResponsePtr> getFaqs(HttpRequestPtr req);
     Task<HttpResponsePtr> getPages(HttpRequestPtr req, std::string slug);
     Task<HttpResponsePtr> getMediaAssets(HttpRequestPtr req);
@@ -104,7 +101,6 @@ class CmsController : public drogon::HttpController<CmsController>
     Task<HttpResponsePtr> getTicketGroups(HttpRequestPtr req);
 
     // tickets and draws
-    Task<HttpResponsePtr> getActiveRaffle(HttpRequestPtr req);
     Task<HttpResponsePtr> getRecentDraws(HttpRequestPtr req);
     Task<HttpResponsePtr> getRecentWinners(HttpRequestPtr req);
 };

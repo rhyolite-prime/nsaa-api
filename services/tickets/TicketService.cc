@@ -27,6 +27,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "constants/RewardTypes.h"
 #include "services/hubtel_api/HubtelApi.h"
 
 using namespace drogon::orm;
@@ -83,7 +84,8 @@ drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSiz
       ticketJson["ticketNumber"] = ticket.getValueOfTicketNumber();
       ticketJson["drawId"] = ticket.getValueOfDrawId();
       ticketJson["customerId"] = ticket.getValueOfCustomerId();
-      ticketJson["colourId"] = ticket.getValueOfColourId();
+      ticketJson["selectedOptionName"] = ticket.getValueOfSelectedOptionName();
+      ticketJson["selectedOptionValue"] = ticket.getValueOfSelectedOptionValue();
       ticketJson["entryFee"] = ticket.getValueOfEntryFee();
       ticketJson["quantity"] = ticket.getValueOfQuantity();
       ticketJson["totalAmount"] = ticket.getValueOfTotalAmount();
@@ -95,7 +97,6 @@ drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSiz
       ticketJson["createdAt"] = ticket.getValueOfCreatedAt().toDbStringLocal();
       ticketJson["updatedAt"] = ticket.getValueOfUpdatedAt().toDbStringLocal();
       ticketJson["customerPhone"] = ticket.getValueOfCustomerPhone();
-      ticketJson["colourName"] = ticket.getValueOfColourName();
       ticketJson["raffleId"] = ticket.getValueOfRaffleId();
 
       data.append(ticketJson);
@@ -184,7 +185,8 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
   LOG_INFO << "CreateTicketDto request:"
             << " customerPhone=" << dto.getCustomerPhone()
-            << " colourId=" << dto.getColourId()
+            << " selectedOptionValue=" << dto.getSelectedOptionValue()
+            << " raffleId=" << dto.getRaffleId()
             << " ticketGroupId=" << dto.getTicketGroupId()
             << " paymentMethod=" << dto.getPaymentMethod()
             << " purchaseChannel=" << dto.getPurchaseChannel()
@@ -193,22 +195,11 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
   try {
     // 1. Find the currently ACTIVE raffle
-    auto activeRaffles = co_await raffleMapper.findBy(Criteria(Raffles::Cols::_status, CompareOperator::EQ, "ACTIVE"));
+    auto activeRaffle = co_await raffleMapper.findByPrimaryKey(dto.getRaffleId());
 
-    if (activeRaffles.empty()) {
-      dto::BaseApiResponse errorResponse;
-      errorResponse.success = false;
-      errorResponse.error["code"] = constants::ERR_VALIDATION;
-      errorResponse.error["message"] = "No active raffle found.";
-      co_return errorResponse;
-    }
-
-    auto activeRaffle = activeRaffles[0];
-    std::string raffleId = activeRaffle.getValueOfId();
 
     // 2. Find the corresponding Draw using the raffle's slug (alias in Draws)
-    auto draws = co_await drawMapper.findBy(
-        Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+    auto draws = co_await drawMapper.findBy(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, dto.getRaffleId()));
 
     if (draws.empty()) {
       dto::BaseApiResponse errorResponse;
@@ -235,21 +226,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
       customerId = insertedCustomer.getValueOfId();
     }
 
-    // 4. Color Management
-    CoroMapper<Colours> colourMapper(dbClient);
-    std::string colourName;
-    try {
-      auto colour = co_await colourMapper.findByPrimaryKey(dto.getColourId());
-      colourName = colour.getValueOfName();
-    } catch (const drogon::orm::DrogonDbException &e) {
-      dto::BaseApiResponse errorResponse;
-      errorResponse.success = false;
-      errorResponse.error["code"] = constants::ERR_VALIDATION;
-      errorResponse.error["message"] = "Invalid colour ID.";
-      co_return errorResponse;
-    }
-
-    // 4.5 Ticket Group Management
+    // 4 Ticket Group Management
     CoroMapper<TicketCollections> ticketGroupMapper(dbClient);
     int quantity = 0;
     double entryFee = 0.0;
@@ -270,8 +247,10 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     // 5. Create the ticket
     Tickets newTicket;
     newTicket.setDrawId(activeDraw.getValueOfId());
-    newTicket.setColourId(dto.getColourId());
-    newTicket.setColourName(colourName);
+
+    newTicket.setSelectedOptionValue("");
+    newTicket.setSelectedOptionName("");
+
     newTicket.setQuantity(quantity);
     newTicket.setCustomerPhone(dto.getCustomerPhone());
     newTicket.setRaffleId(activeRaffle.getValueOfId());
@@ -315,7 +294,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     double totalAmount = entryFee * quantity;
     newTicket.setTotalAmount(std::to_string(totalAmount));
 
-    newTicket.setPaymentStatus("PENDING");
+    newTicket.setPaymentStatus(constants::PaymentStatus::PAYMENT_INITIATED);
     newTicket.setPurchaseChannel(dto.getPurchaseChannel()); // USSD, WSSD
     newTicket.setPaymentMethod(dto.getPaymentMethod());
 
@@ -357,7 +336,8 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
         response.result["ticketAlias"] = result.getValueOfTicketAlias();
         response.result["paymentReference"] = clientReference;
         response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
-        response.result["selectedColour"] = colourName;
+        //response.result["selectedOptionName"] = "";
+        response.result["selectedOptionValue"] = dto.getSelectedOptionValue();
       } else {
         response.success = false;
         response.message = "Ticket created but failed to initialize payment. " +
@@ -416,15 +396,13 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
               "If no bill prompt appears, dial *110# to resume.";
         }
 
-
-
         response.success = true;
         response.message = promptMessage;
         response.result["ticketId"] = result.getValueOfId();
         response.result["ticketNumber"] = result.getValueOfTicketNumber();
         response.result["ticketAlias"] = result.getValueOfTicketNumber();
         response.result["paymentReference"] = clientReference;
-        response.result["selectedColour"] = colourName;
+        response.result["selectedOptionValue"] = dto.getSelectedOptionValue();
       } else {
         response.success = false;
         response.message = "Ticket created but failed to initiate mobile money prompt. " + hubtelResult.message;
@@ -462,23 +440,20 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
   try {
     // 1. Find the ticket by payment reference
     auto tickets = co_await ticketMapper.findBy(
-        Criteria(Tickets::Cols::_payment_reference, CompareOperator::EQ,
-                 paymentReference));
+        Criteria(Tickets::Cols::_payment_reference, CompareOperator::EQ, paymentReference));
 
     if (tickets.empty()) {
       dto::BaseApiResponse errorResponse;
       errorResponse.success = false;
       errorResponse.error["code"] = constants::ERR_DB_NOT_FOUND;
-      errorResponse.error["message"] =
-          "Ticket not found with the provided payment reference.";
+      errorResponse.error["message"] = "Ticket not found with the provided payment reference.";
       co_return errorResponse;
     }
 
     auto ticket = tickets[0];
 
     // 2. Check if already active (idempotency)
-    if (ticket.getValueOfIsActive() &&
-        ticket.getValueOfPaymentStatus() == "PAID") {
+    if (ticket.getValueOfIsActive() && ticket.getValueOfPaymentStatus() == constants::PaymentStatus::SUCCESS) {
       dto::BaseApiResponse response;
       response.success = true;
       response.message = "Ticket is already active.";
@@ -487,7 +462,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
     }
 
     // 3. Update the ticket
-    ticket.setPaymentStatus("PAID");
+    ticket.setPaymentStatus(constants::PaymentStatus::SUCCESS);
     ticket.setIsActive(true);
     ticket.setUpdatedAt(trantor::Date::now());
     co_await ticketMapper.update(ticket);
@@ -513,23 +488,6 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
       auto draw = co_await drawMapper.findByPrimaryKey(drawId);
       int currentEntries = draw.getValueOfTotalEntries();
       draw.setTotalEntries(currentEntries + ticket.getValueOfQuantity());
-
-      std::string currentPoolStr = draw.getValueOfTotalPool();
-      double currentPool = 0;
-      if (!currentPoolStr.empty()) {
-        try {
-          currentPool = std::stod(currentPoolStr);
-        } catch (...) {
-          currentPool = 0;
-        }
-      }
-      double ticketAmount = std::stod(ticket.getValueOfTotalAmount());
-      currentPool += ticketAmount;
-
-      char buffer[64];
-      snprintf(buffer, sizeof(buffer), "%.2f", currentPool);
-      draw.setTotalPool(std::string(buffer));
-      draw.setUpdatedAt(trantor::Date::now());
 
       co_await drawMapper.update(draw);
     } catch (const std::exception &e) {

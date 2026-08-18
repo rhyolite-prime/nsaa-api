@@ -25,5 +25,33 @@ namespace raffle::constants {
         CONSOLATION = 15,
         HYBRID = 16
     };
+
+    enum RaffleStatus {
+        ACTIVE = 0,
+        SCHEDULED = 1,
+        DRAW_COMPLETED = 2,
+        CLOSED = 3,
+    };
+
+    enum DrawStatus {
+        IN_PROGRESS = 0,
+        DRAW_SCHEDULED = 1,
+        COMPLETED = 2,
+        CANCELLED = 3,
+    };
+
+    enum TicketStatus {
+        PENDING = 0,
+        PAID = 1,
+        FAILED = 2,
+        REFUNDED = 3,
+    };
+
+    enum PaymentStatus {
+        PAYMENT_INITIATED = 0,
+        SUCCESS = 1,
+        PAYMENT_FAILED = 2,
+    };
+
 }
 #endif //CHOPMONEYRAFFLEAPI_REWARDTYPES_H

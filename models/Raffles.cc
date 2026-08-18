@@ -17,9 +17,10 @@ const std::string Raffles::Cols::_id = "\"id\"";
 const std::string Raffles::Cols::_name = "\"name\"";
 const std::string Raffles::Cols::_slug = "\"slug\"";
 const std::string Raffles::Cols::_total_entries = "\"total_entries\"";
-const std::string Raffles::Cols::_prize_pool = "\"prize_pool\"";
-const std::string Raffles::Cols::_winning_colour_id = "\"winning_colour_id\"";
-const std::string Raffles::Cols::_winning_colour = "\"winning_colour\"";
+const std::string Raffles::Cols::_expected_revenue = "\"expected_revenue\"";
+const std::string Raffles::Cols::_liablity = "\"liablity\"";
+const std::string Raffles::Cols::_winning_option_value = "\"winning_option_value\"";
+const std::string Raffles::Cols::_winning_option_name = "\"winning_option_name\"";
 const std::string Raffles::Cols::_start_time = "\"start_time\"";
 const std::string Raffles::Cols::_end_time = "\"end_time\"";
 const std::string Raffles::Cols::_draw_time = "\"draw_time\"";
@@ -37,15 +38,16 @@ const std::vector<typename Raffles::MetaData> Raffles::metaData_={
 {"name","std::string","character varying",150,0,0,1},
 {"slug","std::string","character varying",100,0,0,1},
 {"total_entries","int32_t","integer",4,0,0,0},
-{"prize_pool","std::string","numeric",0,0,0,0},
-{"winning_colour_id","std::string","uuid",0,0,0,0},
-{"winning_colour","std::string","character varying",20,0,0,0},
+{"expected_revenue","std::string","numeric",0,0,0,0},
+{"liablity","std::string","numeric",0,0,0,0},
+{"winning_option_value","std::string","character varying",100,0,0,0},
+{"winning_option_name","std::string","character varying",100,0,0,0},
 {"start_time","::trantor::Date","timestamp without time zone",0,0,0,1},
 {"end_time","::trantor::Date","timestamp without time zone",0,0,0,1},
 {"draw_time","::trantor::Date","timestamp without time zone",0,0,0,1},
 {"options","std::string","jsonb",0,0,0,0},
 {"exempted_partners","std::string","jsonb",0,0,0,0},
-{"status","std::string","character varying",20,0,0,0},
+{"status","int32_t","integer",4,0,0,0},
 {"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
 };
@@ -74,17 +76,21 @@ Raffles::Raffles(const Row &r, const ssize_t indexOffset) noexcept
         {
             totalEntries_=std::make_shared<int32_t>(r["total_entries"].as<int32_t>());
         }
-        if(!r["prize_pool"].isNull())
+        if(!r["expected_revenue"].isNull())
         {
-            prizePool_=std::make_shared<std::string>(r["prize_pool"].as<std::string>());
+            expectedRevenue_=std::make_shared<std::string>(r["expected_revenue"].as<std::string>());
         }
-        if(!r["winning_colour_id"].isNull())
+        if(!r["liablity"].isNull())
         {
-            winningColourId_=std::make_shared<std::string>(r["winning_colour_id"].as<std::string>());
+            liablity_=std::make_shared<std::string>(r["liablity"].as<std::string>());
         }
-        if(!r["winning_colour"].isNull())
+        if(!r["winning_option_value"].isNull())
         {
-            winningColour_=std::make_shared<std::string>(r["winning_colour"].as<std::string>());
+            winningOptionValue_=std::make_shared<std::string>(r["winning_option_value"].as<std::string>());
+        }
+        if(!r["winning_option_name"].isNull())
+        {
+            winningOptionName_=std::make_shared<std::string>(r["winning_option_name"].as<std::string>());
         }
         if(!r["start_time"].isNull())
         {
@@ -162,7 +168,7 @@ Raffles::Raffles(const Row &r, const ssize_t indexOffset) noexcept
         }
         if(!r["status"].isNull())
         {
-            status_=std::make_shared<std::string>(r["status"].as<std::string>());
+            status_=std::make_shared<int32_t>(r["status"].as<int32_t>());
         }
         if(!r["created_at"].isNull())
         {
@@ -212,7 +218,7 @@ Raffles::Raffles(const Row &r, const ssize_t indexOffset) noexcept
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 15 > r.size())
+        if(offset + 16 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -241,19 +247,24 @@ Raffles::Raffles(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 4;
         if(!r[index].isNull())
         {
-            prizePool_=std::make_shared<std::string>(r[index].as<std::string>());
+            expectedRevenue_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 5;
         if(!r[index].isNull())
         {
-            winningColourId_=std::make_shared<std::string>(r[index].as<std::string>());
+            liablity_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 6;
         if(!r[index].isNull())
         {
-            winningColour_=std::make_shared<std::string>(r[index].as<std::string>());
+            winningOptionValue_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 7;
+        if(!r[index].isNull())
+        {
+            winningOptionName_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 8;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -276,7 +287,7 @@ Raffles::Raffles(const Row &r, const ssize_t indexOffset) noexcept
                 startTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 8;
+        index = offset + 9;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -299,7 +310,7 @@ Raffles::Raffles(const Row &r, const ssize_t indexOffset) noexcept
                 endTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 9;
+        index = offset + 10;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -322,22 +333,22 @@ Raffles::Raffles(const Row &r, const ssize_t indexOffset) noexcept
                 drawTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 10;
+        index = offset + 11;
         if(!r[index].isNull())
         {
             options_=std::make_shared<std::string>(r[index].as<std::string>());
         }
-        index = offset + 11;
+        index = offset + 12;
         if(!r[index].isNull())
         {
             exemptedPartners_=std::make_shared<std::string>(r[index].as<std::string>());
         }
-        index = offset + 12;
+        index = offset + 13;
         if(!r[index].isNull())
         {
-            status_=std::make_shared<std::string>(r[index].as<std::string>());
+            status_=std::make_shared<int32_t>(r[index].as<int32_t>());
         }
-        index = offset + 13;
+        index = offset + 14;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -360,7 +371,7 @@ Raffles::Raffles(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 14;
+        index = offset + 15;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -389,7 +400,7 @@ Raffles::Raffles(const Row &r, const ssize_t indexOffset) noexcept
 
 Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 15)
+    if(pMasqueradingVector.size() != 16)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -431,7 +442,7 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            prizePool_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
+            expectedRevenue_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -439,7 +450,7 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            winningColourId_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
+            liablity_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -447,7 +458,7 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            winningColour_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
+            winningOptionValue_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
@@ -455,25 +466,7 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[7] = true;
         if(!pJson[pMasqueradingVector[7]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[7]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                startTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
+            winningOptionName_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
@@ -498,7 +491,7 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                endTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                startTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -524,7 +517,7 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                drawTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                endTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -533,7 +526,25 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[10] = true;
         if(!pJson[pMasqueradingVector[10]].isNull())
         {
-            options_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
+            auto timeStr = pJson[pMasqueradingVector[10]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                drawTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
     }
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
@@ -541,7 +552,7 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[11] = true;
         if(!pJson[pMasqueradingVector[11]].isNull())
         {
-            exemptedPartners_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
+            options_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
         }
     }
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
@@ -549,7 +560,7 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[12] = true;
         if(!pJson[pMasqueradingVector[12]].isNull())
         {
-            status_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
+            exemptedPartners_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
@@ -557,7 +568,15 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[13] = true;
         if(!pJson[pMasqueradingVector[13]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[13]].asString();
+            status_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[13]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
+    {
+        dirtyFlag_[14] = true;
+        if(!pJson[pMasqueradingVector[14]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[14]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -578,12 +597,12 @@ Raffles::Raffles(const Json::Value &pJson, const std::vector<std::string> &pMasq
             }
         }
     }
-    if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
+    if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
-        dirtyFlag_[14] = true;
-        if(!pJson[pMasqueradingVector[14]].isNull())
+        dirtyFlag_[15] = true;
+        if(!pJson[pMasqueradingVector[15]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[14]].asString();
+            auto timeStr = pJson[pMasqueradingVector[15]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -640,33 +659,41 @@ Raffles::Raffles(const Json::Value &pJson) noexcept(false)
             totalEntries_=std::make_shared<int32_t>((int32_t)pJson["total_entries"].asInt64());
         }
     }
-    if(pJson.isMember("prize_pool"))
+    if(pJson.isMember("expected_revenue"))
     {
         dirtyFlag_[4]=true;
-        if(!pJson["prize_pool"].isNull())
+        if(!pJson["expected_revenue"].isNull())
         {
-            prizePool_=std::make_shared<std::string>(pJson["prize_pool"].asString());
+            expectedRevenue_=std::make_shared<std::string>(pJson["expected_revenue"].asString());
         }
     }
-    if(pJson.isMember("winning_colour_id"))
+    if(pJson.isMember("liablity"))
     {
         dirtyFlag_[5]=true;
-        if(!pJson["winning_colour_id"].isNull())
+        if(!pJson["liablity"].isNull())
         {
-            winningColourId_=std::make_shared<std::string>(pJson["winning_colour_id"].asString());
+            liablity_=std::make_shared<std::string>(pJson["liablity"].asString());
         }
     }
-    if(pJson.isMember("winning_colour"))
+    if(pJson.isMember("winning_option_value"))
     {
         dirtyFlag_[6]=true;
-        if(!pJson["winning_colour"].isNull())
+        if(!pJson["winning_option_value"].isNull())
         {
-            winningColour_=std::make_shared<std::string>(pJson["winning_colour"].asString());
+            winningOptionValue_=std::make_shared<std::string>(pJson["winning_option_value"].asString());
+        }
+    }
+    if(pJson.isMember("winning_option_name"))
+    {
+        dirtyFlag_[7]=true;
+        if(!pJson["winning_option_name"].isNull())
+        {
+            winningOptionName_=std::make_shared<std::string>(pJson["winning_option_name"].asString());
         }
     }
     if(pJson.isMember("start_time"))
     {
-        dirtyFlag_[7]=true;
+        dirtyFlag_[8]=true;
         if(!pJson["start_time"].isNull())
         {
             auto timeStr = pJson["start_time"].asString();
@@ -692,7 +719,7 @@ Raffles::Raffles(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("end_time"))
     {
-        dirtyFlag_[8]=true;
+        dirtyFlag_[9]=true;
         if(!pJson["end_time"].isNull())
         {
             auto timeStr = pJson["end_time"].asString();
@@ -718,7 +745,7 @@ Raffles::Raffles(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("draw_time"))
     {
-        dirtyFlag_[9]=true;
+        dirtyFlag_[10]=true;
         if(!pJson["draw_time"].isNull())
         {
             auto timeStr = pJson["draw_time"].asString();
@@ -744,7 +771,7 @@ Raffles::Raffles(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("options"))
     {
-        dirtyFlag_[10]=true;
+        dirtyFlag_[11]=true;
         if(!pJson["options"].isNull())
         {
             options_=std::make_shared<std::string>(pJson["options"].asString());
@@ -752,7 +779,7 @@ Raffles::Raffles(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("exempted_partners"))
     {
-        dirtyFlag_[11]=true;
+        dirtyFlag_[12]=true;
         if(!pJson["exempted_partners"].isNull())
         {
             exemptedPartners_=std::make_shared<std::string>(pJson["exempted_partners"].asString());
@@ -760,15 +787,15 @@ Raffles::Raffles(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("status"))
     {
-        dirtyFlag_[12]=true;
+        dirtyFlag_[13]=true;
         if(!pJson["status"].isNull())
         {
-            status_=std::make_shared<std::string>(pJson["status"].asString());
+            status_=std::make_shared<int32_t>((int32_t)pJson["status"].asInt64());
         }
     }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[13]=true;
+        dirtyFlag_[14]=true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -794,7 +821,7 @@ Raffles::Raffles(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("updated_at"))
     {
-        dirtyFlag_[14]=true;
+        dirtyFlag_[15]=true;
         if(!pJson["updated_at"].isNull())
         {
             auto timeStr = pJson["updated_at"].asString();
@@ -823,7 +850,7 @@ Raffles::Raffles(const Json::Value &pJson) noexcept(false)
 void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 15)
+    if(pMasqueradingVector.size() != 16)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -864,7 +891,7 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            prizePool_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
+            expectedRevenue_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -872,7 +899,7 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            winningColourId_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
+            liablity_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -880,7 +907,7 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            winningColour_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
+            winningOptionValue_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
@@ -888,25 +915,7 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[7] = true;
         if(!pJson[pMasqueradingVector[7]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[7]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                startTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
+            winningOptionName_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
@@ -931,7 +940,7 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                endTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                startTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -957,7 +966,7 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                drawTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                endTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -966,7 +975,25 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[10] = true;
         if(!pJson[pMasqueradingVector[10]].isNull())
         {
-            options_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
+            auto timeStr = pJson[pMasqueradingVector[10]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                drawTime_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
     }
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
@@ -974,7 +1001,7 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[11] = true;
         if(!pJson[pMasqueradingVector[11]].isNull())
         {
-            exemptedPartners_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
+            options_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
         }
     }
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
@@ -982,7 +1009,7 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[12] = true;
         if(!pJson[pMasqueradingVector[12]].isNull())
         {
-            status_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
+            exemptedPartners_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
@@ -990,7 +1017,15 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[13] = true;
         if(!pJson[pMasqueradingVector[13]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[13]].asString();
+            status_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[13]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
+    {
+        dirtyFlag_[14] = true;
+        if(!pJson[pMasqueradingVector[14]].isNull())
+        {
+            auto timeStr = pJson[pMasqueradingVector[14]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -1011,12 +1046,12 @@ void Raffles::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
-    if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
+    if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
-        dirtyFlag_[14] = true;
-        if(!pJson[pMasqueradingVector[14]].isNull())
+        dirtyFlag_[15] = true;
+        if(!pJson[pMasqueradingVector[15]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[14]].asString();
+            auto timeStr = pJson[pMasqueradingVector[15]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -1072,33 +1107,41 @@ void Raffles::updateByJson(const Json::Value &pJson) noexcept(false)
             totalEntries_=std::make_shared<int32_t>((int32_t)pJson["total_entries"].asInt64());
         }
     }
-    if(pJson.isMember("prize_pool"))
+    if(pJson.isMember("expected_revenue"))
     {
         dirtyFlag_[4] = true;
-        if(!pJson["prize_pool"].isNull())
+        if(!pJson["expected_revenue"].isNull())
         {
-            prizePool_=std::make_shared<std::string>(pJson["prize_pool"].asString());
+            expectedRevenue_=std::make_shared<std::string>(pJson["expected_revenue"].asString());
         }
     }
-    if(pJson.isMember("winning_colour_id"))
+    if(pJson.isMember("liablity"))
     {
         dirtyFlag_[5] = true;
-        if(!pJson["winning_colour_id"].isNull())
+        if(!pJson["liablity"].isNull())
         {
-            winningColourId_=std::make_shared<std::string>(pJson["winning_colour_id"].asString());
+            liablity_=std::make_shared<std::string>(pJson["liablity"].asString());
         }
     }
-    if(pJson.isMember("winning_colour"))
+    if(pJson.isMember("winning_option_value"))
     {
         dirtyFlag_[6] = true;
-        if(!pJson["winning_colour"].isNull())
+        if(!pJson["winning_option_value"].isNull())
         {
-            winningColour_=std::make_shared<std::string>(pJson["winning_colour"].asString());
+            winningOptionValue_=std::make_shared<std::string>(pJson["winning_option_value"].asString());
+        }
+    }
+    if(pJson.isMember("winning_option_name"))
+    {
+        dirtyFlag_[7] = true;
+        if(!pJson["winning_option_name"].isNull())
+        {
+            winningOptionName_=std::make_shared<std::string>(pJson["winning_option_name"].asString());
         }
     }
     if(pJson.isMember("start_time"))
     {
-        dirtyFlag_[7] = true;
+        dirtyFlag_[8] = true;
         if(!pJson["start_time"].isNull())
         {
             auto timeStr = pJson["start_time"].asString();
@@ -1124,7 +1167,7 @@ void Raffles::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("end_time"))
     {
-        dirtyFlag_[8] = true;
+        dirtyFlag_[9] = true;
         if(!pJson["end_time"].isNull())
         {
             auto timeStr = pJson["end_time"].asString();
@@ -1150,7 +1193,7 @@ void Raffles::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("draw_time"))
     {
-        dirtyFlag_[9] = true;
+        dirtyFlag_[10] = true;
         if(!pJson["draw_time"].isNull())
         {
             auto timeStr = pJson["draw_time"].asString();
@@ -1176,7 +1219,7 @@ void Raffles::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("options"))
     {
-        dirtyFlag_[10] = true;
+        dirtyFlag_[11] = true;
         if(!pJson["options"].isNull())
         {
             options_=std::make_shared<std::string>(pJson["options"].asString());
@@ -1184,7 +1227,7 @@ void Raffles::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("exempted_partners"))
     {
-        dirtyFlag_[11] = true;
+        dirtyFlag_[12] = true;
         if(!pJson["exempted_partners"].isNull())
         {
             exemptedPartners_=std::make_shared<std::string>(pJson["exempted_partners"].asString());
@@ -1192,15 +1235,15 @@ void Raffles::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("status"))
     {
-        dirtyFlag_[12] = true;
+        dirtyFlag_[13] = true;
         if(!pJson["status"].isNull())
         {
-            status_=std::make_shared<std::string>(pJson["status"].asString());
+            status_=std::make_shared<int32_t>((int32_t)pJson["status"].asInt64());
         }
     }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[13] = true;
+        dirtyFlag_[14] = true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -1226,7 +1269,7 @@ void Raffles::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("updated_at"))
     {
-        dirtyFlag_[14] = true;
+        dirtyFlag_[15] = true;
         if(!pJson["updated_at"].isNull())
         {
             auto timeStr = pJson["updated_at"].asString();
@@ -1345,85 +1388,112 @@ void Raffles::setTotalEntriesToNull() noexcept
     dirtyFlag_[3] = true;
 }
 
-const std::string &Raffles::getValueOfPrizePool() const noexcept
+const std::string &Raffles::getValueOfExpectedRevenue() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(prizePool_)
-        return *prizePool_;
+    if(expectedRevenue_)
+        return *expectedRevenue_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Raffles::getPrizePool() const noexcept
+const std::shared_ptr<std::string> &Raffles::getExpectedRevenue() const noexcept
 {
-    return prizePool_;
+    return expectedRevenue_;
 }
-void Raffles::setPrizePool(const std::string &pPrizePool) noexcept
+void Raffles::setExpectedRevenue(const std::string &pExpectedRevenue) noexcept
 {
-    prizePool_ = std::make_shared<std::string>(pPrizePool);
+    expectedRevenue_ = std::make_shared<std::string>(pExpectedRevenue);
     dirtyFlag_[4] = true;
 }
-void Raffles::setPrizePool(std::string &&pPrizePool) noexcept
+void Raffles::setExpectedRevenue(std::string &&pExpectedRevenue) noexcept
 {
-    prizePool_ = std::make_shared<std::string>(std::move(pPrizePool));
+    expectedRevenue_ = std::make_shared<std::string>(std::move(pExpectedRevenue));
     dirtyFlag_[4] = true;
 }
-void Raffles::setPrizePoolToNull() noexcept
+void Raffles::setExpectedRevenueToNull() noexcept
 {
-    prizePool_.reset();
+    expectedRevenue_.reset();
     dirtyFlag_[4] = true;
 }
 
-const std::string &Raffles::getValueOfWinningColourId() const noexcept
+const std::string &Raffles::getValueOfLiablity() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(winningColourId_)
-        return *winningColourId_;
+    if(liablity_)
+        return *liablity_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Raffles::getWinningColourId() const noexcept
+const std::shared_ptr<std::string> &Raffles::getLiablity() const noexcept
 {
-    return winningColourId_;
+    return liablity_;
 }
-void Raffles::setWinningColourId(const std::string &pWinningColourId) noexcept
+void Raffles::setLiablity(const std::string &pLiablity) noexcept
 {
-    winningColourId_ = std::make_shared<std::string>(pWinningColourId);
+    liablity_ = std::make_shared<std::string>(pLiablity);
     dirtyFlag_[5] = true;
 }
-void Raffles::setWinningColourId(std::string &&pWinningColourId) noexcept
+void Raffles::setLiablity(std::string &&pLiablity) noexcept
 {
-    winningColourId_ = std::make_shared<std::string>(std::move(pWinningColourId));
+    liablity_ = std::make_shared<std::string>(std::move(pLiablity));
     dirtyFlag_[5] = true;
 }
-void Raffles::setWinningColourIdToNull() noexcept
+void Raffles::setLiablityToNull() noexcept
 {
-    winningColourId_.reset();
+    liablity_.reset();
     dirtyFlag_[5] = true;
 }
 
-const std::string &Raffles::getValueOfWinningColour() const noexcept
+const std::string &Raffles::getValueOfWinningOptionValue() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(winningColour_)
-        return *winningColour_;
+    if(winningOptionValue_)
+        return *winningOptionValue_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Raffles::getWinningColour() const noexcept
+const std::shared_ptr<std::string> &Raffles::getWinningOptionValue() const noexcept
 {
-    return winningColour_;
+    return winningOptionValue_;
 }
-void Raffles::setWinningColour(const std::string &pWinningColour) noexcept
+void Raffles::setWinningOptionValue(const std::string &pWinningOptionValue) noexcept
 {
-    winningColour_ = std::make_shared<std::string>(pWinningColour);
+    winningOptionValue_ = std::make_shared<std::string>(pWinningOptionValue);
     dirtyFlag_[6] = true;
 }
-void Raffles::setWinningColour(std::string &&pWinningColour) noexcept
+void Raffles::setWinningOptionValue(std::string &&pWinningOptionValue) noexcept
 {
-    winningColour_ = std::make_shared<std::string>(std::move(pWinningColour));
+    winningOptionValue_ = std::make_shared<std::string>(std::move(pWinningOptionValue));
     dirtyFlag_[6] = true;
 }
-void Raffles::setWinningColourToNull() noexcept
+void Raffles::setWinningOptionValueToNull() noexcept
 {
-    winningColour_.reset();
+    winningOptionValue_.reset();
     dirtyFlag_[6] = true;
+}
+
+const std::string &Raffles::getValueOfWinningOptionName() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(winningOptionName_)
+        return *winningOptionName_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Raffles::getWinningOptionName() const noexcept
+{
+    return winningOptionName_;
+}
+void Raffles::setWinningOptionName(const std::string &pWinningOptionName) noexcept
+{
+    winningOptionName_ = std::make_shared<std::string>(pWinningOptionName);
+    dirtyFlag_[7] = true;
+}
+void Raffles::setWinningOptionName(std::string &&pWinningOptionName) noexcept
+{
+    winningOptionName_ = std::make_shared<std::string>(std::move(pWinningOptionName));
+    dirtyFlag_[7] = true;
+}
+void Raffles::setWinningOptionNameToNull() noexcept
+{
+    winningOptionName_.reset();
+    dirtyFlag_[7] = true;
 }
 
 const ::trantor::Date &Raffles::getValueOfStartTime() const noexcept
@@ -1440,7 +1510,7 @@ const std::shared_ptr<::trantor::Date> &Raffles::getStartTime() const noexcept
 void Raffles::setStartTime(const ::trantor::Date &pStartTime) noexcept
 {
     startTime_ = std::make_shared<::trantor::Date>(pStartTime);
-    dirtyFlag_[7] = true;
+    dirtyFlag_[8] = true;
 }
 
 const ::trantor::Date &Raffles::getValueOfEndTime() const noexcept
@@ -1457,7 +1527,7 @@ const std::shared_ptr<::trantor::Date> &Raffles::getEndTime() const noexcept
 void Raffles::setEndTime(const ::trantor::Date &pEndTime) noexcept
 {
     endTime_ = std::make_shared<::trantor::Date>(pEndTime);
-    dirtyFlag_[8] = true;
+    dirtyFlag_[9] = true;
 }
 
 const ::trantor::Date &Raffles::getValueOfDrawTime() const noexcept
@@ -1474,7 +1544,7 @@ const std::shared_ptr<::trantor::Date> &Raffles::getDrawTime() const noexcept
 void Raffles::setDrawTime(const ::trantor::Date &pDrawTime) noexcept
 {
     drawTime_ = std::make_shared<::trantor::Date>(pDrawTime);
-    dirtyFlag_[9] = true;
+    dirtyFlag_[10] = true;
 }
 
 const std::string &Raffles::getValueOfOptions() const noexcept
@@ -1491,17 +1561,17 @@ const std::shared_ptr<std::string> &Raffles::getOptions() const noexcept
 void Raffles::setOptions(const std::string &pOptions) noexcept
 {
     options_ = std::make_shared<std::string>(pOptions);
-    dirtyFlag_[10] = true;
+    dirtyFlag_[11] = true;
 }
 void Raffles::setOptions(std::string &&pOptions) noexcept
 {
     options_ = std::make_shared<std::string>(std::move(pOptions));
-    dirtyFlag_[10] = true;
+    dirtyFlag_[11] = true;
 }
 void Raffles::setOptionsToNull() noexcept
 {
     options_.reset();
-    dirtyFlag_[10] = true;
+    dirtyFlag_[11] = true;
 }
 
 const std::string &Raffles::getValueOfExemptedPartners() const noexcept
@@ -1518,44 +1588,39 @@ const std::shared_ptr<std::string> &Raffles::getExemptedPartners() const noexcep
 void Raffles::setExemptedPartners(const std::string &pExemptedPartners) noexcept
 {
     exemptedPartners_ = std::make_shared<std::string>(pExemptedPartners);
-    dirtyFlag_[11] = true;
+    dirtyFlag_[12] = true;
 }
 void Raffles::setExemptedPartners(std::string &&pExemptedPartners) noexcept
 {
     exemptedPartners_ = std::make_shared<std::string>(std::move(pExemptedPartners));
-    dirtyFlag_[11] = true;
+    dirtyFlag_[12] = true;
 }
 void Raffles::setExemptedPartnersToNull() noexcept
 {
     exemptedPartners_.reset();
-    dirtyFlag_[11] = true;
+    dirtyFlag_[12] = true;
 }
 
-const std::string &Raffles::getValueOfStatus() const noexcept
+const int32_t &Raffles::getValueOfStatus() const noexcept
 {
-    static const std::string defaultValue = std::string();
+    static const int32_t defaultValue = int32_t();
     if(status_)
         return *status_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Raffles::getStatus() const noexcept
+const std::shared_ptr<int32_t> &Raffles::getStatus() const noexcept
 {
     return status_;
 }
-void Raffles::setStatus(const std::string &pStatus) noexcept
+void Raffles::setStatus(const int32_t &pStatus) noexcept
 {
-    status_ = std::make_shared<std::string>(pStatus);
-    dirtyFlag_[12] = true;
-}
-void Raffles::setStatus(std::string &&pStatus) noexcept
-{
-    status_ = std::make_shared<std::string>(std::move(pStatus));
-    dirtyFlag_[12] = true;
+    status_ = std::make_shared<int32_t>(pStatus);
+    dirtyFlag_[13] = true;
 }
 void Raffles::setStatusToNull() noexcept
 {
     status_.reset();
-    dirtyFlag_[12] = true;
+    dirtyFlag_[13] = true;
 }
 
 const ::trantor::Date &Raffles::getValueOfCreatedAt() const noexcept
@@ -1572,12 +1637,12 @@ const std::shared_ptr<::trantor::Date> &Raffles::getCreatedAt() const noexcept
 void Raffles::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
 {
     createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
-    dirtyFlag_[13] = true;
+    dirtyFlag_[14] = true;
 }
 void Raffles::setCreatedAtToNull() noexcept
 {
     createdAt_.reset();
-    dirtyFlag_[13] = true;
+    dirtyFlag_[14] = true;
 }
 
 const ::trantor::Date &Raffles::getValueOfUpdatedAt() const noexcept
@@ -1594,12 +1659,12 @@ const std::shared_ptr<::trantor::Date> &Raffles::getUpdatedAt() const noexcept
 void Raffles::setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept
 {
     updatedAt_ = std::make_shared<::trantor::Date>(pUpdatedAt);
-    dirtyFlag_[14] = true;
+    dirtyFlag_[15] = true;
 }
 void Raffles::setUpdatedAtToNull() noexcept
 {
     updatedAt_.reset();
-    dirtyFlag_[14] = true;
+    dirtyFlag_[15] = true;
 }
 
 void Raffles::updateId(const uint64_t id)
@@ -1613,9 +1678,10 @@ const std::vector<std::string> &Raffles::insertColumns() noexcept
         "name",
         "slug",
         "total_entries",
-        "prize_pool",
-        "winning_colour_id",
-        "winning_colour",
+        "expected_revenue",
+        "liablity",
+        "winning_option_value",
+        "winning_option_name",
         "start_time",
         "end_time",
         "draw_time",
@@ -1676,9 +1742,9 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[4])
     {
-        if(getPrizePool())
+        if(getExpectedRevenue())
         {
-            binder << getValueOfPrizePool();
+            binder << getValueOfExpectedRevenue();
         }
         else
         {
@@ -1687,9 +1753,9 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getWinningColourId())
+        if(getLiablity())
         {
-            binder << getValueOfWinningColourId();
+            binder << getValueOfLiablity();
         }
         else
         {
@@ -1698,9 +1764,9 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[6])
     {
-        if(getWinningColour())
+        if(getWinningOptionValue())
         {
-            binder << getValueOfWinningColour();
+            binder << getValueOfWinningOptionValue();
         }
         else
         {
@@ -1708,6 +1774,17 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
         }
     }
     if(dirtyFlag_[7])
+    {
+        if(getWinningOptionName())
+        {
+            binder << getValueOfWinningOptionName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[8])
     {
         if(getStartTime())
         {
@@ -1718,7 +1795,7 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[8])
+    if(dirtyFlag_[9])
     {
         if(getEndTime())
         {
@@ -1729,7 +1806,7 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[9])
+    if(dirtyFlag_[10])
     {
         if(getDrawTime())
         {
@@ -1740,7 +1817,7 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[10])
+    if(dirtyFlag_[11])
     {
         if(getOptions())
         {
@@ -1751,7 +1828,7 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[11])
+    if(dirtyFlag_[12])
     {
         if(getExemptedPartners())
         {
@@ -1762,7 +1839,7 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[12])
+    if(dirtyFlag_[13])
     {
         if(getStatus())
         {
@@ -1773,7 +1850,7 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[13])
+    if(dirtyFlag_[14])
     {
         if(getCreatedAt())
         {
@@ -1784,7 +1861,7 @@ void Raffles::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[14])
+    if(dirtyFlag_[15])
     {
         if(getUpdatedAt())
         {
@@ -1860,6 +1937,10 @@ const std::vector<std::string> Raffles::updateColumns() const
     {
         ret.push_back(getColumnName(14));
     }
+    if(dirtyFlag_[15])
+    {
+        ret.push_back(getColumnName(15));
+    }
     return ret;
 }
 
@@ -1911,9 +1992,9 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[4])
     {
-        if(getPrizePool())
+        if(getExpectedRevenue())
         {
-            binder << getValueOfPrizePool();
+            binder << getValueOfExpectedRevenue();
         }
         else
         {
@@ -1922,9 +2003,9 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getWinningColourId())
+        if(getLiablity())
         {
-            binder << getValueOfWinningColourId();
+            binder << getValueOfLiablity();
         }
         else
         {
@@ -1933,9 +2014,9 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[6])
     {
-        if(getWinningColour())
+        if(getWinningOptionValue())
         {
-            binder << getValueOfWinningColour();
+            binder << getValueOfWinningOptionValue();
         }
         else
         {
@@ -1943,6 +2024,17 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
         }
     }
     if(dirtyFlag_[7])
+    {
+        if(getWinningOptionName())
+        {
+            binder << getValueOfWinningOptionName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[8])
     {
         if(getStartTime())
         {
@@ -1953,7 +2045,7 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[8])
+    if(dirtyFlag_[9])
     {
         if(getEndTime())
         {
@@ -1964,7 +2056,7 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[9])
+    if(dirtyFlag_[10])
     {
         if(getDrawTime())
         {
@@ -1975,7 +2067,7 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[10])
+    if(dirtyFlag_[11])
     {
         if(getOptions())
         {
@@ -1986,7 +2078,7 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[11])
+    if(dirtyFlag_[12])
     {
         if(getExemptedPartners())
         {
@@ -1997,7 +2089,7 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[12])
+    if(dirtyFlag_[13])
     {
         if(getStatus())
         {
@@ -2008,7 +2100,7 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[13])
+    if(dirtyFlag_[14])
     {
         if(getCreatedAt())
         {
@@ -2019,7 +2111,7 @@ void Raffles::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[14])
+    if(dirtyFlag_[15])
     {
         if(getUpdatedAt())
         {
@@ -2066,29 +2158,37 @@ Json::Value Raffles::toJson() const
     {
         ret["total_entries"]=Json::Value();
     }
-    if(getPrizePool())
+    if(getExpectedRevenue())
     {
-        ret["prize_pool"]=getValueOfPrizePool();
+        ret["expected_revenue"]=getValueOfExpectedRevenue();
     }
     else
     {
-        ret["prize_pool"]=Json::Value();
+        ret["expected_revenue"]=Json::Value();
     }
-    if(getWinningColourId())
+    if(getLiablity())
     {
-        ret["winning_colour_id"]=getValueOfWinningColourId();
-    }
-    else
-    {
-        ret["winning_colour_id"]=Json::Value();
-    }
-    if(getWinningColour())
-    {
-        ret["winning_colour"]=getValueOfWinningColour();
+        ret["liablity"]=getValueOfLiablity();
     }
     else
     {
-        ret["winning_colour"]=Json::Value();
+        ret["liablity"]=Json::Value();
+    }
+    if(getWinningOptionValue())
+    {
+        ret["winning_option_value"]=getValueOfWinningOptionValue();
+    }
+    else
+    {
+        ret["winning_option_value"]=Json::Value();
+    }
+    if(getWinningOptionName())
+    {
+        ret["winning_option_name"]=getValueOfWinningOptionName();
+    }
+    else
+    {
+        ret["winning_option_name"]=Json::Value();
     }
     if(getStartTime())
     {
@@ -2166,7 +2266,7 @@ Json::Value Raffles::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 15)
+    if(pMasqueradingVector.size() == 16)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -2214,9 +2314,9 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[4].empty())
         {
-            if(getPrizePool())
+            if(getExpectedRevenue())
             {
-                ret[pMasqueradingVector[4]]=getValueOfPrizePool();
+                ret[pMasqueradingVector[4]]=getValueOfExpectedRevenue();
             }
             else
             {
@@ -2225,9 +2325,9 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[5].empty())
         {
-            if(getWinningColourId())
+            if(getLiablity())
             {
-                ret[pMasqueradingVector[5]]=getValueOfWinningColourId();
+                ret[pMasqueradingVector[5]]=getValueOfLiablity();
             }
             else
             {
@@ -2236,9 +2336,9 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[6].empty())
         {
-            if(getWinningColour())
+            if(getWinningOptionValue())
             {
-                ret[pMasqueradingVector[6]]=getValueOfWinningColour();
+                ret[pMasqueradingVector[6]]=getValueOfWinningOptionValue();
             }
             else
             {
@@ -2247,9 +2347,9 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[7].empty())
         {
-            if(getStartTime())
+            if(getWinningOptionName())
             {
-                ret[pMasqueradingVector[7]]=getStartTime()->toDbStringLocal();
+                ret[pMasqueradingVector[7]]=getValueOfWinningOptionName();
             }
             else
             {
@@ -2258,9 +2358,9 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[8].empty())
         {
-            if(getEndTime())
+            if(getStartTime())
             {
-                ret[pMasqueradingVector[8]]=getEndTime()->toDbStringLocal();
+                ret[pMasqueradingVector[8]]=getStartTime()->toDbStringLocal();
             }
             else
             {
@@ -2269,9 +2369,9 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[9].empty())
         {
-            if(getDrawTime())
+            if(getEndTime())
             {
-                ret[pMasqueradingVector[9]]=getDrawTime()->toDbStringLocal();
+                ret[pMasqueradingVector[9]]=getEndTime()->toDbStringLocal();
             }
             else
             {
@@ -2280,9 +2380,9 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[10].empty())
         {
-            if(getOptions())
+            if(getDrawTime())
             {
-                ret[pMasqueradingVector[10]]=getValueOfOptions();
+                ret[pMasqueradingVector[10]]=getDrawTime()->toDbStringLocal();
             }
             else
             {
@@ -2291,9 +2391,9 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[11].empty())
         {
-            if(getExemptedPartners())
+            if(getOptions())
             {
-                ret[pMasqueradingVector[11]]=getValueOfExemptedPartners();
+                ret[pMasqueradingVector[11]]=getValueOfOptions();
             }
             else
             {
@@ -2302,9 +2402,9 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[12].empty())
         {
-            if(getStatus())
+            if(getExemptedPartners())
             {
-                ret[pMasqueradingVector[12]]=getValueOfStatus();
+                ret[pMasqueradingVector[12]]=getValueOfExemptedPartners();
             }
             else
             {
@@ -2313,9 +2413,9 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[13].empty())
         {
-            if(getCreatedAt())
+            if(getStatus())
             {
-                ret[pMasqueradingVector[13]]=getCreatedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[13]]=getValueOfStatus();
             }
             else
             {
@@ -2324,13 +2424,24 @@ Json::Value Raffles::toMasqueradedJson(
         }
         if(!pMasqueradingVector[14].empty())
         {
-            if(getUpdatedAt())
+            if(getCreatedAt())
             {
-                ret[pMasqueradingVector[14]]=getUpdatedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[14]]=getCreatedAt()->toDbStringLocal();
             }
             else
             {
                 ret[pMasqueradingVector[14]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[15].empty())
+        {
+            if(getUpdatedAt())
+            {
+                ret[pMasqueradingVector[15]]=getUpdatedAt()->toDbStringLocal();
+            }
+            else
+            {
+                ret[pMasqueradingVector[15]]=Json::Value();
             }
         }
         return ret;
@@ -2368,29 +2479,37 @@ Json::Value Raffles::toMasqueradedJson(
     {
         ret["total_entries"]=Json::Value();
     }
-    if(getPrizePool())
+    if(getExpectedRevenue())
     {
-        ret["prize_pool"]=getValueOfPrizePool();
+        ret["expected_revenue"]=getValueOfExpectedRevenue();
     }
     else
     {
-        ret["prize_pool"]=Json::Value();
+        ret["expected_revenue"]=Json::Value();
     }
-    if(getWinningColourId())
+    if(getLiablity())
     {
-        ret["winning_colour_id"]=getValueOfWinningColourId();
-    }
-    else
-    {
-        ret["winning_colour_id"]=Json::Value();
-    }
-    if(getWinningColour())
-    {
-        ret["winning_colour"]=getValueOfWinningColour();
+        ret["liablity"]=getValueOfLiablity();
     }
     else
     {
-        ret["winning_colour"]=Json::Value();
+        ret["liablity"]=Json::Value();
+    }
+    if(getWinningOptionValue())
+    {
+        ret["winning_option_value"]=getValueOfWinningOptionValue();
+    }
+    else
+    {
+        ret["winning_option_value"]=Json::Value();
+    }
+    if(getWinningOptionName())
+    {
+        ret["winning_option_name"]=getValueOfWinningOptionName();
+    }
+    else
+    {
+        ret["winning_option_name"]=Json::Value();
     }
     if(getStartTime())
     {
@@ -2491,24 +2610,29 @@ bool Raffles::validateJsonForCreation(const Json::Value &pJson, std::string &err
         if(!validJsonOfField(3, "total_entries", pJson["total_entries"], err, true))
             return false;
     }
-    if(pJson.isMember("prize_pool"))
+    if(pJson.isMember("expected_revenue"))
     {
-        if(!validJsonOfField(4, "prize_pool", pJson["prize_pool"], err, true))
+        if(!validJsonOfField(4, "expected_revenue", pJson["expected_revenue"], err, true))
             return false;
     }
-    if(pJson.isMember("winning_colour_id"))
+    if(pJson.isMember("liablity"))
     {
-        if(!validJsonOfField(5, "winning_colour_id", pJson["winning_colour_id"], err, true))
+        if(!validJsonOfField(5, "liablity", pJson["liablity"], err, true))
             return false;
     }
-    if(pJson.isMember("winning_colour"))
+    if(pJson.isMember("winning_option_value"))
     {
-        if(!validJsonOfField(6, "winning_colour", pJson["winning_colour"], err, true))
+        if(!validJsonOfField(6, "winning_option_value", pJson["winning_option_value"], err, true))
+            return false;
+    }
+    if(pJson.isMember("winning_option_name"))
+    {
+        if(!validJsonOfField(7, "winning_option_name", pJson["winning_option_name"], err, true))
             return false;
     }
     if(pJson.isMember("start_time"))
     {
-        if(!validJsonOfField(7, "start_time", pJson["start_time"], err, true))
+        if(!validJsonOfField(8, "start_time", pJson["start_time"], err, true))
             return false;
     }
     else
@@ -2518,7 +2642,7 @@ bool Raffles::validateJsonForCreation(const Json::Value &pJson, std::string &err
     }
     if(pJson.isMember("end_time"))
     {
-        if(!validJsonOfField(8, "end_time", pJson["end_time"], err, true))
+        if(!validJsonOfField(9, "end_time", pJson["end_time"], err, true))
             return false;
     }
     else
@@ -2528,7 +2652,7 @@ bool Raffles::validateJsonForCreation(const Json::Value &pJson, std::string &err
     }
     if(pJson.isMember("draw_time"))
     {
-        if(!validJsonOfField(9, "draw_time", pJson["draw_time"], err, true))
+        if(!validJsonOfField(10, "draw_time", pJson["draw_time"], err, true))
             return false;
     }
     else
@@ -2538,27 +2662,27 @@ bool Raffles::validateJsonForCreation(const Json::Value &pJson, std::string &err
     }
     if(pJson.isMember("options"))
     {
-        if(!validJsonOfField(10, "options", pJson["options"], err, true))
+        if(!validJsonOfField(11, "options", pJson["options"], err, true))
             return false;
     }
     if(pJson.isMember("exempted_partners"))
     {
-        if(!validJsonOfField(11, "exempted_partners", pJson["exempted_partners"], err, true))
+        if(!validJsonOfField(12, "exempted_partners", pJson["exempted_partners"], err, true))
             return false;
     }
     if(pJson.isMember("status"))
     {
-        if(!validJsonOfField(12, "status", pJson["status"], err, true))
+        if(!validJsonOfField(13, "status", pJson["status"], err, true))
             return false;
     }
     if(pJson.isMember("created_at"))
     {
-        if(!validJsonOfField(13, "created_at", pJson["created_at"], err, true))
+        if(!validJsonOfField(14, "created_at", pJson["created_at"], err, true))
             return false;
     }
     if(pJson.isMember("updated_at"))
     {
-        if(!validJsonOfField(14, "updated_at", pJson["updated_at"], err, true))
+        if(!validJsonOfField(15, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
     return true;
@@ -2567,7 +2691,7 @@ bool Raffles::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                  const std::vector<std::string> &pMasqueradingVector,
                                                  std::string &err)
 {
-    if(pMasqueradingVector.size() != 15)
+    if(pMasqueradingVector.size() != 16)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2646,11 +2770,6 @@ bool Raffles::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[7] + " column cannot be null";
-            return false;
-        }
       }
       if(!pMasqueradingVector[8].empty())
       {
@@ -2685,6 +2804,11 @@ bool Raffles::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+        else
+        {
+            err="The " + pMasqueradingVector[10] + " column cannot be null";
+            return false;
+        }
       }
       if(!pMasqueradingVector[11].empty())
       {
@@ -2715,6 +2839,14 @@ bool Raffles::validateMasqueradedJsonForCreation(const Json::Value &pJson,
           if(pJson.isMember(pMasqueradingVector[14]))
           {
               if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[15].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[15]))
+          {
+              if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, true))
                   return false;
           }
       }
@@ -2753,59 +2885,64 @@ bool Raffles::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(3, "total_entries", pJson["total_entries"], err, false))
             return false;
     }
-    if(pJson.isMember("prize_pool"))
+    if(pJson.isMember("expected_revenue"))
     {
-        if(!validJsonOfField(4, "prize_pool", pJson["prize_pool"], err, false))
+        if(!validJsonOfField(4, "expected_revenue", pJson["expected_revenue"], err, false))
             return false;
     }
-    if(pJson.isMember("winning_colour_id"))
+    if(pJson.isMember("liablity"))
     {
-        if(!validJsonOfField(5, "winning_colour_id", pJson["winning_colour_id"], err, false))
+        if(!validJsonOfField(5, "liablity", pJson["liablity"], err, false))
             return false;
     }
-    if(pJson.isMember("winning_colour"))
+    if(pJson.isMember("winning_option_value"))
     {
-        if(!validJsonOfField(6, "winning_colour", pJson["winning_colour"], err, false))
+        if(!validJsonOfField(6, "winning_option_value", pJson["winning_option_value"], err, false))
+            return false;
+    }
+    if(pJson.isMember("winning_option_name"))
+    {
+        if(!validJsonOfField(7, "winning_option_name", pJson["winning_option_name"], err, false))
             return false;
     }
     if(pJson.isMember("start_time"))
     {
-        if(!validJsonOfField(7, "start_time", pJson["start_time"], err, false))
+        if(!validJsonOfField(8, "start_time", pJson["start_time"], err, false))
             return false;
     }
     if(pJson.isMember("end_time"))
     {
-        if(!validJsonOfField(8, "end_time", pJson["end_time"], err, false))
+        if(!validJsonOfField(9, "end_time", pJson["end_time"], err, false))
             return false;
     }
     if(pJson.isMember("draw_time"))
     {
-        if(!validJsonOfField(9, "draw_time", pJson["draw_time"], err, false))
+        if(!validJsonOfField(10, "draw_time", pJson["draw_time"], err, false))
             return false;
     }
     if(pJson.isMember("options"))
     {
-        if(!validJsonOfField(10, "options", pJson["options"], err, false))
+        if(!validJsonOfField(11, "options", pJson["options"], err, false))
             return false;
     }
     if(pJson.isMember("exempted_partners"))
     {
-        if(!validJsonOfField(11, "exempted_partners", pJson["exempted_partners"], err, false))
+        if(!validJsonOfField(12, "exempted_partners", pJson["exempted_partners"], err, false))
             return false;
     }
     if(pJson.isMember("status"))
     {
-        if(!validJsonOfField(12, "status", pJson["status"], err, false))
+        if(!validJsonOfField(13, "status", pJson["status"], err, false))
             return false;
     }
     if(pJson.isMember("created_at"))
     {
-        if(!validJsonOfField(13, "created_at", pJson["created_at"], err, false))
+        if(!validJsonOfField(14, "created_at", pJson["created_at"], err, false))
             return false;
     }
     if(pJson.isMember("updated_at"))
     {
-        if(!validJsonOfField(14, "updated_at", pJson["updated_at"], err, false))
+        if(!validJsonOfField(15, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
     return true;
@@ -2814,7 +2951,7 @@ bool Raffles::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 15)
+    if(pMasqueradingVector.size() != 16)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2898,6 +3035,11 @@ bool Raffles::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
       {
           if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
+      {
+          if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, false))
               return false;
       }
     }
@@ -3012,23 +3154,30 @@ bool Raffles::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+                .from_bytes(pJson.asCString()).size() > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 20)";
+                    " field (the maximum value is 100)";
                 return false;
             }
             break;
         case 7:
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 100)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 100)";
                 return false;
             }
             break;
@@ -3059,7 +3208,8 @@ bool Raffles::validJsonOfField(size_t index,
         case 10:
             if(pJson.isNull())
             {
-                return true;
+                err="The " + fieldName + " column cannot be null";
+                return false;
             }
             if(!pJson.isString())
             {
@@ -3088,16 +3238,19 @@ bool Raffles::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+            break;
+        case 13:
+            if(pJson.isNull())
             {
-                err="String length exceeds limit for the " +
-                    fieldName +
-                    " field (the maximum value is 20)";
+                return true;
+            }
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
                 return false;
             }
             break;
-        case 13:
+        case 14:
             if(pJson.isNull())
             {
                 return true;
@@ -3108,7 +3261,7 @@ bool Raffles::validJsonOfField(size_t index,
                 return false;
             }
             break;
-        case 14:
+        case 15:
             if(pJson.isNull())
             {
                 return true;

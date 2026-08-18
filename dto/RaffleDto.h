@@ -10,10 +10,10 @@
 
 namespace raffle::dto {
 
-class CreateRaffleDto {
+class RaffleDto {
 
 public:
-  CreateRaffleDto() = default;
+  RaffleDto() = default;
 
   void fromJson(const Json::Value &json);
 
@@ -24,8 +24,8 @@ public:
   [[nodiscard]] const std::string &getStartTime() const { return start_time_; }
   [[nodiscard]] const std::string &getEndTime() const { return end_time_; }
   [[nodiscard]] const std::string &getDrawTime() const { return draw_time_; }
-  [[nodiscard]] const std::string &getStatus() const { return status_; }
-  [[nodiscard]] const std::string &getPrizePool() const { return prize_pool_; }
+  [[nodiscard]] double getLiability() const { return liability_; }
+  [[nodiscard]] double getExpectedRevenue() const { return expected_revenue_; }
   [[nodiscard]] const std::vector<std::string> &getExemptedPartners() const { return exempted_partner_ids_; }
   [[nodiscard]] const Json::Value &getOptions() const { return options_; }
 
@@ -35,8 +35,8 @@ public:
   void setStartTime(const std::string &value) { start_time_ = value; }
   void setEndTime(const std::string &value) { end_time_ = value; }
   void setDrawTime(const std::string &value) { draw_time_ = value; }
-  void setStatus(const std::string &value) { status_ = value; }
-  void setPrizePool(const std::string &value) { prize_pool_ = value; }
+  void setLiability(const double &value) { liability_ = value; }
+  void setExpectedRevenue(const double &value) { expected_revenue_ = value; }
   void setExemptedPartners(const std::vector<std::string> &value) { exempted_partner_ids_ = value; }
   void setOptions(const Json::Value &value) { options_ = value; }
 
@@ -46,13 +46,13 @@ private:
   std::string start_time_;
   std::string end_time_;
   std::string draw_time_;
-  std::string status_;
-  std::string prize_pool_;
+  double liability_ {0};
+  double expected_revenue_ {0};
   std::vector<std::string> exempted_partner_ids_;
   Json::Value options_;
 };
 
-inline void CreateRaffleDto::fromJson(const Json::Value &json) {
+inline void RaffleDto::fromJson(const Json::Value &json) {
 
   if (json.isMember("name") && !json["name"].isNull()) {
     setName(json["name"].asString());
@@ -74,12 +74,12 @@ inline void CreateRaffleDto::fromJson(const Json::Value &json) {
     draw_time_ = json["drawTime"].asString();
   }
 
-  if (json.isMember("status") && !json["status"].isNull()) {
-    status_ = json["status"].asString();
+  if (json.isMember("liability") && !json["liability"].isNull()) {
+    liability_ = json["liability"].asDouble();
   }
 
-  if (json.isMember("prizePool") && !json["prizePool"].isNull()) {
-    prize_pool_ = json["prizePool"].asString();
+  if (json.isMember("expectedRevenue") && !json["expectedRevenue"].isNull()) {
+    expected_revenue_ = json["expectedRevenue"].asDouble();
   }
 
   if (json.isMember("exemptedPartnerIds") && !json["exemptedPartnerIds"].isNull()) {

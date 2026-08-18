@@ -94,34 +94,7 @@ Task<HttpResponsePtr> CmsController::getFaqs(HttpRequestPtr req) {
 
 }
 
-Task<HttpResponsePtr> CmsController::getPrizes(HttpRequestPtr req) {
 
-    int pageNo = 1;
-    int pageSize = 10;
-
-    auto pageNoStr = req->getParameter("pageNo");
-    if (!pageNoStr.empty()) {
-        pageNo = std::stoi(pageNoStr);
-    }
-
-    auto pageSizeStr = req->getParameter("pageSize");
-    if (!pageSizeStr.empty()) {
-        pageSize = std::stoi(pageSizeStr);
-    }
-
-    std::string query = req->getParameter("query");
-    if (query.empty()) {
-        query = "";
-    }
-
-    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &priceTierService = plugin->getPriceTierService();
-
-    auto result = co_await priceTierService.getAll(pageNo, pageSize, query);
-    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-    co_return resp;
-
-}
 
 Task<HttpResponsePtr> CmsController::getPages(HttpRequestPtr req, std::string slug) {
 
@@ -734,16 +707,7 @@ Task<HttpResponsePtr> CmsController::getTicketGroups(HttpRequestPtr req) {
     co_return resp;
 }
 
-Task<HttpResponsePtr> CmsController::getActiveRaffle(HttpRequestPtr req) {
 
-    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &raffleService = plugin->getRaffleService();
-
-    auto result = co_await raffleService.getActiveRaffle();
-    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-    co_return resp;
-
-}
 
 
 Task<HttpResponsePtr> CmsController::getRecentDraws(HttpRequestPtr req) {

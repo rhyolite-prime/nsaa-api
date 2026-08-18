@@ -7,8 +7,7 @@
 #include "dto/BaseApiResponse.h"
 #include <drogon/drogon.h>
 #include <drogon/utils/coroutine.h>
-#include "dto/CreateRaffleDto.h"
-#include "dto/UpdateRaffleDto.h"
+#include "dto/RaffleDto.h"
 
 namespace raffle::services {
 
@@ -20,23 +19,18 @@ public:
                                             const std::string &endDate = "",
                                             const std::string &status = "");
 
-  drogon::Task<dto::BaseApiResponse> createAsync(const dto::CreateRaffleDto &dto);
+  drogon::Task<dto::BaseApiResponse> createAsync(const dto::RaffleDto &dto);
 
-  drogon::Task<dto::BaseApiResponse> updateAsync(const dto::UpdateRaffleDto &dto);
+  drogon::Task<dto::BaseApiResponse> updateAsync(const dto::RaffleDto &dto, const std::string &id);
 
   drogon::Task<dto::BaseApiResponse> deleteRaffle(const std::string &raffleId);
 
-  drogon::Task<dto::BaseApiResponse> getActiveRaffle();
+  drogon::Task<dto::BaseApiResponse> getActiveRaffles();
 
   drogon::Task<dto::BaseApiResponse> incrementEntries(const std::string &raffleId);
 
-  drogon::Task<dto::BaseApiResponse> incrementPricePool(const std::string &raffleId);
-
-  drogon::Task<dto::BaseApiResponse> updateWinningColour(const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> activate(const std::string &raffleId);
-
-  drogon::Task<dto::BaseApiResponse> getDetails(const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> getRecentTicketHolders(const std::string &raffleId);
 

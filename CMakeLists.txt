@@ -35,7 +35,6 @@ add_executable(${PROJECT_NAME} main.cc
         dto/BaseApiResponse.h
         dto/CreateColorDto.h
         dto/UpdateColorDto.h
-        services/price_tiers/PriceTierService.h
         services/roles/RoleService.h
         services/settings/SettingService.h
         services/users/UserService.h
@@ -48,15 +47,13 @@ add_executable(${PROJECT_NAME} main.cc
         constants/ErrorCodes.h
         services/colors/ColorService.cc
         services/customers/CustomerService.cc
-        services/price_tiers/PriceTierService.cc
         services/draws/DrawService.h
         services/draws/DrawService.cc
         services/tickets/TicketService.cc
         services/raffles/RaffleService.h
         services/raffles/RaffleService.cc
         services/hubtel_api/HubtelApi.h
-        dto/CreateRaffleDto.h
-        dto/UpdateRaffleDto.h
+        dto/RaffleDto.h
         services/quartz/QuartzApi.h
         dto/QuartzJobDto.h
         services/quartz/QuartzApi.cc

@@ -59,7 +59,7 @@ Task<HttpResponsePtr> RaffleController::create(HttpRequestPtr req) {
     co_return resp;
   }
 
-  raffle::dto::CreateRaffleDto dto;
+  raffle::dto::RaffleDto dto;
   dto.fromJson(*jsonBody);
 
   auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
@@ -70,18 +70,9 @@ Task<HttpResponsePtr> RaffleController::create(HttpRequestPtr req) {
   co_return resp;
 }
 
-Task<HttpResponsePtr> RaffleController::getActiveRaffle(HttpRequestPtr req) {
 
-  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-  auto &raffleService = plugin->getRaffleService();
 
-  auto result = co_await raffleService.getActiveRaffle();
-  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-  co_return resp;
-
-}
-
-Task<HttpResponsePtr> RaffleController::update(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::update(HttpRequestPtr req, std::string raffleId) {
 
   auto jsonBody = req->getJsonObject();
 
@@ -94,33 +85,13 @@ Task<HttpResponsePtr> RaffleController::update(HttpRequestPtr req) {
     co_return resp;
   }
 
-  raffle::dto::UpdateRaffleDto dto;
+  raffle::dto::RaffleDto dto;
   dto.fromJson(*jsonBody);
 
   auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &raffleService = plugin->getRaffleService();
 
-  auto result = co_await raffleService.updateAsync(dto);
-  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-  co_return resp;
-}
-
-Task<HttpResponsePtr> RaffleController::getDetails(HttpRequestPtr req) {
-  auto id = req->getParameter("id");
-
-  if (id.empty()) {
-    raffle::dto::BaseApiResponse response;
-    response.success = false;
-    response.error["message"] = "Raffle ID is required";
-    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-    resp->setStatusCode(k400BadRequest);
-    co_return resp;
-  }
-
-  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-  auto &raffleService = plugin->getRaffleService();
-
-  auto result = co_await raffleService.getDetails(id);
+  auto result = co_await raffleService.updateAsync(dto, raffleId);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }

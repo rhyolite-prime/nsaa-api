@@ -28,6 +28,8 @@
 #include <iomanip>
 #include <sstream>
 
+#include "constants/RewardTypes.h"
+
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
@@ -672,8 +674,8 @@ namespace raffle::services {
         item["ticketNumber"] = ticket.getValueOfTicketNumber();
         item["drawId"] = ticket.getValueOfDrawId();
         item["raffleId"] = ticket.getValueOfRaffleId();
-        item["colourId"] = ticket.getValueOfColourId();
-        item["colourName"] = ticket.getValueOfColourName();
+        item["selectedOptionValue"] = ticket.getValueOfSelectedOptionValue();
+        item["selectedOptionName"] = ticket.getValueOfSelectedOptionName();
         item["entryFee"] = ticket.getValueOfEntryFee();
         item["quantity"] = ticket.getValueOfQuantity();
         item["totalAmount"] = ticket.getValueOfTotalAmount();
@@ -879,8 +881,8 @@ namespace raffle::services {
       // 5. Create the ticket
       Tickets newTicket;
       newTicket.setDrawId(activeDraw.getValueOfId());
-      newTicket.setColourId(dto.getSelectedOption());
-      newTicket.setColourName(optionName);
+      newTicket.setSelectedOptionValue(dto.getSelectedOption());
+      newTicket.setSelectedOptionName(optionName);
       newTicket.setQuantity(quantity);
       newTicket.setCustomerPhone(customer.getValueOfMsisdn());
       newTicket.setRaffleId(activeRaffle.getValueOfId());
@@ -922,7 +924,7 @@ namespace raffle::services {
       double totalAmount = entryFee * quantity;
       newTicket.setTotalAmount(std::to_string(totalAmount));
 
-      newTicket.setPaymentStatus("PENDING");
+      newTicket.setPaymentStatus(constants::PaymentStatus::PAYMENT_INITIATED);
       newTicket.setPurchaseChannel("WEB");
       newTicket.setPaymentMethod("HUBTEL CHECKOUT");
       newTicket.setIsActive(false);
@@ -1141,8 +1143,8 @@ namespace raffle::services {
       // 5. Create the ticket
       Tickets newTicket;
       newTicket.setDrawId(activeDraw.getValueOfId());
-      newTicket.setColourId(dto.getSelectedOption());
-      newTicket.setColourName(optionName);
+      newTicket.setSelectedOptionValue(dto.getSelectedOption());
+      newTicket.setSelectedOptionName(optionName);
       newTicket.setQuantity(quantity);
       newTicket.setCustomerPhone(customer.getValueOfMsisdn());
       newTicket.setRaffleId(activeRaffle.getValueOfId());
@@ -1181,7 +1183,7 @@ namespace raffle::services {
       double totalAmount = entryFee * quantity;
       newTicket.setTotalAmount(std::to_string(totalAmount));
 
-      newTicket.setPaymentStatus("PENDING");
+      newTicket.setPaymentStatus(constants::PaymentStatus::PAYMENT_INITIATED);
       newTicket.setPurchaseChannel("WEB");
       newTicket.setPaymentMethod("HUBTEL CHECKOUT");
       newTicket.setIsActive(false);
@@ -1298,7 +1300,7 @@ namespace raffle::services {
         ticketJson["ticketAlias"] = ticket.getValueOfTicketAlias();
         ticketJson["drawId"] = ticket.getValueOfDrawId();
         ticketJson["customerId"] = ticket.getValueOfCustomerId();
-        ticketJson["colourId"] = ticket.getValueOfColourId();
+        ticketJson["selectedOptionName"] = ticket.getValueOfSelectedOptionName();
         ticketJson["entryFee"] = ticket.getValueOfEntryFee();
         ticketJson["quantity"] = ticket.getValueOfQuantity();
         ticketJson["totalAmount"] = ticket.getValueOfTotalAmount();
@@ -1310,7 +1312,6 @@ namespace raffle::services {
         ticketJson["createdAt"] = ticket.getValueOfCreatedAt().toDbStringLocal();
         ticketJson["updatedAt"] = ticket.getValueOfUpdatedAt().toDbStringLocal();
         ticketJson["customerPhone"] = ticket.getValueOfCustomerPhone();
-        ticketJson["colourName"] = ticket.getValueOfColourName();
         ticketJson["raffleId"] = ticket.getValueOfRaffleId();
 
         data.append(ticketJson);

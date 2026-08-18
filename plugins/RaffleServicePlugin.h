@@ -19,7 +19,6 @@
 #include "services/hubtel_api/HubtelApi.h"
 #include "services/media_library/MediaLibraryService.h"
 #include "services/pages/PageService.h"
-#include "services/price_tiers/PriceTierService.h"
 #include "services/quartz/QuartzApi.h"
 #include "services/raffles/RaffleService.h"
 #include "services/redis/RedisCacheManager.h"
@@ -52,7 +51,6 @@ namespace raffle::plugins {
         services::ColorService &getColorService() { return colorService_; }
         services::CustomerService &getCustomerService() { return customerService_; }
         services::DashboardService &getDashboardService() { return dashboardService_; }
-        services::PriceTierService &getPriceTierService() { return priceTierService_; }
         services::RngLogService &getRngLogService() { return rngLogService_; }
         services::RoleService &getRoleService() { return roleService_; }
         services::SettingService &getSettingService() { return settingService_; }
@@ -79,7 +77,6 @@ namespace raffle::plugins {
         services::ColorService colorService_;
         services::CustomerService customerService_;
         services::DashboardService dashboardService_;
-        services::PriceTierService priceTierService_;
         services::RngLogService rngLogService_;
         services::RoleService roleService_;
         services::SettingService settingService_;

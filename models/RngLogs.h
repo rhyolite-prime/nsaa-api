@@ -38,7 +38,6 @@ namespace drogon_model
 {
 namespace ChopMoneyRaffle
 {
-class Draws;
 
 class RngLogs
 {
@@ -188,10 +187,6 @@ class RngLogs
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
-    Draws getDraws(const drogon::orm::DbClientPtr &clientPtr) const;
-    void getDraws(const drogon::orm::DbClientPtr &clientPtr,
-                  const std::function<void(Draws)> &rcb,
-                  const drogon::orm::ExceptionCallback &ecb) const;
   private:
     friend drogon::orm::Mapper<RngLogs>;
     friend drogon::orm::BaseBuilder<RngLogs, true, true>;
