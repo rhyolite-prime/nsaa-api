@@ -47,6 +47,7 @@ class Raffles
         static const std::string _id;
         static const std::string _name;
         static const std::string _slug;
+        static const std::string _maximum_winners;
         static const std::string _total_entries;
         static const std::string _expected_revenue;
         static const std::string _liablity;
@@ -137,6 +138,15 @@ class Raffles
     ///Set the value of the column slug
     void setSlug(const std::string &pSlug) noexcept;
     void setSlug(std::string &&pSlug) noexcept;
+
+    /**  For column maximum_winners  */
+    ///Get the value of the column maximum_winners, returns the default value if the column is null
+    const int32_t &getValueOfMaximumWinners() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getMaximumWinners() const noexcept;
+    ///Set the value of the column maximum_winners
+    void setMaximumWinners(const int32_t &pMaximumWinners) noexcept;
+    void setMaximumWinnersToNull() noexcept;
 
     /**  For column total_entries  */
     ///Get the value of the column total_entries, returns the default value if the column is null
@@ -259,7 +269,7 @@ class Raffles
     void setUpdatedAtToNull() noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 16;  }
+    static size_t getColumnNumber() noexcept {  return 17;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -284,6 +294,7 @@ class Raffles
     std::shared_ptr<std::string> id_;
     std::shared_ptr<std::string> name_;
     std::shared_ptr<std::string> slug_;
+    std::shared_ptr<int32_t> maximumWinners_;
     std::shared_ptr<int32_t> totalEntries_;
     std::shared_ptr<std::string> expectedRevenue_;
     std::shared_ptr<std::string> liablity_;
@@ -308,7 +319,7 @@ class Raffles
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[16]={ false };
+    bool dirtyFlag_[17]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -342,73 +353,79 @@ class Raffles
             sql += "slug,";
             ++parametersCount;
         }
-        sql += "total_entries,";
+        sql += "maximum_winners,";
         ++parametersCount;
         if(!dirtyFlag_[3])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[4])
+        sql += "total_entries,";
+        ++parametersCount;
+        if(!dirtyFlag_[4])
+        {
+            needSelection=true;
+        }
+        if(dirtyFlag_[5])
         {
             sql += "expected_revenue,";
             ++parametersCount;
         }
-        if(dirtyFlag_[5])
+        if(dirtyFlag_[6])
         {
             sql += "liablity,";
             ++parametersCount;
         }
         sql += "winning_option_value,";
         ++parametersCount;
-        if(!dirtyFlag_[6])
+        if(!dirtyFlag_[7])
         {
             needSelection=true;
         }
         sql += "winning_option_name,";
         ++parametersCount;
-        if(!dirtyFlag_[7])
+        if(!dirtyFlag_[8])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[8])
+        if(dirtyFlag_[9])
         {
             sql += "start_time,";
             ++parametersCount;
         }
-        if(dirtyFlag_[9])
+        if(dirtyFlag_[10])
         {
             sql += "end_time,";
             ++parametersCount;
         }
-        if(dirtyFlag_[10])
+        if(dirtyFlag_[11])
         {
             sql += "draw_time,";
             ++parametersCount;
         }
         sql += "options,";
         ++parametersCount;
-        if(!dirtyFlag_[11])
+        if(!dirtyFlag_[12])
         {
             needSelection=true;
         }
         sql += "exempted_partners,";
         ++parametersCount;
-        if(!dirtyFlag_[12])
+        if(!dirtyFlag_[13])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[13])
+        if(dirtyFlag_[14])
         {
             sql += "status,";
             ++parametersCount;
         }
         sql += "created_at,";
         ++parametersCount;
-        if(!dirtyFlag_[14])
+        if(!dirtyFlag_[15])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[15])
+        if(dirtyFlag_[16])
         {
             sql += "updated_at,";
             ++parametersCount;
@@ -457,6 +474,10 @@ class Raffles
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[5])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -466,10 +487,6 @@ class Raffles
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(dirtyFlag_[7])
         {
@@ -484,6 +501,10 @@ class Raffles
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
         }
         if(dirtyFlag_[9])
         {
@@ -500,10 +521,6 @@ class Raffles
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[12])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -518,7 +535,16 @@ class Raffles
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[14])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[15])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
@@ -527,7 +553,7 @@ class Raffles
         {
             sql +="default,";
         }
-        if(dirtyFlag_[15])
+        if(dirtyFlag_[16])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);

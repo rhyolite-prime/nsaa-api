@@ -120,6 +120,10 @@ add_executable(${PROJECT_NAME} main.cc
         dto/InitializeTicketPurchaseDto.h
         dto/ChangeCustomerPinDto.h
         services/ticket_collection/TicketCollectionService.cc
+        services/prize_config/PrizeConfigService.h
+        dto/PrizeCategoryDto.h
+        dto/PrizeDto.h
+        services/prize_config/PrizeConfigService.cc
 
 )
 

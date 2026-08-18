@@ -19,6 +19,7 @@
 #include "services/hubtel_api/HubtelApi.h"
 #include "services/media_library/MediaLibraryService.h"
 #include "services/pages/PageService.h"
+#include "services/prize_config/PrizeConfigService.h"
 #include "services/quartz/QuartzApi.h"
 #include "services/raffles/RaffleService.h"
 #include "services/redis/RedisCacheManager.h"
@@ -67,6 +68,7 @@ namespace raffle::plugins {
         services::MediaLibraryService &getMediaLibraryService() { return mediaLibraryService_; }
         services::PageService &getPageService() { return pageService_; }
         services::SupportTicketService &getSupportTicketService() { return supportTicketService_; }
+        services::PrizeConfigService &getPrizeConfigService() { return prizeConfigService_; }
         services::TicketCollectionService &getTicketCollectionService() { return ticketCollectionService_; }
 
     private:
@@ -91,6 +93,7 @@ namespace raffle::plugins {
         services::MediaLibraryService mediaLibraryService_;
         services::PageService pageService_;
         services::SupportTicketService supportTicketService_;
+        services::PrizeConfigService prizeConfigService_;
         services::TicketCollectionService ticketCollectionService_;
     };
 

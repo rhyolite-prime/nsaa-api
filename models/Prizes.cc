@@ -23,8 +23,6 @@ const std::string Prizes::Cols::_quantity = "\"quantity\"";
 const std::string Prizes::Cols::_rank = "\"rank\"";
 const std::string Prizes::Cols::_remaining_quantity = "\"remaining_quantity\"";
 const std::string Prizes::Cols::_probability = "\"probability\"";
-const std::string Prizes::Cols::_start_date = "\"start_date\"";
-const std::string Prizes::Cols::_end_date = "\"end_date\"";
 const std::string Prizes::Cols::_metadata = "\"metadata\"";
 const std::string Prizes::Cols::_created_at = "\"created_at\"";
 const std::string Prizes::Cols::_updated_at = "\"updated_at\"";
@@ -43,8 +41,6 @@ const std::vector<typename Prizes::MetaData> Prizes::metaData_={
 {"rank","int32_t","integer",4,0,0,0},
 {"remaining_quantity","int32_t","integer",4,0,0,0},
 {"probability","std::string","numeric",0,0,0,0},
-{"start_date","::trantor::Date","timestamp without time zone",0,0,0,0},
-{"end_date","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"metadata","std::string","jsonb",0,0,0,0},
 {"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
@@ -98,50 +94,6 @@ Prizes::Prizes(const Row &r, const ssize_t indexOffset) noexcept
         {
             probability_=std::make_shared<std::string>(r["probability"].as<std::string>());
         }
-        if(!r["start_date"].isNull())
-        {
-            auto timeStr = r["start_date"].as<std::string>();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                startDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-        if(!r["end_date"].isNull())
-        {
-            auto timeStr = r["end_date"].as<std::string>();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                endDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
         if(!r["metadata"].isNull())
         {
             metadata_=std::make_shared<std::string>(r["metadata"].as<std::string>());
@@ -194,7 +146,7 @@ Prizes::Prizes(const Row &r, const ssize_t indexOffset) noexcept
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 15 > r.size())
+        if(offset + 13 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -253,55 +205,9 @@ Prizes::Prizes(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 10;
         if(!r[index].isNull())
         {
-            auto timeStr = r[index].as<std::string>();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                startDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-        index = offset + 11;
-        if(!r[index].isNull())
-        {
-            auto timeStr = r[index].as<std::string>();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                endDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-        index = offset + 12;
-        if(!r[index].isNull())
-        {
             metadata_=std::make_shared<std::string>(r[index].as<std::string>());
         }
-        index = offset + 13;
+        index = offset + 11;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -324,7 +230,7 @@ Prizes::Prizes(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 14;
+        index = offset + 12;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -353,7 +259,7 @@ Prizes::Prizes(const Row &r, const ssize_t indexOffset) noexcept
 
 Prizes::Prizes(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 15)
+    if(pMasqueradingVector.size() != 13)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -443,25 +349,7 @@ Prizes::Prizes(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[10] = true;
         if(!pJson[pMasqueradingVector[10]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[10]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                startDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
+            metadata_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
@@ -486,7 +374,7 @@ Prizes::Prizes(const Json::Value &pJson, const std::vector<std::string> &pMasque
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                endDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -495,41 +383,7 @@ Prizes::Prizes(const Json::Value &pJson, const std::vector<std::string> &pMasque
         dirtyFlag_[12] = true;
         if(!pJson[pMasqueradingVector[12]].isNull())
         {
-            metadata_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
-        }
-    }
-    if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
-    {
-        dirtyFlag_[13] = true;
-        if(!pJson[pMasqueradingVector[13]].isNull())
-        {
-            auto timeStr = pJson[pMasqueradingVector[13]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-    }
-    if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
-    {
-        dirtyFlag_[14] = true;
-        if(!pJson[pMasqueradingVector[14]].isNull())
-        {
-            auto timeStr = pJson[pMasqueradingVector[14]].asString();
+            auto timeStr = pJson[pMasqueradingVector[12]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -634,61 +488,9 @@ Prizes::Prizes(const Json::Value &pJson) noexcept(false)
             probability_=std::make_shared<std::string>(pJson["probability"].asString());
         }
     }
-    if(pJson.isMember("start_date"))
-    {
-        dirtyFlag_[10]=true;
-        if(!pJson["start_date"].isNull())
-        {
-            auto timeStr = pJson["start_date"].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                startDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-    }
-    if(pJson.isMember("end_date"))
-    {
-        dirtyFlag_[11]=true;
-        if(!pJson["end_date"].isNull())
-        {
-            auto timeStr = pJson["end_date"].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                endDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-    }
     if(pJson.isMember("metadata"))
     {
-        dirtyFlag_[12]=true;
+        dirtyFlag_[10]=true;
         if(!pJson["metadata"].isNull())
         {
             metadata_=std::make_shared<std::string>(pJson["metadata"].asString());
@@ -696,7 +498,7 @@ Prizes::Prizes(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[13]=true;
+        dirtyFlag_[11]=true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -722,7 +524,7 @@ Prizes::Prizes(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("updated_at"))
     {
-        dirtyFlag_[14]=true;
+        dirtyFlag_[12]=true;
         if(!pJson["updated_at"].isNull())
         {
             auto timeStr = pJson["updated_at"].asString();
@@ -751,7 +553,7 @@ Prizes::Prizes(const Json::Value &pJson) noexcept(false)
 void Prizes::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 15)
+    if(pMasqueradingVector.size() != 13)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -840,25 +642,7 @@ void Prizes::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[10] = true;
         if(!pJson[pMasqueradingVector[10]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[10]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                startDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
+            metadata_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
@@ -883,7 +667,7 @@ void Prizes::updateByMasqueradedJson(const Json::Value &pJson,
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                endDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -892,41 +676,7 @@ void Prizes::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[12] = true;
         if(!pJson[pMasqueradingVector[12]].isNull())
         {
-            metadata_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
-        }
-    }
-    if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
-    {
-        dirtyFlag_[13] = true;
-        if(!pJson[pMasqueradingVector[13]].isNull())
-        {
-            auto timeStr = pJson[pMasqueradingVector[13]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-    }
-    if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
-    {
-        dirtyFlag_[14] = true;
-        if(!pJson[pMasqueradingVector[14]].isNull())
-        {
-            auto timeStr = pJson[pMasqueradingVector[14]].asString();
+            auto timeStr = pJson[pMasqueradingVector[12]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -1030,61 +780,9 @@ void Prizes::updateByJson(const Json::Value &pJson) noexcept(false)
             probability_=std::make_shared<std::string>(pJson["probability"].asString());
         }
     }
-    if(pJson.isMember("start_date"))
-    {
-        dirtyFlag_[10] = true;
-        if(!pJson["start_date"].isNull())
-        {
-            auto timeStr = pJson["start_date"].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                startDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-    }
-    if(pJson.isMember("end_date"))
-    {
-        dirtyFlag_[11] = true;
-        if(!pJson["end_date"].isNull())
-        {
-            auto timeStr = pJson["end_date"].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                endDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
-        }
-    }
     if(pJson.isMember("metadata"))
     {
-        dirtyFlag_[12] = true;
+        dirtyFlag_[10] = true;
         if(!pJson["metadata"].isNull())
         {
             metadata_=std::make_shared<std::string>(pJson["metadata"].asString());
@@ -1092,7 +790,7 @@ void Prizes::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[13] = true;
+        dirtyFlag_[11] = true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -1118,7 +816,7 @@ void Prizes::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("updated_at"))
     {
-        dirtyFlag_[14] = true;
+        dirtyFlag_[12] = true;
         if(!pJson["updated_at"].isNull())
         {
             auto timeStr = pJson["updated_at"].asString();
@@ -1394,50 +1092,6 @@ void Prizes::setProbabilityToNull() noexcept
     dirtyFlag_[9] = true;
 }
 
-const ::trantor::Date &Prizes::getValueOfStartDate() const noexcept
-{
-    static const ::trantor::Date defaultValue = ::trantor::Date();
-    if(startDate_)
-        return *startDate_;
-    return defaultValue;
-}
-const std::shared_ptr<::trantor::Date> &Prizes::getStartDate() const noexcept
-{
-    return startDate_;
-}
-void Prizes::setStartDate(const ::trantor::Date &pStartDate) noexcept
-{
-    startDate_ = std::make_shared<::trantor::Date>(pStartDate);
-    dirtyFlag_[10] = true;
-}
-void Prizes::setStartDateToNull() noexcept
-{
-    startDate_.reset();
-    dirtyFlag_[10] = true;
-}
-
-const ::trantor::Date &Prizes::getValueOfEndDate() const noexcept
-{
-    static const ::trantor::Date defaultValue = ::trantor::Date();
-    if(endDate_)
-        return *endDate_;
-    return defaultValue;
-}
-const std::shared_ptr<::trantor::Date> &Prizes::getEndDate() const noexcept
-{
-    return endDate_;
-}
-void Prizes::setEndDate(const ::trantor::Date &pEndDate) noexcept
-{
-    endDate_ = std::make_shared<::trantor::Date>(pEndDate);
-    dirtyFlag_[11] = true;
-}
-void Prizes::setEndDateToNull() noexcept
-{
-    endDate_.reset();
-    dirtyFlag_[11] = true;
-}
-
 const std::string &Prizes::getValueOfMetadata() const noexcept
 {
     static const std::string defaultValue = std::string();
@@ -1452,17 +1106,17 @@ const std::shared_ptr<std::string> &Prizes::getMetadata() const noexcept
 void Prizes::setMetadata(const std::string &pMetadata) noexcept
 {
     metadata_ = std::make_shared<std::string>(pMetadata);
-    dirtyFlag_[12] = true;
+    dirtyFlag_[10] = true;
 }
 void Prizes::setMetadata(std::string &&pMetadata) noexcept
 {
     metadata_ = std::make_shared<std::string>(std::move(pMetadata));
-    dirtyFlag_[12] = true;
+    dirtyFlag_[10] = true;
 }
 void Prizes::setMetadataToNull() noexcept
 {
     metadata_.reset();
-    dirtyFlag_[12] = true;
+    dirtyFlag_[10] = true;
 }
 
 const ::trantor::Date &Prizes::getValueOfCreatedAt() const noexcept
@@ -1479,12 +1133,12 @@ const std::shared_ptr<::trantor::Date> &Prizes::getCreatedAt() const noexcept
 void Prizes::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
 {
     createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
-    dirtyFlag_[13] = true;
+    dirtyFlag_[11] = true;
 }
 void Prizes::setCreatedAtToNull() noexcept
 {
     createdAt_.reset();
-    dirtyFlag_[13] = true;
+    dirtyFlag_[11] = true;
 }
 
 const ::trantor::Date &Prizes::getValueOfUpdatedAt() const noexcept
@@ -1501,12 +1155,12 @@ const std::shared_ptr<::trantor::Date> &Prizes::getUpdatedAt() const noexcept
 void Prizes::setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept
 {
     updatedAt_ = std::make_shared<::trantor::Date>(pUpdatedAt);
-    dirtyFlag_[14] = true;
+    dirtyFlag_[12] = true;
 }
 void Prizes::setUpdatedAtToNull() noexcept
 {
     updatedAt_.reset();
-    dirtyFlag_[14] = true;
+    dirtyFlag_[12] = true;
 }
 
 void Prizes::updateId(const uint64_t id)
@@ -1526,8 +1180,6 @@ const std::vector<std::string> &Prizes::insertColumns() noexcept
         "rank",
         "remaining_quantity",
         "probability",
-        "start_date",
-        "end_date",
         "metadata",
         "created_at",
         "updated_at"
@@ -1649,28 +1301,6 @@ void Prizes::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[10])
     {
-        if(getStartDate())
-        {
-            binder << getValueOfStartDate();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[11])
-    {
-        if(getEndDate())
-        {
-            binder << getValueOfEndDate();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[12])
-    {
         if(getMetadata())
         {
             binder << getValueOfMetadata();
@@ -1680,7 +1310,7 @@ void Prizes::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[13])
+    if(dirtyFlag_[11])
     {
         if(getCreatedAt())
         {
@@ -1691,7 +1321,7 @@ void Prizes::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[14])
+    if(dirtyFlag_[12])
     {
         if(getUpdatedAt())
         {
@@ -1758,14 +1388,6 @@ const std::vector<std::string> Prizes::updateColumns() const
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
-    }
-    if(dirtyFlag_[13])
-    {
-        ret.push_back(getColumnName(13));
-    }
-    if(dirtyFlag_[14])
-    {
-        ret.push_back(getColumnName(14));
     }
     return ret;
 }
@@ -1884,28 +1506,6 @@ void Prizes::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[10])
     {
-        if(getStartDate())
-        {
-            binder << getValueOfStartDate();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[11])
-    {
-        if(getEndDate())
-        {
-            binder << getValueOfEndDate();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[12])
-    {
         if(getMetadata())
         {
             binder << getValueOfMetadata();
@@ -1915,7 +1515,7 @@ void Prizes::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[13])
+    if(dirtyFlag_[11])
     {
         if(getCreatedAt())
         {
@@ -1926,7 +1526,7 @@ void Prizes::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[14])
+    if(dirtyFlag_[12])
     {
         if(getUpdatedAt())
         {
@@ -2021,22 +1621,6 @@ Json::Value Prizes::toJson() const
     {
         ret["probability"]=Json::Value();
     }
-    if(getStartDate())
-    {
-        ret["start_date"]=getStartDate()->toDbStringLocal();
-    }
-    else
-    {
-        ret["start_date"]=Json::Value();
-    }
-    if(getEndDate())
-    {
-        ret["end_date"]=getEndDate()->toDbStringLocal();
-    }
-    else
-    {
-        ret["end_date"]=Json::Value();
-    }
     if(getMetadata())
     {
         ret["metadata"]=getValueOfMetadata();
@@ -2073,7 +1657,7 @@ Json::Value Prizes::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 15)
+    if(pMasqueradingVector.size() == 13)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -2187,9 +1771,9 @@ Json::Value Prizes::toMasqueradedJson(
         }
         if(!pMasqueradingVector[10].empty())
         {
-            if(getStartDate())
+            if(getMetadata())
             {
-                ret[pMasqueradingVector[10]]=getStartDate()->toDbStringLocal();
+                ret[pMasqueradingVector[10]]=getValueOfMetadata();
             }
             else
             {
@@ -2198,9 +1782,9 @@ Json::Value Prizes::toMasqueradedJson(
         }
         if(!pMasqueradingVector[11].empty())
         {
-            if(getEndDate())
+            if(getCreatedAt())
             {
-                ret[pMasqueradingVector[11]]=getEndDate()->toDbStringLocal();
+                ret[pMasqueradingVector[11]]=getCreatedAt()->toDbStringLocal();
             }
             else
             {
@@ -2209,35 +1793,13 @@ Json::Value Prizes::toMasqueradedJson(
         }
         if(!pMasqueradingVector[12].empty())
         {
-            if(getMetadata())
+            if(getUpdatedAt())
             {
-                ret[pMasqueradingVector[12]]=getValueOfMetadata();
+                ret[pMasqueradingVector[12]]=getUpdatedAt()->toDbStringLocal();
             }
             else
             {
                 ret[pMasqueradingVector[12]]=Json::Value();
-            }
-        }
-        if(!pMasqueradingVector[13].empty())
-        {
-            if(getCreatedAt())
-            {
-                ret[pMasqueradingVector[13]]=getCreatedAt()->toDbStringLocal();
-            }
-            else
-            {
-                ret[pMasqueradingVector[13]]=Json::Value();
-            }
-        }
-        if(!pMasqueradingVector[14].empty())
-        {
-            if(getUpdatedAt())
-            {
-                ret[pMasqueradingVector[14]]=getUpdatedAt()->toDbStringLocal();
-            }
-            else
-            {
-                ret[pMasqueradingVector[14]]=Json::Value();
             }
         }
         return ret;
@@ -2323,22 +1885,6 @@ Json::Value Prizes::toMasqueradedJson(
     {
         ret["probability"]=Json::Value();
     }
-    if(getStartDate())
-    {
-        ret["start_date"]=getStartDate()->toDbStringLocal();
-    }
-    else
-    {
-        ret["start_date"]=Json::Value();
-    }
-    if(getEndDate())
-    {
-        ret["end_date"]=getEndDate()->toDbStringLocal();
-    }
-    else
-    {
-        ret["end_date"]=Json::Value();
-    }
     if(getMetadata())
     {
         ret["metadata"]=getValueOfMetadata();
@@ -2423,29 +1969,19 @@ bool Prizes::validateJsonForCreation(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(9, "probability", pJson["probability"], err, true))
             return false;
     }
-    if(pJson.isMember("start_date"))
-    {
-        if(!validJsonOfField(10, "start_date", pJson["start_date"], err, true))
-            return false;
-    }
-    if(pJson.isMember("end_date"))
-    {
-        if(!validJsonOfField(11, "end_date", pJson["end_date"], err, true))
-            return false;
-    }
     if(pJson.isMember("metadata"))
     {
-        if(!validJsonOfField(12, "metadata", pJson["metadata"], err, true))
+        if(!validJsonOfField(10, "metadata", pJson["metadata"], err, true))
             return false;
     }
     if(pJson.isMember("created_at"))
     {
-        if(!validJsonOfField(13, "created_at", pJson["created_at"], err, true))
+        if(!validJsonOfField(11, "created_at", pJson["created_at"], err, true))
             return false;
     }
     if(pJson.isMember("updated_at"))
     {
-        if(!validJsonOfField(14, "updated_at", pJson["updated_at"], err, true))
+        if(!validJsonOfField(12, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
     return true;
@@ -2454,7 +1990,7 @@ bool Prizes::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                 const std::vector<std::string> &pMasqueradingVector,
                                                 std::string &err)
 {
-    if(pMasqueradingVector.size() != 15)
+    if(pMasqueradingVector.size() != 13)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2569,22 +2105,6 @@ bool Prizes::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                   return false;
           }
       }
-      if(!pMasqueradingVector[13].empty())
-      {
-          if(pJson.isMember(pMasqueradingVector[13]))
-          {
-              if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
-                  return false;
-          }
-      }
-      if(!pMasqueradingVector[14].empty())
-      {
-          if(pJson.isMember(pMasqueradingVector[14]))
-          {
-              if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, true))
-                  return false;
-          }
-      }
     }
     catch(const Json::LogicError &e)
     {
@@ -2650,29 +2170,19 @@ bool Prizes::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(9, "probability", pJson["probability"], err, false))
             return false;
     }
-    if(pJson.isMember("start_date"))
-    {
-        if(!validJsonOfField(10, "start_date", pJson["start_date"], err, false))
-            return false;
-    }
-    if(pJson.isMember("end_date"))
-    {
-        if(!validJsonOfField(11, "end_date", pJson["end_date"], err, false))
-            return false;
-    }
     if(pJson.isMember("metadata"))
     {
-        if(!validJsonOfField(12, "metadata", pJson["metadata"], err, false))
+        if(!validJsonOfField(10, "metadata", pJson["metadata"], err, false))
             return false;
     }
     if(pJson.isMember("created_at"))
     {
-        if(!validJsonOfField(13, "created_at", pJson["created_at"], err, false))
+        if(!validJsonOfField(11, "created_at", pJson["created_at"], err, false))
             return false;
     }
     if(pJson.isMember("updated_at"))
     {
-        if(!validJsonOfField(14, "updated_at", pJson["updated_at"], err, false))
+        if(!validJsonOfField(12, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
     return true;
@@ -2681,7 +2191,7 @@ bool Prizes::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                               const std::vector<std::string> &pMasqueradingVector,
                                               std::string &err)
 {
-    if(pMasqueradingVector.size() != 15)
+    if(pMasqueradingVector.size() != 13)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2755,16 +2265,6 @@ bool Prizes::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
-              return false;
-      }
-      if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
-      {
-          if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
-              return false;
-      }
-      if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
-      {
-          if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, false))
               return false;
       }
     }
@@ -2934,28 +2434,6 @@ bool Prizes::validJsonOfField(size_t index,
             }
             break;
         case 12:
-            if(pJson.isNull())
-            {
-                return true;
-            }
-            if(!pJson.isString())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            break;
-        case 13:
-            if(pJson.isNull())
-            {
-                return true;
-            }
-            if(!pJson.isString())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            break;
-        case 14:
             if(pJson.isNull())
             {
                 return true;

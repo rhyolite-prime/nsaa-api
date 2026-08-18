@@ -29,7 +29,6 @@ public:
 
   drogon::Task<dto::BaseApiResponse> incrementEntries(const std::string &raffleId);
 
-
   drogon::Task<dto::BaseApiResponse> activate(const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> getRecentTicketHolders(const std::string &raffleId);

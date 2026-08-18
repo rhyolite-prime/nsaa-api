@@ -40,8 +40,7 @@ drogon::Task<dto::BaseApiResponse> ColorService::getAll(int pageNo, int pageSize
     }
 
     int offset = (pageNo - 1) * pageSize;
-    auto colors =
-        co_await mapper.orderBy(Colours::Cols::_created_at, SortOrder::DESC)
+    auto colors = co_await mapper.orderBy(Colours::Cols::_created_at, SortOrder::DESC)
             .limit(pageSize)
             .offset(offset)
             .findBy(searchCriteria);

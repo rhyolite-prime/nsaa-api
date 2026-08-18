@@ -296,10 +296,11 @@ class PrizeCategories
         {
             needSelection=true;
         }
-        if(dirtyFlag_[5])
+        sql += "max_winners,";
+        ++parametersCount;
+        if(!dirtyFlag_[5])
         {
-            sql += "max_winners,";
-            ++parametersCount;
+            needSelection=true;
         }
         sql += "reward_type,";
         ++parametersCount;
@@ -325,11 +326,10 @@ class PrizeCategories
         {
             needSelection=true;
         }
-        sql += "updated_at,";
-        ++parametersCount;
-        if(!dirtyFlag_[10])
+        if(dirtyFlag_[10])
         {
-            needSelection=true;
+            sql += "updated_at,";
+            ++parametersCount;
         }
         if(parametersCount > 0)
         {
@@ -380,6 +380,10 @@ class PrizeCategories
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[6])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -420,10 +424,6 @@ class PrizeCategories
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(parametersCount > 0)
         {
