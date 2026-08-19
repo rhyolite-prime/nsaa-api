@@ -27,6 +27,8 @@ public:
 
   drogon::Task<dto::BaseApiResponse> getActiveRaffles();
 
+  drogon::Task<dto::BaseApiResponse> getActiveRaffleOptions(const std::string &raffleId);
+
   drogon::Task<dto::BaseApiResponse> incrementEntries(const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> activate(const std::string &raffleId);

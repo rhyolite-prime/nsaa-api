@@ -31,7 +31,7 @@ using namespace drogon_model::ChopMoneyRaffle;
 namespace raffle::services {
 
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSize, const std::string &query,
+  drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSize, const std::string &query,
                       const std::string &startDate, const std::string &endDate,
                       const std::string &status) {
 
@@ -147,7 +147,6 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSiz
 
 
 
-
   drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffles() {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
@@ -217,6 +216,68 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSiz
     co_return errorResponse;
   }
 }
+
+
+  drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffleOptions(const std::string &raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> mapper(dbClient);
+
+  try {
+    // 1. Validate input
+    if (raffleId.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Raffle ID cannot be empty.";
+      co_return errorResponse;
+    }
+
+    // 2. Fetch the raffle
+    auto raffle = co_await mapper.findByPrimaryKey(raffleId);
+
+    // 3. Extract and parse the options
+    Json::Value optionsArray(Json::arrayValue);
+    const std::string &optionsText = raffle.getValueOfOptions();
+
+    if (!optionsText.empty()) {
+      Json::CharReaderBuilder readerBuilder;
+      std::string errs;
+      std::istringstream inputStream(optionsText);
+
+      // Attempt to parse the JSON string back into a Json::Value
+      if (Json::parseFromStream(readerBuilder, inputStream, &optionsArray, &errs) && optionsArray.isArray()) {
+          // Successfully parsed
+      } else {
+          LOG_ERROR << "Failed to parse options for raffle " << raffleId << ". Errors: " << errs;
+      }
+    }
+
+    // 4. Return successful response
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["data"] = optionsArray;
+
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    LOG_ERROR << "Database error in getActiveRaffleOptions: " << e.base().what();
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while fetching raffle options.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    LOG_ERROR << "Error in getActiveRaffleOptions: " << e.what();
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
 
 
  drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::RaffleDto &dto) {
@@ -713,7 +774,6 @@ drogon::Task<dto::BaseApiResponse> RaffleService::incrementEntries(const std::st
 
 
 
-
 drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
@@ -884,8 +944,6 @@ drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffle
 
 
 
-
-
   drogon::Task<dto::BaseApiResponse> RaffleService::activate(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
@@ -933,7 +991,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffle
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::closeRaffle(const std::string &raffleId) {
+ drogon::Task<dto::BaseApiResponse> RaffleService::closeRaffle(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
