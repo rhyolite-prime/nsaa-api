@@ -44,21 +44,21 @@ const std::vector<typename Winners::MetaData> Winners::metaData_={
 {"draw_id","std::string","uuid",0,0,0,1},
 {"ticket_id","std::string","uuid",0,0,0,1},
 {"customer_id","std::string","uuid",0,0,0,1},
-{"selected_option_id","std::string","uuid",0,0,0,1},
-{"selected_option_label","std::string","character varying",50,0,0,0},
+{"selected_option_id","std::string","character varying",100,0,0,0},
+{"selected_option_label","std::string","character varying",100,0,0,0},
 {"prize_amount","std::string","numeric",0,0,0,1},
 {"actual_payout","std::string","numeric",0,0,0,0},
 {"status","std::string","character varying",20,0,0,0},
 {"claim_code","std::string","character varying",50,0,0,0},
 {"verified_by","std::string","character varying",100,0,0,0},
-{"verification_method","std::string","character varying",20,0,0,0},
+{"verification_method","std::string","character varying",50,0,0,0},
 {"verification_id_number","std::string","character varying",50,0,0,0},
 {"verification_date","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"payout_method","std::string","character varying",20,0,0,0},
 {"payout_reference","std::string","character varying",100,0,0,0},
 {"payout_date","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"notified_at","::trantor::Date","timestamp without time zone",0,0,0,0},
-{"ticket_alias","std::string","character varying",10,0,0,0},
+{"ticket_alias","std::string","character varying",50,0,0,0},
 {"phone_number","std::string","character varying",20,0,0,0},
 {"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
@@ -1665,6 +1665,11 @@ void Winners::setSelectedOptionId(const std::string &pSelectedOptionId) noexcept
 void Winners::setSelectedOptionId(std::string &&pSelectedOptionId) noexcept
 {
     selectedOptionId_ = std::make_shared<std::string>(std::move(pSelectedOptionId));
+    dirtyFlag_[4] = true;
+}
+void Winners::setSelectedOptionIdToNull() noexcept
+{
+    selectedOptionId_.reset();
     dirtyFlag_[4] = true;
 }
 
@@ -3374,11 +3379,6 @@ bool Winners::validateJsonForCreation(const Json::Value &pJson, std::string &err
         if(!validJsonOfField(4, "selected_option_id", pJson["selected_option_id"], err, true))
             return false;
     }
-    else
-    {
-        err="The selected_option_id column cannot be null";
-        return false;
-    }
     if(pJson.isMember("selected_option_label"))
     {
         if(!validJsonOfField(5, "selected_option_label", pJson["selected_option_label"], err, true))
@@ -3535,11 +3535,6 @@ bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[4] + " column cannot be null";
-            return false;
-        }
       }
       if(!pMasqueradingVector[5].empty())
       {
@@ -4001,12 +3996,19 @@ bool Winners::validJsonOfField(size_t index,
         case 4:
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 100)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 100)";
                 return false;
             }
             break;
@@ -4021,11 +4023,11 @@ bool Winners::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+                .from_bytes(pJson.asCString()).size() > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 50)";
+                    " field (the maximum value is 100)";
                 return false;
             }
             break;
@@ -4120,11 +4122,11 @@ bool Winners::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+                .from_bytes(pJson.asCString()).size() > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 20)";
+                    " field (the maximum value is 50)";
                 return false;
             }
             break;
@@ -4229,11 +4231,11 @@ bool Winners::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 10)
+                .from_bytes(pJson.asCString()).size() > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 10)";
+                    " field (the maximum value is 50)";
                 return false;
             }
             break;

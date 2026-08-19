@@ -20,10 +20,9 @@ class RaffleController : public drogon::HttpController<RaffleController>
     ADD_METHOD_TO(RaffleController::getRecentTicketHolders, std::string(PREFIX) + "get-recent-ticket-holders", Get, Options);
     ADD_METHOD_TO(RaffleController::getRngLogs, std::string(PREFIX) + "get-rng-logs", Get, Options);
     ADD_METHOD_TO(RaffleController::activate, std::string(PREFIX) + "activate/{1}", Post, Options);
-    ADD_METHOD_TO(RaffleController::runDraw, std::string(PREFIX) + "run-draw/{1}", Post, Options);
     ADD_METHOD_TO(RaffleController::runClosure, std::string(PREFIX) + "run-closure/{1}", Post, Options);
     ADD_METHOD_TO(RaffleController::runCompletion, std::string(PREFIX) + "run-completion/{1}", Post, Options);
-    ADD_METHOD_TO(RaffleController::executeDraw, std::string(PREFIX) + "execute-draw", Get, Options);
+    ADD_METHOD_TO(RaffleController::executeDraw, std::string(PREFIX) + "execute-draw/{1}", Get, Options);
     ADD_METHOD_TO(RaffleController::getActiveRaffles, std::string(PREFIX) + "get-active-raffles", Get, Options);
     ADD_METHOD_TO(RaffleController::getWeeklyRaffles, std::string(PREFIX) + "get-weekly", Get, Options);
     ADD_METHOD_TO(RaffleController::getWeeklyRaffleSchedule, std::string(PREFIX) + "get-weekly-schedule", Get, Options);
@@ -43,9 +42,8 @@ class RaffleController : public drogon::HttpController<RaffleController>
     Task<HttpResponsePtr> getRecentTicketHolders(HttpRequestPtr req);
     Task<HttpResponsePtr> getRngLogs(HttpRequestPtr req);
     Task<HttpResponsePtr> activate(HttpRequestPtr req, std::string raffleId);
-    Task<HttpResponsePtr> runDraw(HttpRequestPtr req, std::string raffleId);
     Task<HttpResponsePtr> runClosure(HttpRequestPtr req, std::string raffleId);
-    Task<HttpResponsePtr> executeDraw (HttpRequestPtr req);
+    Task<HttpResponsePtr> executeDraw (HttpRequestPtr req, std::string raffleId);
     Task<HttpResponsePtr> runCompletion (HttpRequestPtr re, std::string raffleId);
     Task<HttpResponsePtr> getActiveRaffles(HttpRequestPtr req);
     Task<HttpResponsePtr> getWeeklyRaffles(HttpRequestPtr req);

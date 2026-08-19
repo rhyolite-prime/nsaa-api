@@ -43,9 +43,7 @@ public:
 
   drogon::Task<dto::BaseApiResponse> getAllRaffleTickets(const std::string &raffleId, int pageNo, int pageSize);
 
-  drogon::Task<dto::BaseApiResponse> executeDraw();
-
-  drogon::Task<dto::BaseApiResponse> runDraw(const std::string &raffleId);
+  drogon::Task<dto::BaseApiResponse> executeDraw(std::string raffleId);
 
   drogon::Task<dto::BaseApiResponse> closeRaffle(const std::string &raffleId);
 

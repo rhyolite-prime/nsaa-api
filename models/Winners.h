@@ -161,6 +161,7 @@ class Winners
     ///Set the value of the column selected_option_id
     void setSelectedOptionId(const std::string &pSelectedOptionId) noexcept;
     void setSelectedOptionId(std::string &&pSelectedOptionId) noexcept;
+    void setSelectedOptionIdToNull() noexcept;
 
     /**  For column selected_option_label  */
     ///Get the value of the column selected_option_label, returns the default value if the column is null

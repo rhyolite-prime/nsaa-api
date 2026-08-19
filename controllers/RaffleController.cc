@@ -209,30 +209,6 @@ Task<HttpResponsePtr> RaffleController::getRngLogs(HttpRequestPtr req) {
 
 }
 
-Task<HttpResponsePtr> RaffleController::runDraw(HttpRequestPtr req, std::string raffleId) {
-
-  if (raffleId.empty()) {
-    raffle::dto::BaseApiResponse response;
-    response.success = false;
-    response.error["message"] = "Raffle ID is required";
-    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-    resp->setStatusCode(k400BadRequest);
-    co_return resp;
-  }
-
-  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-  auto &raffleService = plugin->getRaffleService();
-
-  co_await raffleService.runDraw(raffleId);
-
-  raffle::dto::BaseApiResponse response;
-  response.success = true;
-  response.message = "Raffle draw executed successfully";
-  auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-  resp->setStatusCode(k200OK);
-  co_return resp;
-
-}
 
 Task<HttpResponsePtr> RaffleController::runClosure(HttpRequestPtr req, std::string raffleId) {
 
@@ -284,12 +260,12 @@ Task<HttpResponsePtr> RaffleController::runCompletion(HttpRequestPtr req, std::s
 }
 
 
-Task<HttpResponsePtr> RaffleController::executeDraw(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::executeDraw(HttpRequestPtr req, std::string raffleId) {
 
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &raffleService = plugin->getRaffleService();
 
-  auto result = co_await raffleService.executeDraw();
+  auto result = co_await raffleService.executeDraw(raffleId);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 

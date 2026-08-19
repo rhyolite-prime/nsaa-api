@@ -10,12 +10,15 @@
 #include <string>
 #include <cstdio>
 #include <ctime>
+#include <random>
+
+#include <algorithm>
 #include <drogon/orm/CoroMapper.h>
 #include <drogon/orm/Mapper.h>
 #include <drogon/utils/coroutine.h>
 #include "utils/DateUtils.h"
 #include "utils/StringUtils.h"
-
+#include <trantor/utils/Logger.h>
 #include "RngLogs.h"
 #include "Tickets.h"
 #include "constants/RewardTypes.h"
@@ -278,6 +281,12 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSiz
       newRaffle.setOptions("[]");
     }
 
+    if (!dto.getPrizeConfiguration().isNull() && dto.getPrizeConfiguration().isArray()) {
+      newRaffle.setPrizeConfig(Json::writeString(writerBuilder, dto.getPrizeConfiguration()));
+    } else {
+      newRaffle.setPrizeConfig("[]");
+    }
+
     Json::Value exemptedPartnersJson(Json::arrayValue);
     for (const auto& partner : dto.getExemptedPartners()) {
       exemptedPartnersJson.append(partner);
@@ -448,6 +457,10 @@ drogon::Task<dto::BaseApiResponse> RaffleService::updateAsync(const dto::RaffleD
 
     if (!dto.getOptions().isNull() && dto.getOptions().isArray()) {
       existingRaffle.setOptions(Json::writeString(writerBuilder, dto.getOptions()));
+    }
+
+    if (!dto.getPrizeConfiguration().isNull() && dto.getPrizeConfiguration().isArray()) {
+      existingRaffle.setPrizeConfig(Json::writeString(writerBuilder, dto.getPrizeConfiguration()));
     }
 
     if (!dto.getExemptedPartners().empty()) {
@@ -697,6 +710,179 @@ drogon::Task<dto::BaseApiResponse> RaffleService::incrementEntries(const std::st
     co_return errorResponse;
   }
 }
+
+
+
+
+drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> raffleMapper(dbClient);
+  CoroMapper<Draws> drawMapper(dbClient);
+  CoroMapper<Tickets> ticketMapper(dbClient);
+  CoroMapper<Winners> winnerMapper(dbClient);
+
+  try {
+    LOG_DEBUG << "Starting draw execution for raffleId: " << raffleId;
+
+    // 1. Get the active raffle
+    auto activeRaffle = co_await raffleMapper.findByPrimaryKey(raffleId);
+
+    // 2. Get the associated draw ID
+    auto draw = co_await drawMapper.findOne(
+        Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, activeRaffle.getValueOfId()));
+
+    LOG_DEBUG << "Successfully fetched raffle and associated draw ID: " << draw.getValueOfId();
+
+    // --- ALGORITHM STEP 1: Pull the options for that particular draw ---
+    LOG_DEBUG << "Step 1: Pulling options for the draw.";
+    Json::Value optionsArray(Json::arrayValue);
+    const std::string &optionsText = activeRaffle.getValueOfOptions();
+    if (!optionsText.empty()) {
+      Json::CharReaderBuilder readerBuilder;
+      std::string errs;
+      std::istringstream inputStream(optionsText);
+      Json::parseFromStream(readerBuilder, inputStream, &optionsArray, &errs);
+    }
+    LOG_DEBUG << "Options loaded. Total options count: " << optionsArray.size();
+
+    // Initialize Random Number Generator
+    std::random_device rd;
+    std::mt19937 rng(rd());
+
+    // --- ALGORITHM STEP 2: Pick an option at random as the winning option ---
+    LOG_DEBUG << "Step 2: Picking a random winning option.";
+    Json::Value winningOption;
+    std::string winningOptionId = "";
+
+    if (!optionsArray.empty() && optionsArray.isArray()) {
+      std::uniform_int_distribution<int> optDist(0, optionsArray.size() - 1);
+      winningOption = optionsArray[optDist(rng)];
+      winningOptionId = winningOption["id"].asString();
+      LOG_DEBUG << "Winning option selected: " << winningOption["name"].asString()
+                << " (ID: " << winningOptionId << ")";
+    } else {
+      LOG_DEBUG << "No options available to pick from.";
+    }
+
+    // --- ALGORITHM STEP 3: Select all tickets linked to the raffleId ---
+    LOG_DEBUG << "Step 3: Selecting all tickets for raffleId: " << raffleId;
+    auto allTickets = co_await ticketMapper.findBy(
+        Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ, raffleId) && Criteria(Tickets::Cols::_payment_status, CompareOperator::EQ, std::to_string(constants::PaymentStatus::SUCCESS))
+    );
+    int totalCount = allTickets.size();
+    LOG_DEBUG << "Total tickets found: " << totalCount;
+
+    Json::Value winnersResult = Json::arrayValue;
+
+    if (totalCount > 0 && !winningOptionId.empty()) {
+
+      // --- ALGORITHM STEP 4: Filter the ticket pool ---
+      LOG_DEBUG << "Step 4: Filtering tickets to find those that selected the winning option.";
+      std::vector<Tickets> filteredTickets;
+      for (const auto& ticket : allTickets) {
+          if (ticket.getValueOfSelectedOptionValue() == winningOptionId) {
+              filteredTickets.push_back(ticket);
+          }
+      }
+      int validCount = filteredTickets.size();
+      LOG_DEBUG << "Filtering complete. " << validCount << " out of " << totalCount << " tickets guessed correctly.";
+
+      if (validCount > 0) {
+          // --- ALGORITHM STEP 5: Determine how many winners to draw ---
+          int maximumWinners = activeRaffle.getValueOfMaximumWinners();
+          int actualWinners = std::min(validCount, maximumWinners);
+          LOG_DEBUG << "Step 5: Maximum winners set to " << maximumWinners
+                    << ". Actual winners to draw from the filtered pool: " << actualWinners;
+
+          // Pull prize configuration
+          Json::Value prizeConfigArray(Json::arrayValue);
+          const std::string &prizeText = activeRaffle.getValueOfPrizeConfig();
+          if (!prizeText.empty()) {
+            Json::CharReaderBuilder readerBuilder;
+            std::string errs;
+            std::istringstream inputStream(prizeText);
+            Json::parseFromStream(readerBuilder, inputStream, &prizeConfigArray, &errs);
+          }
+          LOG_DEBUG << "Prize configuration loaded. Total prize tiers: " << prizeConfigArray.size();
+
+          // --- ALGORITHM STEP 6: Shuffle the filtered ticket pool ---
+          LOG_DEBUG << "Step 6: Shuffling the filtered ticket pool.";
+          std::shuffle(filteredTickets.begin(), filteredTickets.end(), rng);
+
+          // --- ALGORITHM STEP 7: Pick winners from the top of the shuffled valid pool ---
+          LOG_DEBUG << "Step 7: Selecting winners and assigning prizes.";
+          for (int i = 0; i < actualWinners; ++i) {
+            auto winningTicket = filteredTickets[i];
+
+            LOG_DEBUG << "--- Draw Pick " << (i + 1) << " ---";
+            LOG_DEBUG << "Selected winning ticket ID: " << winningTicket.getValueOfId()
+                      << " (Ticket Number: " << winningTicket.getValueOfTicketNumber() << ")";
+
+            // Map the corresponding prize for the current winner's rank
+            double prizeAmount = 0.0;
+            if (prizeConfigArray.isArray() && i < (int)prizeConfigArray.size()) {
+              prizeAmount = prizeConfigArray[i]["value"].asDouble();
+            }
+
+            // Write winner to the database
+            Winners winner;
+            winner.setDrawId(draw.getValueOfId());
+            winner.setTicketId(winningTicket.getValueOfId());
+            winner.setCustomerId(winningTicket.getValueOfCustomerId());
+
+            winner.setSelectedOptionId(winningOptionId);
+            winner.setSelectedOptionLabel(winningOption["name"].asString());
+
+            winner.setPrizeAmount(std::to_string(prizeAmount));
+            winner.setStatus("PENDING");
+            winner.setTicketAlias(winningTicket.getValueOfTicketNumber());
+            winner.setPhoneNumber(winningTicket.getValueOfCustomerPhone());
+
+            auto savedWinner = co_await winnerMapper.insert(winner);
+            winnersResult.append(utils::StringUtils::snakeCaseToCamelCase(savedWinner.toJson()));
+            LOG_DEBUG << "Winner successfully saved to database. DB Record ID: " << savedWinner.getValueOfId();
+          }
+      } else {
+          LOG_DEBUG << "No tickets guessed the winning option. No prizes awarded.";
+      }
+    } else {
+      LOG_DEBUG << "No tickets found or no winning option determined. Skipping winner selection.";
+    }
+
+    // Mark the raffle lifecycle as complete
+    LOG_DEBUG << "Updating raffle status to DRAW_COMPLETED.";
+    activeRaffle.setStatus(constants::RaffleStatus::DRAW_COMPLETED);
+    co_await raffleMapper.update(activeRaffle);
+
+    LOG_DEBUG << "Draw execution fully completed for raffleId: " << raffleId;
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.message = "Draw executed successfully";
+    response.result = winnersResult;
+
+    co_return response;
+
+  } catch (const DrogonDbException &e) {
+    LOG_ERROR << "Database error while executing draw for raffleId: " << raffleId << ". Details: " << e.base().what();
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while executing draw.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    LOG_ERROR << "Internal error while executing draw for raffleId: " << raffleId << ". Details: " << e.what();
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+
 
 
 
@@ -1145,115 +1331,6 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getRngLogs(const std::string &
 
 }
 
-
-drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw() {
-  auto dbClient = drogon::app().getDbClient();
-  CoroMapper<Raffles> raffleMapper(dbClient);
-  CoroMapper<Draws> drawMapper(dbClient);
-
-  try {
-    // 1. Get the active raffle
-    auto activeRaffle = co_await raffleMapper.findOne(
-        Criteria(Raffles::Cols::_status, CompareOperator::EQ, "ACTIVE"));
-
-    // 2. Get the associated draw ID
-    auto draw = co_await drawMapper.findOne(
-        Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ,
-                 activeRaffle.getValueOfId()));
-
-    // 3. Run execute draw postgres function
-    auto sqlResult = co_await dbClient->execSqlCoro(
-        "SELECT public.execute_draw($1)", draw.getValueOfId());
-
-    dto::BaseApiResponse response;
-    response.success = true;
-    response.message = "Draw executed successfully";
-
-    if (!sqlResult.empty()) {
-      // Extract the JSONB result from the first column of the first row
-      response.result = utils::StringUtils::snakeCaseToCamelCase(sqlResult[0][0].as<Json::Value>());
-
-      // at this point results are guaranteed
-      // update raffle status to "COMPLETED".
-      activeRaffle.setStatus(constants::RaffleStatus::DRAW_COMPLETED);
-      co_await raffleMapper.update(activeRaffle);
-
-    } else {
-      response.result["drawId"] = draw.getValueOfId();
-    }
-
-    co_return response;
-
-  } catch (const DrogonDbException &e) {
-    dto::BaseApiResponse errorResponse;
-    errorResponse.success = false;
-    errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] = "Database error while executing draw.";
-    errorResponse.error["detail"] = e.base().what();
-    co_return errorResponse;
-  } catch (const std::exception &e) {
-    dto::BaseApiResponse errorResponse;
-    errorResponse.success = false;
-    errorResponse.error["code"] = constants::ERR_INTERNAL;
-    errorResponse.error["message"] = "Internal error.";
-    errorResponse.error["detail"] = e.what();
-    co_return errorResponse;
-  }
-}
-
-
-drogon::Task<dto::BaseApiResponse> RaffleService::runDraw(const std::string &raffleId) {
-  auto dbClient = drogon::app().getDbClient();
-  CoroMapper<Raffles> raffleMapper(dbClient);
-  CoroMapper<Draws> drawMapper(dbClient);
-
-  try {
-
-    auto activeRaffle = co_await raffleMapper.findByPrimaryKey(raffleId);
-
-    // 2. Get the associated draw ID
-    auto draw = co_await drawMapper.findOne(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ,  raffleId));
-
-    // 3. Run execute draw postgres function
-    auto sqlResult = co_await dbClient->execSqlCoro("SELECT public.execute_draw($1)", draw.getValueOfId());
-
-    dto::BaseApiResponse response;
-    response.success = true;
-    response.message = "Draw executed successfully";
-
-    if (!sqlResult.empty()) {
-      // Extract the JSONB result from the first column of the first row
-      response.result = utils::StringUtils::snakeCaseToCamelCase(sqlResult[0][0].as<Json::Value>());
-
-      // at this point results are guaranteed
-      // update raffle status to "COMPLETED".
-      activeRaffle.setStatus(constants::RaffleStatus::DRAW_COMPLETED);
-      co_await raffleMapper.update(activeRaffle);
-
-    } else {
-      response.result["drawId"] = draw.getValueOfId();
-    }
-
-    // notify admin via email
-
-    co_return response;
-
-  } catch (const DrogonDbException &e) {
-    dto::BaseApiResponse errorResponse;
-    errorResponse.success = false;
-    errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] = "Database error while executing draw.";
-    errorResponse.error["detail"] = e.base().what();
-    co_return errorResponse;
-  } catch (const std::exception &e) {
-    dto::BaseApiResponse errorResponse;
-    errorResponse.success = false;
-    errorResponse.error["code"] = constants::ERR_INTERNAL;
-    errorResponse.error["message"] = "Internal error.";
-    errorResponse.error["detail"] = e.what();
-    co_return errorResponse;
-  }
-}
 
 
 drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffles() {

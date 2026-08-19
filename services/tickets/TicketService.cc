@@ -121,61 +121,6 @@ drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSiz
   }
 }
 
-drogon::Task<dto::BaseApiResponse> TicketService::getStats() {
-  auto dbClient = drogon::app().getDbClient();
-
-  try {
-    auto result = co_await dbClient->execSqlCoro(
-        "SELECT count(*) as total_tickets, "
-        "count(CASE WHEN is_active = true THEN 1 END) as active_tickets, "
-        "count(CASE WHEN payment_status = 'PAID' THEN 1 END) as paid_tickets, "
-        "coalesce(sum(CASE WHEN is_active = true THEN total_amount ELSE 0 "
-        "END), 0) as total_revenue "
-        "FROM tickets");
-
-    dto::BaseApiResponse response;
-    response.success = true;
-    response.message = "Ticket stats retrieved successfully";
-    if (result.size() > 0) {
-      auto totalTickets = result[0]["total_tickets"].as<int>();
-      auto paidTickets = result[0]["paid_tickets"].as<int>();
-
-      response.result["totalTickets"] = totalTickets;
-      response.result["activeTickets"] = result[0]["active_tickets"].as<int>();
-      response.result["paidTickets"] = paidTickets;
-      response.result["totalRevenue"] = result[0]["total_revenue"].as<double>();
-
-      double conversionRate = 0.0;
-      if (totalTickets > 0) {
-        conversionRate =
-            (static_cast<double>(paidTickets) / totalTickets) * 100.0;
-      }
-      response.result["conversionRate"] = conversionRate;
-    } else {
-      response.result["totalTickets"] = 0;
-      response.result["activeTickets"] = 0;
-      response.result["paidTickets"] = 0;
-      response.result["totalRevenue"] = 0.0;
-      response.result["conversionRate"] = 0.0;
-    }
-    co_return response;
-  } catch (const drogon::orm::DrogonDbException &e) {
-    dto::BaseApiResponse errorResponse;
-    errorResponse.success = false;
-    errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] =
-        "Database error while fetching ticket stats.";
-    errorResponse.error["detail"] = e.base().what();
-    co_return errorResponse;
-  } catch (const std::exception &e) {
-    dto::BaseApiResponse errorResponse;
-    errorResponse.success = false;
-    errorResponse.error["code"] = constants::ERR_INTERNAL;
-    errorResponse.error["message"] = "Internal error.";
-    errorResponse.error["detail"] = e.what();
-    co_return errorResponse;
-  }
-}
 
 drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicketDto &dto) {
   auto dbClient = drogon::app().getDbClient();
@@ -248,7 +193,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     Tickets newTicket;
     newTicket.setDrawId(activeDraw.getValueOfId());
 
-    newTicket.setSelectedOptionValue("");
+    newTicket.setSelectedOptionValue(dto.getSelectedOptionValue());
     newTicket.setSelectedOptionName("");
 
     newTicket.setQuantity(quantity);

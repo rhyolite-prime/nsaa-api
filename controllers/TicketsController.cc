@@ -31,14 +31,7 @@ Task<HttpResponsePtr> TicketsController::getAll(HttpRequestPtr req) {
   co_return resp;
 }
 
-Task<HttpResponsePtr> TicketsController::getStats(HttpRequestPtr req) {
-  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-  auto &ticketService = plugin->getTicketService();
 
-  auto result = co_await ticketService.getStats();
-  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-  co_return resp;
-}
 
 Task<HttpResponsePtr> TicketsController::create(const HttpRequestPtr req) {
   auto jsonBody = req->getJsonObject();

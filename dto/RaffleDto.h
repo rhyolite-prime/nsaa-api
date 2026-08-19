@@ -29,6 +29,7 @@ public:
   [[nodiscard]] double getExpectedRevenue() const { return expected_revenue_; }
   [[nodiscard]] const std::vector<std::string> &getExemptedPartners() const { return exempted_partner_ids_; }
   [[nodiscard]] const Json::Value &getOptions() const { return options_; }
+  [[nodiscard]] const Json::Value &getPrizeConfiguration() const { return prize_configuration_; }
 
   // Setters
   void setName(const std::string &value) { name_ = value; }
@@ -41,6 +42,7 @@ public:
   void setExpectedRevenue(const double &value) { expected_revenue_ = value; }
   void setExemptedPartners(const std::vector<std::string> &value) { exempted_partner_ids_ = value; }
   void setOptions(const Json::Value &value) { options_ = value; }
+  void setPrizeConfiguration(const Json::Value &value) { prize_configuration_ = value; }
 
 private:
   std::string name_;
@@ -53,6 +55,7 @@ private:
   double expected_revenue_ {0};
   std::vector<std::string> exempted_partner_ids_;
   Json::Value options_;
+  Json::Value prize_configuration_;
 };
 
 inline void RaffleDto::fromJson(const Json::Value &json) {
@@ -60,6 +63,7 @@ inline void RaffleDto::fromJson(const Json::Value &json) {
   if (json.isMember("name") && !json["name"].isNull()) {
     setName(json["name"].asString());
   }
+
 
   if (json.isMember("slug") && !json["slug"].isNull()) {
     slug_ = json["slug"].asString();
@@ -103,6 +107,10 @@ inline void RaffleDto::fromJson(const Json::Value &json) {
 
   if (json.isMember("options") && !json["options"].isNull()) {
     setOptions(json["options"]);
+  }
+
+  if (json.isMember("prizeConfiguration") && !json["prizeConfiguration"].isNull()) {
+    setPrizeConfiguration(json["prizeConfiguration"]);
   }
 }
 

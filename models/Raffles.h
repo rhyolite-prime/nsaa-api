@@ -57,6 +57,7 @@ class Raffles
         static const std::string _end_time;
         static const std::string _draw_time;
         static const std::string _options;
+        static const std::string _prize_config;
         static const std::string _exempted_partners;
         static const std::string _status;
         static const std::string _created_at;
@@ -231,6 +232,16 @@ class Raffles
     void setOptions(std::string &&pOptions) noexcept;
     void setOptionsToNull() noexcept;
 
+    /**  For column prize_config  */
+    ///Get the value of the column prize_config, returns the default value if the column is null
+    const std::string &getValueOfPrizeConfig() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPrizeConfig() const noexcept;
+    ///Set the value of the column prize_config
+    void setPrizeConfig(const std::string &pPrizeConfig) noexcept;
+    void setPrizeConfig(std::string &&pPrizeConfig) noexcept;
+    void setPrizeConfigToNull() noexcept;
+
     /**  For column exempted_partners  */
     ///Get the value of the column exempted_partners, returns the default value if the column is null
     const std::string &getValueOfExemptedPartners() const noexcept;
@@ -269,7 +280,7 @@ class Raffles
     void setUpdatedAtToNull() noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 17;  }
+    static size_t getColumnNumber() noexcept {  return 18;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -304,6 +315,7 @@ class Raffles
     std::shared_ptr<::trantor::Date> endTime_;
     std::shared_ptr<::trantor::Date> drawTime_;
     std::shared_ptr<std::string> options_;
+    std::shared_ptr<std::string> prizeConfig_;
     std::shared_ptr<std::string> exemptedPartners_;
     std::shared_ptr<int32_t> status_;
     std::shared_ptr<::trantor::Date> createdAt_;
@@ -319,7 +331,7 @@ class Raffles
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[17]={ false };
+    bool dirtyFlag_[18]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -408,24 +420,30 @@ class Raffles
         {
             needSelection=true;
         }
-        sql += "exempted_partners,";
+        sql += "prize_config,";
         ++parametersCount;
         if(!dirtyFlag_[13])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[14])
+        sql += "exempted_partners,";
+        ++parametersCount;
+        if(!dirtyFlag_[14])
+        {
+            needSelection=true;
+        }
+        if(dirtyFlag_[15])
         {
             sql += "status,";
             ++parametersCount;
         }
         sql += "created_at,";
         ++parametersCount;
-        if(!dirtyFlag_[15])
+        if(!dirtyFlag_[16])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[16])
+        if(dirtyFlag_[17])
         {
             sql += "updated_at,";
             ++parametersCount;
@@ -544,7 +562,16 @@ class Raffles
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[15])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[16])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
@@ -553,7 +580,7 @@ class Raffles
         {
             sql +="default,";
         }
-        if(dirtyFlag_[16])
+        if(dirtyFlag_[17])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
