@@ -12,15 +12,12 @@
 #include <drogon/orm/Mapper.h>
 #include <drogon/utils/coroutine.h>
 #include <string>
-
-#include "Colours.h"
 #include "Draws.h"
 #include "Raffles.h"
 #include "Tickets.h"
 #include "TicketCollections.h"
 #include <algorithm>
 #include <uuid/uuid.h>
-
 #include "dto/CheckoutResponse.h"
 #include "dto/WebCheckoutDto.h"
 #include "utils/IdGeneratorUtils.h"
@@ -171,6 +168,29 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
       customerId = insertedCustomer.getValueOfId();
     }
 
+    // --- Extract SelectedOptionName from Raffle Options ---
+    std::string matchedOptionName = "";
+    std::string optionsText = activeRaffle.getValueOfOptions();
+
+    if (!optionsText.empty() && !dto.getSelectedOptionValue().empty()) {
+      Json::Value optionsArray;
+      Json::CharReaderBuilder readerBuilder;
+      std::string errs;
+      std::istringstream inputStream(optionsText);
+
+      // Parse the JSON string and search for the matching ID
+      if (Json::parseFromStream(readerBuilder, inputStream, &optionsArray, &errs) && optionsArray.isArray()) {
+        for (const auto& option : optionsArray) {
+          if (option.isMember("id") && option["id"].asString() == dto.getSelectedOptionValue()) {
+            if (option.isMember("name")) {
+              matchedOptionName = option["name"].asString();
+              break; // Match found, exit loop
+            }
+          }
+        }
+      }
+    }
+
     // 4 Ticket Group Management
     CoroMapper<TicketCollections> ticketGroupMapper(dbClient);
     int quantity = 0;
@@ -194,7 +214,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     newTicket.setDrawId(activeDraw.getValueOfId());
 
     newTicket.setSelectedOptionValue(dto.getSelectedOptionValue());
-    newTicket.setSelectedOptionName("");
+    newTicket.setSelectedOptionName(matchedOptionName);
 
     newTicket.setQuantity(quantity);
     newTicket.setCustomerPhone(dto.getCustomerPhone());
