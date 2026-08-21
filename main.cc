@@ -17,8 +17,7 @@ int main() {
 
         LOG_INFO << "Origin: " << origin;
 
-        if (std::find(allowedOrigins.begin(), allowedOrigins.end(), origin) !=
-            allowedOrigins.end()) {
+        if (std::find(allowedOrigins.begin(), allowedOrigins.end(), origin) != allowedOrigins.end()) {
           resp->addHeader("Access-Control-Allow-Origin", origin);
           resp->addHeader("Access-Control-Allow-Credentials", "true");
         }

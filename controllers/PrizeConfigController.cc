@@ -132,7 +132,24 @@ drogon::Task<HttpResponsePtr> PrizeConfigController::getAllPrizes(HttpRequestPtr
 
 }
 
+drogon::Task<HttpResponsePtr> PrizeConfigController::getCategoryPrizes(HttpRequestPtr req, const std::string &categoryId) {
 
+    if (categoryId.empty()) {
+        raffle::dto::BaseApiResponse response;
+        response.success = false;
+        response.error["message"] = "Category ID is required";
+        auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+        resp->setStatusCode(k400BadRequest);
+        co_return resp;
+    }
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &prizeConfigService = plugin->getPrizeConfigService();
+
+    auto result = co_await prizeConfigService.getCategoryPrizes(categoryId);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
 
 drogon::Task<HttpResponsePtr> PrizeConfigController::createPrize(HttpRequestPtr req) {
 

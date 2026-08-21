@@ -246,7 +246,6 @@ namespace raffle::services {
 
     drogon::Task<dto::BaseApiResponse> PrizeConfigService::getAllPrizes(int pageNo, int pageSize, const std::string &query) {
 
-
       auto dbClient = drogon::app().getDbClient();
       CoroMapper<Prizes> mapper(dbClient);
 
@@ -294,6 +293,63 @@ namespace raffle::services {
           item["id"] = j["id"];
           item["name"] = j["name"];
           item["code"] = j["code"];
+          item["description"] = j["description"];
+          item["priority"] = j["priority"];
+          item["priority"] = j["priority"];
+          item["max_winners"] = j["max_winners"];
+          item["reward_type"] = j["reward_type"];
+          item["is_repeatable"] = j["is_repeatable"];
+          item["is_active"] = j["is_active"];
+          item["createdAt"] = j["created_at"];
+          data.append(item);
+        }
+        response.result["data"] = data;
+        co_return response;
+
+      } catch (const DrogonDbException &e) {
+        dto::BaseApiResponse errorResponse;
+        errorResponse.success = false;
+        errorResponse.error["code"] = constants::ERR_DB_QUERY;
+        errorResponse.error["message"] = "Database error while fetching colors.";
+        errorResponse.error["detail"] = e.base().what();
+        co_return errorResponse;
+      } catch (const std::exception &e) {
+        dto::BaseApiResponse errorResponse;
+        errorResponse.success = false;
+        errorResponse.error["code"] = constants::ERR_INTERNAL;
+        errorResponse.error["message"] = "Internal error.";
+        errorResponse.error["detail"] = e.what();
+        co_return errorResponse;
+      }
+
+    }
+
+    drogon::Task<dto::BaseApiResponse> PrizeConfigService::getCategoryPrizes(const std::string &id) {
+
+auto dbClient = drogon::app().getDbClient();
+      CoroMapper<Prizes> mapper(dbClient);
+
+
+
+      try {
+
+
+        Criteria searchCriteria =  Criteria(Prizes::Cols::_category_id, CompareOperator::EQ, id);
+
+        auto prizes = co_await mapper.findBy(searchCriteria);
+
+        dto::BaseApiResponse response;
+        response.success = true;
+
+        Json::Value data = Json::arrayValue;
+        for (const auto &prize : prizes) {
+          Json::Value j = prize.toJson();
+          Json::Value item;
+
+          item["id"] = j["id"];
+          item["name"] = j["name"];
+          item["code"] = j["code"];
+          item["categoryId"] = j["category_id"];
           item["description"] = j["description"];
           item["priority"] = j["priority"];
           item["priority"] = j["priority"];

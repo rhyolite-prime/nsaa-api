@@ -27,6 +27,8 @@ namespace raffle::services {
 
         drogon::Task<dto::BaseApiResponse> getAllPrizes(int pageNo, int pageSize, const std::string &query);
 
+        drogon::Task<dto::BaseApiResponse> getCategoryPrizes(const std::string &id);
+
         drogon::Task<dto::BaseApiResponse> createPrize(const dto::PrizeDto &dto);
 
         drogon::Task<dto::BaseApiResponse> updatePrize(const dto::PrizeDto &dto, const std::string &id);

@@ -30,11 +30,7 @@ add_executable(${PROJECT_NAME} main.cc
         plugins/RaffleServicePlugin.h
         filters/CustomerJwtAuthFilter.h
         filters/CustomerJwtAuthFilter.cc
-        controllers/AuthController.h
-        services/colors/ColorService.h
         dto/BaseApiResponse.h
-        dto/CreateColorDto.h
-        dto/UpdateColorDto.h
         services/roles/RoleService.h
         services/settings/SettingService.h
         services/users/UserService.h
@@ -45,7 +41,6 @@ add_executable(${PROJECT_NAME} main.cc
         services/winners/WinnerService.h
         services/rng_logs/RngLogService.h
         constants/ErrorCodes.h
-        services/colors/ColorService.cc
         services/customers/CustomerService.cc
         services/draws/DrawService.h
         services/draws/DrawService.cc
@@ -66,7 +61,6 @@ add_executable(${PROJECT_NAME} main.cc
         utils/DateUtils.cc
         utils/StringUtils.h
         utils/StringUtils.cc
-        controllers/PaymentCallbackController.h
         services/settings/SettingService.cc
         dto/CreateUserDto.h
         dto/UpdateUserDto.h
@@ -81,7 +75,6 @@ add_executable(${PROJECT_NAME} main.cc
         services/hubtel_api/HubtelApi.cc
         dto/CheckoutResponse.h
         dto/DirectReceiveMoneyResponse.h
-        controllers/HubtelCallbackProcessorController.h
         services/email/EmailService.h
         dto/SendEmailDto.h
         services/email/EmailService.cc

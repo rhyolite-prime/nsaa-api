@@ -10,7 +10,6 @@
 
 #include "services/affiliate_partners/AffiliatePartnerService.h"
 #include "services/banners/BannerService.h"
-#include "services/colors/ColorService.h"
 #include "services/customers/CustomerService.h"
 #include "services/dashboard/DashboardService.h"
 #include "services/draws/DrawService.h"
@@ -49,7 +48,6 @@ namespace raffle::plugins {
 
         services::RedisCacheManager &getRedisCacheManager() { return redisCacheService_; }
         services::HubtelApi &getHubtelApi() { return hubtelApi_; }
-        services::ColorService &getColorService() { return colorService_; }
         services::CustomerService &getCustomerService() { return customerService_; }
         services::DashboardService &getDashboardService() { return dashboardService_; }
         services::RngLogService &getRngLogService() { return rngLogService_; }
@@ -76,7 +74,6 @@ namespace raffle::plugins {
         services::HubtelApi hubtelApi_;
         services::DrawService drawService_;
         services::RaffleService raffleService_;
-        services::ColorService colorService_;
         services::CustomerService customerService_;
         services::DashboardService dashboardService_;
         services::RngLogService rngLogService_;

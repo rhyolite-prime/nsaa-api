@@ -16,6 +16,7 @@ class PrizeConfigController : public drogon::HttpController<PrizeConfigControlle
   ADD_METHOD_TO(PrizeConfigController::deleteCategory, std::string(PREFIX) + "delete-category/{1}", Delete, Options);
 
   ADD_METHOD_TO(PrizeConfigController::getAllPrizes, std::string(PREFIX) + "get-all-prizes", Get, Options);
+  ADD_METHOD_TO(PrizeConfigController::getCategoryPrizes, std::string(PREFIX) + "get-category-prizes/{1}", Get, Options);
   ADD_METHOD_TO(PrizeConfigController::createPrize, std::string(PREFIX) + "create-prize", Post, Options);
   ADD_METHOD_TO(PrizeConfigController::updatePrize, std::string(PREFIX) + "update-prize/{1}", Put, Options);
   ADD_METHOD_TO(PrizeConfigController::deletePrize, std::string(PREFIX) + "delete-prize/{1}", Delete, Options);
@@ -30,6 +31,7 @@ class PrizeConfigController : public drogon::HttpController<PrizeConfigControlle
   //prizes
 
   drogon::Task<HttpResponsePtr> getAllPrizes(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> getCategoryPrizes(HttpRequestPtr req, const std::string &categoryId);
   drogon::Task<HttpResponsePtr> createPrize(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> updatePrize(HttpRequestPtr req, const std::string &prizeId);
   drogon::Task<HttpResponsePtr> deletePrize(HttpRequestPtr req, const std::string &prizeId);
