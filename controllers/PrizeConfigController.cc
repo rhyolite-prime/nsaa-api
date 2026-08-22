@@ -5,7 +5,7 @@
 drogon::Task<HttpResponsePtr> PrizeConfigController::getAllCategories(HttpRequestPtr req) {
 
     int pageNo = 1;
-    int pageSize = 10;
+    int pageSize = 50;
 
     auto pageNoStr = req->getParameter("pageNo");
     if (!pageNoStr.empty()) {
@@ -106,7 +106,7 @@ drogon::Task<HttpResponsePtr> PrizeConfigController::deleteCategory(HttpRequestP
 drogon::Task<HttpResponsePtr> PrizeConfigController::getAllPrizes(HttpRequestPtr req) {
 
     int pageNo = 1;
-    int pageSize = 10;
+    int pageSize = 50;
 
     auto pageNoStr = req->getParameter("pageNo");
     if (!pageNoStr.empty()) {

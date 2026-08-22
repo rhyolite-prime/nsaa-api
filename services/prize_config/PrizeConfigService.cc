@@ -292,15 +292,26 @@ namespace raffle::services {
 
           item["id"] = j["id"];
           item["name"] = j["name"];
-          item["code"] = j["code"];
+          item["value"] = j["value"];
+          item["categoryId"] = j["category_id"];
           item["description"] = j["description"];
-          item["priority"] = j["priority"];
-          item["priority"] = j["priority"];
-          item["max_winners"] = j["max_winners"];
-          item["reward_type"] = j["reward_type"];
-          item["is_repeatable"] = j["is_repeatable"];
-          item["is_active"] = j["is_active"];
-          item["createdAt"] = j["created_at"];
+          item["currency"] = j["currency"];
+          item["quantity"] = j["quantity"];
+          item["rank"] = j["rank"];
+          item["remainingQuantity"] = j["remaining_quantity"];
+          item["probability"] = j["probability"];
+
+          std::string metaDataStr = prize.getValueOfMetadata();
+          Json::Value metaDataJson;
+          Json::Reader reader;
+
+          if (!metaDataStr.empty() && reader.parse(metaDataStr, metaDataJson)) {
+            item["metaData"] = metaDataJson;
+          } else {
+            item["metaData"] = Json::objectValue;
+          }
+
+
           data.append(item);
         }
         response.result["data"] = data;
@@ -326,13 +337,10 @@ namespace raffle::services {
 
     drogon::Task<dto::BaseApiResponse> PrizeConfigService::getCategoryPrizes(const std::string &id) {
 
-auto dbClient = drogon::app().getDbClient();
+      auto dbClient = drogon::app().getDbClient();
       CoroMapper<Prizes> mapper(dbClient);
 
-
-
       try {
-
 
         Criteria searchCriteria =  Criteria(Prizes::Cols::_category_id, CompareOperator::EQ, id);
 
@@ -348,16 +356,25 @@ auto dbClient = drogon::app().getDbClient();
 
           item["id"] = j["id"];
           item["name"] = j["name"];
-          item["code"] = j["code"];
+          item["value"] = j["value"];
           item["categoryId"] = j["category_id"];
           item["description"] = j["description"];
-          item["priority"] = j["priority"];
-          item["priority"] = j["priority"];
-          item["max_winners"] = j["max_winners"];
-          item["reward_type"] = j["reward_type"];
-          item["is_repeatable"] = j["is_repeatable"];
-          item["is_active"] = j["is_active"];
-          item["createdAt"] = j["created_at"];
+          item["currency"] = j["currency"];
+          item["quantity"] = j["quantity"];
+          item["rank"] = j["rank"];
+          item["remainingQuantity"] = j["remaining_quantity"];
+          item["probability"] = j["probability"];
+
+          std::string metaDataStr = prize.getValueOfMetadata();
+          Json::Value metaDataJson;
+          Json::Reader reader;
+
+          if (!metaDataStr.empty() && reader.parse(metaDataStr, metaDataJson)) {
+            item["metaData"] = metaDataJson;
+          } else {
+            item["metaData"] = Json::objectValue;
+          }
+
           data.append(item);
         }
         response.result["data"] = data;
@@ -387,6 +404,7 @@ auto dbClient = drogon::app().getDbClient();
       CoroMapper<Prizes> mapper(dbClient);
 
       try {
+
         Prizes newPrize;
         newPrize.setCategoryId(dto.getCategoryId());
         newPrize.setCurrency(dto.getCurrency());
@@ -397,6 +415,10 @@ auto dbClient = drogon::app().getDbClient();
         newPrize.setQuantity(dto.getQuantity());
         newPrize.setRemainingQuantity(dto.getRemainingQuantity());
 
+        Json::StreamWriterBuilder builder;
+        builder["indentation"] = "";
+
+        newPrize.setMetadata(Json::writeString(builder, dto.getMetaData()));
 
         auto result = co_await mapper.insert(newPrize);
 
@@ -443,6 +465,19 @@ auto dbClient = drogon::app().getDbClient();
         auto existingPrize = co_await mapper.findByPrimaryKey(id);
 
         existingPrize.setName(dto.getName());
+        existingPrize.setCategoryId(dto.getCategoryId());
+        existingPrize.setCurrency(dto.getCurrency());
+        existingPrize.setName(dto.getName());
+        existingPrize.setDescription(dto.getDescription());
+        existingPrize.setValue(std::to_string(dto.getValue()));
+        existingPrize.setProbability(std::to_string(dto.getWinProbability()));
+        existingPrize.setQuantity(dto.getQuantity());
+        existingPrize.setRemainingQuantity(dto.getRemainingQuantity());
+
+        Json::StreamWriterBuilder builder;
+        builder["indentation"] = "";
+
+        existingPrize.setMetadata(Json::writeString(builder, dto.getMetaData()));
 
         auto updatedRowCount = co_await mapper.update(existingPrize);
 

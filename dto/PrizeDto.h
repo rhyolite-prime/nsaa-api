@@ -27,6 +27,7 @@ namespace raffle::dto {
         [[nodiscard]] int getQuantity() const { return quantity_; }
         [[nodiscard]] int getRemainingQuantity() const { return remaining_quantity_; }
         [[nodiscard]] double getWinProbability() const { return win_probability_; }
+        [[nodiscard]] Json::Value getMetaData() const { return meta_data_; }
 
 
         // Setters
@@ -38,6 +39,7 @@ namespace raffle::dto {
         void setQuantity(const int value) { quantity_ = value; }
         void setRemainingQuantity(const int value) { remaining_quantity_ = value; }
         void setWinProbability(const double value) { win_probability_ = value; }
+        void setMetaData(const Json::Value value) { meta_data_ = value; }
 
 
     private:
@@ -50,6 +52,7 @@ namespace raffle::dto {
         int quantity_ = 1;
         int remaining_quantity_ = 1;
         double win_probability_ {0};
+        Json::Value meta_data_;
 
     };
 
@@ -88,6 +91,12 @@ namespace raffle::dto {
             remaining_quantity_ = json["remainingQuantity"].asInt();
 
         }
+
+        if (json.isMember("metaData") && !json["metaData"].isNull()) {
+            setMetaData(json["metaData"]);
+        }
+
+
 
     }
 

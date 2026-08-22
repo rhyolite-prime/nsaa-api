@@ -93,7 +93,7 @@ class CmsController : public drogon::HttpController<CmsController>
     Task<HttpResponsePtr> updateMediaLibraryAsset(HttpRequestPtr req, std::string id);
     Task<HttpResponsePtr> deleteMediaLibraryAsset(HttpRequestPtr req, std::string id);
 
-    //colors
+    //tickets
     Task<HttpResponsePtr> getTicketGroups(HttpRequestPtr req);
 
     // tickets and draws
