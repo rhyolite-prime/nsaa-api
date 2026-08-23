@@ -31,9 +31,8 @@ using namespace drogon_model::ChopMoneyRaffle;
 namespace raffle::services {
 
 
-  drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSize, const std::string &query,
-                      const std::string &startDate, const std::string &endDate,
-                      const std::string &status) {
+  drogon::Task<dto::BaseApiResponse> RaffleService::getAll(int pageNo, int pageSize, const std::string &query, int status,
+                      const std::string &startDate, const std::string &endDate) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
@@ -57,7 +56,7 @@ namespace raffle::services {
         Criteria(Raffles::Cols::_slug, CompareOperator::Like, likeQuery));
   }
 
-  if (!status.empty()) {
+  if (status != -1) {
     addCriteria(Criteria(Raffles::Cols::_status, CompareOperator::EQ, status));
   }
 
@@ -113,9 +112,10 @@ namespace raffle::services {
       item["id"] = j["id"];
       item["name"] = j["name"];
       item["slug"] = j["slug"];
-      item["options"] = j["options"];
+      //item["options"] = j["options"];
       item["totalEntries"] = j["total_entries"];
-      item["prizePool"] = j["prize_pool"];
+      item["liablity"] = j["liablity"];
+      item["expectedRevenue"] = j["expected_revenue"];
       item["winningColour"] = j["winning_colour"];
       item["startsAt"] = j["start_time"];
       item["endsAt"] = j["end_time"];
@@ -218,7 +218,7 @@ namespace raffle::services {
 }
 
 
-  drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffleOptions(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::getActiveRaffleOptions(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -278,16 +278,13 @@ namespace raffle::services {
   }
 }
 
-
-
  drogon::Task<dto::BaseApiResponse> RaffleService::createAsync(const dto::RaffleDto &dto) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
   try {
-    if (dto.getName().empty() || dto.getStartTime().empty() ||
-        dto.getEndTime().empty() || dto.getDrawTime().empty()) {
+    if (dto.getName().empty() || dto.getStartTime().empty() || dto.getEndTime().empty() || dto.getDrawTime().empty()) {
       dto::BaseApiResponse errorResponse;
       errorResponse.success = false;
       errorResponse.error["code"] = constants::ERR_VALIDATION;
@@ -488,6 +485,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::updateAsync(const dto::RaffleD
     existingRaffle.setLiablity(std::to_string(dto.getLiability()));
     existingRaffle.setExpectedRevenue(std::to_string(dto.getExpectedRevenue()));
 
+
     if (!dto.getStartTime().empty()) {
       auto newStartTime = trantor::Date::fromDbStringLocal(utils::DateUtils::normalizeDateString(dto.getStartTime()));
       if (existingRaffle.getValueOfStartTime() != newStartTime) {
@@ -574,6 +572,10 @@ drogon::Task<dto::BaseApiResponse> RaffleService::updateAsync(const dto::RaffleD
         auto &quartzApi = plugin->getQuartzApi();
         auto customConfig = drogon::app().getCustomConfig();
 
+        // delete previous quartz jobs before creating new ones
+
+
+
         // Activation Job Update
         std::string raffleActivationCallBackUrl = customConfig["QuartzSchedulerApi"]["RaffleActivationCallBackUrl"].asString();
         dto::QuartzJobDto raffleActivationQuartzJobDto;
@@ -618,6 +620,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::updateAsync(const dto::RaffleD
         raffleDrawQuartzJobDto.endDate = drawStartTime.after(5 * 60).toDbStringLocal();
 
         co_await quartzApi.scheduleJob(raffleDrawQuartzJobDto);
+
 
       } catch (const std::exception &e) {
         LOG_ERROR << "Failed to reschedule Quartz jobs for raffle " << id << ": " << e.what();
@@ -697,6 +700,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::deleteRaffle(const std::string
       co_return errorResponse;
     }
 
+    // delete associated quartz jobs
+
     dto::BaseApiResponse response;
     response.success = true;
     response.message = "Raffle deleted successfully";
@@ -771,8 +776,6 @@ drogon::Task<dto::BaseApiResponse> RaffleService::incrementEntries(const std::st
     co_return errorResponse;
   }
 }
-
-
 
 drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffleId) {
   auto dbClient = drogon::app().getDbClient();
@@ -943,7 +946,6 @@ drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffle
 }
 
 
-
   drogon::Task<dto::BaseApiResponse> RaffleService::activate(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
@@ -1074,8 +1076,6 @@ drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffle
     co_return errorResponse;
   }
 }
-
-
 
 drogon::Task<dto::BaseApiResponse> RaffleService::getRecentTicketHolders(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();

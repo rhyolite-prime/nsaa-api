@@ -14,10 +14,9 @@ namespace raffle::services {
 class RaffleService {
 public:
   drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize,
-                                            const std::string &query,
+                                            const std::string &query, int status,
                                             const std::string &startDate = "",
-                                            const std::string &endDate = "",
-                                            const std::string &status = "");
+                                            const std::string &endDate = "");
 
   drogon::Task<dto::BaseApiResponse> createAsync(const dto::RaffleDto &dto);
 

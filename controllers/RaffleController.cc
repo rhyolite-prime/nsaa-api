@@ -7,6 +7,7 @@ Task<HttpResponsePtr> RaffleController::getAll(HttpRequestPtr req) {
 
   int pageNo = 1;
   int pageSize = 10;
+  int status = -1;
 
   auto pageNoStr = req->getParameter("pageNo");
   if (!pageNoStr.empty()) {
@@ -33,15 +34,13 @@ Task<HttpResponsePtr> RaffleController::getAll(HttpRequestPtr req) {
     startDate = "";
   }
 
-  std::string status = req->getParameter("status");
-  if (status.empty()) {
-    status = "";
-  }
+  status = std::stoi(req->getParameter("status")) ;
+
 
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &raffleService = plugin->getRaffleService();
 
-  auto result = co_await raffleService.getAll(pageNo, pageSize, query, startDate, endDate, status);
+  auto result = co_await raffleService.getAll(pageNo, pageSize, query, status, startDate, endDate);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }
