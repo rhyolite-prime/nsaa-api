@@ -295,9 +295,8 @@ Task<HttpResponsePtr> RaffleController::activate(HttpRequestPtr req,  std::strin
   co_return resp;
 }
 
-Task<HttpResponsePtr> RaffleController::deleteRaffle(HttpRequestPtr req)
+Task<HttpResponsePtr> RaffleController::deleteRaffle(HttpRequestPtr req, std::string raffleId)
 {
-  auto raffleId = req->getParameter("id");
 
   if (raffleId.empty()) {
     raffle::dto::BaseApiResponse response;

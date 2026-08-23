@@ -13,7 +13,7 @@ class RaffleController : public drogon::HttpController<RaffleController>
     ADD_METHOD_TO(RaffleController::create, std::string(PREFIX) + "create", Post, Options);
     ADD_METHOD_TO(RaffleController::update, std::string(PREFIX) + "update/{1}", Post, Options);
     ADD_METHOD_TO(RaffleController::extendRaffleDeadline, std::string(PREFIX) + "extend-deadline", Post, Options);
-    ADD_METHOD_TO(RaffleController::deleteRaffle, std::string(PREFIX) + "delete", Delete, Options);
+    ADD_METHOD_TO(RaffleController::deleteRaffle, std::string(PREFIX) + "delete/{1}", Delete, Options);
     ADD_METHOD_TO(RaffleController::getTopTicketHolders, std::string(PREFIX) + "get-top-ticket-holders", Get, Options);
     ADD_METHOD_TO(RaffleController::getTickets, std::string(PREFIX) + "get-tickets", Get, Options);
     ADD_METHOD_TO(RaffleController::getTicketStats, std::string(PREFIX) + "get-tickets-stats", Get, Options);
@@ -36,7 +36,7 @@ class RaffleController : public drogon::HttpController<RaffleController>
     Task<HttpResponsePtr> getTicketStats(HttpRequestPtr req);
     Task<HttpResponsePtr> create(HttpRequestPtr req);
     Task<HttpResponsePtr> update(HttpRequestPtr req, std::string raffleId);
-    Task<HttpResponsePtr> deleteRaffle(HttpRequestPtr req);
+    Task<HttpResponsePtr> deleteRaffle(HttpRequestPtr req, std::string raffleId);
     Task<HttpResponsePtr> extendRaffleDeadline(HttpRequestPtr req);
 
     Task<HttpResponsePtr> getTopTicketHolders(HttpRequestPtr req);
