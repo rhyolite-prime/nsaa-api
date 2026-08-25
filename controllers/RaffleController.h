@@ -22,6 +22,7 @@ class RaffleController : public drogon::HttpController<RaffleController>
     ADD_METHOD_TO(RaffleController::activate, std::string(PREFIX) + "activate/{1}", Post, Options);
     ADD_METHOD_TO(RaffleController::runClosure, std::string(PREFIX) + "run-closure/{1}", Post, Options);
     ADD_METHOD_TO(RaffleController::runCompletion, std::string(PREFIX) + "run-completion/{1}", Post, Options);
+    ADD_METHOD_TO(RaffleController::executeDraw, std::string(PREFIX) + "run-draw/{1}", Post, Options);
     ADD_METHOD_TO(RaffleController::executeDraw, std::string(PREFIX) + "execute-draw/{1}", Get, Options);
     ADD_METHOD_TO(RaffleController::getActiveRaffles, std::string(PREFIX) + "get-active-raffles", Get, Options);
     ADD_METHOD_TO(RaffleController::getActiveRaffleOptions, std::string(PREFIX) + "get-active-raffle-options", Get, Options);
