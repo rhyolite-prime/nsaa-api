@@ -90,6 +90,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSiz
       ticketJson["paymentStatus"] = ticket.getValueOfPaymentStatus();
       ticketJson["paymentMethod"] = ticket.getValueOfPaymentMethod();
       ticketJson["purchaseChannel"] = ticket.getValueOfPurchaseChannel();
+      ticketJson["ticketAlias"] = ticket.getValueOfTicketAlias();
       ticketJson["isActive"] = ticket.getValueOfIsActive();
       ticketJson["createdAt"] = ticket.getValueOfCreatedAt().toDbStringLocal();
       ticketJson["updatedAt"] = ticket.getValueOfUpdatedAt().toDbStringLocal();

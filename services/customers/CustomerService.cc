@@ -365,8 +365,8 @@ namespace raffle::services {
     LOG_INFO << " Default PIN => " << defaultPin;
 
     auto &hubtelApi = plugin->getHubtelApi();
-    //bool smsSent = co_await hubtelApi.SendSms(storedPhone, message);
-    bool smsSent = true;
+    bool smsSent = co_await hubtelApi.SendSms(storedPhone, message);
+
     if (!smsSent)
     {
       LOG_ERROR << "sendOtp: SMS delivery failed for requestId=" << dto.getRequestId() << ", phone=" << storedPhone;
@@ -546,8 +546,8 @@ namespace raffle::services {
       auto plugin = drogon::app().getPlugin<plugins::RaffleServicePlugin>();
       if (plugin) {
         auto &hubtelApi = plugin->getHubtelApi();
-        // bool smsSent = co_await hubtelApi.SendSms(normalizedPhone, message);
-        bool smsSent = true;
+        bool smsSent = co_await hubtelApi.SendSms(normalizedPhone, message);
+
         if (!smsSent) {
           LOG_ERROR << "resetPin: SMS delivery failed for phone=" << normalizedPhone;
         } else {
