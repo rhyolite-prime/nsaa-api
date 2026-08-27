@@ -202,7 +202,7 @@ Task<HttpResponsePtr> RaffleController::getRngLogs(HttpRequestPtr req) {
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &raffleService = plugin->getRaffleService();
 
-  auto result = co_await raffleService.getRngLogs(raffleId);
+  auto result = co_await raffleService.getDrawLogs(raffleId);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 

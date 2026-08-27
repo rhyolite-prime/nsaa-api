@@ -14,7 +14,7 @@ namespace raffle::services {
 
 class TicketService {
 public:
-  drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize,const std::string &query);
+  drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
 
   drogon::Task<dto::BaseApiResponse> activate(const std::string &paymentReference);
 

@@ -40,7 +40,7 @@ public:
 
   drogon::Task<dto::BaseApiResponse> getTicketStats(const std::string &raffleId);
 
-  drogon::Task<dto::BaseApiResponse> getRngLogs(const std::string &raffleId);
+  drogon::Task<dto::BaseApiResponse> getDrawLogs(const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> getAllRaffleTickets(const std::string &raffleId, int pageNo, int pageSize);
 
