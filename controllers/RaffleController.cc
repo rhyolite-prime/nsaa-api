@@ -280,6 +280,17 @@ Task<HttpResponsePtr> RaffleController::getDrawDetails (HttpRequestPtr req, std:
 }
 
 
+Task<HttpResponsePtr> RaffleController::getDetails (HttpRequestPtr req, std::string raffleId) {
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getDetails(raffleId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
+}
+
 Task<HttpResponsePtr> RaffleController::activate(HttpRequestPtr req,  std::string raffleId) {
 
 
