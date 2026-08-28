@@ -42,8 +42,7 @@ drogon::Task<dto::BaseApiResponse> DrawService::getAll(int pageNo, int pageSize,
     }
 
     auto colors =
-        co_await mapper.orderBy(Draws::Cols::_created_at, SortOrder::DESC)
-            .paginate(pageNo, pageSize)
+        co_await mapper.orderBy(Draws::Cols::_created_at, SortOrder::DESC).paginate(pageNo, pageSize)
             .findBy(searchCriteria);
 
     auto totalPages = (totalCount + pageSize - 1) / pageSize;
@@ -55,9 +54,7 @@ drogon::Task<dto::BaseApiResponse> DrawService::getAll(int pageNo, int pageSize,
     response.result["pageSize"] = pageSize;
     response.result["totalPages"] = (int)totalPages;
     response.result["lowerBound"] = pageSize * (pageNo - 1) + 1;
-    response.result["upperBound"] = (int)totalPages == pageNo
-                                        ? (Json::UInt64)totalCount
-                                        : (Json::UInt64)(pageNo * pageSize);
+    response.result["upperBound"] = (int)totalPages == pageNo ? (Json::UInt64)totalCount : (Json::UInt64)(pageNo * pageSize);
 
     Json::Value data = Json::arrayValue;
     for (const auto &color : colors) {

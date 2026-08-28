@@ -36,6 +36,9 @@ public:
 
   drogon::Task<dto::BaseApiResponse> getTopTicketHolders(const std::string &raffleId);
 
+
+  drogon::Task<dto::BaseApiResponse> getDrawDetails(const std::string &raffleId);
+
   drogon::Task<dto::BaseApiResponse> getTickets(const std::string &raffleId, int pageNo, int pageSize);
 
   drogon::Task<dto::BaseApiResponse> getTicketStats(const std::string &raffleId);

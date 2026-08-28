@@ -53,5 +53,20 @@ namespace raffle::constants {
         PAYMENT_FAILED = 2,
     };
 
+    enum WinnerStatus {
+        PENDING_PAYOUT = 0,
+        PROCESSING_PAYOUT = 1,
+        PAYOUT_COMPLETED = 2,
+        PAYOUT_FAILED = 3,
+        CLAIMED = 4,
+        DISQUALIFIED = 5,
+        UNDER_REVIEW = 6,
+        REPLACED = 7,
+        NOTIFIED = 8,
+        ACKNOWLEDGED = 9,
+
+
+    };
+
 }
 #endif //CHOPMONEYRAFFLEAPI_REWARDTYPES_H

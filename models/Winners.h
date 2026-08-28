@@ -52,7 +52,6 @@ class Winners
         static const std::string _selected_option_label;
         static const std::string _prize_amount;
         static const std::string _actual_payout;
-        static const std::string _status;
         static const std::string _claim_code;
         static const std::string _verified_by;
         static const std::string _verification_method;
@@ -66,6 +65,7 @@ class Winners
         static const std::string _phone_number;
         static const std::string _created_at;
         static const std::string _updated_at;
+        static const std::string _status;
     };
 
     static const int primaryKeyNumber;
@@ -192,16 +192,6 @@ class Winners
     void setActualPayout(std::string &&pActualPayout) noexcept;
     void setActualPayoutToNull() noexcept;
 
-    /**  For column status  */
-    ///Get the value of the column status, returns the default value if the column is null
-    const std::string &getValueOfStatus() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getStatus() const noexcept;
-    ///Set the value of the column status
-    void setStatus(const std::string &pStatus) noexcept;
-    void setStatus(std::string &&pStatus) noexcept;
-    void setStatusToNull() noexcept;
-
     /**  For column claim_code  */
     ///Get the value of the column claim_code, returns the default value if the column is null
     const std::string &getValueOfClaimCode() const noexcept;
@@ -327,6 +317,15 @@ class Winners
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
+    /**  For column status  */
+    ///Get the value of the column status, returns the default value if the column is null
+    const int32_t &getValueOfStatus() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getStatus() const noexcept;
+    ///Set the value of the column status
+    void setStatus(const int32_t &pStatus) noexcept;
+    void setStatusToNull() noexcept;
+
 
     static size_t getColumnNumber() noexcept {  return 22;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
@@ -358,7 +357,6 @@ class Winners
     std::shared_ptr<std::string> selectedOptionLabel_;
     std::shared_ptr<std::string> prizeAmount_;
     std::shared_ptr<std::string> actualPayout_;
-    std::shared_ptr<std::string> status_;
     std::shared_ptr<std::string> claimCode_;
     std::shared_ptr<std::string> verifiedBy_;
     std::shared_ptr<std::string> verificationMethod_;
@@ -372,6 +370,7 @@ class Winners
     std::shared_ptr<std::string> phoneNumber_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+    std::shared_ptr<int32_t> status_;
     struct MetaData
     {
         const std::string colName_;
@@ -442,74 +441,74 @@ class Winners
             sql += "actual_payout,";
             ++parametersCount;
         }
-        sql += "status,";
-        ++parametersCount;
-        if(!dirtyFlag_[8])
-        {
-            needSelection=true;
-        }
-        if(dirtyFlag_[9])
+        if(dirtyFlag_[8])
         {
             sql += "claim_code,";
             ++parametersCount;
         }
-        if(dirtyFlag_[10])
+        if(dirtyFlag_[9])
         {
             sql += "verified_by,";
             ++parametersCount;
         }
-        if(dirtyFlag_[11])
+        if(dirtyFlag_[10])
         {
             sql += "verification_method,";
             ++parametersCount;
         }
-        if(dirtyFlag_[12])
+        if(dirtyFlag_[11])
         {
             sql += "verification_id_number,";
             ++parametersCount;
         }
-        if(dirtyFlag_[13])
+        if(dirtyFlag_[12])
         {
             sql += "verification_date,";
             ++parametersCount;
         }
-        if(dirtyFlag_[14])
+        if(dirtyFlag_[13])
         {
             sql += "payout_method,";
             ++parametersCount;
         }
-        if(dirtyFlag_[15])
+        if(dirtyFlag_[14])
         {
             sql += "payout_reference,";
             ++parametersCount;
         }
-        if(dirtyFlag_[16])
+        if(dirtyFlag_[15])
         {
             sql += "payout_date,";
             ++parametersCount;
         }
-        if(dirtyFlag_[17])
+        if(dirtyFlag_[16])
         {
             sql += "notified_at,";
             ++parametersCount;
         }
-        if(dirtyFlag_[18])
+        if(dirtyFlag_[17])
         {
             sql += "ticket_alias,";
             ++parametersCount;
         }
-        if(dirtyFlag_[19])
+        if(dirtyFlag_[18])
         {
             sql += "phone_number,";
             ++parametersCount;
         }
         sql += "created_at,";
         ++parametersCount;
-        if(!dirtyFlag_[20])
+        if(!dirtyFlag_[19])
         {
             needSelection=true;
         }
         sql += "updated_at,";
+        ++parametersCount;
+        if(!dirtyFlag_[20])
+        {
+            needSelection=true;
+        }
+        sql += "status,";
         ++parametersCount;
         if(!dirtyFlag_[21])
         {
@@ -575,10 +574,6 @@ class Winners
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[9])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -633,6 +628,10 @@ class Winners
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
         }
         if(dirtyFlag_[20])
         {
