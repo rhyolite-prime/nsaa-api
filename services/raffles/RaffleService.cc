@@ -995,8 +995,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffle
           winner.setPhoneNumber(winningTicket.getValueOfCustomerPhone());
 
           auto savedWinner = co_await winnerMapper.insert(winner);
-          winnersResult.append(
-              utils::StringUtils::snakeCaseToCamelCase(savedWinner.toJson()));
+          winnersResult.append(utils::StringUtils::snakeCaseToCamelCase(savedWinner.toJson()));
           LOG_DEBUG << "Winner successfully saved to database. DB Record ID: "
                     << savedWinner.getValueOfId();
         }
@@ -1143,10 +1142,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDrawDetails(const std::stri
     // 3. Get winners and prize
     Json::Value winnersJson = Json::arrayValue;
     try {
-      auto draw = co_await drawMapper.findOne(
-          Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
-      auto winners = co_await winnerMapper.findBy(Criteria(
-          Winners::Cols::_draw_id, CompareOperator::EQ, draw.getValueOfId()));
+      auto draw = co_await drawMapper.findOne(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+      auto winners = co_await winnerMapper.findBy(Criteria(Winners::Cols::_draw_id, CompareOperator::EQ, draw.getValueOfId()));
 
       for (const auto &w : winners) {
         winnersJson.append(w.toJson());
@@ -1159,7 +1156,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDrawDetails(const std::stri
 
     dto::BaseApiResponse response;
     response.success = true;
-    response.result["data"] = resultData;
+    response.result = resultData;
     co_return response;
 
   } catch (const drogon::orm::DrogonDbException &e) {
