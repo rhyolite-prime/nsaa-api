@@ -50,8 +50,6 @@ class Winners
         static const std::string _customer_id;
         static const std::string _selected_option_id;
         static const std::string _selected_option_label;
-        static const std::string _prize_amount;
-        static const std::string _actual_payout;
         static const std::string _claim_code;
         static const std::string _verified_by;
         static const std::string _verification_method;
@@ -66,6 +64,7 @@ class Winners
         static const std::string _created_at;
         static const std::string _updated_at;
         static const std::string _status;
+        static const std::string _prize_description;
     };
 
     static const int primaryKeyNumber;
@@ -172,25 +171,6 @@ class Winners
     void setSelectedOptionLabel(const std::string &pSelectedOptionLabel) noexcept;
     void setSelectedOptionLabel(std::string &&pSelectedOptionLabel) noexcept;
     void setSelectedOptionLabelToNull() noexcept;
-
-    /**  For column prize_amount  */
-    ///Get the value of the column prize_amount, returns the default value if the column is null
-    const std::string &getValueOfPrizeAmount() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getPrizeAmount() const noexcept;
-    ///Set the value of the column prize_amount
-    void setPrizeAmount(const std::string &pPrizeAmount) noexcept;
-    void setPrizeAmount(std::string &&pPrizeAmount) noexcept;
-
-    /**  For column actual_payout  */
-    ///Get the value of the column actual_payout, returns the default value if the column is null
-    const std::string &getValueOfActualPayout() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getActualPayout() const noexcept;
-    ///Set the value of the column actual_payout
-    void setActualPayout(const std::string &pActualPayout) noexcept;
-    void setActualPayout(std::string &&pActualPayout) noexcept;
-    void setActualPayoutToNull() noexcept;
 
     /**  For column claim_code  */
     ///Get the value of the column claim_code, returns the default value if the column is null
@@ -326,8 +306,18 @@ class Winners
     void setStatus(const int32_t &pStatus) noexcept;
     void setStatusToNull() noexcept;
 
+    /**  For column prize_description  */
+    ///Get the value of the column prize_description, returns the default value if the column is null
+    const std::string &getValueOfPrizeDescription() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPrizeDescription() const noexcept;
+    ///Set the value of the column prize_description
+    void setPrizeDescription(const std::string &pPrizeDescription) noexcept;
+    void setPrizeDescription(std::string &&pPrizeDescription) noexcept;
+    void setPrizeDescriptionToNull() noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 22;  }
+
+    static size_t getColumnNumber() noexcept {  return 21;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -355,8 +345,6 @@ class Winners
     std::shared_ptr<std::string> customerId_;
     std::shared_ptr<std::string> selectedOptionId_;
     std::shared_ptr<std::string> selectedOptionLabel_;
-    std::shared_ptr<std::string> prizeAmount_;
-    std::shared_ptr<std::string> actualPayout_;
     std::shared_ptr<std::string> claimCode_;
     std::shared_ptr<std::string> verifiedBy_;
     std::shared_ptr<std::string> verificationMethod_;
@@ -371,6 +359,7 @@ class Winners
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
     std::shared_ptr<int32_t> status_;
+    std::shared_ptr<std::string> prizeDescription_;
     struct MetaData
     {
         const std::string colName_;
@@ -382,7 +371,7 @@ class Winners
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[22]={ false };
+    bool dirtyFlag_[21]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -433,86 +422,81 @@ class Winners
         }
         if(dirtyFlag_[6])
         {
-            sql += "prize_amount,";
+            sql += "claim_code,";
             ++parametersCount;
         }
         if(dirtyFlag_[7])
         {
-            sql += "actual_payout,";
+            sql += "verified_by,";
             ++parametersCount;
         }
         if(dirtyFlag_[8])
         {
-            sql += "claim_code,";
+            sql += "verification_method,";
             ++parametersCount;
         }
         if(dirtyFlag_[9])
         {
-            sql += "verified_by,";
+            sql += "verification_id_number,";
             ++parametersCount;
         }
         if(dirtyFlag_[10])
         {
-            sql += "verification_method,";
+            sql += "verification_date,";
             ++parametersCount;
         }
         if(dirtyFlag_[11])
         {
-            sql += "verification_id_number,";
+            sql += "payout_method,";
             ++parametersCount;
         }
         if(dirtyFlag_[12])
         {
-            sql += "verification_date,";
+            sql += "payout_reference,";
             ++parametersCount;
         }
         if(dirtyFlag_[13])
         {
-            sql += "payout_method,";
+            sql += "payout_date,";
             ++parametersCount;
         }
         if(dirtyFlag_[14])
         {
-            sql += "payout_reference,";
+            sql += "notified_at,";
             ++parametersCount;
         }
         if(dirtyFlag_[15])
         {
-            sql += "payout_date,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[16])
-        {
-            sql += "notified_at,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[17])
-        {
             sql += "ticket_alias,";
             ++parametersCount;
         }
-        if(dirtyFlag_[18])
+        if(dirtyFlag_[16])
         {
             sql += "phone_number,";
             ++parametersCount;
         }
         sql += "created_at,";
         ++parametersCount;
-        if(!dirtyFlag_[19])
+        if(!dirtyFlag_[17])
         {
             needSelection=true;
         }
         sql += "updated_at,";
         ++parametersCount;
-        if(!dirtyFlag_[20])
+        if(!dirtyFlag_[18])
         {
             needSelection=true;
         }
         sql += "status,";
         ++parametersCount;
-        if(!dirtyFlag_[21])
+        if(!dirtyFlag_[19])
         {
             needSelection=true;
+        }
+        if(dirtyFlag_[20])
+        {
+            sql += "prize_description,";
+            ++parametersCount;
         }
         if(parametersCount > 0)
         {
@@ -619,10 +603,18 @@ class Winners
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[18])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
         }
         if(dirtyFlag_[19])
         {
@@ -637,19 +629,6 @@ class Winners
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
-        }
-        if(dirtyFlag_[21])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(parametersCount > 0)
         {

@@ -975,9 +975,9 @@ drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffle
                     << winningTicket.getValueOfTicketNumber() << ")";
 
           // Map the corresponding prize for the current winner's rank
-          double prizeAmount = 0.0;
+          std::string prizeDescription;
           if (prizeConfigArray.isArray() && i < (int)prizeConfigArray.size()) {
-            prizeAmount = prizeConfigArray[i]["value"].asDouble();
+            prizeDescription = prizeConfigArray[i]["prizeName"].asString();
           }
 
           // Write winner to the database
@@ -989,7 +989,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffle
           winner.setSelectedOptionId(winningOptionId);
           winner.setSelectedOptionLabel(winningOption["name"].asString());
 
-          winner.setPrizeAmount(std::to_string(prizeAmount));
+          winner.setPrizeDescription(prizeDescription);
           winner.setStatus(constants::WinnerStatus::PENDING_PAYOUT);
           winner.setTicketAlias(winningTicket.getValueOfTicketAlias());
           winner.setPhoneNumber(winningTicket.getValueOfCustomerPhone());
