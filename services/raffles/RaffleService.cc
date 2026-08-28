@@ -1137,7 +1137,20 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDrawDetails(const std::stri
     }
     resultData["topTicketHolders"] = topHolders;
 
-    // 3. Get winners and prize
+    // 3. Compute actual revenue
+    auto revenueResult = co_await dbClient->execSqlCoro(
+        "SELECT COALESCE(SUM(CAST(total_amount AS NUMERIC)), 0) as actual_revenue "
+        "FROM tickets "
+        "WHERE raffle_id = $1 AND payment_status = 1",
+        raffleId);
+
+    double actualRevenue = 0.0;
+    if (!revenueResult.empty()) {
+      actualRevenue = revenueResult[0]["actual_revenue"].as<double>();
+    }
+    resultData["actualRevenue"] = actualRevenue;
+
+    // 4. Get winners and prize
     Json::Value winnersJson = Json::arrayValue;
     try {
       auto draw = co_await drawMapper.findOne(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
