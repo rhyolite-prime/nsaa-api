@@ -1094,9 +1094,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDrawDetails(const std::stri
       Json::CharReaderBuilder readerBuilder;
       std::string errs;
       std::istringstream inputStream(prizeText);
-      if (Json::parseFromStream(readerBuilder, inputStream, &parsedPrize,
-                                &errs) &&
-          parsedPrize.isArray()) {
+      if (Json::parseFromStream(readerBuilder, inputStream, &parsedPrize, &errs) && parsedPrize.isArray()) {
         prizeConfigArray = parsedPrize;
       }
     }
@@ -1156,7 +1154,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDrawDetails(const std::stri
 
     dto::BaseApiResponse response;
     response.success = true;
-    response.result = resultData;
+    response.result = utils::StringUtils::snakeCaseToCamelCase(resultData);
     co_return response;
 
   } catch (const drogon::orm::DrogonDbException &e) {
