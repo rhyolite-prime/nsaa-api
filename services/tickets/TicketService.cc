@@ -32,17 +32,20 @@ using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
 
-drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query) {
+drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query, const std::string &raffleId) {
+
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> mapper(dbClient);
 
   Criteria searchCriteria;
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
-    searchCriteria = Criteria(Tickets::Cols::_customer_phone,
-                              CompareOperator::Like, likeQuery);
-    searchCriteria = Criteria(Tickets::Cols::_ticket_number,
-                              CompareOperator::Like, likeQuery);
+    searchCriteria = Criteria(Tickets::Cols::_customer_phone, CompareOperator::Like, likeQuery);
+    searchCriteria = Criteria(Tickets::Cols::_ticket_number, CompareOperator::Like, likeQuery);
+  }
+
+  if (!raffleId.empty()) {
+    searchCriteria = Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ, raffleId);
   }
 
   try {
@@ -58,8 +61,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSiz
 
     int offset = (pageNo - 1) * pageSize;
     auto result =
-        co_await mapper.orderBy(Tickets::Cols::_created_at, SortOrder::DESC)
-            .limit(pageSize)
+        co_await mapper.orderBy(Tickets::Cols::_created_at, SortOrder::DESC).limit(pageSize)
             .offset(offset)
             .findBy(searchCriteria);
 
@@ -119,6 +121,56 @@ drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSiz
   }
 }
 
+
+drogon::Task<dto::BaseApiResponse> TicketService::getRaffleTicketStats(const std::string &raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+
+  try {
+    auto result = co_await dbClient->execSqlCoro(
+        "SELECT count(*) as total_tickets, "
+        "sum(case when payment_status = 1 then 1 else 0 end) as active_tickets, "
+        "sum(case when payment_status = 1 then cast(total_amount as numeric) else 0 end) as total_revenue "
+        "FROM tickets WHERE raffle_id = $1", raffleId);
+
+    dto::BaseApiResponse response;
+    response.success = true;
+
+    int64_t totalTickets = 0;
+    int64_t activeTickets = 0;
+    double totalRevenue = 0.0;
+
+    if (!result.empty()) {
+      auto row = result[0];
+      totalTickets = row["total_tickets"].as<int64_t>();
+      activeTickets = row["active_tickets"].isNull() ? 0 : row["active_tickets"].as<int64_t>();
+      totalRevenue = row["total_revenue"].isNull() ? 0.0 : row["total_revenue"].as<double>();
+    }
+
+    double conversionRate = totalTickets > 0 ? (static_cast<double>(activeTickets) / totalTickets) * 100.0 : 0.0;
+
+    response.result["totalTickets"] = (Json::UInt64)totalTickets;
+    response.result["activeTickets"] = (Json::UInt64)activeTickets;
+    response.result["conversionRate"] = conversionRate;
+    response.result["totalRevenue"] = totalRevenue;
+
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while fetching ticket stats.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
 
 drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicketDto &dto) {
   auto dbClient = drogon::app().getDbClient();

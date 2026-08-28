@@ -24,8 +24,7 @@ drogon::Task<dto::BaseApiResponse> DrawService::getAll(int pageNo, int pageSize,
   Criteria searchCriteria;
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
-    searchCriteria =
-        Criteria(Draws::Cols::_alias, CompareOperator::Like, likeQuery) ||
+    searchCriteria = Criteria(Draws::Cols::_alias, CompareOperator::Like, likeQuery) ||
         Criteria(Draws::Cols::_draw_code, CompareOperator::Like, likeQuery);
   }
 

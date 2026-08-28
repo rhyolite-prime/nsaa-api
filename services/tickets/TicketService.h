@@ -14,9 +14,11 @@ namespace raffle::services {
 
 class TicketService {
 public:
-  drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
+  drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query, const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> activate(const std::string &paymentReference);
+
+  drogon::Task<dto::BaseApiResponse> getRaffleTicketStats(const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> create(const dto::CreateTicketDto &dto);
 };
