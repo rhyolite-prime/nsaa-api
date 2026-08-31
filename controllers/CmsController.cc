@@ -679,6 +679,29 @@ Task<HttpResponsePtr> CmsController::getTicketGroups(HttpRequestPtr req) {
 }
 
 
+Task<HttpResponsePtr> CmsController::getActiveRaffles(HttpRequestPtr req) {
+
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &raffleService = plugin->getRaffleService();
+
+    auto result = co_await raffleService.getActiveRaffles();
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
+
+
+Task<HttpResponsePtr> CmsController::getActiveRaffleOptions(HttpRequestPtr req) {
+
+    auto raffleId = req->getParameter("raffleId");
+
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &raffleService = plugin->getRaffleService();
+
+    auto result = co_await raffleService.getActiveRaffleOptions(raffleId);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+
+}
 
 
 Task<HttpResponsePtr> CmsController::getRecentDraws(HttpRequestPtr req) {

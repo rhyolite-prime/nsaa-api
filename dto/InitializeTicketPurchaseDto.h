@@ -17,11 +17,13 @@ namespace raffle::dto {
         void fromJson(const Json::Value& json);
 
         // Getters
+        [[nodiscard]] const std::string &getRaffleId() const { return raffle_id_; }
         [[nodiscard]] const std::string &getSelectedOption() const { return selected_option_; }
         [[nodiscard]] const std::string &getTicketGroupId() const { return ticket_group_id_; }
         [[nodiscard]] const std::string &getPhoneNumber() const { return phone_number_; }
 
         // Setters
+        void setRaffleId(const std::string &value) { raffle_id_ = value; }
         void setSelectedOption(const std::string &value) { selected_option_ = value; }
         void setTicketGroupId(const std::string &value) { ticket_group_id_ = value; }
         void setPhoneNumber(const std::string &value) { phone_number_ = value; }
@@ -29,6 +31,7 @@ namespace raffle::dto {
 
     private:
 
+        std::string raffle_id_;
         std::string selected_option_;
         std::string ticket_group_id_;
         std::string phone_number_;
@@ -36,6 +39,10 @@ namespace raffle::dto {
     };
 
     inline void InitializeTicketPurchaseDto::fromJson(const Json::Value& json) {
+
+        if (json.isMember("raffleId") && !json["raffleId"].isNull()) {
+            setRaffleId(json["raffleId"].asString());
+        }
 
         if (json.isMember("selectedOption") && !json["selectedOption"].isNull()) {
            setSelectedOption(json["selectedOption"].asString());

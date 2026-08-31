@@ -631,7 +631,8 @@ curl --location 'http://localhost:5044/api/v1/customers/buy-ticket' \
 --header 'Content-Type: application/json' \
 --header 'Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndlaS56aGFuZ0BleGFtcGxlLmNvbSIsImV4cCI6MTc4MTY1MTQwOSwiaWF0IjoxNzc5MDU5NDA5LCJpc3MiOiJOb3MiLCJ1c2VySWQiOiJjMDY2YTZlYy0xZmQxLTQ0NzctOTY0MC02NjQyMjM4Y2JlMzAiLCJ1c2VybmFtZSI6IndlaXpoYW5nIn0.vwUVS8kDZmL-b7fdysv-URy-r5voL8tv9i3YAiA_gIU' \
 --data '{
-    "selectedOption": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
+    "raffleId": "8990662a-e40f-4344-9b56-1fd31680aa64",
+    "selectedOption": "gold",
     "ticketGroupId" : "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde74"
 }'
 ```
@@ -714,7 +715,8 @@ Buys a ticket for a guest customer. Returns a checkout URL and ticket details. A
 curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/buy-guest-ticket' \
 --header 'Content-Type: application/json' \
 --data '{
-    "selectedOption": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
+    "raffleId": "8990662a-e40f-4344-9b56-1fd31680aa64",
+    "selectedOption": "gold",
     "phoneNumber": "0245444123",
     "ticketGroupId" : "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde74"
 }'
@@ -734,69 +736,6 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/buy-guest-t
     "ticketNumber": "20260707083625",
     "ticketAlias": "WDW-004",
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiZDQyYzk5YTgtZDdkYi00NmI1LTlhZGMtMmIxYzUwMmFkZTcxIiwiZXhwIjoxNzkzODk2NzIwLCJpYXQiOjE3ODM1Mjg3MjAsImlzcyI6Ik5TQUFfUExBWSJ9.Ka6LdjUIQQHGiC54Es5IaVTiZBnpOAkYgJ5WG66yCIY"
-  },
-  "success": true,
-  "targetUrl": ""
-}
-```
-
-## 19. List Colors
-
-**POST** `/cms/colours/list-all`
-
-### Description
-
-Gets a list of all available colours.
-
-### Example Request
-
-```bash
-curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/colours/list-all'
-```
-
-### Example Response
-
-```json
-{
-  "error": null,
-  "message": "",
-  "result": {
-    "data": [
-      {
-        "code": "RED",
-        "emoji": "🔴",
-        "id": "74dabff4-079e-5d0b-8ae9-1b2a536dbf11",
-        "name": "Red",
-        "sortOrder": 1
-      },
-      {
-        "code": "GOLD",
-        "emoji": "🟡",
-        "id": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
-        "name": "Gold",
-        "sortOrder": 2
-      },
-      {
-        "code": "GREEN",
-        "emoji": "🟢",
-        "id": "937a22c0-f7d5-57bd-9a98-71e44fc7b78a",
-        "name": "Green",
-        "sortOrder": 3
-      },
-      {
-        "code": "BLACK_STAR",
-        "emoji": "⭐",
-        "id": "9de57805-008a-5ec4-ae79-ec94b4818173",
-        "name": "Black Star",
-        "sortOrder": 4
-      }
-    ],
-    "lowerBound": 1,
-    "pageNo": 1,
-    "pageSize": 10,
-    "totalCount": 4,
-    "totalPages": 1,
-    "upperBound": 4
   },
   "success": true,
   "targetUrl": ""
@@ -1036,16 +975,16 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/get-recent-winner
 
 ## 22. Get Active Raffle
 
-**POST** `/cms/get-active-raffle`
+**POST** `/cms/raffles/get-all`
 
 ### Description
 
-Gets active raffle
+Gets all active raffles
 
 ### Example Request
 
 ```bash
-curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/get-active-raffle'
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/cms/raffles/get-all'
 ```
 
 ### Example Response
@@ -1055,40 +994,39 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/get-active-raffle
   "error": null,
   "message": "",
   "result": {
-    "createdAt": "2026-06-15 10:00:00",
-    "drawTime": "2026-08-01 18:00:00",
-    "endsAt": "2026-07-31 23:59:59",
-    "id": "e16810df-9980-4da1-ad55-e12d6975ecde",
-    "name": "Summer Mega Raffle 2026",
-    "options": [
+    "data": [
       {
-        "code": "RED",
-        "hexcolor": "#FF0000",
-        "id": "e26810df-9980-4da1-ad55-e12d6975ecde",
-        "name": "Red(Liverpool)",
-        "sortOrder": 1
-      },
-      {
-        "code": "BLUE",
-        "hexcolor": "#16c8f5",
-        "id": "e26810df-9980-4da1-ad55-e12d6975ecde",
-        "name": "Blue(Manchester)",
-        "sortOrder": 2
-      },
-      {
-        "code": "RED",
-        "hexcolor": "#000000",
-        "id": "e26810df-9980-4da1-ad55-e12d6975ecde",
-        "name": "Black(DRAW)",
-        "sortOrder": 3
+        "createdAt": "2026-08-31 21:03:25.321459",
+        "drawTime": "2026-08-31 23:03:00",
+        "endsAt": "2026-08-31 22:02:00",
+        "expectedRevenue": "50000.00",
+        "id": "8990662a-e40f-4344-9b56-1fd31680aa64",
+        "liability": "25000.00",
+        "name": "tsest",
+        "options": [
+          {
+            "id": "red",
+            "name": "Red"
+          },
+          {
+            "id": "gold",
+            "name": "Gold"
+          },
+          {
+            "id": "green",
+            "name": "Green"
+          },
+          {
+            "id": "black",
+            "name": "Black"
+          }
+        ],
+        "slug": "tsest-20260831",
+        "startsAt": "2026-08-31 21:02:00",
+        "status": 0,
+        "totalEntries": 0
       }
-    ],
-    "prizePool": "5000.00",
-    "slug": "summer-mega-raffle-2026",
-    "startsAt": "2026-07-27",
-    "status": "ACTIVE",
-    "totalEntries": 1250,
-    "winningColour": "Red"
+    ]
   },
   "success": true,
   "targetUrl": ""
@@ -1096,6 +1034,52 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/get-active-raffle
 
 ```
 
+
+## 23. Get Active Raffle
+
+**POST** `/cms/raffles/get-options`
+
+### Description
+
+Gets raffle options
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/cms/raffles/get-options?raffleId=8990662a-e40f-4344-9b56-1fd31680aa64'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "id": "red",
+        "name": "Red"
+      },
+      {
+        "id": "gold",
+        "name": "Gold"
+      },
+      {
+        "id": "green",
+        "name": "Green"
+      },
+      {
+        "id": "black",
+        "name": "Black"
+      }
+    ]
+  },
+  "success": true,
+  "targetUrl": ""
+}
+
+```
 # ⚠️ Error Handling
 
 

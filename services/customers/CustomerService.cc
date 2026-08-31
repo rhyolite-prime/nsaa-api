@@ -807,7 +807,7 @@ namespace raffle::services {
       auto customer = co_await customerMapper.findByPrimaryKey(customerId);
 
       // 2. Find active raffle
-      auto activeRaffles = co_await raffleMapper.findBy(Criteria(Raffles::Cols::_status, CompareOperator::EQ, "ACTIVE"));
+      auto activeRaffles = co_await raffleMapper.findBy(Criteria(Raffles::Cols::_id, CompareOperator::EQ, dto.getRaffleId()));
 
       if (activeRaffles.empty()) {
         dto::BaseApiResponse errorResponse;
@@ -818,11 +818,9 @@ namespace raffle::services {
       }
 
       auto activeRaffle = activeRaffles[0];
-      std::string raffleId = activeRaffle.getValueOfId();
 
       // 3. Find draw
-      auto draws = co_await drawMapper.findBy(
-          Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+      auto draws = co_await drawMapper.findBy(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, dto.getRaffleId()));
 
       if (draws.empty()) {
         dto::BaseApiResponse errorResponse;
@@ -1005,11 +1003,13 @@ namespace raffle::services {
     CoroMapper<TicketCollections> ticketGroupMapper(dbClient);
 
     LOG_INFO << "buyGuestTicket request:"
+             << " raffleId=" << dto.getRaffleId()
              << " phoneNumber=" << dto.getPhoneNumber()
              << " selectedOption=" << dto.getSelectedOption()
              << " ticketGroupId=" << dto.getTicketGroupId();
 
     std::string normalizedPhone = dto.getPhoneNumber();
+
     if (normalizedPhone.empty()) {
       dto::BaseApiResponse errorResponse;
       errorResponse.success = false;
@@ -1070,7 +1070,7 @@ namespace raffle::services {
                        .sign(jwt::algorithm::hs256{jwtSecurityKey});
 
       // 2. Find active raffle
-      auto activeRaffles = co_await raffleMapper.findBy(Criteria(Raffles::Cols::_status, CompareOperator::EQ, "ACTIVE"));
+      auto activeRaffles = co_await raffleMapper.findBy(Criteria(Raffles::Cols::_id, CompareOperator::EQ, dto.getRaffleId()));
 
       if (activeRaffles.empty()) {
         dto::BaseApiResponse errorResponse;
@@ -1081,11 +1081,9 @@ namespace raffle::services {
       }
 
       auto activeRaffle = activeRaffles[0];
-      std::string raffleId = activeRaffle.getValueOfId();
 
       // 3. Find draw
-      auto draws = co_await drawMapper.findBy(
-          Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+      auto draws = co_await drawMapper.findBy(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, dto.getRaffleId()));
 
       if (draws.empty()) {
         dto::BaseApiResponse errorResponse;
