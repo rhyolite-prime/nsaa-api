@@ -487,8 +487,10 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
 
     // 4. Update the associated Raffle
     auto raffleId = ticket.getValueOfRaffleId();
+    std::string raffleName;
     try {
       auto raffle = co_await raffleMapper.findByPrimaryKey(raffleId);
+      raffleName = raffle.getValueOfName();
       int currentEntries = raffle.getValueOfTotalEntries();
       raffle.setTotalEntries(currentEntries + ticket.getValueOfQuantity());
 
@@ -509,8 +511,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
 
       co_await drawMapper.update(draw);
     } catch (const std::exception &e) {
-      LOG_ERROR << "Failed to update associated draw for ticket "
-                << ticket.getValueOfId() << ": " << e.what();
+      LOG_ERROR << "Failed to update associated draw for ticket " << ticket.getValueOfId() << ": " << e.what();
     }
 
     // 6. Update the associated Customer
@@ -549,6 +550,24 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
         LOG_ERROR << "Failed to update associated customer for ticket "
                   << ticket.getValueOfId() << ": " << e.what();
       }
+    }
+
+    // 7. Send SMS confirmation to the ticket buyer
+    try {
+      std::string ticketAlias = ticket.getValueOfTicketAlias();
+      std::string customerPhone = ticket.getValueOfCustomerPhone();
+      std::string smsMessage = "Your ticket " + ticketAlias +
+                               " for " + raffleName +
+                               " has been activated. Good luck!";
+      raffle::services::HubtelApi hubtelApi;
+      auto smsSent = co_await hubtelApi.SendSms(customerPhone, smsMessage);
+      if (!smsSent) {
+        LOG_WARN << "SMS notification failed for ticket " << ticket.getValueOfId()
+                 << " (phone: " << customerPhone << ")";
+      }
+    } catch (const std::exception &e) {
+      LOG_ERROR << "Exception sending SMS for ticket "
+                << ticket.getValueOfId() << ": " << e.what();
     }
 
     dto::BaseApiResponse response;
