@@ -12,7 +12,6 @@ class CmsController : public drogon::HttpController<CmsController>
     //public
     ADD_METHOD_TO(CmsController::getHeroSlides, std::string(PREFIX) + "hero-slides", Get, Options);
     ADD_METHOD_TO(CmsController::getPromotionalBanners, std::string(PREFIX) + "banners", Get, Options);
-    ADD_METHOD_TO(CmsController::getPrizes, std::string(PREFIX) + "prizes", Get, Options);
     ADD_METHOD_TO(CmsController::getFaqs, std::string(PREFIX) + "faqs", Get, Options);
     ADD_METHOD_TO(CmsController::getPages, std::string(PREFIX) + "pages/{1}", Get, Options);
     ADD_METHOD_TO(CmsController::getMediaAssets, std::string(PREFIX) + "media-assets", Get, Options);
@@ -46,18 +45,22 @@ class CmsController : public drogon::HttpController<CmsController>
     ADD_METHOD_TO(CmsController::updateMediaLibraryAsset, std::string(PREFIX) + "media-library/update-asset/{1}", Put, Options);
     ADD_METHOD_TO(CmsController::deleteMediaLibraryAsset, std::string(PREFIX) + "media-library/delete-asset/{1}", Delete, Options);
 
-    //colors
-    ADD_METHOD_TO(CmsController::getColors, std::string(PREFIX) + "colours/list-all", Get, Options);
-
     //ticket collections
-    //ADD_METHOD_TO(CmsController::getTicketCollection, std::string(PREFIX) + "ticket/get-collection", Get, Options);
+    ADD_METHOD_TO(CmsController::getTicketGroups, std::string(PREFIX) + "tickets/get-groups", Get, Options);
+
+    //active raffles
+    ADD_METHOD_TO(CmsController::getActiveRaffles, std::string(PREFIX) + "raffles/get-all", Get, Options);
+    ADD_METHOD_TO(CmsController::getActiveRaffleOptions, std::string(PREFIX) + "raffles/get-options", Get, Options);
+
+    // tickets and draws
+    ADD_METHOD_TO(CmsController::getRecentDraws, std::string(PREFIX) + "get-recent-draws", Get, Options);
+    ADD_METHOD_TO(CmsController::getRecentWinners, std::string(PREFIX) + "get-recent-winners", Get, Options);
 
     METHOD_LIST_END
 
     //public
     Task<HttpResponsePtr> getHeroSlides(HttpRequestPtr req);
     Task<HttpResponsePtr> getPromotionalBanners(HttpRequestPtr req);
-    Task<HttpResponsePtr> getPrizes(HttpRequestPtr req);
     Task<HttpResponsePtr> getFaqs(HttpRequestPtr req);
     Task<HttpResponsePtr> getPages(HttpRequestPtr req, std::string slug);
     Task<HttpResponsePtr> getMediaAssets(HttpRequestPtr req);
@@ -94,9 +97,15 @@ class CmsController : public drogon::HttpController<CmsController>
     Task<HttpResponsePtr> updateMediaLibraryAsset(HttpRequestPtr req, std::string id);
     Task<HttpResponsePtr> deleteMediaLibraryAsset(HttpRequestPtr req, std::string id);
 
-    //colors
-    Task<HttpResponsePtr> getColors(HttpRequestPtr req);
-    //Task<HttpResponsePtr> getTicketCollection(HttpRequestPtr req);
+    //tickets
+    Task<HttpResponsePtr> getTicketGroups(HttpRequestPtr req);
 
+    Task<HttpResponsePtr> getActiveRaffles(HttpRequestPtr req);
+
+    Task<HttpResponsePtr> getActiveRaffleOptions(HttpRequestPtr req);
+
+    // tickets and draws
+    Task<HttpResponsePtr> getRecentDraws(HttpRequestPtr req);
+    Task<HttpResponsePtr> getRecentWinners(HttpRequestPtr req);
 };
 

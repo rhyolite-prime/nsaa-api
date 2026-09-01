@@ -617,7 +617,7 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/profile-det
 
 ## 16. Buy Ticket (Authenticated Customer)
 
-**GET** `/customers/buy-ticket`
+**POST** `/customers/buy-ticket`
 
 ### Description
 
@@ -626,8 +626,15 @@ Buys a ticket for a customer. Returns a checkout URL and ticket details.
 ### Example Request
 
 ```bash
-curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/buy-ticket' \
---header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiMzExYzg4MDQtMmE1My00Yjg5LWE3OWUtMDE4NDc0N2FjZTA1IiwiZXhwIjoxNzkzMTk5NTcxLCJpYXQiOjE3ODI4MzE1NzEsImlzcyI6Ik5TQUFfUExBWSJ9.onHw4U5Wdktwe2ZQLmdN8fjpZ1WRiDYXaOhe3eVLhOs'
+curl --location 'http://localhost:5044/api/v1/customers/buy-ticket' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiNTM0YzYxMjctYTcxZS00ZmEwLWExODctM2ZlYzFkZTIwMDJhIiwiZXhwIjoxNzkzNzgzODk3LCJpYXQiOjE3ODM0MTU4OTcsImlzcyI6Ik5TQUFfUExBWSJ9.fZUlOVquCmzh1CPHZgnMo_wmESknTkYpBRzZdYJWxAs' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndlaS56aGFuZ0BleGFtcGxlLmNvbSIsImV4cCI6MTc4MTY1MTQwOSwiaWF0IjoxNzc5MDU5NDA5LCJpc3MiOiJOb3MiLCJ1c2VySWQiOiJjMDY2YTZlYy0xZmQxLTQ0NzctOTY0MC02NjQyMjM4Y2JlMzAiLCJ1c2VybmFtZSI6IndlaXpoYW5nIn0.vwUVS8kDZmL-b7fdysv-URy-r5voL8tv9i3YAiA_gIU' \
+--data '{
+    "raffleId": "8990662a-e40f-4344-9b56-1fd31680aa64",
+    "selectedOption": "gold",
+    "ticketGroupId" : "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde74"
+}'
 ```
 
 ### Example Response
@@ -694,18 +701,59 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/get-raffle-
 }
 ```
 
-## 18. List Colors
+## 18. Buy Ticket (Guest Customer)
 
-**POST** `/cms/colours/list-all`
+**POST** `/customers/buy-guest-ticket`
 
 ### Description
 
-Gets a list of all available colours.
+Buys a ticket for a guest customer. Returns a checkout URL and ticket details. Automatically creates an account for the guest and return a JWT for login.
 
 ### Example Request
 
 ```bash
-curl --location 'http://localhost:5044/api/v1/cms/colours/list-all'
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/buy-guest-ticket' \
+--header 'Content-Type: application/json' \
+--data '{
+    "raffleId": "8990662a-e40f-4344-9b56-1fd31680aa64",
+    "selectedOption": "gold",
+    "phoneNumber": "0245444123",
+    "ticketGroupId" : "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde74"
+}'
+```
+
+### Example Response
+
+```json
+ {
+  "error": null,
+  "message": "Ticket created successfully. Please complete payment.",
+  "result": {
+    "checkoutUrl": "https://pay.hubtel.com/f3fda1ca4a27424786034b7174d83467",
+    "paymentReference": "690864ea-a3c9-0d95-85c9-56fddd5197a3",
+    "selectedColour": "Gold",
+    "ticketId": "7f6361c7-76dd-4c2c-b86f-8c0e52352893",
+    "ticketNumber": "20260707083625",
+    "ticketAlias": "WDW-004",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21lcklkIjoiZDQyYzk5YTgtZDdkYi00NmI1LTlhZGMtMmIxYzUwMmFkZTcxIiwiZXhwIjoxNzkzODk2NzIwLCJpYXQiOjE3ODM1Mjg3MjAsImlzcyI6Ik5TQUFfUExBWSJ9.Ka6LdjUIQQHGiC54Es5IaVTiZBnpOAkYgJ5WG66yCIY"
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+## 20. Get Ticket Groups
+
+**POST** `/cms/tickets/get-groups`
+
+### Description
+
+Gets a list of all Ticket Groups & Prices  
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/tickets/get-groups'
 ```
 
 ### Example Response
@@ -717,32 +765,32 @@ curl --location 'http://localhost:5044/api/v1/cms/colours/list-all'
   "result": {
     "data": [
       {
-        "code": "RED",
-        "emoji": "🔴",
-        "id": "74dabff4-079e-5d0b-8ae9-1b2a536dbf11",
-        "name": "Red",
-        "sortOrder": 1
+        "id": "e8036a4a-1879-4fdf-88d3-b65a53c42ed6",
+        "isActive": true,
+        "name": "10 Tickets",
+        "quantity": 10,
+        "unitPrice": "5.00"
       },
       {
-        "code": "GOLD",
-        "emoji": "🟡",
-        "id": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73",
-        "name": "Gold",
-        "sortOrder": 2
+        "id": "961ae756-86e2-43c9-8667-c6c194f75526",
+        "isActive": true,
+        "name": "5 Tickets",
+        "quantity": 5,
+        "unitPrice": "5.00"
       },
       {
-        "code": "GREEN",
-        "emoji": "🟢",
-        "id": "937a22c0-f7d5-57bd-9a98-71e44fc7b78a",
-        "name": "Green",
-        "sortOrder": 3
+        "id": "18439554-2a20-4c34-8f4b-95214b6cef41",
+        "isActive": true,
+        "name": "2 Tickets",
+        "quantity": 2,
+        "unitPrice": "5.00"
       },
       {
-        "code": "BLACK_STAR",
-        "emoji": "⭐",
-        "id": "9de57805-008a-5ec4-ae79-ec94b4818173",
-        "name": "Black Star",
-        "sortOrder": 4
+        "id": "e51ff197-6831-4291-b490-d7cd0a9b027f",
+        "isActive": true,
+        "name": "1 Ticket",
+        "quantity": 1,
+        "unitPrice": "5.00"
       }
     ],
     "lowerBound": 1,
@@ -759,8 +807,279 @@ curl --location 'http://localhost:5044/api/v1/cms/colours/list-all'
 
 
 
+## 20. Get recent draws
+
+**POST** `/cms/get-recent-draws`
+
+### Description
+
+Gets a list of all Recent draws
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/get-recent-draws'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "alias": "tuesday-bliss",
+        "drawCode": "20260428-1830",
+        "drawDate": "2026-04-28 18:30:00",
+        "drawTime": null,
+        "id": "701a21f7-a711-482d-86ae-2d77a5697070",
+        "status": "COMPLETED",
+        "totalEntries": 35,
+        "totalPool": "7.00",
+        "totalPrices": "11000.00",
+        "winningColour": "Black Star",
+        "winningColourId": "9de57805-008a-5ec4-ae79-ec94b4818173"
+      },
+      {
+        "alias": "mabango-grand-2026",
+        "drawCode": "20250118-2005",
+        "drawDate": "2025-01-18 20:05:00",
+        "drawTime": null,
+        "id": "78653b5c-212c-4295-a55d-6b88b4be9e98",
+        "status": "COMPLETED",
+        "totalEntries": 0,
+        "totalPool": "0.00",
+        "totalPrices": "14000.00",
+        "winningColour": null,
+        "winningColourId": "937a22c0-f7d5-57bd-9a98-71e44fc7b78a"
+      },
+      {
+        "alias": "january-grand-2026",
+        "drawCode": "20260118-2005",
+        "drawDate": "2026-01-18 20:05:00",
+        "drawTime": null,
+        "id": "876e172c-2b44-440e-887b-0f51634dddf9",
+        "status": "COMPLETED",
+        "totalEntries": 105,
+        "totalPool": "0.00",
+        "totalPrices": "15001.56",
+        "winningColour": "Red",
+        "winningColourId": "74dabff4-079e-5d0b-8ae9-1b2a536dbf11"
+      },
+      {
+        "alias": "sunday-jackpot-2026",
+        "drawCode": "20260111-2105",
+        "drawDate": "2026-01-11 21:05:00",
+        "drawTime": null,
+        "id": "35c1c3f4-c3a5-4619-9007-1c32765c9940",
+        "status": "COMPLETED",
+        "totalEntries": 0,
+        "totalPool": "0.00",
+        "totalPrices": "15000.06",
+        "winningColour": "Red",
+        "winningColourId": "74dabff4-079e-5d0b-8ae9-1b2a536dbf11"
+      },
+      {
+        "alias": "friday-night-draw-2026",
+        "drawCode": "19691231-2359",
+        "drawDate": "1969-12-31 23:59:59",
+        "drawTime": null,
+        "id": "4dd647a4-75ca-487d-8e2c-eab0428d1021",
+        "status": "COMPLETED",
+        "totalEntries": 0,
+        "totalPool": "0.00",
+        "totalPrices": "14000.00",
+        "winningColour": "Gold",
+        "winningColourId": "0bcb27f1-4593-53b4-bbcd-2ed6cf8bde73"
+      }
+    ],
+    "lowerBound": 1,
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalCount": 5,
+    "totalPages": 1,
+    "upperBound": 5
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
 
 
+## 21. Get recent winners
+
+**POST** `/cms/get-recent-winners`
+
+### Description
+
+Gets a list of all Recent Winners
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/get-recent-winners'
+```
+
+### Example Response
+
+```json
+ {
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "actualPayout": "150.00",
+        "customerId": "c3d4e5f6-a7b8-9012-cdef-345678901234",
+        "drawId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "id": "cb311f8f-d8ac-42f6-a511-cce98af8cbac",
+        "phoneNumber": "+23*******890",
+        "prizeAmount": "150.00",
+        "ticketAlias": "T-001",
+        "ticketId": "b2c3d4e5-f6a7-8901-bcde-f23456789012"
+      },
+      {
+        "actualPayout": "300.00",
+        "customerId": "b8c9d0e1-f2a3-4567-a1b3-890123456789",
+        "drawId": "c3d4e5f6-a7b8-9012-cdef-345678901234",
+        "id": "ddfafc90-6ddf-44ed-8e10-b5231b077c77",
+        "phoneNumber": "+23*******111",
+        "prizeAmount": "300.00",
+        "ticketAlias": "T-006",
+        "ticketId": "a7b8c9d0-e1f2-3456-a0b2-789012345678"
+      },
+      {
+        "actualPayout": "500.00",
+        "customerId": "e5f6a7b8-c9d0-1234-ef00-567890123456",
+        "drawId": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
+        "id": "eefdbcde-41c7-431e-a18f-b565c1c2756f",
+        "phoneNumber": "+23*******455",
+        "prizeAmount": "500.00",
+        "ticketAlias": "T-003",
+        "ticketId": "d4e5f6a7-b8c9-0123-def0-456789012345"
+      }
+    ],
+    "lowerBound": 1,
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalCount": 10,
+    "totalPages": 1,
+    "upperBound": 10
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+## 22. Get Active Raffle
+
+**POST** `/cms/raffles/get-all`
+
+### Description
+
+Gets all active raffles
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/cms/raffles/get-all'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "createdAt": "2026-08-31 21:03:25.321459",
+        "drawTime": "2026-08-31 23:03:00",
+        "endsAt": "2026-08-31 22:02:00",
+        "expectedRevenue": "50000.00",
+        "id": "8990662a-e40f-4344-9b56-1fd31680aa64",
+        "liability": "25000.00",
+        "name": "tsest",
+        "options": [
+          {
+            "id": "red",
+            "name": "Red"
+          },
+          {
+            "id": "gold",
+            "name": "Gold"
+          },
+          {
+            "id": "green",
+            "name": "Green"
+          },
+          {
+            "id": "black",
+            "name": "Black"
+          }
+        ],
+        "slug": "tsest-20260831",
+        "startsAt": "2026-08-31 21:02:00",
+        "status": 0,
+        "totalEntries": 0
+      }
+    ]
+  },
+  "success": true,
+  "targetUrl": ""
+}
+
+```
+
+
+## 23. Get Active Raffle
+
+**POST** `/cms/raffles/get-options`
+
+### Description
+
+Gets raffle options
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/cms/raffles/get-options?raffleId=8990662a-e40f-4344-9b56-1fd31680aa64'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "id": "red",
+        "name": "Red"
+      },
+      {
+        "id": "gold",
+        "name": "Gold"
+      },
+      {
+        "id": "green",
+        "name": "Green"
+      },
+      {
+        "id": "black",
+        "name": "Black"
+      }
+    ]
+  },
+  "success": true,
+  "targetUrl": ""
+}
+
+```
 # ⚠️ Error Handling
 
 

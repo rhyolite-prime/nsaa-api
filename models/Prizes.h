@@ -54,8 +54,6 @@ class Prizes
         static const std::string _rank;
         static const std::string _remaining_quantity;
         static const std::string _probability;
-        static const std::string _start_date;
-        static const std::string _end_date;
         static const std::string _metadata;
         static const std::string _created_at;
         static const std::string _updated_at;
@@ -205,24 +203,6 @@ class Prizes
     void setProbability(std::string &&pProbability) noexcept;
     void setProbabilityToNull() noexcept;
 
-    /**  For column start_date  */
-    ///Get the value of the column start_date, returns the default value if the column is null
-    const ::trantor::Date &getValueOfStartDate() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<::trantor::Date> &getStartDate() const noexcept;
-    ///Set the value of the column start_date
-    void setStartDate(const ::trantor::Date &pStartDate) noexcept;
-    void setStartDateToNull() noexcept;
-
-    /**  For column end_date  */
-    ///Get the value of the column end_date, returns the default value if the column is null
-    const ::trantor::Date &getValueOfEndDate() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<::trantor::Date> &getEndDate() const noexcept;
-    ///Set the value of the column end_date
-    void setEndDate(const ::trantor::Date &pEndDate) noexcept;
-    void setEndDateToNull() noexcept;
-
     /**  For column metadata  */
     ///Get the value of the column metadata, returns the default value if the column is null
     const std::string &getValueOfMetadata() const noexcept;
@@ -252,7 +232,7 @@ class Prizes
     void setUpdatedAtToNull() noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 15;  }
+    static size_t getColumnNumber() noexcept {  return 13;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -284,8 +264,6 @@ class Prizes
     std::shared_ptr<int32_t> rank_;
     std::shared_ptr<int32_t> remainingQuantity_;
     std::shared_ptr<std::string> probability_;
-    std::shared_ptr<::trantor::Date> startDate_;
-    std::shared_ptr<::trantor::Date> endDate_;
     std::shared_ptr<std::string> metadata_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
@@ -300,7 +278,7 @@ class Prizes
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[15]={ false };
+    bool dirtyFlag_[13]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -373,30 +351,19 @@ class Prizes
         }
         if(dirtyFlag_[10])
         {
-            sql += "start_date,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[11])
-        {
-            sql += "end_date,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[12])
-        {
             sql += "metadata,";
             ++parametersCount;
         }
         sql += "created_at,";
         ++parametersCount;
-        if(!dirtyFlag_[13])
+        if(!dirtyFlag_[11])
         {
             needSelection=true;
         }
-        sql += "updated_at,";
-        ++parametersCount;
-        if(!dirtyFlag_[14])
+        if(dirtyFlag_[12])
         {
-            needSelection=true;
+            sql += "updated_at,";
+            ++parametersCount;
         }
         if(parametersCount > 0)
         {
@@ -481,28 +448,14 @@ class Prizes
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[12])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        if(dirtyFlag_[13])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
-        }
-        if(dirtyFlag_[14])
-        {
-            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
-            sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(parametersCount > 0)
         {

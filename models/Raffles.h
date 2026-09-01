@@ -47,16 +47,21 @@ class Raffles
         static const std::string _id;
         static const std::string _name;
         static const std::string _slug;
+        static const std::string _maximum_winners;
         static const std::string _total_entries;
-        static const std::string _prize_pool;
-        static const std::string _winning_colour_id;
-        static const std::string _winning_colour;
+        static const std::string _expected_revenue;
+        static const std::string _liablity;
+        static const std::string _winning_option_value;
+        static const std::string _winning_option_name;
         static const std::string _start_time;
         static const std::string _end_time;
         static const std::string _draw_time;
+        static const std::string _options;
+        static const std::string _prize_config;
+        static const std::string _exempted_partners;
+        static const std::string _status;
         static const std::string _created_at;
         static const std::string _updated_at;
-        static const std::string _status;
     };
 
     static const int primaryKeyNumber;
@@ -135,6 +140,15 @@ class Raffles
     void setSlug(const std::string &pSlug) noexcept;
     void setSlug(std::string &&pSlug) noexcept;
 
+    /**  For column maximum_winners  */
+    ///Get the value of the column maximum_winners, returns the default value if the column is null
+    const int32_t &getValueOfMaximumWinners() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getMaximumWinners() const noexcept;
+    ///Set the value of the column maximum_winners
+    void setMaximumWinners(const int32_t &pMaximumWinners) noexcept;
+    void setMaximumWinnersToNull() noexcept;
+
     /**  For column total_entries  */
     ///Get the value of the column total_entries, returns the default value if the column is null
     const int32_t &getValueOfTotalEntries() const noexcept;
@@ -144,35 +158,45 @@ class Raffles
     void setTotalEntries(const int32_t &pTotalEntries) noexcept;
     void setTotalEntriesToNull() noexcept;
 
-    /**  For column prize_pool  */
-    ///Get the value of the column prize_pool, returns the default value if the column is null
-    const std::string &getValueOfPrizePool() const noexcept;
+    /**  For column expected_revenue  */
+    ///Get the value of the column expected_revenue, returns the default value if the column is null
+    const std::string &getValueOfExpectedRevenue() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getPrizePool() const noexcept;
-    ///Set the value of the column prize_pool
-    void setPrizePool(const std::string &pPrizePool) noexcept;
-    void setPrizePool(std::string &&pPrizePool) noexcept;
-    void setPrizePoolToNull() noexcept;
+    const std::shared_ptr<std::string> &getExpectedRevenue() const noexcept;
+    ///Set the value of the column expected_revenue
+    void setExpectedRevenue(const std::string &pExpectedRevenue) noexcept;
+    void setExpectedRevenue(std::string &&pExpectedRevenue) noexcept;
+    void setExpectedRevenueToNull() noexcept;
 
-    /**  For column winning_colour_id  */
-    ///Get the value of the column winning_colour_id, returns the default value if the column is null
-    const std::string &getValueOfWinningColourId() const noexcept;
+    /**  For column liablity  */
+    ///Get the value of the column liablity, returns the default value if the column is null
+    const std::string &getValueOfLiablity() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getWinningColourId() const noexcept;
-    ///Set the value of the column winning_colour_id
-    void setWinningColourId(const std::string &pWinningColourId) noexcept;
-    void setWinningColourId(std::string &&pWinningColourId) noexcept;
-    void setWinningColourIdToNull() noexcept;
+    const std::shared_ptr<std::string> &getLiablity() const noexcept;
+    ///Set the value of the column liablity
+    void setLiablity(const std::string &pLiablity) noexcept;
+    void setLiablity(std::string &&pLiablity) noexcept;
+    void setLiablityToNull() noexcept;
 
-    /**  For column winning_colour  */
-    ///Get the value of the column winning_colour, returns the default value if the column is null
-    const std::string &getValueOfWinningColour() const noexcept;
+    /**  For column winning_option_value  */
+    ///Get the value of the column winning_option_value, returns the default value if the column is null
+    const std::string &getValueOfWinningOptionValue() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getWinningColour() const noexcept;
-    ///Set the value of the column winning_colour
-    void setWinningColour(const std::string &pWinningColour) noexcept;
-    void setWinningColour(std::string &&pWinningColour) noexcept;
-    void setWinningColourToNull() noexcept;
+    const std::shared_ptr<std::string> &getWinningOptionValue() const noexcept;
+    ///Set the value of the column winning_option_value
+    void setWinningOptionValue(const std::string &pWinningOptionValue) noexcept;
+    void setWinningOptionValue(std::string &&pWinningOptionValue) noexcept;
+    void setWinningOptionValueToNull() noexcept;
+
+    /**  For column winning_option_name  */
+    ///Get the value of the column winning_option_name, returns the default value if the column is null
+    const std::string &getValueOfWinningOptionName() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getWinningOptionName() const noexcept;
+    ///Set the value of the column winning_option_name
+    void setWinningOptionName(const std::string &pWinningOptionName) noexcept;
+    void setWinningOptionName(std::string &&pWinningOptionName) noexcept;
+    void setWinningOptionNameToNull() noexcept;
 
     /**  For column start_time  */
     ///Get the value of the column start_time, returns the default value if the column is null
@@ -198,6 +222,45 @@ class Raffles
     ///Set the value of the column draw_time
     void setDrawTime(const ::trantor::Date &pDrawTime) noexcept;
 
+    /**  For column options  */
+    ///Get the value of the column options, returns the default value if the column is null
+    const std::string &getValueOfOptions() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getOptions() const noexcept;
+    ///Set the value of the column options
+    void setOptions(const std::string &pOptions) noexcept;
+    void setOptions(std::string &&pOptions) noexcept;
+    void setOptionsToNull() noexcept;
+
+    /**  For column prize_config  */
+    ///Get the value of the column prize_config, returns the default value if the column is null
+    const std::string &getValueOfPrizeConfig() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getPrizeConfig() const noexcept;
+    ///Set the value of the column prize_config
+    void setPrizeConfig(const std::string &pPrizeConfig) noexcept;
+    void setPrizeConfig(std::string &&pPrizeConfig) noexcept;
+    void setPrizeConfigToNull() noexcept;
+
+    /**  For column exempted_partners  */
+    ///Get the value of the column exempted_partners, returns the default value if the column is null
+    const std::string &getValueOfExemptedPartners() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getExemptedPartners() const noexcept;
+    ///Set the value of the column exempted_partners
+    void setExemptedPartners(const std::string &pExemptedPartners) noexcept;
+    void setExemptedPartners(std::string &&pExemptedPartners) noexcept;
+    void setExemptedPartnersToNull() noexcept;
+
+    /**  For column status  */
+    ///Get the value of the column status, returns the default value if the column is null
+    const int32_t &getValueOfStatus() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getStatus() const noexcept;
+    ///Set the value of the column status
+    void setStatus(const int32_t &pStatus) noexcept;
+    void setStatusToNull() noexcept;
+
     /**  For column created_at  */
     ///Get the value of the column created_at, returns the default value if the column is null
     const ::trantor::Date &getValueOfCreatedAt() const noexcept;
@@ -216,18 +279,8 @@ class Raffles
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
-    /**  For column status  */
-    ///Get the value of the column status, returns the default value if the column is null
-    const std::string &getValueOfStatus() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getStatus() const noexcept;
-    ///Set the value of the column status
-    void setStatus(const std::string &pStatus) noexcept;
-    void setStatus(std::string &&pStatus) noexcept;
-    void setStatusToNull() noexcept;
 
-
-    static size_t getColumnNumber() noexcept {  return 13;  }
+    static size_t getColumnNumber() noexcept {  return 18;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -252,16 +305,21 @@ class Raffles
     std::shared_ptr<std::string> id_;
     std::shared_ptr<std::string> name_;
     std::shared_ptr<std::string> slug_;
+    std::shared_ptr<int32_t> maximumWinners_;
     std::shared_ptr<int32_t> totalEntries_;
-    std::shared_ptr<std::string> prizePool_;
-    std::shared_ptr<std::string> winningColourId_;
-    std::shared_ptr<std::string> winningColour_;
+    std::shared_ptr<std::string> expectedRevenue_;
+    std::shared_ptr<std::string> liablity_;
+    std::shared_ptr<std::string> winningOptionValue_;
+    std::shared_ptr<std::string> winningOptionName_;
     std::shared_ptr<::trantor::Date> startTime_;
     std::shared_ptr<::trantor::Date> endTime_;
     std::shared_ptr<::trantor::Date> drawTime_;
+    std::shared_ptr<std::string> options_;
+    std::shared_ptr<std::string> prizeConfig_;
+    std::shared_ptr<std::string> exemptedPartners_;
+    std::shared_ptr<int32_t> status_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
-    std::shared_ptr<std::string> status_;
     struct MetaData
     {
         const std::string colName_;
@@ -273,7 +331,7 @@ class Raffles
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[13]={ false };
+    bool dirtyFlag_[18]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -307,61 +365,88 @@ class Raffles
             sql += "slug,";
             ++parametersCount;
         }
-        sql += "total_entries,";
+        sql += "maximum_winners,";
         ++parametersCount;
         if(!dirtyFlag_[3])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[4])
+        sql += "total_entries,";
+        ++parametersCount;
+        if(!dirtyFlag_[4])
         {
-            sql += "prize_pool,";
+            needSelection=true;
+        }
+        if(dirtyFlag_[5])
+        {
+            sql += "expected_revenue,";
             ++parametersCount;
         }
-        sql += "winning_colour_id,";
+        if(dirtyFlag_[6])
+        {
+            sql += "liablity,";
+            ++parametersCount;
+        }
+        sql += "winning_option_value,";
         ++parametersCount;
-        if(!dirtyFlag_[5])
+        if(!dirtyFlag_[7])
         {
             needSelection=true;
         }
-        sql += "winning_colour,";
+        sql += "winning_option_name,";
         ++parametersCount;
-        if(!dirtyFlag_[6])
+        if(!dirtyFlag_[8])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[7])
+        if(dirtyFlag_[9])
         {
             sql += "start_time,";
             ++parametersCount;
         }
-        if(dirtyFlag_[8])
+        if(dirtyFlag_[10])
         {
             sql += "end_time,";
             ++parametersCount;
         }
-        if(dirtyFlag_[9])
+        if(dirtyFlag_[11])
         {
             sql += "draw_time,";
             ++parametersCount;
         }
-        sql += "created_at,";
-        ++parametersCount;
-        if(!dirtyFlag_[10])
-        {
-            needSelection=true;
-        }
-        sql += "updated_at,";
-        ++parametersCount;
-        if(!dirtyFlag_[11])
-        {
-            needSelection=true;
-        }
-        sql += "status,";
+        sql += "options,";
         ++parametersCount;
         if(!dirtyFlag_[12])
         {
             needSelection=true;
+        }
+        sql += "prize_config,";
+        ++parametersCount;
+        if(!dirtyFlag_[13])
+        {
+            needSelection=true;
+        }
+        sql += "exempted_partners,";
+        ++parametersCount;
+        if(!dirtyFlag_[14])
+        {
+            needSelection=true;
+        }
+        if(dirtyFlag_[15])
+        {
+            sql += "status,";
+            ++parametersCount;
+        }
+        sql += "created_at,";
+        ++parametersCount;
+        if(!dirtyFlag_[16])
+        {
+            needSelection=true;
+        }
+        if(dirtyFlag_[17])
+        {
+            sql += "updated_at,";
+            ++parametersCount;
         }
         if(parametersCount > 0)
         {
@@ -407,33 +492,37 @@ class Raffles
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[5])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(dirtyFlag_[6])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[7])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[8])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
         }
         if(dirtyFlag_[9])
         {
@@ -445,18 +534,10 @@ class Raffles
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[11])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(dirtyFlag_[12])
         {
@@ -466,6 +547,43 @@ class Raffles
         else
         {
             sql +="default,";
+        }
+        if(dirtyFlag_[13])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[14])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[15])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[16])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[17])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
         }
         if(parametersCount > 0)
         {

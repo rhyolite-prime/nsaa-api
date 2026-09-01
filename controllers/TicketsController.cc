@@ -23,21 +23,29 @@ Task<HttpResponsePtr> TicketsController::getAll(HttpRequestPtr req) {
     query = "";
   }
 
+  std::string raffleId = req->getParameter("raffleId");
+  if (raffleId.empty()) {
+    raffleId = "";
+  }
+
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &ticketService = plugin->getTicketService();
 
-  auto result = co_await ticketService.getAll(pageNo, pageSize, query);
+  auto result = co_await ticketService.getAll(pageNo, pageSize, query, raffleId);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }
 
-Task<HttpResponsePtr> TicketsController::getStats(HttpRequestPtr req) {
+
+Task<HttpResponsePtr> TicketsController::getRaffleTicketStats(HttpRequestPtr req, std::string raffleId) {
+
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &ticketService = plugin->getTicketService();
 
-  auto result = co_await ticketService.getStats();
+  auto result = co_await ticketService.getRaffleTicketStats(raffleId);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
+
 }
 
 Task<HttpResponsePtr> TicketsController::create(const HttpRequestPtr req) {

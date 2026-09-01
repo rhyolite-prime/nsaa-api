@@ -10,7 +10,6 @@
 
 #include "services/affiliate_partners/AffiliatePartnerService.h"
 #include "services/banners/BannerService.h"
-#include "services/colors/ColorService.h"
 #include "services/customers/CustomerService.h"
 #include "services/dashboard/DashboardService.h"
 #include "services/draws/DrawService.h"
@@ -19,7 +18,7 @@
 #include "services/hubtel_api/HubtelApi.h"
 #include "services/media_library/MediaLibraryService.h"
 #include "services/pages/PageService.h"
-#include "services/price_tiers/PriceTierService.h"
+#include "services/prize_config/PrizeConfigService.h"
 #include "services/quartz/QuartzApi.h"
 #include "services/raffles/RaffleService.h"
 #include "services/redis/RedisCacheManager.h"
@@ -28,6 +27,7 @@
 #include "services/settings/SettingService.h"
 #include "services/support_ticket/SupportTicketService.h"
 #include "services/tickets/TicketService.h"
+#include "services/ticket_collection/TicketCollectionService.h"
 #include "services/transaction_audit/TransactionAuditService.h"
 #include "services/users/UserService.h"
 
@@ -48,10 +48,8 @@ namespace raffle::plugins {
 
         services::RedisCacheManager &getRedisCacheManager() { return redisCacheService_; }
         services::HubtelApi &getHubtelApi() { return hubtelApi_; }
-        services::ColorService &getColorService() { return colorService_; }
         services::CustomerService &getCustomerService() { return customerService_; }
         services::DashboardService &getDashboardService() { return dashboardService_; }
-        services::PriceTierService &getPriceTierService() { return priceTierService_; }
         services::RngLogService &getRngLogService() { return rngLogService_; }
         services::RoleService &getRoleService() { return roleService_; }
         services::SettingService &getSettingService() { return settingService_; }
@@ -68,16 +66,16 @@ namespace raffle::plugins {
         services::MediaLibraryService &getMediaLibraryService() { return mediaLibraryService_; }
         services::PageService &getPageService() { return pageService_; }
         services::SupportTicketService &getSupportTicketService() { return supportTicketService_; }
+        services::PrizeConfigService &getPrizeConfigService() { return prizeConfigService_; }
+        services::TicketCollectionService &getTicketCollectionService() { return ticketCollectionService_; }
 
     private:
         services::RedisCacheManager redisCacheService_;
         services::HubtelApi hubtelApi_;
         services::DrawService drawService_;
         services::RaffleService raffleService_;
-        services::ColorService colorService_;
         services::CustomerService customerService_;
         services::DashboardService dashboardService_;
-        services::PriceTierService priceTierService_;
         services::RngLogService rngLogService_;
         services::RoleService roleService_;
         services::SettingService settingService_;
@@ -92,6 +90,8 @@ namespace raffle::plugins {
         services::MediaLibraryService mediaLibraryService_;
         services::PageService pageService_;
         services::SupportTicketService supportTicketService_;
+        services::PrizeConfigService prizeConfigService_;
+        services::TicketCollectionService ticketCollectionService_;
     };
 
 }

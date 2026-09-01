@@ -10,15 +10,13 @@
 
 namespace raffle::services {
 
-    class DrawService {
-    public:
+class DrawService {
+public:
+  drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
+  drogon::Task<dto::BaseApiResponse> getRecentDraws(int pageNo, int pageSize);
+  drogon::Task<dto::BaseApiResponse> getRecentWinners(int pageNo, int pageSize);
+};
 
-        drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
-        //drogon::Task<dto::BaseApiResponse> executeDraw();
+} // namespace raffle::services
 
-
-    };
-
-}
-
-#endif //CHOPMONEYRAFFLEAPI_DRAWSERVICE_H
+#endif // CHOPMONEYRAFFLEAPI_DRAWSERVICE_H

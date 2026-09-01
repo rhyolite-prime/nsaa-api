@@ -30,12 +30,7 @@ add_executable(${PROJECT_NAME} main.cc
         plugins/RaffleServicePlugin.h
         filters/CustomerJwtAuthFilter.h
         filters/CustomerJwtAuthFilter.cc
-        controllers/AuthController.h
-        services/colors/ColorService.h
         dto/BaseApiResponse.h
-        dto/CreateColorDto.h
-        dto/UpdateColorDto.h
-        services/price_tiers/PriceTierService.h
         services/roles/RoleService.h
         services/settings/SettingService.h
         services/users/UserService.h
@@ -46,17 +41,14 @@ add_executable(${PROJECT_NAME} main.cc
         services/winners/WinnerService.h
         services/rng_logs/RngLogService.h
         constants/ErrorCodes.h
-        services/colors/ColorService.cc
         services/customers/CustomerService.cc
-        services/price_tiers/PriceTierService.cc
         services/draws/DrawService.h
         services/draws/DrawService.cc
         services/tickets/TicketService.cc
         services/raffles/RaffleService.h
         services/raffles/RaffleService.cc
         services/hubtel_api/HubtelApi.h
-        dto/CreateRaffleDto.h
-        dto/UpdateRaffleDto.h
+        dto/RaffleDto.h
         services/quartz/QuartzApi.h
         dto/QuartzJobDto.h
         services/quartz/QuartzApi.cc
@@ -69,7 +61,6 @@ add_executable(${PROJECT_NAME} main.cc
         utils/DateUtils.cc
         utils/StringUtils.h
         utils/StringUtils.cc
-        controllers/PaymentCallbackController.h
         services/settings/SettingService.cc
         dto/CreateUserDto.h
         dto/UpdateUserDto.h
@@ -84,7 +75,6 @@ add_executable(${PROJECT_NAME} main.cc
         services/hubtel_api/HubtelApi.cc
         dto/CheckoutResponse.h
         dto/DirectReceiveMoneyResponse.h
-        controllers/HubtelCallbackProcessorController.h
         services/email/EmailService.h
         dto/SendEmailDto.h
         services/email/EmailService.cc
@@ -122,6 +112,11 @@ add_executable(${PROJECT_NAME} main.cc
         dto/TicketCollectionDto.h
         dto/InitializeTicketPurchaseDto.h
         dto/ChangeCustomerPinDto.h
+        services/ticket_collection/TicketCollectionService.cc
+        services/prize_config/PrizeConfigService.h
+        dto/PrizeCategoryDto.h
+        dto/PrizeDto.h
+        services/prize_config/PrizeConfigService.cc
 
 )
 

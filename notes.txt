@@ -1,5 +1,5 @@
 **** To add Bcrypt and jwt-cpp as dependencies ***
-git submodule add <bcrypt-repo-url> external_deps/Bcrypt
+git submodule add https://github.com/hilch/Bcrypt.cpp external_deps/Bcrypt
 git submodule add <jwt-cpp-repo-url> external_deps/jwt-cpp
 
 git add .gitmodules external_deps/Bcrypt external_deps/jwt-cpp

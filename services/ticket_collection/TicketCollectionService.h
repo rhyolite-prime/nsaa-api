@@ -15,13 +15,16 @@ namespace raffle::services {
     class TicketCollectionService {
 
     public:
+
         drogon::Task<dto::BaseApiResponse> getAll(int pageNo, int pageSize, const std::string &query);
+
+        drogon::Task<dto::BaseApiResponse> getAllActive(int pageNo, int pageSize, const std::string &query);
 
         drogon::Task<dto::BaseApiResponse> create(const dto::TicketCollectionDto &dto);
 
         drogon::Task<dto::BaseApiResponse> update(const dto::TicketCollectionDto &dto, const std::string &id);
 
-        drogon::Task<dto::BaseApiResponse> deleteRole(const std::string &roleId);
+        drogon::Task<dto::BaseApiResponse> deleteItem(const std::string &itemId);
 
     };
 

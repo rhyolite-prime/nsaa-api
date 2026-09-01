@@ -17,11 +17,8 @@ const std::string Winners::Cols::_id = "\"id\"";
 const std::string Winners::Cols::_draw_id = "\"draw_id\"";
 const std::string Winners::Cols::_ticket_id = "\"ticket_id\"";
 const std::string Winners::Cols::_customer_id = "\"customer_id\"";
-const std::string Winners::Cols::_prize_tier_id = "\"prize_tier_id\"";
-const std::string Winners::Cols::_colour_id = "\"colour_id\"";
-const std::string Winners::Cols::_prize_amount = "\"prize_amount\"";
-const std::string Winners::Cols::_actual_payout = "\"actual_payout\"";
-const std::string Winners::Cols::_status = "\"status\"";
+const std::string Winners::Cols::_selected_option_id = "\"selected_option_id\"";
+const std::string Winners::Cols::_selected_option_label = "\"selected_option_label\"";
 const std::string Winners::Cols::_claim_code = "\"claim_code\"";
 const std::string Winners::Cols::_verified_by = "\"verified_by\"";
 const std::string Winners::Cols::_verification_method = "\"verification_method\"";
@@ -31,11 +28,12 @@ const std::string Winners::Cols::_payout_method = "\"payout_method\"";
 const std::string Winners::Cols::_payout_reference = "\"payout_reference\"";
 const std::string Winners::Cols::_payout_date = "\"payout_date\"";
 const std::string Winners::Cols::_notified_at = "\"notified_at\"";
+const std::string Winners::Cols::_ticket_alias = "\"ticket_alias\"";
+const std::string Winners::Cols::_phone_number = "\"phone_number\"";
 const std::string Winners::Cols::_created_at = "\"created_at\"";
 const std::string Winners::Cols::_updated_at = "\"updated_at\"";
-const std::string Winners::Cols::_ticket_alias = "\"ticket_alias\"";
-const std::string Winners::Cols::_colour_name = "\"colour_name\"";
-const std::string Winners::Cols::_phone_number = "\"phone_number\"";
+const std::string Winners::Cols::_status = "\"status\"";
+const std::string Winners::Cols::_prize_description = "\"prize_description\"";
 const std::string Winners::primaryKeyName = "id";
 const bool Winners::hasPrimaryKey = true;
 const std::string Winners::tableName = "\"winners\"";
@@ -45,25 +43,23 @@ const std::vector<typename Winners::MetaData> Winners::metaData_={
 {"draw_id","std::string","uuid",0,0,0,1},
 {"ticket_id","std::string","uuid",0,0,0,1},
 {"customer_id","std::string","uuid",0,0,0,1},
-{"prize_tier_id","std::string","uuid",0,0,0,1},
-{"colour_id","std::string","uuid",0,0,0,1},
-{"prize_amount","std::string","numeric",0,0,0,1},
-{"actual_payout","std::string","numeric",0,0,0,0},
-{"status","std::string","character varying",20,0,0,0},
+{"selected_option_id","std::string","character varying",100,0,0,0},
+{"selected_option_label","std::string","character varying",100,0,0,0},
 {"claim_code","std::string","character varying",50,0,0,0},
 {"verified_by","std::string","character varying",100,0,0,0},
-{"verification_method","std::string","character varying",20,0,0,0},
+{"verification_method","std::string","character varying",50,0,0,0},
 {"verification_id_number","std::string","character varying",50,0,0,0},
 {"verification_date","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"payout_method","std::string","character varying",20,0,0,0},
 {"payout_reference","std::string","character varying",100,0,0,0},
 {"payout_date","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"notified_at","::trantor::Date","timestamp without time zone",0,0,0,0},
+{"ticket_alias","std::string","character varying",50,0,0,0},
+{"phone_number","std::string","character varying",20,0,0,0},
 {"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
-{"ticket_alias","std::string","character varying",10,0,0,0},
-{"colour_name","std::string","character varying",50,0,0,0},
-{"phone_number","std::string","character varying",20,0,0,0}
+{"status","int32_t","integer",4,0,0,0},
+{"prize_description","std::string","character varying",200,0,0,0}
 };
 const std::string &Winners::getColumnName(size_t index) noexcept(false)
 {
@@ -90,25 +86,13 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
         {
             customerId_=std::make_shared<std::string>(r["customer_id"].as<std::string>());
         }
-        if(!r["prize_tier_id"].isNull())
+        if(!r["selected_option_id"].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(r["prize_tier_id"].as<std::string>());
+            selectedOptionId_=std::make_shared<std::string>(r["selected_option_id"].as<std::string>());
         }
-        if(!r["colour_id"].isNull())
+        if(!r["selected_option_label"].isNull())
         {
-            colourId_=std::make_shared<std::string>(r["colour_id"].as<std::string>());
-        }
-        if(!r["prize_amount"].isNull())
-        {
-            prizeAmount_=std::make_shared<std::string>(r["prize_amount"].as<std::string>());
-        }
-        if(!r["actual_payout"].isNull())
-        {
-            actualPayout_=std::make_shared<std::string>(r["actual_payout"].as<std::string>());
-        }
-        if(!r["status"].isNull())
-        {
-            status_=std::make_shared<std::string>(r["status"].as<std::string>());
+            selectedOptionLabel_=std::make_shared<std::string>(r["selected_option_label"].as<std::string>());
         }
         if(!r["claim_code"].isNull())
         {
@@ -200,6 +184,14 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 notifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        if(!r["ticket_alias"].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(r["ticket_alias"].as<std::string>());
+        }
+        if(!r["phone_number"].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(r["phone_number"].as<std::string>());
+        }
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
@@ -244,23 +236,19 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        if(!r["ticket_alias"].isNull())
+        if(!r["status"].isNull())
         {
-            ticketAlias_=std::make_shared<std::string>(r["ticket_alias"].as<std::string>());
+            status_=std::make_shared<int32_t>(r["status"].as<int32_t>());
         }
-        if(!r["colour_name"].isNull())
+        if(!r["prize_description"].isNull())
         {
-            colourName_=std::make_shared<std::string>(r["colour_name"].as<std::string>());
-        }
-        if(!r["phone_number"].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(r["phone_number"].as<std::string>());
+            prizeDescription_=std::make_shared<std::string>(r["prize_description"].as<std::string>());
         }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 23 > r.size())
+        if(offset + 21 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -289,49 +277,34 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
         index = offset + 4;
         if(!r[index].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(r[index].as<std::string>());
+            selectedOptionId_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 5;
         if(!r[index].isNull())
         {
-            colourId_=std::make_shared<std::string>(r[index].as<std::string>());
+            selectedOptionLabel_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 6;
         if(!r[index].isNull())
         {
-            prizeAmount_=std::make_shared<std::string>(r[index].as<std::string>());
+            claimCode_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 7;
         if(!r[index].isNull())
         {
-            actualPayout_=std::make_shared<std::string>(r[index].as<std::string>());
+            verifiedBy_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 8;
         if(!r[index].isNull())
         {
-            status_=std::make_shared<std::string>(r[index].as<std::string>());
+            verificationMethod_=std::make_shared<std::string>(r[index].as<std::string>());
         }
         index = offset + 9;
         if(!r[index].isNull())
         {
-            claimCode_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
-        index = offset + 10;
-        if(!r[index].isNull())
-        {
-            verifiedBy_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
-        index = offset + 11;
-        if(!r[index].isNull())
-        {
-            verificationMethod_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
-        index = offset + 12;
-        if(!r[index].isNull())
-        {
             verificationIdNumber_=std::make_shared<std::string>(r[index].as<std::string>());
         }
-        index = offset + 13;
+        index = offset + 10;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -354,17 +327,17 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 verificationDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 14;
+        index = offset + 11;
         if(!r[index].isNull())
         {
             payoutMethod_=std::make_shared<std::string>(r[index].as<std::string>());
         }
-        index = offset + 15;
+        index = offset + 12;
         if(!r[index].isNull())
         {
             payoutReference_=std::make_shared<std::string>(r[index].as<std::string>());
         }
-        index = offset + 16;
+        index = offset + 13;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -387,7 +360,7 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 payoutDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 17;
+        index = offset + 14;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -410,7 +383,17 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 notifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 18;
+        index = offset + 15;
+        if(!r[index].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 16;
+        if(!r[index].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 17;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -433,7 +416,7 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
-        index = offset + 19;
+        index = offset + 18;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
@@ -456,20 +439,15 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+        index = offset + 19;
+        if(!r[index].isNull())
+        {
+            status_=std::make_shared<int32_t>(r[index].as<int32_t>());
+        }
         index = offset + 20;
         if(!r[index].isNull())
         {
-            ticketAlias_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
-        index = offset + 21;
-        if(!r[index].isNull())
-        {
-            colourName_=std::make_shared<std::string>(r[index].as<std::string>());
-        }
-        index = offset + 22;
-        if(!r[index].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(r[index].as<std::string>());
+            prizeDescription_=std::make_shared<std::string>(r[index].as<std::string>());
         }
     }
 
@@ -477,7 +455,7 @@ Winners::Winners(const Row &r, const ssize_t indexOffset) noexcept
 
 Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 21)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -519,7 +497,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
+            selectedOptionId_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -527,7 +505,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            colourId_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
+            selectedOptionLabel_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -535,7 +513,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            prizeAmount_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
+            claimCode_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
@@ -543,7 +521,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[7] = true;
         if(!pJson[pMasqueradingVector[7]].isNull())
         {
-            actualPayout_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
+            verifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
@@ -551,7 +529,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[8] = true;
         if(!pJson[pMasqueradingVector[8]].isNull())
         {
-            status_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
+            verificationMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
@@ -559,7 +537,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[9] = true;
         if(!pJson[pMasqueradingVector[9]].isNull())
         {
-            claimCode_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
+            verificationIdNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
@@ -567,7 +545,25 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[10] = true;
         if(!pJson[pMasqueradingVector[10]].isNull())
         {
-            verifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
+            auto timeStr = pJson[pMasqueradingVector[10]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                verificationDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
     }
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
@@ -575,7 +571,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[11] = true;
         if(!pJson[pMasqueradingVector[11]].isNull())
         {
-            verificationMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
+            payoutMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
         }
     }
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
@@ -583,7 +579,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[12] = true;
         if(!pJson[pMasqueradingVector[12]].isNull())
         {
-            verificationIdNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
+            payoutReference_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
@@ -608,7 +604,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                verificationDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                payoutDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -617,23 +613,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[14] = true;
         if(!pJson[pMasqueradingVector[14]].isNull())
         {
-            payoutMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
-        }
-    }
-    if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
-    {
-        dirtyFlag_[15] = true;
-        if(!pJson[pMasqueradingVector[15]].isNull())
-        {
-            payoutReference_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
-        }
-    }
-    if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
-    {
-        dirtyFlag_[16] = true;
-        if(!pJson[pMasqueradingVector[16]].isNull())
-        {
-            auto timeStr = pJson[pMasqueradingVector[16]].asString();
+            auto timeStr = pJson[pMasqueradingVector[14]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -650,8 +630,24 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                payoutDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                notifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
+        }
+    }
+    if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
+    {
+        dirtyFlag_[15] = true;
+        if(!pJson[pMasqueradingVector[15]].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
+        }
+    }
+    if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
+    {
+        dirtyFlag_[16] = true;
+        if(!pJson[pMasqueradingVector[16]].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
         }
     }
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
@@ -676,7 +672,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                notifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -702,7 +698,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -711,25 +707,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[19] = true;
         if(!pJson[pMasqueradingVector[19]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[19]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
+            status_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[19]].asInt64());
         }
     }
     if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
@@ -737,23 +715,7 @@ Winners::Winners(const Json::Value &pJson, const std::vector<std::string> &pMasq
         dirtyFlag_[20] = true;
         if(!pJson[pMasqueradingVector[20]].isNull())
         {
-            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
-        }
-    }
-    if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
-    {
-        dirtyFlag_[21] = true;
-        if(!pJson[pMasqueradingVector[21]].isNull())
-        {
-            colourName_=std::make_shared<std::string>(pJson[pMasqueradingVector[21]].asString());
-        }
-    }
-    if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
-    {
-        dirtyFlag_[22] = true;
-        if(!pJson[pMasqueradingVector[22]].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[22]].asString());
+            prizeDescription_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
         }
     }
 }
@@ -792,49 +754,25 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
             customerId_=std::make_shared<std::string>(pJson["customer_id"].asString());
         }
     }
-    if(pJson.isMember("prize_tier_id"))
+    if(pJson.isMember("selected_option_id"))
     {
         dirtyFlag_[4]=true;
-        if(!pJson["prize_tier_id"].isNull())
+        if(!pJson["selected_option_id"].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(pJson["prize_tier_id"].asString());
+            selectedOptionId_=std::make_shared<std::string>(pJson["selected_option_id"].asString());
         }
     }
-    if(pJson.isMember("colour_id"))
+    if(pJson.isMember("selected_option_label"))
     {
         dirtyFlag_[5]=true;
-        if(!pJson["colour_id"].isNull())
+        if(!pJson["selected_option_label"].isNull())
         {
-            colourId_=std::make_shared<std::string>(pJson["colour_id"].asString());
-        }
-    }
-    if(pJson.isMember("prize_amount"))
-    {
-        dirtyFlag_[6]=true;
-        if(!pJson["prize_amount"].isNull())
-        {
-            prizeAmount_=std::make_shared<std::string>(pJson["prize_amount"].asString());
-        }
-    }
-    if(pJson.isMember("actual_payout"))
-    {
-        dirtyFlag_[7]=true;
-        if(!pJson["actual_payout"].isNull())
-        {
-            actualPayout_=std::make_shared<std::string>(pJson["actual_payout"].asString());
-        }
-    }
-    if(pJson.isMember("status"))
-    {
-        dirtyFlag_[8]=true;
-        if(!pJson["status"].isNull())
-        {
-            status_=std::make_shared<std::string>(pJson["status"].asString());
+            selectedOptionLabel_=std::make_shared<std::string>(pJson["selected_option_label"].asString());
         }
     }
     if(pJson.isMember("claim_code"))
     {
-        dirtyFlag_[9]=true;
+        dirtyFlag_[6]=true;
         if(!pJson["claim_code"].isNull())
         {
             claimCode_=std::make_shared<std::string>(pJson["claim_code"].asString());
@@ -842,7 +780,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("verified_by"))
     {
-        dirtyFlag_[10]=true;
+        dirtyFlag_[7]=true;
         if(!pJson["verified_by"].isNull())
         {
             verifiedBy_=std::make_shared<std::string>(pJson["verified_by"].asString());
@@ -850,7 +788,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("verification_method"))
     {
-        dirtyFlag_[11]=true;
+        dirtyFlag_[8]=true;
         if(!pJson["verification_method"].isNull())
         {
             verificationMethod_=std::make_shared<std::string>(pJson["verification_method"].asString());
@@ -858,7 +796,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("verification_id_number"))
     {
-        dirtyFlag_[12]=true;
+        dirtyFlag_[9]=true;
         if(!pJson["verification_id_number"].isNull())
         {
             verificationIdNumber_=std::make_shared<std::string>(pJson["verification_id_number"].asString());
@@ -866,7 +804,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("verification_date"))
     {
-        dirtyFlag_[13]=true;
+        dirtyFlag_[10]=true;
         if(!pJson["verification_date"].isNull())
         {
             auto timeStr = pJson["verification_date"].asString();
@@ -892,7 +830,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("payout_method"))
     {
-        dirtyFlag_[14]=true;
+        dirtyFlag_[11]=true;
         if(!pJson["payout_method"].isNull())
         {
             payoutMethod_=std::make_shared<std::string>(pJson["payout_method"].asString());
@@ -900,7 +838,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("payout_reference"))
     {
-        dirtyFlag_[15]=true;
+        dirtyFlag_[12]=true;
         if(!pJson["payout_reference"].isNull())
         {
             payoutReference_=std::make_shared<std::string>(pJson["payout_reference"].asString());
@@ -908,7 +846,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("payout_date"))
     {
-        dirtyFlag_[16]=true;
+        dirtyFlag_[13]=true;
         if(!pJson["payout_date"].isNull())
         {
             auto timeStr = pJson["payout_date"].asString();
@@ -934,7 +872,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("notified_at"))
     {
-        dirtyFlag_[17]=true;
+        dirtyFlag_[14]=true;
         if(!pJson["notified_at"].isNull())
         {
             auto timeStr = pJson["notified_at"].asString();
@@ -958,9 +896,25 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+    if(pJson.isMember("ticket_alias"))
+    {
+        dirtyFlag_[15]=true;
+        if(!pJson["ticket_alias"].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
+        }
+    }
+    if(pJson.isMember("phone_number"))
+    {
+        dirtyFlag_[16]=true;
+        if(!pJson["phone_number"].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
+        }
+    }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[18]=true;
+        dirtyFlag_[17]=true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -986,7 +940,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("updated_at"))
     {
-        dirtyFlag_[19]=true;
+        dirtyFlag_[18]=true;
         if(!pJson["updated_at"].isNull())
         {
             auto timeStr = pJson["updated_at"].asString();
@@ -1010,28 +964,20 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
             }
         }
     }
-    if(pJson.isMember("ticket_alias"))
+    if(pJson.isMember("status"))
+    {
+        dirtyFlag_[19]=true;
+        if(!pJson["status"].isNull())
+        {
+            status_=std::make_shared<int32_t>((int32_t)pJson["status"].asInt64());
+        }
+    }
+    if(pJson.isMember("prize_description"))
     {
         dirtyFlag_[20]=true;
-        if(!pJson["ticket_alias"].isNull())
+        if(!pJson["prize_description"].isNull())
         {
-            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
-        }
-    }
-    if(pJson.isMember("colour_name"))
-    {
-        dirtyFlag_[21]=true;
-        if(!pJson["colour_name"].isNull())
-        {
-            colourName_=std::make_shared<std::string>(pJson["colour_name"].asString());
-        }
-    }
-    if(pJson.isMember("phone_number"))
-    {
-        dirtyFlag_[22]=true;
-        if(!pJson["phone_number"].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
+            prizeDescription_=std::make_shared<std::string>(pJson["prize_description"].asString());
         }
     }
 }
@@ -1039,7 +985,7 @@ Winners::Winners(const Json::Value &pJson) noexcept(false)
 void Winners::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 21)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -1080,7 +1026,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[4] = true;
         if(!pJson[pMasqueradingVector[4]].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
+            selectedOptionId_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
@@ -1088,7 +1034,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[5] = true;
         if(!pJson[pMasqueradingVector[5]].isNull())
         {
-            colourId_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
+            selectedOptionLabel_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
@@ -1096,7 +1042,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[6] = true;
         if(!pJson[pMasqueradingVector[6]].isNull())
         {
-            prizeAmount_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
+            claimCode_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
@@ -1104,7 +1050,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[7] = true;
         if(!pJson[pMasqueradingVector[7]].isNull())
         {
-            actualPayout_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
+            verifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
@@ -1112,7 +1058,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[8] = true;
         if(!pJson[pMasqueradingVector[8]].isNull())
         {
-            status_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
+            verificationMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
@@ -1120,7 +1066,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[9] = true;
         if(!pJson[pMasqueradingVector[9]].isNull())
         {
-            claimCode_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
+            verificationIdNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
@@ -1128,7 +1074,25 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[10] = true;
         if(!pJson[pMasqueradingVector[10]].isNull())
         {
-            verifiedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
+            auto timeStr = pJson[pMasqueradingVector[10]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
+            time_t t = mktime(&stm);
+            size_t decimalNum = 0;
+            if(p)
+            {
+                if(*p=='.')
+                {
+                    std::string decimals(p+1,&timeStr[timeStr.length()]);
+                    while(decimals.length()<6)
+                    {
+                        decimals += "0";
+                    }
+                    decimalNum = (size_t)atol(decimals.c_str());
+                }
+                verificationDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+            }
         }
     }
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
@@ -1136,7 +1100,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[11] = true;
         if(!pJson[pMasqueradingVector[11]].isNull())
         {
-            verificationMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
+            payoutMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
         }
     }
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
@@ -1144,7 +1108,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[12] = true;
         if(!pJson[pMasqueradingVector[12]].isNull())
         {
-            verificationIdNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
+            payoutReference_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
@@ -1169,7 +1133,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                verificationDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                payoutDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -1178,23 +1142,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[14] = true;
         if(!pJson[pMasqueradingVector[14]].isNull())
         {
-            payoutMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
-        }
-    }
-    if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
-    {
-        dirtyFlag_[15] = true;
-        if(!pJson[pMasqueradingVector[15]].isNull())
-        {
-            payoutReference_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
-        }
-    }
-    if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
-    {
-        dirtyFlag_[16] = true;
-        if(!pJson[pMasqueradingVector[16]].isNull())
-        {
-            auto timeStr = pJson[pMasqueradingVector[16]].asString();
+            auto timeStr = pJson[pMasqueradingVector[14]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
@@ -1211,8 +1159,24 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                payoutDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                notifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
+        }
+    }
+    if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
+    {
+        dirtyFlag_[15] = true;
+        if(!pJson[pMasqueradingVector[15]].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
+        }
+    }
+    if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
+    {
+        dirtyFlag_[16] = true;
+        if(!pJson[pMasqueradingVector[16]].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
         }
     }
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
@@ -1237,7 +1201,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                notifiedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -1263,7 +1227,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
                     }
                     decimalNum = (size_t)atol(decimals.c_str());
                 }
-                createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
+                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
     }
@@ -1272,25 +1236,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[19] = true;
         if(!pJson[pMasqueradingVector[19]].isNull())
         {
-            auto timeStr = pJson[pMasqueradingVector[19]].asString();
-            struct tm stm;
-            memset(&stm,0,sizeof(stm));
-            auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
-            time_t t = mktime(&stm);
-            size_t decimalNum = 0;
-            if(p)
-            {
-                if(*p=='.')
-                {
-                    std::string decimals(p+1,&timeStr[timeStr.length()]);
-                    while(decimals.length()<6)
-                    {
-                        decimals += "0";
-                    }
-                    decimalNum = (size_t)atol(decimals.c_str());
-                }
-                updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
-            }
+            status_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[19]].asInt64());
         }
     }
     if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
@@ -1298,23 +1244,7 @@ void Winners::updateByMasqueradedJson(const Json::Value &pJson,
         dirtyFlag_[20] = true;
         if(!pJson[pMasqueradingVector[20]].isNull())
         {
-            ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
-        }
-    }
-    if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
-    {
-        dirtyFlag_[21] = true;
-        if(!pJson[pMasqueradingVector[21]].isNull())
-        {
-            colourName_=std::make_shared<std::string>(pJson[pMasqueradingVector[21]].asString());
-        }
-    }
-    if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
-    {
-        dirtyFlag_[22] = true;
-        if(!pJson[pMasqueradingVector[22]].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[22]].asString());
+            prizeDescription_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
         }
     }
 }
@@ -1352,49 +1282,25 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
             customerId_=std::make_shared<std::string>(pJson["customer_id"].asString());
         }
     }
-    if(pJson.isMember("prize_tier_id"))
+    if(pJson.isMember("selected_option_id"))
     {
         dirtyFlag_[4] = true;
-        if(!pJson["prize_tier_id"].isNull())
+        if(!pJson["selected_option_id"].isNull())
         {
-            prizeTierId_=std::make_shared<std::string>(pJson["prize_tier_id"].asString());
+            selectedOptionId_=std::make_shared<std::string>(pJson["selected_option_id"].asString());
         }
     }
-    if(pJson.isMember("colour_id"))
+    if(pJson.isMember("selected_option_label"))
     {
         dirtyFlag_[5] = true;
-        if(!pJson["colour_id"].isNull())
+        if(!pJson["selected_option_label"].isNull())
         {
-            colourId_=std::make_shared<std::string>(pJson["colour_id"].asString());
-        }
-    }
-    if(pJson.isMember("prize_amount"))
-    {
-        dirtyFlag_[6] = true;
-        if(!pJson["prize_amount"].isNull())
-        {
-            prizeAmount_=std::make_shared<std::string>(pJson["prize_amount"].asString());
-        }
-    }
-    if(pJson.isMember("actual_payout"))
-    {
-        dirtyFlag_[7] = true;
-        if(!pJson["actual_payout"].isNull())
-        {
-            actualPayout_=std::make_shared<std::string>(pJson["actual_payout"].asString());
-        }
-    }
-    if(pJson.isMember("status"))
-    {
-        dirtyFlag_[8] = true;
-        if(!pJson["status"].isNull())
-        {
-            status_=std::make_shared<std::string>(pJson["status"].asString());
+            selectedOptionLabel_=std::make_shared<std::string>(pJson["selected_option_label"].asString());
         }
     }
     if(pJson.isMember("claim_code"))
     {
-        dirtyFlag_[9] = true;
+        dirtyFlag_[6] = true;
         if(!pJson["claim_code"].isNull())
         {
             claimCode_=std::make_shared<std::string>(pJson["claim_code"].asString());
@@ -1402,7 +1308,7 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("verified_by"))
     {
-        dirtyFlag_[10] = true;
+        dirtyFlag_[7] = true;
         if(!pJson["verified_by"].isNull())
         {
             verifiedBy_=std::make_shared<std::string>(pJson["verified_by"].asString());
@@ -1410,7 +1316,7 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("verification_method"))
     {
-        dirtyFlag_[11] = true;
+        dirtyFlag_[8] = true;
         if(!pJson["verification_method"].isNull())
         {
             verificationMethod_=std::make_shared<std::string>(pJson["verification_method"].asString());
@@ -1418,7 +1324,7 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("verification_id_number"))
     {
-        dirtyFlag_[12] = true;
+        dirtyFlag_[9] = true;
         if(!pJson["verification_id_number"].isNull())
         {
             verificationIdNumber_=std::make_shared<std::string>(pJson["verification_id_number"].asString());
@@ -1426,7 +1332,7 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("verification_date"))
     {
-        dirtyFlag_[13] = true;
+        dirtyFlag_[10] = true;
         if(!pJson["verification_date"].isNull())
         {
             auto timeStr = pJson["verification_date"].asString();
@@ -1452,7 +1358,7 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("payout_method"))
     {
-        dirtyFlag_[14] = true;
+        dirtyFlag_[11] = true;
         if(!pJson["payout_method"].isNull())
         {
             payoutMethod_=std::make_shared<std::string>(pJson["payout_method"].asString());
@@ -1460,7 +1366,7 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("payout_reference"))
     {
-        dirtyFlag_[15] = true;
+        dirtyFlag_[12] = true;
         if(!pJson["payout_reference"].isNull())
         {
             payoutReference_=std::make_shared<std::string>(pJson["payout_reference"].asString());
@@ -1468,7 +1374,7 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("payout_date"))
     {
-        dirtyFlag_[16] = true;
+        dirtyFlag_[13] = true;
         if(!pJson["payout_date"].isNull())
         {
             auto timeStr = pJson["payout_date"].asString();
@@ -1494,7 +1400,7 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("notified_at"))
     {
-        dirtyFlag_[17] = true;
+        dirtyFlag_[14] = true;
         if(!pJson["notified_at"].isNull())
         {
             auto timeStr = pJson["notified_at"].asString();
@@ -1518,9 +1424,25 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+    if(pJson.isMember("ticket_alias"))
+    {
+        dirtyFlag_[15] = true;
+        if(!pJson["ticket_alias"].isNull())
+        {
+            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
+        }
+    }
+    if(pJson.isMember("phone_number"))
+    {
+        dirtyFlag_[16] = true;
+        if(!pJson["phone_number"].isNull())
+        {
+            phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
+        }
+    }
     if(pJson.isMember("created_at"))
     {
-        dirtyFlag_[18] = true;
+        dirtyFlag_[17] = true;
         if(!pJson["created_at"].isNull())
         {
             auto timeStr = pJson["created_at"].asString();
@@ -1546,7 +1468,7 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
     }
     if(pJson.isMember("updated_at"))
     {
-        dirtyFlag_[19] = true;
+        dirtyFlag_[18] = true;
         if(!pJson["updated_at"].isNull())
         {
             auto timeStr = pJson["updated_at"].asString();
@@ -1570,28 +1492,20 @@ void Winners::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
-    if(pJson.isMember("ticket_alias"))
+    if(pJson.isMember("status"))
+    {
+        dirtyFlag_[19] = true;
+        if(!pJson["status"].isNull())
+        {
+            status_=std::make_shared<int32_t>((int32_t)pJson["status"].asInt64());
+        }
+    }
+    if(pJson.isMember("prize_description"))
     {
         dirtyFlag_[20] = true;
-        if(!pJson["ticket_alias"].isNull())
+        if(!pJson["prize_description"].isNull())
         {
-            ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
-        }
-    }
-    if(pJson.isMember("colour_name"))
-    {
-        dirtyFlag_[21] = true;
-        if(!pJson["colour_name"].isNull())
-        {
-            colourName_=std::make_shared<std::string>(pJson["colour_name"].asString());
-        }
-    }
-    if(pJson.isMember("phone_number"))
-    {
-        dirtyFlag_[22] = true;
-        if(!pJson["phone_number"].isNull())
-        {
-            phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
+            prizeDescription_=std::make_shared<std::string>(pJson["prize_description"].asString());
         }
     }
 }
@@ -1689,124 +1603,58 @@ void Winners::setCustomerId(std::string &&pCustomerId) noexcept
     dirtyFlag_[3] = true;
 }
 
-const std::string &Winners::getValueOfPrizeTierId() const noexcept
+const std::string &Winners::getValueOfSelectedOptionId() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(prizeTierId_)
-        return *prizeTierId_;
+    if(selectedOptionId_)
+        return *selectedOptionId_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Winners::getPrizeTierId() const noexcept
+const std::shared_ptr<std::string> &Winners::getSelectedOptionId() const noexcept
 {
-    return prizeTierId_;
+    return selectedOptionId_;
 }
-void Winners::setPrizeTierId(const std::string &pPrizeTierId) noexcept
+void Winners::setSelectedOptionId(const std::string &pSelectedOptionId) noexcept
 {
-    prizeTierId_ = std::make_shared<std::string>(pPrizeTierId);
+    selectedOptionId_ = std::make_shared<std::string>(pSelectedOptionId);
     dirtyFlag_[4] = true;
 }
-void Winners::setPrizeTierId(std::string &&pPrizeTierId) noexcept
+void Winners::setSelectedOptionId(std::string &&pSelectedOptionId) noexcept
 {
-    prizeTierId_ = std::make_shared<std::string>(std::move(pPrizeTierId));
+    selectedOptionId_ = std::make_shared<std::string>(std::move(pSelectedOptionId));
+    dirtyFlag_[4] = true;
+}
+void Winners::setSelectedOptionIdToNull() noexcept
+{
+    selectedOptionId_.reset();
     dirtyFlag_[4] = true;
 }
 
-const std::string &Winners::getValueOfColourId() const noexcept
+const std::string &Winners::getValueOfSelectedOptionLabel() const noexcept
 {
     static const std::string defaultValue = std::string();
-    if(colourId_)
-        return *colourId_;
+    if(selectedOptionLabel_)
+        return *selectedOptionLabel_;
     return defaultValue;
 }
-const std::shared_ptr<std::string> &Winners::getColourId() const noexcept
+const std::shared_ptr<std::string> &Winners::getSelectedOptionLabel() const noexcept
 {
-    return colourId_;
+    return selectedOptionLabel_;
 }
-void Winners::setColourId(const std::string &pColourId) noexcept
+void Winners::setSelectedOptionLabel(const std::string &pSelectedOptionLabel) noexcept
 {
-    colourId_ = std::make_shared<std::string>(pColourId);
+    selectedOptionLabel_ = std::make_shared<std::string>(pSelectedOptionLabel);
     dirtyFlag_[5] = true;
 }
-void Winners::setColourId(std::string &&pColourId) noexcept
+void Winners::setSelectedOptionLabel(std::string &&pSelectedOptionLabel) noexcept
 {
-    colourId_ = std::make_shared<std::string>(std::move(pColourId));
+    selectedOptionLabel_ = std::make_shared<std::string>(std::move(pSelectedOptionLabel));
     dirtyFlag_[5] = true;
 }
-
-const std::string &Winners::getValueOfPrizeAmount() const noexcept
+void Winners::setSelectedOptionLabelToNull() noexcept
 {
-    static const std::string defaultValue = std::string();
-    if(prizeAmount_)
-        return *prizeAmount_;
-    return defaultValue;
-}
-const std::shared_ptr<std::string> &Winners::getPrizeAmount() const noexcept
-{
-    return prizeAmount_;
-}
-void Winners::setPrizeAmount(const std::string &pPrizeAmount) noexcept
-{
-    prizeAmount_ = std::make_shared<std::string>(pPrizeAmount);
-    dirtyFlag_[6] = true;
-}
-void Winners::setPrizeAmount(std::string &&pPrizeAmount) noexcept
-{
-    prizeAmount_ = std::make_shared<std::string>(std::move(pPrizeAmount));
-    dirtyFlag_[6] = true;
-}
-
-const std::string &Winners::getValueOfActualPayout() const noexcept
-{
-    static const std::string defaultValue = std::string();
-    if(actualPayout_)
-        return *actualPayout_;
-    return defaultValue;
-}
-const std::shared_ptr<std::string> &Winners::getActualPayout() const noexcept
-{
-    return actualPayout_;
-}
-void Winners::setActualPayout(const std::string &pActualPayout) noexcept
-{
-    actualPayout_ = std::make_shared<std::string>(pActualPayout);
-    dirtyFlag_[7] = true;
-}
-void Winners::setActualPayout(std::string &&pActualPayout) noexcept
-{
-    actualPayout_ = std::make_shared<std::string>(std::move(pActualPayout));
-    dirtyFlag_[7] = true;
-}
-void Winners::setActualPayoutToNull() noexcept
-{
-    actualPayout_.reset();
-    dirtyFlag_[7] = true;
-}
-
-const std::string &Winners::getValueOfStatus() const noexcept
-{
-    static const std::string defaultValue = std::string();
-    if(status_)
-        return *status_;
-    return defaultValue;
-}
-const std::shared_ptr<std::string> &Winners::getStatus() const noexcept
-{
-    return status_;
-}
-void Winners::setStatus(const std::string &pStatus) noexcept
-{
-    status_ = std::make_shared<std::string>(pStatus);
-    dirtyFlag_[8] = true;
-}
-void Winners::setStatus(std::string &&pStatus) noexcept
-{
-    status_ = std::make_shared<std::string>(std::move(pStatus));
-    dirtyFlag_[8] = true;
-}
-void Winners::setStatusToNull() noexcept
-{
-    status_.reset();
-    dirtyFlag_[8] = true;
+    selectedOptionLabel_.reset();
+    dirtyFlag_[5] = true;
 }
 
 const std::string &Winners::getValueOfClaimCode() const noexcept
@@ -1823,17 +1671,17 @@ const std::shared_ptr<std::string> &Winners::getClaimCode() const noexcept
 void Winners::setClaimCode(const std::string &pClaimCode) noexcept
 {
     claimCode_ = std::make_shared<std::string>(pClaimCode);
-    dirtyFlag_[9] = true;
+    dirtyFlag_[6] = true;
 }
 void Winners::setClaimCode(std::string &&pClaimCode) noexcept
 {
     claimCode_ = std::make_shared<std::string>(std::move(pClaimCode));
-    dirtyFlag_[9] = true;
+    dirtyFlag_[6] = true;
 }
 void Winners::setClaimCodeToNull() noexcept
 {
     claimCode_.reset();
-    dirtyFlag_[9] = true;
+    dirtyFlag_[6] = true;
 }
 
 const std::string &Winners::getValueOfVerifiedBy() const noexcept
@@ -1850,17 +1698,17 @@ const std::shared_ptr<std::string> &Winners::getVerifiedBy() const noexcept
 void Winners::setVerifiedBy(const std::string &pVerifiedBy) noexcept
 {
     verifiedBy_ = std::make_shared<std::string>(pVerifiedBy);
-    dirtyFlag_[10] = true;
+    dirtyFlag_[7] = true;
 }
 void Winners::setVerifiedBy(std::string &&pVerifiedBy) noexcept
 {
     verifiedBy_ = std::make_shared<std::string>(std::move(pVerifiedBy));
-    dirtyFlag_[10] = true;
+    dirtyFlag_[7] = true;
 }
 void Winners::setVerifiedByToNull() noexcept
 {
     verifiedBy_.reset();
-    dirtyFlag_[10] = true;
+    dirtyFlag_[7] = true;
 }
 
 const std::string &Winners::getValueOfVerificationMethod() const noexcept
@@ -1877,17 +1725,17 @@ const std::shared_ptr<std::string> &Winners::getVerificationMethod() const noexc
 void Winners::setVerificationMethod(const std::string &pVerificationMethod) noexcept
 {
     verificationMethod_ = std::make_shared<std::string>(pVerificationMethod);
-    dirtyFlag_[11] = true;
+    dirtyFlag_[8] = true;
 }
 void Winners::setVerificationMethod(std::string &&pVerificationMethod) noexcept
 {
     verificationMethod_ = std::make_shared<std::string>(std::move(pVerificationMethod));
-    dirtyFlag_[11] = true;
+    dirtyFlag_[8] = true;
 }
 void Winners::setVerificationMethodToNull() noexcept
 {
     verificationMethod_.reset();
-    dirtyFlag_[11] = true;
+    dirtyFlag_[8] = true;
 }
 
 const std::string &Winners::getValueOfVerificationIdNumber() const noexcept
@@ -1904,17 +1752,17 @@ const std::shared_ptr<std::string> &Winners::getVerificationIdNumber() const noe
 void Winners::setVerificationIdNumber(const std::string &pVerificationIdNumber) noexcept
 {
     verificationIdNumber_ = std::make_shared<std::string>(pVerificationIdNumber);
-    dirtyFlag_[12] = true;
+    dirtyFlag_[9] = true;
 }
 void Winners::setVerificationIdNumber(std::string &&pVerificationIdNumber) noexcept
 {
     verificationIdNumber_ = std::make_shared<std::string>(std::move(pVerificationIdNumber));
-    dirtyFlag_[12] = true;
+    dirtyFlag_[9] = true;
 }
 void Winners::setVerificationIdNumberToNull() noexcept
 {
     verificationIdNumber_.reset();
-    dirtyFlag_[12] = true;
+    dirtyFlag_[9] = true;
 }
 
 const ::trantor::Date &Winners::getValueOfVerificationDate() const noexcept
@@ -1931,12 +1779,12 @@ const std::shared_ptr<::trantor::Date> &Winners::getVerificationDate() const noe
 void Winners::setVerificationDate(const ::trantor::Date &pVerificationDate) noexcept
 {
     verificationDate_ = std::make_shared<::trantor::Date>(pVerificationDate);
-    dirtyFlag_[13] = true;
+    dirtyFlag_[10] = true;
 }
 void Winners::setVerificationDateToNull() noexcept
 {
     verificationDate_.reset();
-    dirtyFlag_[13] = true;
+    dirtyFlag_[10] = true;
 }
 
 const std::string &Winners::getValueOfPayoutMethod() const noexcept
@@ -1953,17 +1801,17 @@ const std::shared_ptr<std::string> &Winners::getPayoutMethod() const noexcept
 void Winners::setPayoutMethod(const std::string &pPayoutMethod) noexcept
 {
     payoutMethod_ = std::make_shared<std::string>(pPayoutMethod);
-    dirtyFlag_[14] = true;
+    dirtyFlag_[11] = true;
 }
 void Winners::setPayoutMethod(std::string &&pPayoutMethod) noexcept
 {
     payoutMethod_ = std::make_shared<std::string>(std::move(pPayoutMethod));
-    dirtyFlag_[14] = true;
+    dirtyFlag_[11] = true;
 }
 void Winners::setPayoutMethodToNull() noexcept
 {
     payoutMethod_.reset();
-    dirtyFlag_[14] = true;
+    dirtyFlag_[11] = true;
 }
 
 const std::string &Winners::getValueOfPayoutReference() const noexcept
@@ -1980,17 +1828,17 @@ const std::shared_ptr<std::string> &Winners::getPayoutReference() const noexcept
 void Winners::setPayoutReference(const std::string &pPayoutReference) noexcept
 {
     payoutReference_ = std::make_shared<std::string>(pPayoutReference);
-    dirtyFlag_[15] = true;
+    dirtyFlag_[12] = true;
 }
 void Winners::setPayoutReference(std::string &&pPayoutReference) noexcept
 {
     payoutReference_ = std::make_shared<std::string>(std::move(pPayoutReference));
-    dirtyFlag_[15] = true;
+    dirtyFlag_[12] = true;
 }
 void Winners::setPayoutReferenceToNull() noexcept
 {
     payoutReference_.reset();
-    dirtyFlag_[15] = true;
+    dirtyFlag_[12] = true;
 }
 
 const ::trantor::Date &Winners::getValueOfPayoutDate() const noexcept
@@ -2007,12 +1855,12 @@ const std::shared_ptr<::trantor::Date> &Winners::getPayoutDate() const noexcept
 void Winners::setPayoutDate(const ::trantor::Date &pPayoutDate) noexcept
 {
     payoutDate_ = std::make_shared<::trantor::Date>(pPayoutDate);
-    dirtyFlag_[16] = true;
+    dirtyFlag_[13] = true;
 }
 void Winners::setPayoutDateToNull() noexcept
 {
     payoutDate_.reset();
-    dirtyFlag_[16] = true;
+    dirtyFlag_[13] = true;
 }
 
 const ::trantor::Date &Winners::getValueOfNotifiedAt() const noexcept
@@ -2029,56 +1877,12 @@ const std::shared_ptr<::trantor::Date> &Winners::getNotifiedAt() const noexcept
 void Winners::setNotifiedAt(const ::trantor::Date &pNotifiedAt) noexcept
 {
     notifiedAt_ = std::make_shared<::trantor::Date>(pNotifiedAt);
-    dirtyFlag_[17] = true;
+    dirtyFlag_[14] = true;
 }
 void Winners::setNotifiedAtToNull() noexcept
 {
     notifiedAt_.reset();
-    dirtyFlag_[17] = true;
-}
-
-const ::trantor::Date &Winners::getValueOfCreatedAt() const noexcept
-{
-    static const ::trantor::Date defaultValue = ::trantor::Date();
-    if(createdAt_)
-        return *createdAt_;
-    return defaultValue;
-}
-const std::shared_ptr<::trantor::Date> &Winners::getCreatedAt() const noexcept
-{
-    return createdAt_;
-}
-void Winners::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
-{
-    createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
-    dirtyFlag_[18] = true;
-}
-void Winners::setCreatedAtToNull() noexcept
-{
-    createdAt_.reset();
-    dirtyFlag_[18] = true;
-}
-
-const ::trantor::Date &Winners::getValueOfUpdatedAt() const noexcept
-{
-    static const ::trantor::Date defaultValue = ::trantor::Date();
-    if(updatedAt_)
-        return *updatedAt_;
-    return defaultValue;
-}
-const std::shared_ptr<::trantor::Date> &Winners::getUpdatedAt() const noexcept
-{
-    return updatedAt_;
-}
-void Winners::setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept
-{
-    updatedAt_ = std::make_shared<::trantor::Date>(pUpdatedAt);
-    dirtyFlag_[19] = true;
-}
-void Winners::setUpdatedAtToNull() noexcept
-{
-    updatedAt_.reset();
-    dirtyFlag_[19] = true;
+    dirtyFlag_[14] = true;
 }
 
 const std::string &Winners::getValueOfTicketAlias() const noexcept
@@ -2095,44 +1899,17 @@ const std::shared_ptr<std::string> &Winners::getTicketAlias() const noexcept
 void Winners::setTicketAlias(const std::string &pTicketAlias) noexcept
 {
     ticketAlias_ = std::make_shared<std::string>(pTicketAlias);
-    dirtyFlag_[20] = true;
+    dirtyFlag_[15] = true;
 }
 void Winners::setTicketAlias(std::string &&pTicketAlias) noexcept
 {
     ticketAlias_ = std::make_shared<std::string>(std::move(pTicketAlias));
-    dirtyFlag_[20] = true;
+    dirtyFlag_[15] = true;
 }
 void Winners::setTicketAliasToNull() noexcept
 {
     ticketAlias_.reset();
-    dirtyFlag_[20] = true;
-}
-
-const std::string &Winners::getValueOfColourName() const noexcept
-{
-    static const std::string defaultValue = std::string();
-    if(colourName_)
-        return *colourName_;
-    return defaultValue;
-}
-const std::shared_ptr<std::string> &Winners::getColourName() const noexcept
-{
-    return colourName_;
-}
-void Winners::setColourName(const std::string &pColourName) noexcept
-{
-    colourName_ = std::make_shared<std::string>(pColourName);
-    dirtyFlag_[21] = true;
-}
-void Winners::setColourName(std::string &&pColourName) noexcept
-{
-    colourName_ = std::make_shared<std::string>(std::move(pColourName));
-    dirtyFlag_[21] = true;
-}
-void Winners::setColourNameToNull() noexcept
-{
-    colourName_.reset();
-    dirtyFlag_[21] = true;
+    dirtyFlag_[15] = true;
 }
 
 const std::string &Winners::getValueOfPhoneNumber() const noexcept
@@ -2149,17 +1926,110 @@ const std::shared_ptr<std::string> &Winners::getPhoneNumber() const noexcept
 void Winners::setPhoneNumber(const std::string &pPhoneNumber) noexcept
 {
     phoneNumber_ = std::make_shared<std::string>(pPhoneNumber);
-    dirtyFlag_[22] = true;
+    dirtyFlag_[16] = true;
 }
 void Winners::setPhoneNumber(std::string &&pPhoneNumber) noexcept
 {
     phoneNumber_ = std::make_shared<std::string>(std::move(pPhoneNumber));
-    dirtyFlag_[22] = true;
+    dirtyFlag_[16] = true;
 }
 void Winners::setPhoneNumberToNull() noexcept
 {
     phoneNumber_.reset();
-    dirtyFlag_[22] = true;
+    dirtyFlag_[16] = true;
+}
+
+const ::trantor::Date &Winners::getValueOfCreatedAt() const noexcept
+{
+    static const ::trantor::Date defaultValue = ::trantor::Date();
+    if(createdAt_)
+        return *createdAt_;
+    return defaultValue;
+}
+const std::shared_ptr<::trantor::Date> &Winners::getCreatedAt() const noexcept
+{
+    return createdAt_;
+}
+void Winners::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
+{
+    createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
+    dirtyFlag_[17] = true;
+}
+void Winners::setCreatedAtToNull() noexcept
+{
+    createdAt_.reset();
+    dirtyFlag_[17] = true;
+}
+
+const ::trantor::Date &Winners::getValueOfUpdatedAt() const noexcept
+{
+    static const ::trantor::Date defaultValue = ::trantor::Date();
+    if(updatedAt_)
+        return *updatedAt_;
+    return defaultValue;
+}
+const std::shared_ptr<::trantor::Date> &Winners::getUpdatedAt() const noexcept
+{
+    return updatedAt_;
+}
+void Winners::setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept
+{
+    updatedAt_ = std::make_shared<::trantor::Date>(pUpdatedAt);
+    dirtyFlag_[18] = true;
+}
+void Winners::setUpdatedAtToNull() noexcept
+{
+    updatedAt_.reset();
+    dirtyFlag_[18] = true;
+}
+
+const int32_t &Winners::getValueOfStatus() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(status_)
+        return *status_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &Winners::getStatus() const noexcept
+{
+    return status_;
+}
+void Winners::setStatus(const int32_t &pStatus) noexcept
+{
+    status_ = std::make_shared<int32_t>(pStatus);
+    dirtyFlag_[19] = true;
+}
+void Winners::setStatusToNull() noexcept
+{
+    status_.reset();
+    dirtyFlag_[19] = true;
+}
+
+const std::string &Winners::getValueOfPrizeDescription() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(prizeDescription_)
+        return *prizeDescription_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Winners::getPrizeDescription() const noexcept
+{
+    return prizeDescription_;
+}
+void Winners::setPrizeDescription(const std::string &pPrizeDescription) noexcept
+{
+    prizeDescription_ = std::make_shared<std::string>(pPrizeDescription);
+    dirtyFlag_[20] = true;
+}
+void Winners::setPrizeDescription(std::string &&pPrizeDescription) noexcept
+{
+    prizeDescription_ = std::make_shared<std::string>(std::move(pPrizeDescription));
+    dirtyFlag_[20] = true;
+}
+void Winners::setPrizeDescriptionToNull() noexcept
+{
+    prizeDescription_.reset();
+    dirtyFlag_[20] = true;
 }
 
 void Winners::updateId(const uint64_t id)
@@ -2173,11 +2043,8 @@ const std::vector<std::string> &Winners::insertColumns() noexcept
         "draw_id",
         "ticket_id",
         "customer_id",
-        "prize_tier_id",
-        "colour_id",
-        "prize_amount",
-        "actual_payout",
-        "status",
+        "selected_option_id",
+        "selected_option_label",
         "claim_code",
         "verified_by",
         "verification_method",
@@ -2187,11 +2054,12 @@ const std::vector<std::string> &Winners::insertColumns() noexcept
         "payout_reference",
         "payout_date",
         "notified_at",
+        "ticket_alias",
+        "phone_number",
         "created_at",
         "updated_at",
-        "ticket_alias",
-        "colour_name",
-        "phone_number"
+        "status",
+        "prize_description"
     };
     return inCols;
 }
@@ -2244,9 +2112,9 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[4])
     {
-        if(getPrizeTierId())
+        if(getSelectedOptionId())
         {
-            binder << getValueOfPrizeTierId();
+            binder << getValueOfSelectedOptionId();
         }
         else
         {
@@ -2255,9 +2123,9 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getColourId())
+        if(getSelectedOptionLabel())
         {
-            binder << getValueOfColourId();
+            binder << getValueOfSelectedOptionLabel();
         }
         else
         {
@@ -2265,39 +2133,6 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
         }
     }
     if(dirtyFlag_[6])
-    {
-        if(getPrizeAmount())
-        {
-            binder << getValueOfPrizeAmount();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[7])
-    {
-        if(getActualPayout())
-        {
-            binder << getValueOfActualPayout();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[8])
-    {
-        if(getStatus())
-        {
-            binder << getValueOfStatus();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[9])
     {
         if(getClaimCode())
         {
@@ -2308,7 +2143,7 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[10])
+    if(dirtyFlag_[7])
     {
         if(getVerifiedBy())
         {
@@ -2319,7 +2154,7 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[11])
+    if(dirtyFlag_[8])
     {
         if(getVerificationMethod())
         {
@@ -2330,7 +2165,7 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[12])
+    if(dirtyFlag_[9])
     {
         if(getVerificationIdNumber())
         {
@@ -2341,7 +2176,7 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[13])
+    if(dirtyFlag_[10])
     {
         if(getVerificationDate())
         {
@@ -2352,7 +2187,7 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[14])
+    if(dirtyFlag_[11])
     {
         if(getPayoutMethod())
         {
@@ -2363,7 +2198,7 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[15])
+    if(dirtyFlag_[12])
     {
         if(getPayoutReference())
         {
@@ -2374,7 +2209,7 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[16])
+    if(dirtyFlag_[13])
     {
         if(getPayoutDate())
         {
@@ -2385,7 +2220,7 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[17])
+    if(dirtyFlag_[14])
     {
         if(getNotifiedAt())
         {
@@ -2396,29 +2231,7 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[18])
-    {
-        if(getCreatedAt())
-        {
-            binder << getValueOfCreatedAt();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[19])
-    {
-        if(getUpdatedAt())
-        {
-            binder << getValueOfUpdatedAt();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[20])
+    if(dirtyFlag_[15])
     {
         if(getTicketAlias())
         {
@@ -2429,22 +2242,55 @@ void Winners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[21])
+    if(dirtyFlag_[16])
     {
-        if(getColourName())
+        if(getPhoneNumber())
         {
-            binder << getValueOfColourName();
+            binder << getValueOfPhoneNumber();
         }
         else
         {
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[22])
+    if(dirtyFlag_[17])
     {
-        if(getPhoneNumber())
+        if(getCreatedAt())
         {
-            binder << getValueOfPhoneNumber();
+            binder << getValueOfCreatedAt();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[18])
+    {
+        if(getUpdatedAt())
+        {
+            binder << getValueOfUpdatedAt();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[19])
+    {
+        if(getStatus())
+        {
+            binder << getValueOfStatus();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[20])
+    {
+        if(getPrizeDescription())
+        {
+            binder << getValueOfPrizeDescription();
         }
         else
         {
@@ -2540,14 +2386,6 @@ const std::vector<std::string> Winners::updateColumns() const
     {
         ret.push_back(getColumnName(20));
     }
-    if(dirtyFlag_[21])
-    {
-        ret.push_back(getColumnName(21));
-    }
-    if(dirtyFlag_[22])
-    {
-        ret.push_back(getColumnName(22));
-    }
     return ret;
 }
 
@@ -2599,9 +2437,9 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[4])
     {
-        if(getPrizeTierId())
+        if(getSelectedOptionId())
         {
-            binder << getValueOfPrizeTierId();
+            binder << getValueOfSelectedOptionId();
         }
         else
         {
@@ -2610,9 +2448,9 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
     }
     if(dirtyFlag_[5])
     {
-        if(getColourId())
+        if(getSelectedOptionLabel())
         {
-            binder << getValueOfColourId();
+            binder << getValueOfSelectedOptionLabel();
         }
         else
         {
@@ -2620,39 +2458,6 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
         }
     }
     if(dirtyFlag_[6])
-    {
-        if(getPrizeAmount())
-        {
-            binder << getValueOfPrizeAmount();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[7])
-    {
-        if(getActualPayout())
-        {
-            binder << getValueOfActualPayout();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[8])
-    {
-        if(getStatus())
-        {
-            binder << getValueOfStatus();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[9])
     {
         if(getClaimCode())
         {
@@ -2663,7 +2468,7 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[10])
+    if(dirtyFlag_[7])
     {
         if(getVerifiedBy())
         {
@@ -2674,7 +2479,7 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[11])
+    if(dirtyFlag_[8])
     {
         if(getVerificationMethod())
         {
@@ -2685,7 +2490,7 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[12])
+    if(dirtyFlag_[9])
     {
         if(getVerificationIdNumber())
         {
@@ -2696,7 +2501,7 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[13])
+    if(dirtyFlag_[10])
     {
         if(getVerificationDate())
         {
@@ -2707,7 +2512,7 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[14])
+    if(dirtyFlag_[11])
     {
         if(getPayoutMethod())
         {
@@ -2718,7 +2523,7 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[15])
+    if(dirtyFlag_[12])
     {
         if(getPayoutReference())
         {
@@ -2729,7 +2534,7 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[16])
+    if(dirtyFlag_[13])
     {
         if(getPayoutDate())
         {
@@ -2740,7 +2545,7 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[17])
+    if(dirtyFlag_[14])
     {
         if(getNotifiedAt())
         {
@@ -2751,29 +2556,7 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[18])
-    {
-        if(getCreatedAt())
-        {
-            binder << getValueOfCreatedAt();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[19])
-    {
-        if(getUpdatedAt())
-        {
-            binder << getValueOfUpdatedAt();
-        }
-        else
-        {
-            binder << nullptr;
-        }
-    }
-    if(dirtyFlag_[20])
+    if(dirtyFlag_[15])
     {
         if(getTicketAlias())
         {
@@ -2784,22 +2567,55 @@ void Winners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[21])
+    if(dirtyFlag_[16])
     {
-        if(getColourName())
+        if(getPhoneNumber())
         {
-            binder << getValueOfColourName();
+            binder << getValueOfPhoneNumber();
         }
         else
         {
             binder << nullptr;
         }
     }
-    if(dirtyFlag_[22])
+    if(dirtyFlag_[17])
     {
-        if(getPhoneNumber())
+        if(getCreatedAt())
         {
-            binder << getValueOfPhoneNumber();
+            binder << getValueOfCreatedAt();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[18])
+    {
+        if(getUpdatedAt())
+        {
+            binder << getValueOfUpdatedAt();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[19])
+    {
+        if(getStatus())
+        {
+            binder << getValueOfStatus();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[20])
+    {
+        if(getPrizeDescription())
+        {
+            binder << getValueOfPrizeDescription();
         }
         else
         {
@@ -2842,45 +2658,21 @@ Json::Value Winners::toJson() const
     {
         ret["customer_id"]=Json::Value();
     }
-    if(getPrizeTierId())
+    if(getSelectedOptionId())
     {
-        ret["prize_tier_id"]=getValueOfPrizeTierId();
+        ret["selected_option_id"]=getValueOfSelectedOptionId();
     }
     else
     {
-        ret["prize_tier_id"]=Json::Value();
+        ret["selected_option_id"]=Json::Value();
     }
-    if(getColourId())
+    if(getSelectedOptionLabel())
     {
-        ret["colour_id"]=getValueOfColourId();
-    }
-    else
-    {
-        ret["colour_id"]=Json::Value();
-    }
-    if(getPrizeAmount())
-    {
-        ret["prize_amount"]=getValueOfPrizeAmount();
+        ret["selected_option_label"]=getValueOfSelectedOptionLabel();
     }
     else
     {
-        ret["prize_amount"]=Json::Value();
-    }
-    if(getActualPayout())
-    {
-        ret["actual_payout"]=getValueOfActualPayout();
-    }
-    else
-    {
-        ret["actual_payout"]=Json::Value();
-    }
-    if(getStatus())
-    {
-        ret["status"]=getValueOfStatus();
-    }
-    else
-    {
-        ret["status"]=Json::Value();
+        ret["selected_option_label"]=Json::Value();
     }
     if(getClaimCode())
     {
@@ -2954,6 +2746,22 @@ Json::Value Winners::toJson() const
     {
         ret["notified_at"]=Json::Value();
     }
+    if(getTicketAlias())
+    {
+        ret["ticket_alias"]=getValueOfTicketAlias();
+    }
+    else
+    {
+        ret["ticket_alias"]=Json::Value();
+    }
+    if(getPhoneNumber())
+    {
+        ret["phone_number"]=getValueOfPhoneNumber();
+    }
+    else
+    {
+        ret["phone_number"]=Json::Value();
+    }
     if(getCreatedAt())
     {
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
@@ -2970,29 +2778,21 @@ Json::Value Winners::toJson() const
     {
         ret["updated_at"]=Json::Value();
     }
-    if(getTicketAlias())
+    if(getStatus())
     {
-        ret["ticket_alias"]=getValueOfTicketAlias();
+        ret["status"]=getValueOfStatus();
     }
     else
     {
-        ret["ticket_alias"]=Json::Value();
+        ret["status"]=Json::Value();
     }
-    if(getColourName())
+    if(getPrizeDescription())
     {
-        ret["colour_name"]=getValueOfColourName();
-    }
-    else
-    {
-        ret["colour_name"]=Json::Value();
-    }
-    if(getPhoneNumber())
-    {
-        ret["phone_number"]=getValueOfPhoneNumber();
+        ret["prize_description"]=getValueOfPrizeDescription();
     }
     else
     {
-        ret["phone_number"]=Json::Value();
+        ret["prize_description"]=Json::Value();
     }
     return ret;
 }
@@ -3006,7 +2806,7 @@ Json::Value Winners::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 23)
+    if(pMasqueradingVector.size() == 21)
     {
         if(!pMasqueradingVector[0].empty())
         {
@@ -3054,9 +2854,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[4].empty())
         {
-            if(getPrizeTierId())
+            if(getSelectedOptionId())
             {
-                ret[pMasqueradingVector[4]]=getValueOfPrizeTierId();
+                ret[pMasqueradingVector[4]]=getValueOfSelectedOptionId();
             }
             else
             {
@@ -3065,9 +2865,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[5].empty())
         {
-            if(getColourId())
+            if(getSelectedOptionLabel())
             {
-                ret[pMasqueradingVector[5]]=getValueOfColourId();
+                ret[pMasqueradingVector[5]]=getValueOfSelectedOptionLabel();
             }
             else
             {
@@ -3076,9 +2876,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[6].empty())
         {
-            if(getPrizeAmount())
+            if(getClaimCode())
             {
-                ret[pMasqueradingVector[6]]=getValueOfPrizeAmount();
+                ret[pMasqueradingVector[6]]=getValueOfClaimCode();
             }
             else
             {
@@ -3087,9 +2887,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[7].empty())
         {
-            if(getActualPayout())
+            if(getVerifiedBy())
             {
-                ret[pMasqueradingVector[7]]=getValueOfActualPayout();
+                ret[pMasqueradingVector[7]]=getValueOfVerifiedBy();
             }
             else
             {
@@ -3098,9 +2898,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[8].empty())
         {
-            if(getStatus())
+            if(getVerificationMethod())
             {
-                ret[pMasqueradingVector[8]]=getValueOfStatus();
+                ret[pMasqueradingVector[8]]=getValueOfVerificationMethod();
             }
             else
             {
@@ -3109,9 +2909,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[9].empty())
         {
-            if(getClaimCode())
+            if(getVerificationIdNumber())
             {
-                ret[pMasqueradingVector[9]]=getValueOfClaimCode();
+                ret[pMasqueradingVector[9]]=getValueOfVerificationIdNumber();
             }
             else
             {
@@ -3120,9 +2920,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[10].empty())
         {
-            if(getVerifiedBy())
+            if(getVerificationDate())
             {
-                ret[pMasqueradingVector[10]]=getValueOfVerifiedBy();
+                ret[pMasqueradingVector[10]]=getVerificationDate()->toDbStringLocal();
             }
             else
             {
@@ -3131,9 +2931,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[11].empty())
         {
-            if(getVerificationMethod())
+            if(getPayoutMethod())
             {
-                ret[pMasqueradingVector[11]]=getValueOfVerificationMethod();
+                ret[pMasqueradingVector[11]]=getValueOfPayoutMethod();
             }
             else
             {
@@ -3142,9 +2942,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[12].empty())
         {
-            if(getVerificationIdNumber())
+            if(getPayoutReference())
             {
-                ret[pMasqueradingVector[12]]=getValueOfVerificationIdNumber();
+                ret[pMasqueradingVector[12]]=getValueOfPayoutReference();
             }
             else
             {
@@ -3153,9 +2953,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[13].empty())
         {
-            if(getVerificationDate())
+            if(getPayoutDate())
             {
-                ret[pMasqueradingVector[13]]=getVerificationDate()->toDbStringLocal();
+                ret[pMasqueradingVector[13]]=getPayoutDate()->toDbStringLocal();
             }
             else
             {
@@ -3164,9 +2964,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[14].empty())
         {
-            if(getPayoutMethod())
+            if(getNotifiedAt())
             {
-                ret[pMasqueradingVector[14]]=getValueOfPayoutMethod();
+                ret[pMasqueradingVector[14]]=getNotifiedAt()->toDbStringLocal();
             }
             else
             {
@@ -3175,9 +2975,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[15].empty())
         {
-            if(getPayoutReference())
+            if(getTicketAlias())
             {
-                ret[pMasqueradingVector[15]]=getValueOfPayoutReference();
+                ret[pMasqueradingVector[15]]=getValueOfTicketAlias();
             }
             else
             {
@@ -3186,9 +2986,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[16].empty())
         {
-            if(getPayoutDate())
+            if(getPhoneNumber())
             {
-                ret[pMasqueradingVector[16]]=getPayoutDate()->toDbStringLocal();
+                ret[pMasqueradingVector[16]]=getValueOfPhoneNumber();
             }
             else
             {
@@ -3197,9 +2997,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[17].empty())
         {
-            if(getNotifiedAt())
+            if(getCreatedAt())
             {
-                ret[pMasqueradingVector[17]]=getNotifiedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[17]]=getCreatedAt()->toDbStringLocal();
             }
             else
             {
@@ -3208,9 +3008,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[18].empty())
         {
-            if(getCreatedAt())
+            if(getUpdatedAt())
             {
-                ret[pMasqueradingVector[18]]=getCreatedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[18]]=getUpdatedAt()->toDbStringLocal();
             }
             else
             {
@@ -3219,9 +3019,9 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[19].empty())
         {
-            if(getUpdatedAt())
+            if(getStatus())
             {
-                ret[pMasqueradingVector[19]]=getUpdatedAt()->toDbStringLocal();
+                ret[pMasqueradingVector[19]]=getValueOfStatus();
             }
             else
             {
@@ -3230,35 +3030,13 @@ Json::Value Winners::toMasqueradedJson(
         }
         if(!pMasqueradingVector[20].empty())
         {
-            if(getTicketAlias())
+            if(getPrizeDescription())
             {
-                ret[pMasqueradingVector[20]]=getValueOfTicketAlias();
+                ret[pMasqueradingVector[20]]=getValueOfPrizeDescription();
             }
             else
             {
                 ret[pMasqueradingVector[20]]=Json::Value();
-            }
-        }
-        if(!pMasqueradingVector[21].empty())
-        {
-            if(getColourName())
-            {
-                ret[pMasqueradingVector[21]]=getValueOfColourName();
-            }
-            else
-            {
-                ret[pMasqueradingVector[21]]=Json::Value();
-            }
-        }
-        if(!pMasqueradingVector[22].empty())
-        {
-            if(getPhoneNumber())
-            {
-                ret[pMasqueradingVector[22]]=getValueOfPhoneNumber();
-            }
-            else
-            {
-                ret[pMasqueradingVector[22]]=Json::Value();
             }
         }
         return ret;
@@ -3296,45 +3074,21 @@ Json::Value Winners::toMasqueradedJson(
     {
         ret["customer_id"]=Json::Value();
     }
-    if(getPrizeTierId())
+    if(getSelectedOptionId())
     {
-        ret["prize_tier_id"]=getValueOfPrizeTierId();
+        ret["selected_option_id"]=getValueOfSelectedOptionId();
     }
     else
     {
-        ret["prize_tier_id"]=Json::Value();
+        ret["selected_option_id"]=Json::Value();
     }
-    if(getColourId())
+    if(getSelectedOptionLabel())
     {
-        ret["colour_id"]=getValueOfColourId();
-    }
-    else
-    {
-        ret["colour_id"]=Json::Value();
-    }
-    if(getPrizeAmount())
-    {
-        ret["prize_amount"]=getValueOfPrizeAmount();
+        ret["selected_option_label"]=getValueOfSelectedOptionLabel();
     }
     else
     {
-        ret["prize_amount"]=Json::Value();
-    }
-    if(getActualPayout())
-    {
-        ret["actual_payout"]=getValueOfActualPayout();
-    }
-    else
-    {
-        ret["actual_payout"]=Json::Value();
-    }
-    if(getStatus())
-    {
-        ret["status"]=getValueOfStatus();
-    }
-    else
-    {
-        ret["status"]=Json::Value();
+        ret["selected_option_label"]=Json::Value();
     }
     if(getClaimCode())
     {
@@ -3408,6 +3162,22 @@ Json::Value Winners::toMasqueradedJson(
     {
         ret["notified_at"]=Json::Value();
     }
+    if(getTicketAlias())
+    {
+        ret["ticket_alias"]=getValueOfTicketAlias();
+    }
+    else
+    {
+        ret["ticket_alias"]=Json::Value();
+    }
+    if(getPhoneNumber())
+    {
+        ret["phone_number"]=getValueOfPhoneNumber();
+    }
+    else
+    {
+        ret["phone_number"]=Json::Value();
+    }
     if(getCreatedAt())
     {
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
@@ -3424,29 +3194,21 @@ Json::Value Winners::toMasqueradedJson(
     {
         ret["updated_at"]=Json::Value();
     }
-    if(getTicketAlias())
+    if(getStatus())
     {
-        ret["ticket_alias"]=getValueOfTicketAlias();
+        ret["status"]=getValueOfStatus();
     }
     else
     {
-        ret["ticket_alias"]=Json::Value();
+        ret["status"]=Json::Value();
     }
-    if(getColourName())
+    if(getPrizeDescription())
     {
-        ret["colour_name"]=getValueOfColourName();
-    }
-    else
-    {
-        ret["colour_name"]=Json::Value();
-    }
-    if(getPhoneNumber())
-    {
-        ret["phone_number"]=getValueOfPhoneNumber();
+        ret["prize_description"]=getValueOfPrizeDescription();
     }
     else
     {
-        ret["phone_number"]=Json::Value();
+        ret["prize_description"]=Json::Value();
     }
     return ret;
 }
@@ -3488,114 +3250,89 @@ bool Winners::validateJsonForCreation(const Json::Value &pJson, std::string &err
         err="The customer_id column cannot be null";
         return false;
     }
-    if(pJson.isMember("prize_tier_id"))
+    if(pJson.isMember("selected_option_id"))
     {
-        if(!validJsonOfField(4, "prize_tier_id", pJson["prize_tier_id"], err, true))
+        if(!validJsonOfField(4, "selected_option_id", pJson["selected_option_id"], err, true))
             return false;
     }
-    else
+    if(pJson.isMember("selected_option_label"))
     {
-        err="The prize_tier_id column cannot be null";
-        return false;
-    }
-    if(pJson.isMember("colour_id"))
-    {
-        if(!validJsonOfField(5, "colour_id", pJson["colour_id"], err, true))
-            return false;
-    }
-    else
-    {
-        err="The colour_id column cannot be null";
-        return false;
-    }
-    if(pJson.isMember("prize_amount"))
-    {
-        if(!validJsonOfField(6, "prize_amount", pJson["prize_amount"], err, true))
-            return false;
-    }
-    else
-    {
-        err="The prize_amount column cannot be null";
-        return false;
-    }
-    if(pJson.isMember("actual_payout"))
-    {
-        if(!validJsonOfField(7, "actual_payout", pJson["actual_payout"], err, true))
-            return false;
-    }
-    if(pJson.isMember("status"))
-    {
-        if(!validJsonOfField(8, "status", pJson["status"], err, true))
+        if(!validJsonOfField(5, "selected_option_label", pJson["selected_option_label"], err, true))
             return false;
     }
     if(pJson.isMember("claim_code"))
     {
-        if(!validJsonOfField(9, "claim_code", pJson["claim_code"], err, true))
+        if(!validJsonOfField(6, "claim_code", pJson["claim_code"], err, true))
             return false;
     }
     if(pJson.isMember("verified_by"))
     {
-        if(!validJsonOfField(10, "verified_by", pJson["verified_by"], err, true))
+        if(!validJsonOfField(7, "verified_by", pJson["verified_by"], err, true))
             return false;
     }
     if(pJson.isMember("verification_method"))
     {
-        if(!validJsonOfField(11, "verification_method", pJson["verification_method"], err, true))
+        if(!validJsonOfField(8, "verification_method", pJson["verification_method"], err, true))
             return false;
     }
     if(pJson.isMember("verification_id_number"))
     {
-        if(!validJsonOfField(12, "verification_id_number", pJson["verification_id_number"], err, true))
+        if(!validJsonOfField(9, "verification_id_number", pJson["verification_id_number"], err, true))
             return false;
     }
     if(pJson.isMember("verification_date"))
     {
-        if(!validJsonOfField(13, "verification_date", pJson["verification_date"], err, true))
+        if(!validJsonOfField(10, "verification_date", pJson["verification_date"], err, true))
             return false;
     }
     if(pJson.isMember("payout_method"))
     {
-        if(!validJsonOfField(14, "payout_method", pJson["payout_method"], err, true))
+        if(!validJsonOfField(11, "payout_method", pJson["payout_method"], err, true))
             return false;
     }
     if(pJson.isMember("payout_reference"))
     {
-        if(!validJsonOfField(15, "payout_reference", pJson["payout_reference"], err, true))
+        if(!validJsonOfField(12, "payout_reference", pJson["payout_reference"], err, true))
             return false;
     }
     if(pJson.isMember("payout_date"))
     {
-        if(!validJsonOfField(16, "payout_date", pJson["payout_date"], err, true))
+        if(!validJsonOfField(13, "payout_date", pJson["payout_date"], err, true))
             return false;
     }
     if(pJson.isMember("notified_at"))
     {
-        if(!validJsonOfField(17, "notified_at", pJson["notified_at"], err, true))
-            return false;
-    }
-    if(pJson.isMember("created_at"))
-    {
-        if(!validJsonOfField(18, "created_at", pJson["created_at"], err, true))
-            return false;
-    }
-    if(pJson.isMember("updated_at"))
-    {
-        if(!validJsonOfField(19, "updated_at", pJson["updated_at"], err, true))
+        if(!validJsonOfField(14, "notified_at", pJson["notified_at"], err, true))
             return false;
     }
     if(pJson.isMember("ticket_alias"))
     {
-        if(!validJsonOfField(20, "ticket_alias", pJson["ticket_alias"], err, true))
-            return false;
-    }
-    if(pJson.isMember("colour_name"))
-    {
-        if(!validJsonOfField(21, "colour_name", pJson["colour_name"], err, true))
+        if(!validJsonOfField(15, "ticket_alias", pJson["ticket_alias"], err, true))
             return false;
     }
     if(pJson.isMember("phone_number"))
     {
-        if(!validJsonOfField(22, "phone_number", pJson["phone_number"], err, true))
+        if(!validJsonOfField(16, "phone_number", pJson["phone_number"], err, true))
+            return false;
+    }
+    if(pJson.isMember("created_at"))
+    {
+        if(!validJsonOfField(17, "created_at", pJson["created_at"], err, true))
+            return false;
+    }
+    if(pJson.isMember("updated_at"))
+    {
+        if(!validJsonOfField(18, "updated_at", pJson["updated_at"], err, true))
+            return false;
+    }
+    if(pJson.isMember("status"))
+    {
+        if(!validJsonOfField(19, "status", pJson["status"], err, true))
+            return false;
+    }
+    if(pJson.isMember("prize_description"))
+    {
+        if(!validJsonOfField(20, "prize_description", pJson["prize_description"], err, true))
             return false;
     }
     return true;
@@ -3604,7 +3341,7 @@ bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                  const std::vector<std::string> &pMasqueradingVector,
                                                  std::string &err)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 21)
     {
         err = "Bad masquerading vector";
         return false;
@@ -3664,11 +3401,6 @@ bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[4] + " column cannot be null";
-            return false;
-        }
       }
       if(!pMasqueradingVector[5].empty())
       {
@@ -3677,11 +3409,6 @@ bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[5] + " column cannot be null";
-            return false;
-        }
       }
       if(!pMasqueradingVector[6].empty())
       {
@@ -3690,11 +3417,6 @@ bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[6] + " column cannot be null";
-            return false;
-        }
       }
       if(!pMasqueradingVector[7].empty())
       {
@@ -3808,22 +3530,6 @@ bool Winners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                   return false;
           }
       }
-      if(!pMasqueradingVector[21].empty())
-      {
-          if(pJson.isMember(pMasqueradingVector[21]))
-          {
-              if(!validJsonOfField(21, pMasqueradingVector[21], pJson[pMasqueradingVector[21]], err, true))
-                  return false;
-          }
-      }
-      if(!pMasqueradingVector[22].empty())
-      {
-          if(pJson.isMember(pMasqueradingVector[22]))
-          {
-              if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, true))
-                  return false;
-          }
-      }
     }
     catch(const Json::LogicError &e)
     {
@@ -3859,99 +3565,89 @@ bool Winners::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
         if(!validJsonOfField(3, "customer_id", pJson["customer_id"], err, false))
             return false;
     }
-    if(pJson.isMember("prize_tier_id"))
+    if(pJson.isMember("selected_option_id"))
     {
-        if(!validJsonOfField(4, "prize_tier_id", pJson["prize_tier_id"], err, false))
+        if(!validJsonOfField(4, "selected_option_id", pJson["selected_option_id"], err, false))
             return false;
     }
-    if(pJson.isMember("colour_id"))
+    if(pJson.isMember("selected_option_label"))
     {
-        if(!validJsonOfField(5, "colour_id", pJson["colour_id"], err, false))
-            return false;
-    }
-    if(pJson.isMember("prize_amount"))
-    {
-        if(!validJsonOfField(6, "prize_amount", pJson["prize_amount"], err, false))
-            return false;
-    }
-    if(pJson.isMember("actual_payout"))
-    {
-        if(!validJsonOfField(7, "actual_payout", pJson["actual_payout"], err, false))
-            return false;
-    }
-    if(pJson.isMember("status"))
-    {
-        if(!validJsonOfField(8, "status", pJson["status"], err, false))
+        if(!validJsonOfField(5, "selected_option_label", pJson["selected_option_label"], err, false))
             return false;
     }
     if(pJson.isMember("claim_code"))
     {
-        if(!validJsonOfField(9, "claim_code", pJson["claim_code"], err, false))
+        if(!validJsonOfField(6, "claim_code", pJson["claim_code"], err, false))
             return false;
     }
     if(pJson.isMember("verified_by"))
     {
-        if(!validJsonOfField(10, "verified_by", pJson["verified_by"], err, false))
+        if(!validJsonOfField(7, "verified_by", pJson["verified_by"], err, false))
             return false;
     }
     if(pJson.isMember("verification_method"))
     {
-        if(!validJsonOfField(11, "verification_method", pJson["verification_method"], err, false))
+        if(!validJsonOfField(8, "verification_method", pJson["verification_method"], err, false))
             return false;
     }
     if(pJson.isMember("verification_id_number"))
     {
-        if(!validJsonOfField(12, "verification_id_number", pJson["verification_id_number"], err, false))
+        if(!validJsonOfField(9, "verification_id_number", pJson["verification_id_number"], err, false))
             return false;
     }
     if(pJson.isMember("verification_date"))
     {
-        if(!validJsonOfField(13, "verification_date", pJson["verification_date"], err, false))
+        if(!validJsonOfField(10, "verification_date", pJson["verification_date"], err, false))
             return false;
     }
     if(pJson.isMember("payout_method"))
     {
-        if(!validJsonOfField(14, "payout_method", pJson["payout_method"], err, false))
+        if(!validJsonOfField(11, "payout_method", pJson["payout_method"], err, false))
             return false;
     }
     if(pJson.isMember("payout_reference"))
     {
-        if(!validJsonOfField(15, "payout_reference", pJson["payout_reference"], err, false))
+        if(!validJsonOfField(12, "payout_reference", pJson["payout_reference"], err, false))
             return false;
     }
     if(pJson.isMember("payout_date"))
     {
-        if(!validJsonOfField(16, "payout_date", pJson["payout_date"], err, false))
+        if(!validJsonOfField(13, "payout_date", pJson["payout_date"], err, false))
             return false;
     }
     if(pJson.isMember("notified_at"))
     {
-        if(!validJsonOfField(17, "notified_at", pJson["notified_at"], err, false))
-            return false;
-    }
-    if(pJson.isMember("created_at"))
-    {
-        if(!validJsonOfField(18, "created_at", pJson["created_at"], err, false))
-            return false;
-    }
-    if(pJson.isMember("updated_at"))
-    {
-        if(!validJsonOfField(19, "updated_at", pJson["updated_at"], err, false))
+        if(!validJsonOfField(14, "notified_at", pJson["notified_at"], err, false))
             return false;
     }
     if(pJson.isMember("ticket_alias"))
     {
-        if(!validJsonOfField(20, "ticket_alias", pJson["ticket_alias"], err, false))
-            return false;
-    }
-    if(pJson.isMember("colour_name"))
-    {
-        if(!validJsonOfField(21, "colour_name", pJson["colour_name"], err, false))
+        if(!validJsonOfField(15, "ticket_alias", pJson["ticket_alias"], err, false))
             return false;
     }
     if(pJson.isMember("phone_number"))
     {
-        if(!validJsonOfField(22, "phone_number", pJson["phone_number"], err, false))
+        if(!validJsonOfField(16, "phone_number", pJson["phone_number"], err, false))
+            return false;
+    }
+    if(pJson.isMember("created_at"))
+    {
+        if(!validJsonOfField(17, "created_at", pJson["created_at"], err, false))
+            return false;
+    }
+    if(pJson.isMember("updated_at"))
+    {
+        if(!validJsonOfField(18, "updated_at", pJson["updated_at"], err, false))
+            return false;
+    }
+    if(pJson.isMember("status"))
+    {
+        if(!validJsonOfField(19, "status", pJson["status"], err, false))
+            return false;
+    }
+    if(pJson.isMember("prize_description"))
+    {
+        if(!validJsonOfField(20, "prize_description", pJson["prize_description"], err, false))
             return false;
     }
     return true;
@@ -3960,7 +3656,7 @@ bool Winners::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 23)
+    if(pMasqueradingVector.size() != 21)
     {
         err = "Bad masquerading vector";
         return false;
@@ -4076,16 +3772,6 @@ bool Winners::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
           if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, false))
               return false;
       }
-      if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
-      {
-          if(!validJsonOfField(21, pMasqueradingVector[21], pJson[pMasqueradingVector[21]], err, false))
-              return false;
-      }
-      if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
-      {
-          if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, false))
-              return false;
-      }
     }
     catch(const Json::LogicError &e)
     {
@@ -4153,36 +3839,57 @@ bool Winners::validJsonOfField(size_t index,
         case 4:
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 100)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 100)";
                 return false;
             }
             break;
         case 5:
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 100)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 100)";
                 return false;
             }
             break;
         case 6:
             if(pJson.isNull())
             {
-                err="The " + fieldName + " column cannot be null";
-                return false;
+                return true;
             }
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 50)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 50)";
                 return false;
             }
             break;
@@ -4194,6 +3901,14 @@ bool Winners::validJsonOfField(size_t index,
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 100)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 100)";
                 return false;
             }
             break;
@@ -4208,11 +3923,11 @@ bool Winners::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+                .from_bytes(pJson.asCString()).size() > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 20)";
+                    " field (the maximum value is 50)";
                 return false;
             }
             break;
@@ -4243,14 +3958,6 @@ bool Winners::validJsonOfField(size_t index,
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
-            {
-                err="String length exceeds limit for the " +
-                    fieldName +
-                    " field (the maximum value is 100)";
                 return false;
             }
             break;
@@ -4284,11 +3991,11 @@ bool Winners::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+                .from_bytes(pJson.asCString()).size() > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 50)";
+                    " field (the maximum value is 100)";
                 return false;
             }
             break;
@@ -4313,14 +4020,6 @@ bool Winners::validJsonOfField(size_t index,
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
-            {
-                err="String length exceeds limit for the " +
-                    fieldName +
-                    " field (the maximum value is 20)";
-                return false;
-            }
             break;
         case 15:
             if(pJson.isNull())
@@ -4333,11 +4032,11 @@ bool Winners::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+                .from_bytes(pJson.asCString()).size() > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 100)";
+                    " field (the maximum value is 50)";
                 return false;
             }
             break;
@@ -4349,6 +4048,14 @@ bool Winners::validJsonOfField(size_t index,
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+                .from_bytes(pJson.asCString()).size() > 20)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 20)";
                 return false;
             }
             break;
@@ -4379,7 +4086,7 @@ bool Winners::validJsonOfField(size_t index,
             {
                 return true;
             }
-            if(!pJson.isString())
+            if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
@@ -4396,49 +4103,11 @@ bool Winners::validJsonOfField(size_t index,
                 return false;
             }
             if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 10)
+                .from_bytes(pJson.asCString()).size() > 200)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
-                    " field (the maximum value is 10)";
-                return false;
-            }
-            break;
-        case 21:
-            if(pJson.isNull())
-            {
-                return true;
-            }
-            if(!pJson.isString())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
-            {
-                err="String length exceeds limit for the " +
-                    fieldName +
-                    " field (the maximum value is 50)";
-                return false;
-            }
-            break;
-        case 22:
-            if(pJson.isNull())
-            {
-                return true;
-            }
-            if(!pJson.isString())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
-            {
-                err="String length exceeds limit for the " +
-                    fieldName +
-                    " field (the maximum value is 20)";
+                    " field (the maximum value is 200)";
                 return false;
             }
             break;

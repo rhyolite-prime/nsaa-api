@@ -48,7 +48,8 @@ class Tickets
         static const std::string _ticket_number;
         static const std::string _draw_id;
         static const std::string _customer_id;
-        static const std::string _colour_id;
+        static const std::string _selected_option_value;
+        static const std::string _selected_option_name;
         static const std::string _entry_fee;
         static const std::string _quantity;
         static const std::string _total_amount;
@@ -57,12 +58,11 @@ class Tickets
         static const std::string _payment_method;
         static const std::string _purchase_channel;
         static const std::string _is_active;
-        static const std::string _created_at;
-        static const std::string _updated_at;
         static const std::string _customer_phone;
-        static const std::string _colour_name;
         static const std::string _raffle_id;
         static const std::string _ticket_alias;
+        static const std::string _created_at;
+        static const std::string _updated_at;
     };
 
     static const int primaryKeyNumber;
@@ -150,14 +150,25 @@ class Tickets
     void setCustomerId(const std::string &pCustomerId) noexcept;
     void setCustomerId(std::string &&pCustomerId) noexcept;
 
-    /**  For column colour_id  */
-    ///Get the value of the column colour_id, returns the default value if the column is null
-    const std::string &getValueOfColourId() const noexcept;
+    /**  For column selected_option_value  */
+    ///Get the value of the column selected_option_value, returns the default value if the column is null
+    const std::string &getValueOfSelectedOptionValue() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getColourId() const noexcept;
-    ///Set the value of the column colour_id
-    void setColourId(const std::string &pColourId) noexcept;
-    void setColourId(std::string &&pColourId) noexcept;
+    const std::shared_ptr<std::string> &getSelectedOptionValue() const noexcept;
+    ///Set the value of the column selected_option_value
+    void setSelectedOptionValue(const std::string &pSelectedOptionValue) noexcept;
+    void setSelectedOptionValue(std::string &&pSelectedOptionValue) noexcept;
+    void setSelectedOptionValueToNull() noexcept;
+
+    /**  For column selected_option_name  */
+    ///Get the value of the column selected_option_name, returns the default value if the column is null
+    const std::string &getValueOfSelectedOptionName() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getSelectedOptionName() const noexcept;
+    ///Set the value of the column selected_option_name
+    void setSelectedOptionName(const std::string &pSelectedOptionName) noexcept;
+    void setSelectedOptionName(std::string &&pSelectedOptionName) noexcept;
+    void setSelectedOptionNameToNull() noexcept;
 
     /**  For column entry_fee  */
     ///Get the value of the column entry_fee, returns the default value if the column is null
@@ -197,12 +208,11 @@ class Tickets
 
     /**  For column payment_status  */
     ///Get the value of the column payment_status, returns the default value if the column is null
-    const std::string &getValueOfPaymentStatus() const noexcept;
+    const int32_t &getValueOfPaymentStatus() const noexcept;
     ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getPaymentStatus() const noexcept;
+    const std::shared_ptr<int32_t> &getPaymentStatus() const noexcept;
     ///Set the value of the column payment_status
-    void setPaymentStatus(const std::string &pPaymentStatus) noexcept;
-    void setPaymentStatus(std::string &&pPaymentStatus) noexcept;
+    void setPaymentStatus(const int32_t &pPaymentStatus) noexcept;
     void setPaymentStatusToNull() noexcept;
 
     /**  For column payment_method  */
@@ -234,24 +244,6 @@ class Tickets
     void setIsActive(const bool &pIsActive) noexcept;
     void setIsActiveToNull() noexcept;
 
-    /**  For column created_at  */
-    ///Get the value of the column created_at, returns the default value if the column is null
-    const ::trantor::Date &getValueOfCreatedAt() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<::trantor::Date> &getCreatedAt() const noexcept;
-    ///Set the value of the column created_at
-    void setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept;
-    void setCreatedAtToNull() noexcept;
-
-    /**  For column updated_at  */
-    ///Get the value of the column updated_at, returns the default value if the column is null
-    const ::trantor::Date &getValueOfUpdatedAt() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<::trantor::Date> &getUpdatedAt() const noexcept;
-    ///Set the value of the column updated_at
-    void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
-    void setUpdatedAtToNull() noexcept;
-
     /**  For column customer_phone  */
     ///Get the value of the column customer_phone, returns the default value if the column is null
     const std::string &getValueOfCustomerPhone() const noexcept;
@@ -261,16 +253,6 @@ class Tickets
     void setCustomerPhone(const std::string &pCustomerPhone) noexcept;
     void setCustomerPhone(std::string &&pCustomerPhone) noexcept;
     void setCustomerPhoneToNull() noexcept;
-
-    /**  For column colour_name  */
-    ///Get the value of the column colour_name, returns the default value if the column is null
-    const std::string &getValueOfColourName() const noexcept;
-    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
-    const std::shared_ptr<std::string> &getColourName() const noexcept;
-    ///Set the value of the column colour_name
-    void setColourName(const std::string &pColourName) noexcept;
-    void setColourName(std::string &&pColourName) noexcept;
-    void setColourNameToNull() noexcept;
 
     /**  For column raffle_id  */
     ///Get the value of the column raffle_id, returns the default value if the column is null
@@ -290,6 +272,24 @@ class Tickets
     void setTicketAlias(const std::string &pTicketAlias) noexcept;
     void setTicketAlias(std::string &&pTicketAlias) noexcept;
     void setTicketAliasToNull() noexcept;
+
+    /**  For column created_at  */
+    ///Get the value of the column created_at, returns the default value if the column is null
+    const ::trantor::Date &getValueOfCreatedAt() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getCreatedAt() const noexcept;
+    ///Set the value of the column created_at
+    void setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept;
+    void setCreatedAtToNull() noexcept;
+
+    /**  For column updated_at  */
+    ///Get the value of the column updated_at, returns the default value if the column is null
+    const ::trantor::Date &getValueOfUpdatedAt() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getUpdatedAt() const noexcept;
+    ///Set the value of the column updated_at
+    void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
+    void setUpdatedAtToNull() noexcept;
 
 
     static size_t getColumnNumber() noexcept {  return 19;  }
@@ -318,21 +318,21 @@ class Tickets
     std::shared_ptr<std::string> ticketNumber_;
     std::shared_ptr<std::string> drawId_;
     std::shared_ptr<std::string> customerId_;
-    std::shared_ptr<std::string> colourId_;
+    std::shared_ptr<std::string> selectedOptionValue_;
+    std::shared_ptr<std::string> selectedOptionName_;
     std::shared_ptr<std::string> entryFee_;
     std::shared_ptr<int32_t> quantity_;
     std::shared_ptr<std::string> totalAmount_;
     std::shared_ptr<std::string> paymentReference_;
-    std::shared_ptr<std::string> paymentStatus_;
+    std::shared_ptr<int32_t> paymentStatus_;
     std::shared_ptr<std::string> paymentMethod_;
     std::shared_ptr<std::string> purchaseChannel_;
     std::shared_ptr<bool> isActive_;
-    std::shared_ptr<::trantor::Date> createdAt_;
-    std::shared_ptr<::trantor::Date> updatedAt_;
     std::shared_ptr<std::string> customerPhone_;
-    std::shared_ptr<std::string> colourName_;
     std::shared_ptr<std::string> raffleId_;
     std::shared_ptr<std::string> ticketAlias_;
+    std::shared_ptr<::trantor::Date> createdAt_;
+    std::shared_ptr<::trantor::Date> updatedAt_;
     struct MetaData
     {
         const std::string colName_;
@@ -385,84 +385,82 @@ class Tickets
         }
         if(dirtyFlag_[4])
         {
-            sql += "colour_id,";
+            sql += "selected_option_value,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[5])
+        {
+            sql += "selected_option_name,";
             ++parametersCount;
         }
         sql += "entry_fee,";
-        ++parametersCount;
-        if(!dirtyFlag_[5])
-        {
-            needSelection=true;
-        }
-        sql += "quantity,";
         ++parametersCount;
         if(!dirtyFlag_[6])
         {
             needSelection=true;
         }
-        if(dirtyFlag_[7])
+        sql += "quantity,";
+        ++parametersCount;
+        if(!dirtyFlag_[7])
+        {
+            needSelection=true;
+        }
+        if(dirtyFlag_[8])
         {
             sql += "total_amount,";
             ++parametersCount;
         }
-        if(dirtyFlag_[8])
+        if(dirtyFlag_[9])
         {
             sql += "payment_reference,";
             ++parametersCount;
         }
-        sql += "payment_status,";
-        ++parametersCount;
-        if(!dirtyFlag_[9])
-        {
-            needSelection=true;
-        }
         if(dirtyFlag_[10])
+        {
+            sql += "payment_status,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[11])
         {
             sql += "payment_method,";
             ++parametersCount;
         }
         sql += "purchase_channel,";
         ++parametersCount;
-        if(!dirtyFlag_[11])
+        if(!dirtyFlag_[12])
         {
             needSelection=true;
         }
         sql += "is_active,";
         ++parametersCount;
-        if(!dirtyFlag_[12])
-        {
-            needSelection=true;
-        }
-        sql += "created_at,";
-        ++parametersCount;
         if(!dirtyFlag_[13])
         {
             needSelection=true;
         }
-        sql += "updated_at,";
-        ++parametersCount;
-        if(!dirtyFlag_[14])
-        {
-            needSelection=true;
-        }
-        if(dirtyFlag_[15])
+        if(dirtyFlag_[14])
         {
             sql += "customer_phone,";
             ++parametersCount;
         }
-        if(dirtyFlag_[16])
-        {
-            sql += "colour_name,";
-            ++parametersCount;
-        }
-        if(dirtyFlag_[17])
+        if(dirtyFlag_[15])
         {
             sql += "raffle_id,";
             ++parametersCount;
         }
-        if(dirtyFlag_[18])
+        if(dirtyFlag_[16])
         {
             sql += "ticket_alias,";
+            ++parametersCount;
+        }
+        sql += "created_at,";
+        ++parametersCount;
+        if(!dirtyFlag_[17])
+        {
+            needSelection=true;
+        }
+        if(dirtyFlag_[18])
+        {
+            sql += "updated_at,";
             ++parametersCount;
         }
         if(parametersCount > 0)
@@ -510,10 +508,6 @@ class Tickets
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[6])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -528,6 +522,10 @@ class Tickets
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
+        else
+        {
+            sql +="default,";
+        }
         if(dirtyFlag_[8])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -538,10 +536,6 @@ class Tickets
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[10])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -551,10 +545,6 @@ class Tickets
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
-        }
-        else
-        {
-            sql +="default,";
         }
         if(dirtyFlag_[12])
         {
@@ -579,10 +569,6 @@ class Tickets
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
         }
-        else
-        {
-            sql +="default,";
-        }
         if(dirtyFlag_[15])
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
@@ -597,6 +583,10 @@ class Tickets
         {
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
         }
         if(dirtyFlag_[18])
         {

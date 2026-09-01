@@ -94,34 +94,7 @@ Task<HttpResponsePtr> CmsController::getFaqs(HttpRequestPtr req) {
 
 }
 
-Task<HttpResponsePtr> CmsController::getPrizes(HttpRequestPtr req) {
 
-    int pageNo = 1;
-    int pageSize = 10;
-
-    auto pageNoStr = req->getParameter("pageNo");
-    if (!pageNoStr.empty()) {
-        pageNo = std::stoi(pageNoStr);
-    }
-
-    auto pageSizeStr = req->getParameter("pageSize");
-    if (!pageSizeStr.empty()) {
-        pageSize = std::stoi(pageSizeStr);
-    }
-
-    std::string query = req->getParameter("query");
-    if (query.empty()) {
-        query = "";
-    }
-
-    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &priceTierService = plugin->getPriceTierService();
-
-    auto result = co_await priceTierService.getAll(pageNo, pageSize, query);
-    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-    co_return resp;
-
-}
 
 Task<HttpResponsePtr> CmsController::getPages(HttpRequestPtr req, std::string slug) {
 
@@ -682,7 +655,7 @@ Task<HttpResponsePtr> CmsController::deleteMediaLibraryAsset(HttpRequestPtr req,
 }
 
 
-Task<HttpResponsePtr> CmsController::getColors(HttpRequestPtr req) {
+Task<HttpResponsePtr> CmsController::getTicketGroups(HttpRequestPtr req) {
 
     int pageNo = 1;
     int pageSize = 10;
@@ -697,26 +670,86 @@ Task<HttpResponsePtr> CmsController::getColors(HttpRequestPtr req) {
         pageSize = std::stoi(pageSizeStr);
     }
 
-    std::string query = req->getParameter("query");
-    if (query.empty()) {
-        query = "";
-    }
-
-
     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &colorService = plugin->getColorService();
+    auto &ticketCollectionService = plugin->getTicketCollectionService();
 
-    auto result = co_await colorService.listAll(pageNo, pageSize, query);
+    auto result = co_await ticketCollectionService.getAllActive(pageNo, pageSize, "");
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
 }
 
-// Task<HttpResponsePtr> CmsController::getTicketCollection(HttpRequestPtr req) {
-//
-//     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-//     auto &ticketCollectionService = plugin->getTicketCollectionService();
-//
-//     auto result = co_await ticketCollectionService.listAll();
-//     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-//     co_return resp;
-// }
+
+Task<HttpResponsePtr> CmsController::getActiveRaffles(HttpRequestPtr req) {
+
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &raffleService = plugin->getRaffleService();
+
+    auto result = co_await raffleService.getActiveRaffles();
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
+
+
+Task<HttpResponsePtr> CmsController::getActiveRaffleOptions(HttpRequestPtr req) {
+
+    auto raffleId = req->getParameter("raffleId");
+
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &raffleService = plugin->getRaffleService();
+
+    auto result = co_await raffleService.getActiveRaffleOptions(raffleId);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+
+}
+
+
+Task<HttpResponsePtr> CmsController::getRecentDraws(HttpRequestPtr req) {
+
+
+    int pageNo = 1;
+    int pageSize = 10;
+
+    auto pageNoStr = req->getParameter("pageNo");
+    if (!pageNoStr.empty()) {
+        pageNo = std::stoi(pageNoStr);
+    }
+
+    auto pageSizeStr = req->getParameter("pageSize");
+    if (!pageSizeStr.empty()) {
+        pageSize = std::stoi(pageSizeStr);
+    }
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &drawService = plugin->getDrawService();
+
+    auto result = co_await drawService.getRecentDraws(pageNo, pageSize);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+
+}
+
+Task<HttpResponsePtr> CmsController::getRecentWinners(HttpRequestPtr req) {
+
+
+    int pageNo = 1;
+    int pageSize = 10;
+
+    auto pageNoStr = req->getParameter("pageNo");
+    if (!pageNoStr.empty()) {
+        pageNo = std::stoi(pageNoStr);
+    }
+
+    auto pageSizeStr = req->getParameter("pageSize");
+    if (!pageSizeStr.empty()) {
+        pageSize = std::stoi(pageSizeStr);
+    }
+
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &drawService = plugin->getDrawService();
+
+    auto result = co_await drawService.getRecentWinners(pageNo, pageSize);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+
+}

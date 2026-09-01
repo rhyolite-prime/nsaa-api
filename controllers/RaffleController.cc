@@ -7,6 +7,7 @@ Task<HttpResponsePtr> RaffleController::getAll(HttpRequestPtr req) {
 
   int pageNo = 1;
   int pageSize = 10;
+  int status = -1;
 
   auto pageNoStr = req->getParameter("pageNo");
   if (!pageNoStr.empty()) {
@@ -33,15 +34,13 @@ Task<HttpResponsePtr> RaffleController::getAll(HttpRequestPtr req) {
     startDate = "";
   }
 
-  std::string status = req->getParameter("status");
-  if (status.empty()) {
-    status = "";
-  }
+  status = std::stoi(req->getParameter("status")) ;
+
 
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &raffleService = plugin->getRaffleService();
 
-  auto result = co_await raffleService.getAll(pageNo, pageSize, query, startDate, endDate, status);
+  auto result = co_await raffleService.getAll(pageNo, pageSize, query, status, startDate, endDate);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }
@@ -59,7 +58,7 @@ Task<HttpResponsePtr> RaffleController::create(HttpRequestPtr req) {
     co_return resp;
   }
 
-  raffle::dto::CreateRaffleDto dto;
+  raffle::dto::RaffleDto dto;
   dto.fromJson(*jsonBody);
 
   auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
@@ -70,18 +69,7 @@ Task<HttpResponsePtr> RaffleController::create(HttpRequestPtr req) {
   co_return resp;
 }
 
-Task<HttpResponsePtr> RaffleController::getActiveRaffle(HttpRequestPtr req) {
-
-  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-  auto &raffleService = plugin->getRaffleService();
-
-  auto result = co_await raffleService.getActiveRaffle();
-  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-  co_return resp;
-
-}
-
-Task<HttpResponsePtr> RaffleController::update(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::update(HttpRequestPtr req, std::string raffleId) {
 
   auto jsonBody = req->getJsonObject();
 
@@ -94,37 +82,16 @@ Task<HttpResponsePtr> RaffleController::update(HttpRequestPtr req) {
     co_return resp;
   }
 
-  raffle::dto::UpdateRaffleDto dto;
+  raffle::dto::RaffleDto dto;
   dto.fromJson(*jsonBody);
 
   auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &raffleService = plugin->getRaffleService();
 
-  auto result = co_await raffleService.updateAsync(dto);
+  auto result = co_await raffleService.updateAsync(dto, raffleId);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }
-
-Task<HttpResponsePtr> RaffleController::getDetails(HttpRequestPtr req) {
-  auto id = req->getParameter("id");
-
-  if (id.empty()) {
-    raffle::dto::BaseApiResponse response;
-    response.success = false;
-    response.error["message"] = "Raffle ID is required";
-    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-    resp->setStatusCode(k400BadRequest);
-    co_return resp;
-  }
-
-  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-  auto &raffleService = plugin->getRaffleService();
-
-  auto result = co_await raffleService.getDetails(id);
-  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-  co_return resp;
-}
-
 
 Task<HttpResponsePtr> RaffleController::extendRaffleDeadline(HttpRequestPtr req) {
   raffle::dto::BaseApiResponse response;
@@ -225,43 +192,19 @@ Task<HttpResponsePtr> RaffleController::getTicketStats(HttpRequestPtr req) {
 }
 
 
-Task<HttpResponsePtr> RaffleController::getRngLogs(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::getDrawLogs(HttpRequestPtr req) {
 
   auto raffleId = req->getParameter("id");
 
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &raffleService = plugin->getRaffleService();
 
-  auto result = co_await raffleService.getRngLogs(raffleId);
+  auto result = co_await raffleService.getDrawLogs(raffleId);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 
 }
 
-Task<HttpResponsePtr> RaffleController::runDraw(HttpRequestPtr req, std::string raffleId) {
-
-  if (raffleId.empty()) {
-    raffle::dto::BaseApiResponse response;
-    response.success = false;
-    response.error["message"] = "Raffle ID is required";
-    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-    resp->setStatusCode(k400BadRequest);
-    co_return resp;
-  }
-
-  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-  auto &raffleService = plugin->getRaffleService();
-
-  co_await raffleService.runDraw(raffleId);
-
-  raffle::dto::BaseApiResponse response;
-  response.success = true;
-  response.message = "Raffle draw executed successfully";
-  auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-  resp->setStatusCode(k200OK);
-  co_return resp;
-
-}
 
 Task<HttpResponsePtr> RaffleController::runClosure(HttpRequestPtr req, std::string raffleId) {
 
@@ -313,12 +256,36 @@ Task<HttpResponsePtr> RaffleController::runCompletion(HttpRequestPtr req, std::s
 }
 
 
-Task<HttpResponsePtr> RaffleController::executeDraw(HttpRequestPtr req) {
+Task<HttpResponsePtr> RaffleController::executeDraw(HttpRequestPtr req, std::string raffleId) {
 
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &raffleService = plugin->getRaffleService();
 
-  auto result = co_await raffleService.executeDraw();
+  auto result = co_await raffleService.executeDraw(raffleId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
+}
+
+
+Task<HttpResponsePtr> RaffleController::getDrawDetails (HttpRequestPtr req, std::string raffleId) {
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getDrawDetails(raffleId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
+}
+
+
+Task<HttpResponsePtr> RaffleController::getDetails (HttpRequestPtr req, std::string raffleId) {
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getDetails(raffleId);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 
@@ -349,9 +316,8 @@ Task<HttpResponsePtr> RaffleController::activate(HttpRequestPtr req,  std::strin
   co_return resp;
 }
 
-Task<HttpResponsePtr> RaffleController::deleteRaffle(HttpRequestPtr req)
+Task<HttpResponsePtr> RaffleController::deleteRaffle(HttpRequestPtr req, std::string raffleId)
 {
-  auto raffleId = req->getParameter("id");
 
   if (raffleId.empty()) {
     raffle::dto::BaseApiResponse response;
@@ -379,6 +345,29 @@ Task<HttpResponsePtr> RaffleController::getWeeklyRaffles(HttpRequestPtr req) {
   auto result = co_await raffleService.getWeeklyRaffles();
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
+}
+
+Task<HttpResponsePtr> RaffleController::getActiveRaffles(HttpRequestPtr req) {
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getActiveRaffles();
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
+
+Task<HttpResponsePtr> RaffleController::getActiveRaffleOptions(HttpRequestPtr req) {
+
+  auto raffleId = req->getParameter("raffleId");
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getActiveRaffleOptions(raffleId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
 }
 
 Task<HttpResponsePtr> RaffleController::getWeeklyRaffleSchedule(HttpRequestPtr req) {

@@ -1,9 +1,9 @@
-#include "PriceTiersController.h"
-#include "dto/BaseApiResponse.h"
+#include "TicketGroupController.h"
 #include "constants/ErrorCodes.h"
 #include "plugins/RaffleServicePlugin.h"
 
-Task<HttpResponsePtr> PriceTiersController::getAll(HttpRequestPtr req)
+
+Task<HttpResponsePtr> TicketGroupController::getAll(HttpRequestPtr req)
 {
     int pageNo = 1;
     int pageSize = 10;
@@ -23,17 +23,17 @@ Task<HttpResponsePtr> PriceTiersController::getAll(HttpRequestPtr req)
         query = "";
     }
 
-    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &priceTierService = plugin->getPriceTierService();
 
-    auto result = co_await priceTierService.getAll(pageNo, pageSize, query);
+    auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &ticketCollectionService = plugin->getTicketCollectionService();
+
+    auto result = co_await ticketCollectionService.getAll(pageNo, pageSize, query);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
-
 }
 
-Task<HttpResponsePtr> PriceTiersController::create(HttpRequestPtr req)
-{
+Task<HttpResponsePtr> TicketGroupController::create(HttpRequestPtr req) {
+
     auto jsonBody = req->getJsonObject();
 
     if (!jsonBody) {
@@ -45,20 +45,19 @@ Task<HttpResponsePtr> PriceTiersController::create(HttpRequestPtr req)
         co_return resp;
     }
 
-    raffle::dto::CreatePriceTierDto priceTierDto;
-    priceTierDto.fromJson(*jsonBody);
+    raffle::dto::TicketCollectionDto dto;
+    dto.fromJson(*jsonBody);
 
     auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &priceTierService = plugin->getPriceTierService();
+    auto &ticketCollectionService = plugin->getTicketCollectionService();
 
-    auto result = co_await priceTierService.createAsync(priceTierDto);
+    auto result = co_await ticketCollectionService.create(dto);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
-
 }
 
-Task<HttpResponsePtr> PriceTiersController::update(HttpRequestPtr req)
-{
+Task<HttpResponsePtr> TicketGroupController::update(HttpRequestPtr req, const std::string &id) {
+
     auto jsonBody = req->getJsonObject();
 
     if (!jsonBody) {
@@ -70,37 +69,33 @@ Task<HttpResponsePtr> PriceTiersController::update(HttpRequestPtr req)
         co_return resp;
     }
 
-    raffle::dto::UpdatePriceTierDto priceTierDto;
-    priceTierDto.fromJson(*jsonBody);
+    raffle::dto::TicketCollectionDto dto;
+    dto.fromJson(*jsonBody);
 
     auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &priceTierService = plugin->getPriceTierService();
+    auto &ticketCollectionService = plugin->getTicketCollectionService();
 
-    auto result = co_await priceTierService.updateAsync(priceTierDto);
+    auto result = co_await ticketCollectionService.update(dto, id);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     co_return resp;
-
 }
 
-Task<HttpResponsePtr> PriceTiersController::deletePriceTier(HttpRequestPtr req)
-{
-    auto priceTierId = req->getParameter("id");
+Task<HttpResponsePtr> TicketGroupController::deleteItem(HttpRequestPtr req, const std::string &id) {
 
-    if (priceTierId.empty()) {
+    if (id.empty()) {
         raffle::dto::BaseApiResponse response;
         response.success = false;
-        response.error["message"] = "Price Tier is required";
+        response.error["message"] = "Color ID is required";
         auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
         resp->setStatusCode(k400BadRequest);
         co_return resp;
     }
 
     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &priceTierService = plugin->getPriceTierService();
+    auto &ticketCollectionService = plugin->getTicketCollectionService();
 
-    auto result = co_await priceTierService.deletePriceTier(priceTierId);
+    auto result = co_await ticketCollectionService.deleteItem(id);
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
     resp->setStatusCode(result.success ? k200OK : (result.error.isMember("code") && result.error["code"].asInt() == raffle::constants::ERR_RESOURCE_NOT_FOUND ? k404NotFound : k500InternalServerError));
     co_return resp;
-
 }

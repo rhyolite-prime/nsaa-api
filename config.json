@@ -205,11 +205,7 @@
             //The TRACE level is only valid when built in DEBUG mode.
             "log_level": "DEBUG",
             //display_local_time: false by default, if true, the log time is displayed in local time
-            "display_local_time": false,
-            "log_path": "./logs",
-            "log_file": "nsaa.log",
-            "log_async": true,
-            "log_flush_interval": 1
+            "display_local_time": false
         },
         //run_as_daemon: False by default
         "run_as_daemon": false,
@@ -367,9 +363,6 @@
         "HubtelSmsApi":{
             "ClientId": "cmgfmxdp",
             "ClientSecret": "qkggakvr"
-        },
-        "TicketConfiguration": {
-            "Price": 0.2
         },
         "Permissions": [
             {
