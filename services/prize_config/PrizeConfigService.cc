@@ -67,6 +67,7 @@ namespace raffle::services {
           item["maxWinners"] = j["max_winners"];
           item["rewardType"] = j["reward_type"];
           item["isRepeatable"] = j["is_repeatable"];
+          item["captionImageUrl"] = j["caption_image_url"];
           item["isActive"] = j["is_active"];
           item["createdAt"] = j["created_at"];
           data.append(item);

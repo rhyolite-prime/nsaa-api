@@ -679,6 +679,16 @@ Task<HttpResponsePtr> CmsController::getTicketGroups(HttpRequestPtr req) {
 }
 
 
+Task<HttpResponsePtr> CmsController::getPrizeCategories(HttpRequestPtr req) {
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &prizeConfigService = plugin->getPrizeConfigService();
+
+    auto result = co_await prizeConfigService.getAllCategories(1, 100, "");
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
+
 Task<HttpResponsePtr> CmsController::getActiveRaffles(HttpRequestPtr req) {
 
     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();

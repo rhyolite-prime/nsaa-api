@@ -1035,7 +1035,7 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/cms/raffles/get-a
 ```
 
 
-## 23. Get Active Raffle
+## 23. Get Raffle Options
 
 **POST** `/cms/raffles/get-options`
 
@@ -1080,8 +1080,267 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/cms/raffles/get-o
 }
 
 ```
+
 # ⚠️ Error Handling
 
+
+## 24. Get Prize Categories
+
+**POST** `/cms/prizes/get-all`
+
+### Description
+
+Gets All Prizes
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/prizes/get-all'
+```
+
+### Example Response
+
+```json
+
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "captionImageUrl": null,
+        "code": "HYBRID",
+        "createdAt": "2026-08-18 19:44:42.476657",
+        "description": "Hybrid prize bundle",
+        "id": "32059376-799d-4aed-be95-ff1c5a483acf",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Hybrid Prize",
+        "priority": 3,
+        "rewardType": 16
+      },
+      {
+        "captionImageUrl": null,
+        "code": "CONSOLATION",
+        "createdAt": "2026-08-18 19:44:10.300180",
+        "description": "Consolation prize",
+        "id": "2db9f2f2-f8c3-4b06-af34-7a0d0aa574e0",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Consolation Prize",
+        "priority": 3,
+        "rewardType": 15
+      },
+      {
+        "captionImageUrl": null,
+        "code": "MEMBERSHIP",
+        "createdAt": "2026-08-18 19:43:23.137915",
+        "description": "Exclusive membership access",
+        "id": "09cba6f4-2c92-4ada-b2d0-b4e357a79103",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Premium Club Membership",
+        "priority": 3,
+        "rewardType": 14
+      },
+      {
+        "captionImageUrl": null,
+        "code": "DATA_BUNDLE",
+        "createdAt": "2026-08-18 19:42:53.043179",
+        "description": "Data Bundles Across All Networks",
+        "id": "2546805d-b520-4fe1-9bb3-ba777abb0211",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Data Bundle",
+        "priority": 3,
+        "rewardType": 13
+      },
+      {
+        "captionImageUrl": null,
+        "code": "AIRTIME",
+        "createdAt": "2026-08-18 19:42:02.721801",
+        "description": "Prepaid mobile airtime",
+        "id": "0643c285-380f-4237-ace9-2427df760f84",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Mobile Airtime Top-up",
+        "priority": 3,
+        "rewardType": 12
+      },
+      {
+        "captionImageUrl": null,
+        "code": "DISCOUNT",
+        "createdAt": "2026-08-18 19:39:53.165351",
+        "description": "General Storewide discount",
+        "id": "0b74b34f-532a-440d-a3c8-355415776bb1",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Discount",
+        "priority": 3,
+        "rewardType": 11
+      },
+      {
+        "captionImageUrl": null,
+        "code": "COUPON",
+        "createdAt": "2026-08-18 19:39:08.072183",
+        "description": "50% discount coupon",
+        "id": "aea1857e-b2ab-4341-8e29-603d9d0836b4",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Coupon",
+        "priority": 3,
+        "rewardType": 10
+      },
+      {
+        "captionImageUrl": null,
+        "code": "DONATION",
+        "createdAt": "2026-08-18 19:37:50.286484",
+        "description": "Donation in winners name",
+        "id": "6d5841cb-bcd6-4bac-89ac-328e8aee3789",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Donation",
+        "priority": 3,
+        "rewardType": 9
+      },
+      {
+        "captionImageUrl": null,
+        "code": "EXPERIENCE",
+        "createdAt": "2026-08-18 19:32:21.097905",
+        "description": "VIP experience at a concert",
+        "id": "d5267836-5bd5-4c69-9088-7e84618d5aff",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Experience",
+        "priority": 8,
+        "rewardType": 8
+      },
+      {
+        "captionImageUrl": null,
+        "code": "SERVICE",
+        "createdAt": "2026-08-18 19:23:28.200569",
+        "description": "Local car wash service",
+        "id": "ea7cad34-1ea4-4f53-97dd-a240fdff040b",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Service",
+        "priority": 7,
+        "rewardType": 7
+      },
+      {
+        "captionImageUrl": null,
+        "code": "SUBSCRIPTION",
+        "createdAt": "2026-08-18 19:22:38.217284",
+        "description": "Annual streaming subscription (Netflix, Youtube)",
+        "id": "e24cbf3f-3ca7-4596-aba7-25bdec7013fc",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Subscription",
+        "priority": 5,
+        "rewardType": 6
+      },
+      {
+        "captionImageUrl": null,
+        "code": "DIGITAL_ITEM",
+        "createdAt": "2026-08-18 19:21:42.010141",
+        "description": "Digital Item",
+        "id": "3af988b8-f81b-4727-b7d0-ecc67a2338c4",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Digital Items",
+        "priority": 5,
+        "rewardType": 5
+      },
+      {
+        "captionImageUrl": null,
+        "code": "PHYSICAL_ITEM",
+        "createdAt": "2026-08-18 19:20:25.633292",
+        "description": "Electronics prizes",
+        "id": "7073c55d-99b8-4e82-92c6-fb6e1f5c33b2",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Physical Items",
+        "priority": 4,
+        "rewardType": 4
+      },
+      {
+        "captionImageUrl": null,
+        "code": "VOUCHER",
+        "createdAt": "2026-08-18 19:16:50.048880",
+        "description": "Relaxing spa day voucher",
+        "id": "43c47481-1039-4953-879d-80ed0173ffa5",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Voucher",
+        "priority": 2,
+        "rewardType": 3
+      },
+      {
+        "captionImageUrl": null,
+        "code": "GIFT_CARD",
+        "createdAt": "2026-08-18 19:14:31.533885",
+        "description": "Digital Gift Card",
+        "id": "8c35c0d6-5be4-46d4-8645-d6609e03e063",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Gift Card",
+        "priority": 2,
+        "rewardType": 2
+      },
+      {
+        "captionImageUrl": null,
+        "code": "POINTS_100",
+        "createdAt": "2026-08-18 19:11:12.261763",
+        "description": "Bonus loyalty points",
+        "id": "80bfabea-b24c-43d1-b87d-cff0d79fb2d0",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 5,
+        "name": "Loyalty Points Booster",
+        "priority": 1,
+        "rewardType": 1
+      },
+      {
+        "captionImageUrl": null,
+        "code": "CASH",
+        "createdAt": "2026-08-18 19:07:39.520948",
+        "description": "Ultimate cash prize",
+        "id": "c6755cfd-63e5-4045-8d77-e49ea35d0768",
+        "isActive": true,
+        "isRepeatable": false,
+        "maxWinners": 1,
+        "name": "Grand Cash Prize",
+        "priority": 0,
+        "rewardType": 0
+      }
+    ],
+    "lowerBound": 1,
+    "pageNo": 1,
+    "pageSize": 100,
+    "totalCount": 17,
+    "totalPages": 1,
+    "upperBound": 17
+  },
+  "success": true,
+  "targetUrl": ""
+}
+
+```
 
 Common error responses:
 
