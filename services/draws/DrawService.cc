@@ -206,6 +206,7 @@ drogon::Task<dto::BaseApiResponse> DrawService::getRecentWinners(int pageNo, int
       item["prizeAmount"] = j["prize_amount"];
       item["actualPayout"] = j["actual_payout"];
       item["ticketAlias"] = j["ticket_alias"];
+      item["prizeDescription"] = j["prize_description"];
       std::string phone = j["phone_number"].asString();
       if (phone.length() > 6) {
         phone = phone.substr(0, 3) + std::string(phone.length() - 6, '*') + phone.substr(phone.length() - 3);

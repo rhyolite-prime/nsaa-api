@@ -679,6 +679,16 @@ Task<HttpResponsePtr> CmsController::getTicketGroups(HttpRequestPtr req) {
 }
 
 
+Task<HttpResponsePtr> CmsController::getPrizeCategories(HttpRequestPtr req) {
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &prizeConfigService = plugin->getPrizeConfigService();
+
+    auto result = co_await prizeConfigService.getAllCategories(1, 100, "");
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
+
 Task<HttpResponsePtr> CmsController::getActiveRaffles(HttpRequestPtr req) {
 
     auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
@@ -703,9 +713,32 @@ Task<HttpResponsePtr> CmsController::getActiveRaffleOptions(HttpRequestPtr req) 
 
 }
 
+Task<HttpResponsePtr> CmsController::getDrawHistory(HttpRequestPtr req) {
+
+    int pageNo = 1;
+    int pageSize = 10;
+
+    auto pageNoStr = req->getParameter("pageNo");
+    if (!pageNoStr.empty()) {
+        pageNo = std::stoi(pageNoStr);
+    }
+
+    auto pageSizeStr = req->getParameter("pageSize");
+    if (!pageSizeStr.empty()) {
+        pageSize = std::stoi(pageSizeStr);
+    }
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &raffleService = plugin->getRaffleService();
+
+    auto result = co_await raffleService.getDrawHistory(pageNo, pageSize);
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+
+}
+
 
 Task<HttpResponsePtr> CmsController::getRecentDraws(HttpRequestPtr req) {
-
 
     int pageNo = 1;
     int pageSize = 10;
