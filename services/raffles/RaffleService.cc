@@ -1497,8 +1497,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getTopTicketHolders(const std:
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getAllRaffleTickets(const std::string &raffleId, int pageNo,
-                                   int pageSize) {
+drogon::Task<dto::BaseApiResponse> RaffleService::getAllRaffleTickets(const std::string &raffleId, int pageNo, int pageSize) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> mapper(dbClient);
 
@@ -1568,8 +1567,104 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAllRaffleTickets(const std:
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getTickets(const std::string &raffleId, int pageNo,
-                          int pageSize) {
+
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getDrawHistory(int pageNo, int pageSize) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> mapper(dbClient);
+
+  // Helper to convert status int to string
+  static auto statusToString = [](int status) -> std::string {
+    switch (status) {
+      case constants::RaffleStatus::ACTIVE:          return "ACTIVE";
+      case constants::RaffleStatus::SCHEDULED:       return "SCHEDULED";
+      case constants::RaffleStatus::DRAW_COMPLETED:  return "DRAW_COMPLETED";
+      case constants::RaffleStatus::CLOSED:          return "CLOSED";
+      default:                                       return "UNKNOWN";
+    }
+  };
+
+  try {
+    if (pageNo < 1) pageNo = 1;
+    if (pageSize < 1) pageSize = 10;
+    if (pageSize > 100) pageSize = 100; // limit to avoid excessive load
+
+    // Only raffles that have had a draw (status 2 or 3)
+    Criteria statusCriteria =
+        Criteria(Raffles::Cols::_status, CompareOperator::EQ,
+                 std::to_string(constants::RaffleStatus::DRAW_COMPLETED)) ||
+        Criteria(Raffles::Cols::_status, CompareOperator::EQ,
+                 std::to_string(constants::RaffleStatus::CLOSED));
+
+    auto totalCount = co_await mapper.count(statusCriteria);
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["totalCount"] = (Json::UInt64)totalCount;
+    response.result["pageNo"] = pageNo;
+    response.result["pageSize"] = pageSize;
+
+    if (totalCount == 0) {
+      response.result["data"] = Json::arrayValue;
+      response.result["totalPages"] = 0;
+      response.result["lowerBound"] = 0;
+      response.result["upperBound"] = 0;
+      co_return response;
+    }
+
+    int totalPages = (totalCount + pageSize - 1) / pageSize;
+    int offset = (pageNo - 1) * pageSize;
+
+    auto raffles = co_await mapper
+                       .orderBy(Raffles::Cols::_draw_time, SortOrder::DESC)
+                       .limit(pageSize)
+                       .offset(offset)
+                       .findBy(statusCriteria);
+
+    Json::Value data = Json::arrayValue;
+    for (const auto &raffle : raffles) {
+      Json::Value item;
+      item["id"] = raffle.getValueOfId();
+      item["name"] = raffle.getValueOfName();
+      item["drawTime"] = raffle.getValueOfDrawTime().toDbStringLocal();
+      item["winningOption"] = raffle.getValueOfWinningOptionName();
+      // Convert status enum to string
+      item["status"] = statusToString(raffle.getValueOfStatus());
+      data.append(item);
+    }
+
+    response.result["data"] = data;
+    response.result["totalPages"] = totalPages;
+    int64_t lower = (int64_t)(pageNo - 1) * pageSize + 1;
+    int64_t upper = (pageNo == totalPages) ? (int64_t)totalCount : (int64_t)(pageNo * pageSize);
+    response.result["lowerBound"] = (Json::UInt64)lower;
+    response.result["upperBound"] = (Json::UInt64)upper;
+
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    LOG_ERROR << "Database error in getDrawHistory: " << e.base().what();
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] = "Database error while fetching draw history.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    LOG_ERROR << "Error in getDrawHistory: " << e.what();
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+
+
+
+drogon::Task<dto::BaseApiResponse> RaffleService::getTickets(const std::string &raffleId, int pageNo, int pageSize) {
   return getAllRaffleTickets(raffleId, pageNo, pageSize);
 }
 
@@ -1650,8 +1745,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffles() {
   try {
     // 1. Calculate Sunday and Saturday bounds using the current local time
     auto now = trantor::Date::now();
-    time_t seconds =
-        static_cast<time_t>(now.microSecondsSinceEpoch() / 1000000);
+    time_t seconds = static_cast<time_t>(now.microSecondsSinceEpoch() / 1000000);
     struct tm tm_now;
     localtime_r(&seconds, &tm_now);
 
