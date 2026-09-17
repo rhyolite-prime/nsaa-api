@@ -268,8 +268,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     double entryFee = 0.0;
     std::string ticketFee;
     try {
-      auto ticketGroup =
-          co_await ticketGroupMapper.findByPrimaryKey(dto.getTicketGroupId());
+      auto ticketGroup =  co_await ticketGroupMapper.findByPrimaryKey(dto.getTicketGroupId());
       quantity = ticketGroup.getValueOfQuantity();
       ticketFee = ticketGroup.getValueOfUnitPrice();
       entryFee = std::stod(ticketFee);
@@ -355,8 +354,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
           hubtelConfig["WebCheckoutCallBackUrl"].asString();
 
       webCheckoutDto.setCallbackUrl(
-          hubtelConfig.isMember("WebCheckoutCallBackUrl")
-              ? hubtelConfig["WebCheckoutCallBackUrl"].asString()
+          hubtelConfig.isMember("WebCheckoutCallBackUrl") ? hubtelConfig["WebCheckoutCallBackUrl"].asString()
               : "https://nsaa-api.rhyoliteprime.com/api/v1/"
                 "hubtel-callback-processor/web-checkout");
       webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());

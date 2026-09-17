@@ -2033,8 +2033,7 @@ RaffleService::getRaffleSummary(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::getRaffleStats(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::getRaffleStats(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
 
