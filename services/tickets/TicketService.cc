@@ -560,8 +560,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
 
         // Update number of entries
         int32_t currentEntries = customer.getValueOfNumberOfEntries();
-        customer.setNumberOfEntries(currentEntries +
-                                    ticket.getValueOfQuantity());
+        customer.setNumberOfEntries(currentEntries + ticket.getValueOfQuantity());
 
         // Update total spent
         double currentSpent = 0;
@@ -593,8 +592,26 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
     try {
       std::string ticketAlias = ticket.getValueOfTicketAlias();
       std::string customerPhone = ticket.getValueOfCustomerPhone();
-      std::string smsMessage = "Your ticket " + ticketAlias + " for " +
-                               raffleName + " has been activated. Good luck!";
+      std::string quantity      = std::to_string(ticket.getValueOfQuantity());
+
+      double totalAmount = 0.0;
+      try {
+        totalAmount = std::stod(ticket.getValueOfTotalAmount());
+      } catch (...) {
+        totalAmount = 0.0;
+      }
+
+      std::ostringstream amountStream;
+      amountStream << std::fixed << std::setprecision(2) << totalAmount;
+      std::string amountStr = amountStream.str();
+
+      std::string smsMessage =
+         "Your ticket " + ticketAlias + " for " + raffleName +
+         " has been activated. "
+         "Quantity: " + quantity + ", "
+         "Amount Paid: GHS" + amountStr + ". "
+         "Good luck!";
+
       raffle::services::HubtelApi hubtelApi;
       auto smsSent = co_await hubtelApi.SendSms(customerPhone, smsMessage);
       if (!smsSent) {

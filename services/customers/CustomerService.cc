@@ -1578,22 +1578,36 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getTicketSummary(const dto::
     // Returns tickets joined with raffle name, grouped per ticket entry.
     auto result = co_await dbClient->execSqlCoro(
         "SELECT t.ticket_alias, t.quantity, t.raffle_id, "
-        "       r.name AS raffle_name "
+        "       r.name AS raffle_name, t.created_at "
         "FROM tickets t "
         "JOIN raffles r ON r.id = t.raffle_id "
-        "WHERE t.customer_id = $1 and t.is_active = true "
+        "WHERE t.customer_id = $1 "
+        "  AND t.is_active = true "
+        "  AND t.created_at >= NOW() - INTERVAL '7 days' "
         "ORDER BY t.created_at DESC",
         customer.getValueOfId());
 
     Json::Value data = Json::arrayValue;
-    for (const auto &row : result) {
+
+    if (result.empty()) {
       Json::Value item;
-      item["ticketAlias"] = row["ticket_alias"].as<std::string>();
-      item["raffleName"]  = row["raffle_name"].as<std::string>();
-      item["quantity"]    = row["quantity"].as<int>();
-      item["raffleId"]    = row["raffle_id"].as<std::string>();
+      item["ticketAlias"] = "";
+      item["raffleName"]  = "No Tickets found";
+      item["quantity"]    = 0;
+      item["raffleId"]    = "";
       data.append(item);
+    } else {
+      for (const auto &row : result) {
+        Json::Value item;
+        item["ticketAlias"] = row["ticket_alias"].as<std::string>();
+        item["raffleName"]  = row["raffle_name"].as<std::string>();
+        item["quantity"]    = row["quantity"].as<int>();
+        item["raffleId"]    = row["raffle_id"].as<std::string>();
+        data.append(item);
+      }
     }
+
+
 
     response.success = true;
     response.result["data"] = data;
