@@ -2113,7 +2113,8 @@ RaffleService::getRaffleStats(const std::string &raffleId) {
 
     dto::BaseApiResponse response;
     response.success = true;
-    response.result["text"] = text;
+    response.result["message"] = text;
+    response.message = text;
     co_return response;
 
   } catch (const drogon::orm::DrogonDbException &e) {

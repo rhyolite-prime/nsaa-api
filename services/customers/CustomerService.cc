@@ -1562,8 +1562,7 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getTicketSummary(const dto::
     // --- Authenticate customer ---
     Customers customer = co_await customerMapper.findOne(criteria);
 
-    std::string storedHash = utils::PasswordUtils::normalizeBcryptHash(
-        customer.getValueOfSecretPin());
+    std::string storedHash = utils::PasswordUtils::normalizeBcryptHash(customer.getValueOfSecretPin());
 
     bool pinMatches = bcrypt::validatePassword(dto.getPin(), storedHash);
 

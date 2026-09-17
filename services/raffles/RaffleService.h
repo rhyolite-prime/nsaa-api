@@ -37,19 +37,15 @@ public:
   drogon::Task<dto::BaseApiResponse>
   getRecentTicketHolders(const std::string &raffleId);
 
-  drogon::Task<dto::BaseApiResponse>
-  getTopTicketHolders(const std::string &raffleId);
+  drogon::Task<dto::BaseApiResponse> getTopTicketHolders(const std::string &raffleId);
 
-  drogon::Task<dto::BaseApiResponse>
-  getDrawDetails(const std::string &raffleId);
+  drogon::Task<dto::BaseApiResponse> getDrawDetails(const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> getDetails(const std::string &raffleId);
 
-  drogon::Task<dto::BaseApiResponse> getTickets(const std::string &raffleId,
-                                                int pageNo, int pageSize);
+  drogon::Task<dto::BaseApiResponse> getTickets(const std::string &raffleId, int pageNo, int pageSize);
 
-  drogon::Task<dto::BaseApiResponse>
-  getTicketStats(const std::string &raffleId);
+  drogon::Task<dto::BaseApiResponse> getTicketStats(const std::string &raffleId);
 
   drogon::Task<dto::BaseApiResponse> getDrawLogs(const std::string &raffleId);
 
@@ -71,8 +67,7 @@ public:
   drogon::Task<dto::BaseApiResponse>
   getRaffleSummary(const std::string &raffleId);
 
-  drogon::Task<dto::BaseApiResponse>
-  getRaffleStats(const std::string &raffleId);
+  drogon::Task<dto::BaseApiResponse> getRaffleStats(const std::string &raffleId);
 
   // public web
   drogon::Task<dto::BaseApiResponse> getWeeklyRaffleSchedule();
