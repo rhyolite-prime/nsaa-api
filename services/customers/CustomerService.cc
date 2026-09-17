@@ -1581,7 +1581,7 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getTicketSummary(const dto::
         "       r.name AS raffle_name "
         "FROM tickets t "
         "JOIN raffles r ON r.id = t.raffle_id "
-        "WHERE t.customer_id = $1 and t.is_active = true"
+        "WHERE t.customer_id = $1 and t.is_active = true "
         "ORDER BY t.created_at DESC",
         customer.getValueOfId());
 
