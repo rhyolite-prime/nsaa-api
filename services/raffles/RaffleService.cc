@@ -1048,7 +1048,8 @@ RaffleService::executeDraw(std::string raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getDrawDetails(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::getDrawDetails(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
   CoroMapper<Draws> drawMapper(dbClient);
@@ -1198,7 +1199,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDrawDetails(const std::stri
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getDetails(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::getDetails(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -1252,7 +1254,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDetails(const std::string &
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::activate(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::activate(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -1299,7 +1302,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::activate(const std::string &ra
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::closeRaffle(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::closeRaffle(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -1341,7 +1345,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::closeRaffle(const std::string 
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::completeRaffle(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::completeRaffle(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -1383,7 +1388,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::completeRaffle(const std::stri
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getRecentTicketHolders(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::getRecentTicketHolders(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   try {
     if (raffleId.empty()) {
@@ -1438,7 +1444,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getRecentTicketHolders(const s
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getTopTicketHolders(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::getTopTicketHolders(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   try {
     if (raffleId.empty()) {
@@ -1497,7 +1504,9 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getTopTicketHolders(const std:
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getAllRaffleTickets(const std::string &raffleId, int pageNo, int pageSize) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::getAllRaffleTickets(const std::string &raffleId, int pageNo,
+                                   int pageSize) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> mapper(dbClient);
 
@@ -1567,27 +1576,34 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getAllRaffleTickets(const std:
   }
 }
 
-
-
-drogon::Task<dto::BaseApiResponse> RaffleService::getDrawHistory(int pageNo, int pageSize) {
+drogon::Task<dto::BaseApiResponse> RaffleService::getDrawHistory(int pageNo,
+                                                                 int pageSize) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
   // Helper to convert status int to string
   static auto statusToString = [](int status) -> std::string {
     switch (status) {
-      case constants::RaffleStatus::ACTIVE:          return "ACTIVE";
-      case constants::RaffleStatus::SCHEDULED:       return "SCHEDULED";
-      case constants::RaffleStatus::DRAW_COMPLETED:  return "DRAW_COMPLETED";
-      case constants::RaffleStatus::CLOSED:          return "CLOSED";
-      default:                                       return "UNKNOWN";
+    case constants::RaffleStatus::ACTIVE:
+      return "ACTIVE";
+    case constants::RaffleStatus::SCHEDULED:
+      return "SCHEDULED";
+    case constants::RaffleStatus::DRAW_COMPLETED:
+      return "DRAW COMPLETED";
+    case constants::RaffleStatus::CLOSED:
+      return "CLOSED";
+    default:
+      return "UNKNOWN";
     }
   };
 
   try {
-    if (pageNo < 1) pageNo = 1;
-    if (pageSize < 1) pageSize = 10;
-    if (pageSize > 100) pageSize = 100; // limit to avoid excessive load
+    if (pageNo < 1)
+      pageNo = 1;
+    if (pageSize < 1)
+      pageSize = 10;
+    if (pageSize > 100)
+      pageSize = 100; // limit to avoid excessive load
 
     // Only raffles that have had a draw (status 2 or 3)
     Criteria statusCriteria =
@@ -1615,11 +1631,11 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDrawHistory(int pageNo, int
     int totalPages = (totalCount + pageSize - 1) / pageSize;
     int offset = (pageNo - 1) * pageSize;
 
-    auto raffles = co_await mapper
-                       .orderBy(Raffles::Cols::_draw_time, SortOrder::DESC)
-                       .limit(pageSize)
-                       .offset(offset)
-                       .findBy(statusCriteria);
+    auto raffles =
+        co_await mapper.orderBy(Raffles::Cols::_draw_time, SortOrder::DESC)
+            .limit(pageSize)
+            .offset(offset)
+            .findBy(statusCriteria);
 
     Json::Value data = Json::arrayValue;
     for (const auto &raffle : raffles) {
@@ -1636,7 +1652,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDrawHistory(int pageNo, int
     response.result["data"] = data;
     response.result["totalPages"] = totalPages;
     int64_t lower = (int64_t)(pageNo - 1) * pageSize + 1;
-    int64_t upper = (pageNo == totalPages) ? (int64_t)totalCount : (int64_t)(pageNo * pageSize);
+    int64_t upper = (pageNo == totalPages) ? (int64_t)totalCount
+                                           : (int64_t)(pageNo * pageSize);
     response.result["lowerBound"] = (Json::UInt64)lower;
     response.result["upperBound"] = (Json::UInt64)upper;
 
@@ -1647,7 +1664,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDrawHistory(int pageNo, int
     dto::BaseApiResponse errorResponse;
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] = "Database error while fetching draw history.";
+    errorResponse.error["message"] =
+        "Database error while fetching draw history.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   } catch (const std::exception &e) {
@@ -1661,14 +1679,14 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getDrawHistory(int pageNo, int
   }
 }
 
-
-
-
-drogon::Task<dto::BaseApiResponse> RaffleService::getTickets(const std::string &raffleId, int pageNo, int pageSize) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::getTickets(const std::string &raffleId, int pageNo,
+                          int pageSize) {
   return getAllRaffleTickets(raffleId, pageNo, pageSize);
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getTicketStats(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::getTicketStats(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
 
   try {
@@ -1727,7 +1745,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getTicketStats(const std::stri
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::getDrawLogs(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse>
+RaffleService::getDrawLogs(const std::string &raffleId) {
 
   dto::BaseApiResponse errorResponse;
   errorResponse.success = false;
@@ -1745,7 +1764,8 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffles() {
   try {
     // 1. Calculate Sunday and Saturday bounds using the current local time
     auto now = trantor::Date::now();
-    time_t seconds = static_cast<time_t>(now.microSecondsSinceEpoch() / 1000000);
+    time_t seconds =
+        static_cast<time_t>(now.microSecondsSinceEpoch() / 1000000);
     struct tm tm_now;
     localtime_r(&seconds, &tm_now);
 
@@ -2001,6 +2021,107 @@ RaffleService::getRaffleSummary(const std::string &raffleId) {
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
     errorResponse.error["message"] =
         "Database error while fetching raffle summary.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
+}
+
+drogon::Task<dto::BaseApiResponse>
+RaffleService::getRaffleStats(const std::string &raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> raffleMapper(dbClient);
+
+  try {
+    if (raffleId.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] = "Raffle ID cannot be empty.";
+      co_return errorResponse;
+    }
+
+    auto raffle = co_await raffleMapper.findByPrimaryKey(raffleId);
+    int status = raffle.getValueOfStatus();
+
+    // Map numeric status to display string
+    std::string statusStr;
+    switch (status) {
+    case constants::RaffleStatus::ACTIVE:
+      statusStr = "ACTIVE";
+      break;
+    case constants::RaffleStatus::SCHEDULED:
+      statusStr = "SCHEDULED";
+      break;
+    case constants::RaffleStatus::DRAW_COMPLETED:
+      statusStr = "DRAW COMPLETED";
+      break;
+    case constants::RaffleStatus::CLOSED:
+      statusStr = "CLOSED";
+      break;
+    default:
+      statusStr = "UNKNOWN";
+      break;
+    }
+
+    std::string raffleName = raffle.getValueOfName();
+    std::string drawTime = raffle.getValueOfDrawTime().toDbStringLocal();
+    int participants = raffle.getValueOfTotalEntries();
+
+    // Build the base USSD-style formatted string
+    std::string text;
+    text += "Raffle Name: " + raffleName + "\n";
+    text += "Status: " + statusStr + "\n";
+    text += "Draw Time: " + drawTime + "\n";
+    text += "Participants: " + std::to_string(participants) + "\n";
+
+    // Append winner info only when the draw has been completed/closed
+    if (status == constants::RaffleStatus::DRAW_COMPLETED ||
+        status == constants::RaffleStatus::CLOSED) {
+
+      CoroMapper<Draws> drawMapper(dbClient);
+      auto draws = co_await drawMapper.findBy(
+          Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, raffleId));
+
+      if (!draws.empty()) {
+        std::string drawId = draws[0].getValueOfId();
+
+        CoroMapper<Winners> winnerMapper(dbClient);
+        auto winners = co_await winnerMapper.findBy(
+            Criteria(Winners::Cols::_draw_id, CompareOperator::EQ, drawId));
+
+        if (!winners.empty()) {
+          std::string ticketId = winners[0].getValueOfTicketId();
+
+          CoroMapper<Tickets> ticketMapper(dbClient);
+          auto ticket = co_await ticketMapper.findByPrimaryKey(ticketId);
+
+          text += "Winner: " + ticket.getValueOfTicketAlias();
+        } else {
+          text += "Winner: N/A";
+        }
+      } else {
+        text += "Winner: N/A";
+      }
+    }
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["text"] = text;
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] =
+        "Database error while fetching raffle stats.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   } catch (const std::exception &e) {

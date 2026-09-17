@@ -4,25 +4,24 @@
 
 #include "TicketService.h"
 #include "Customers.h"
+#include "Draws.h"
+#include "Raffles.h"
+#include "TicketCollections.h"
+#include "Tickets.h"
 #include "constants/ErrorCodes.h"
 #include "dto/BaseApiResponse.h"
+#include "dto/CheckoutResponse.h"
 #include "dto/CreateTicketDto.h"
+#include "dto/WebCheckoutDto.h"
+#include "utils/IdGeneratorUtils.h"
+#include <algorithm>
 #include <drogon/orm/CoroMapper.h>
 #include <drogon/orm/DbClient.h>
 #include <drogon/orm/Mapper.h>
 #include <drogon/utils/coroutine.h>
-#include <string>
-#include "Draws.h"
-#include "Raffles.h"
-#include "Tickets.h"
-#include "TicketCollections.h"
-#include <algorithm>
-#include <uuid/uuid.h>
-#include "dto/CheckoutResponse.h"
-#include "dto/WebCheckoutDto.h"
-#include "utils/IdGeneratorUtils.h"
 #include <iomanip>
 #include <sstream>
+#include <string>
 
 #include "constants/RewardTypes.h"
 #include "services/hubtel_api/HubtelApi.h"
@@ -32,7 +31,8 @@ using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
 
-drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query, const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query,
+                      const std::string &raffleId) {
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> mapper(dbClient);
@@ -40,12 +40,15 @@ drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSiz
   Criteria searchCriteria;
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
-    searchCriteria = Criteria(Tickets::Cols::_customer_phone, CompareOperator::Like, likeQuery);
-    searchCriteria = Criteria(Tickets::Cols::_ticket_number, CompareOperator::Like, likeQuery);
+    searchCriteria = Criteria(Tickets::Cols::_customer_phone,
+                              CompareOperator::Like, likeQuery);
+    searchCriteria = Criteria(Tickets::Cols::_ticket_number,
+                              CompareOperator::Like, likeQuery);
   }
 
   if (!raffleId.empty()) {
-    searchCriteria = Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ, raffleId);
+    searchCriteria =
+        Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ, raffleId);
   }
 
   try {
@@ -61,7 +64,8 @@ drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSiz
 
     int offset = (pageNo - 1) * pageSize;
     auto result =
-        co_await mapper.orderBy(Tickets::Cols::_created_at, SortOrder::DESC).limit(pageSize)
+        co_await mapper.orderBy(Tickets::Cols::_created_at, SortOrder::DESC)
+            .limit(pageSize)
             .offset(offset)
             .findBy(searchCriteria);
 
@@ -121,16 +125,18 @@ drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSiz
   }
 }
 
-
 drogon::Task<dto::BaseApiResponse> TicketService::getRaffleTicketStats(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
 
   try {
     auto result = co_await dbClient->execSqlCoro(
         "SELECT count(*) as total_tickets, "
-        "sum(case when payment_status = 1 then 1 else 0 end) as active_tickets, "
-        "sum(case when payment_status = 1 then cast(total_amount as numeric) else 0 end) as total_revenue "
-        "FROM tickets WHERE raffle_id = $1", raffleId);
+        "sum(case when payment_status = 1 then 1 else 0 end) as "
+        "active_tickets, "
+        "sum(case when payment_status = 1 then cast(total_amount as numeric) "
+        "else 0 end) as total_revenue "
+        "FROM tickets WHERE raffle_id = $1",
+        raffleId);
 
     dto::BaseApiResponse response;
     response.success = true;
@@ -142,11 +148,18 @@ drogon::Task<dto::BaseApiResponse> TicketService::getRaffleTicketStats(const std
     if (!result.empty()) {
       auto row = result[0];
       totalTickets = row["total_tickets"].as<int64_t>();
-      activeTickets = row["active_tickets"].isNull() ? 0 : row["active_tickets"].as<int64_t>();
-      totalRevenue = row["total_revenue"].isNull() ? 0.0 : row["total_revenue"].as<double>();
+      activeTickets = row["active_tickets"].isNull()
+                          ? 0
+                          : row["active_tickets"].as<int64_t>();
+      totalRevenue = row["total_revenue"].isNull()
+                         ? 0.0
+                         : row["total_revenue"].as<double>();
     }
 
-    double conversionRate = totalTickets > 0 ? (static_cast<double>(activeTickets) / totalTickets) * 100.0 : 0.0;
+    double conversionRate =
+        totalTickets > 0
+            ? (static_cast<double>(activeTickets) / totalTickets) * 100.0
+            : 0.0;
 
     response.result["totalTickets"] = (Json::UInt64)totalTickets;
     response.result["activeTickets"] = (Json::UInt64)activeTickets;
@@ -179,28 +192,29 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
   CoroMapper<Tickets> ticketMapper(dbClient);
 
   LOG_INFO << "CreateTicketDto request:"
-            << " customerPhone=" << dto.getCustomerPhone()
-            << " selectedOptionValue=" << dto.getSelectedOptionValue()
-            << " raffleId=" << dto.getRaffleId()
-            << " ticketGroupId=" << dto.getTicketGroupId()
-            << " paymentMethod=" << dto.getPaymentMethod()
-            << " purchaseChannel=" << dto.getPurchaseChannel()
-            << " provider=" << dto.getProvider();
-
+           << " customerPhone=" << dto.getCustomerPhone()
+           << " selectedOptionValue=" << dto.getSelectedOptionValue()
+           << " raffleId=" << dto.getRaffleId()
+           << " ticketGroupId=" << dto.getTicketGroupId()
+           << " paymentMethod=" << dto.getPaymentMethod()
+           << " purchaseChannel=" << dto.getPurchaseChannel()
+           << " provider=" << dto.getProvider();
 
   try {
     // 1. Find the currently ACTIVE raffle
-    auto activeRaffle = co_await raffleMapper.findByPrimaryKey(dto.getRaffleId());
-
+    auto activeRaffle =
+        co_await raffleMapper.findByPrimaryKey(dto.getRaffleId());
 
     // 2. Find the corresponding Draw using the raffle's slug (alias in Draws)
-    auto draws = co_await drawMapper.findBy(Criteria(Draws::Cols::_raffle_id, CompareOperator::EQ, dto.getRaffleId()));
+    auto draws = co_await drawMapper.findBy(Criteria(
+        Draws::Cols::_raffle_id, CompareOperator::EQ, dto.getRaffleId()));
 
     if (draws.empty()) {
       dto::BaseApiResponse errorResponse;
       errorResponse.success = false;
       errorResponse.error["code"] = constants::ERR_VALIDATION;
-      errorResponse.error["message"] = "No corresponding draw found for the active raffle.";
+      errorResponse.error["message"] =
+          "No corresponding draw found for the active raffle.";
       co_return errorResponse;
     }
 
@@ -209,7 +223,8 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     // 3. Customer Management
     CoroMapper<Customers> customerMapper(dbClient);
     std::string customerId;
-    auto existingCustomers = co_await customerMapper.findBy(Criteria(Customers::Cols::_msisdn, CompareOperator::EQ, dto.getCustomerPhone()));
+    auto existingCustomers = co_await customerMapper.findBy(Criteria(
+        Customers::Cols::_msisdn, CompareOperator::EQ, dto.getCustomerPhone()));
 
     if (!existingCustomers.empty()) {
       customerId = existingCustomers[0].getValueOfId();
@@ -232,9 +247,12 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
       std::istringstream inputStream(optionsText);
 
       // Parse the JSON string and search for the matching ID
-      if (Json::parseFromStream(readerBuilder, inputStream, &optionsArray, &errs) && optionsArray.isArray()) {
-        for (const auto& option : optionsArray) {
-          if (option.isMember("id") && option["id"].asString() == dto.getSelectedOptionValue()) {
+      if (Json::parseFromStream(readerBuilder, inputStream, &optionsArray,
+                                &errs) &&
+          optionsArray.isArray()) {
+        for (const auto &option : optionsArray) {
+          if (option.isMember("id") &&
+              option["id"].asString() == dto.getSelectedOptionValue()) {
             if (option.isMember("name")) {
               matchedOptionName = option["name"].asString();
               break; // Match found, exit loop
@@ -250,7 +268,8 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     double entryFee = 0.0;
     std::string ticketFee;
     try {
-      auto ticketGroup = co_await ticketGroupMapper.findByPrimaryKey(dto.getTicketGroupId());
+      auto ticketGroup =
+          co_await ticketGroupMapper.findByPrimaryKey(dto.getTicketGroupId());
       quantity = ticketGroup.getValueOfQuantity();
       ticketFee = ticketGroup.getValueOfUnitPrice();
       entryFee = std::stod(ticketFee);
@@ -291,17 +310,20 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     std::string initials = "";
     bool newWord = true;
     for (char c : raffleName) {
-        if (std::isspace(c)) {
-            newWord = true;
-        } else if (newWord && std::isalpha(c)) {
-            initials += std::toupper(c);
-            newWord = false;
-        }
+      if (std::isspace(c)) {
+        newWord = true;
+      } else if (newWord && std::isalpha(c)) {
+        initials += std::toupper(c);
+        newWord = false;
+      }
     }
 
-    auto ticketCount = co_await ticketMapper.count(Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ, activeRaffle.getValueOfId()));
+    auto ticketCount = co_await ticketMapper.count(
+        Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ,
+                 activeRaffle.getValueOfId()));
     std::ostringstream aliasStream;
-    aliasStream << initials << "-" << std::setfill('0') << std::setw(3) << (ticketCount + 1);
+    aliasStream << initials << "-" << std::setfill('0') << std::setw(3)
+                << (ticketCount + 1);
     newTicket.setTicketAlias(aliasStream.str());
 
     auto &app = drogon::app();
@@ -329,16 +351,23 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
     if (dto.getPurchaseChannel() == "WSSD") {
 
       raffle::dto::WebCheckoutDto webCheckoutDto;
-      std::string callbackUrl = hubtelConfig["WebCheckoutCallBackUrl"].asString();
+      std::string callbackUrl =
+          hubtelConfig["WebCheckoutCallBackUrl"].asString();
 
-      webCheckoutDto.setCallbackUrl(hubtelConfig.isMember("WebCheckoutCallBackUrl") ? hubtelConfig["WebCheckoutCallBackUrl"].asString() : "https://nsaa-api.rhyoliteprime.com/api/v1/hubtel-callback-processor/web-checkout");
+      webCheckoutDto.setCallbackUrl(
+          hubtelConfig.isMember("WebCheckoutCallBackUrl")
+              ? hubtelConfig["WebCheckoutCallBackUrl"].asString()
+              : "https://nsaa-api.rhyoliteprime.com/api/v1/"
+                "hubtel-callback-processor/web-checkout");
       webCheckoutDto.setCancellationUrl(hubtelConfig["ReturnUrl"].asString());
       webCheckoutDto.setReturnUrl(hubtelConfig["ReturnUrl"].asString());
       webCheckoutDto.setTotalAmount(totalAmount);
-      webCheckoutDto.setDescription("Ticket Purchase - " + activeRaffle.getValueOfSlug());
+      webCheckoutDto.setDescription("Ticket Purchase - " +
+                                    activeRaffle.getValueOfSlug());
       webCheckoutDto.setClientReference(clientReference);
 
-      auto hubtelResult = co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
+      auto hubtelResult =
+          co_await hubtelApi.InitializeWebCheckout(webCheckoutDto);
 
       LOG_INFO << "Hubtel WebCheckout result for clientReference="
                << clientReference
@@ -348,13 +377,14 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
       if (hubtelResult.responseCode == "0000") {
         response.success = true;
-        response.message = "Ticket created successfully. Please complete payment.";
+        response.message =
+            "Ticket created successfully. Please complete payment.";
         response.result["ticketId"] = result.getValueOfId();
         response.result["ticketNumber"] = result.getValueOfTicketNumber();
         response.result["ticketAlias"] = result.getValueOfTicketAlias();
         response.result["paymentReference"] = clientReference;
         response.result["checkoutUrl"] = hubtelResult.data.checkoutUrl;
-        //response.result["selectedOptionName"] = "";
+        // response.result["selectedOptionName"] = "";
         response.result["selectedOptionValue"] = dto.getSelectedOptionValue();
       } else {
         response.success = false;
@@ -386,16 +416,20 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
       dto::DirectReceiveMoneyDto directReceiveDto;
       directReceiveDto.setCustomerName("NSAA_" + dto.getCustomerPhone());
-      directReceiveDto.setCustomerEmail(dto.getCustomerPhone() +"@nsaaplay.com");
+      directReceiveDto.setCustomerEmail(dto.getCustomerPhone() +
+                                        "@nsaaplay.com");
       directReceiveDto.setCustomerMsisdn(dto.getCustomerPhone());
       directReceiveDto.setAmount(totalAmount);
 
       directReceiveDto.setChannel(provider);
       directReceiveDto.setClientReference(clientReference);
-      directReceiveDto.setDescription("Ticket Purchase - " + activeRaffle.getValueOfSlug());
-      directReceiveDto.setPrimaryCallbackUrl(hubtelConfig["DirectReceiveMoneyCallBackUrl"].asString());
+      directReceiveDto.setDescription("Ticket Purchase - " +
+                                      activeRaffle.getValueOfSlug());
+      directReceiveDto.setPrimaryCallbackUrl(
+          hubtelConfig["DirectReceiveMoneyCallBackUrl"].asString());
 
-      auto hubtelResult =  co_await hubtelApi.QueueReceiveMoneyRequest(directReceiveDto);
+      auto hubtelResult =
+          co_await hubtelApi.QueueReceiveMoneyRequest(directReceiveDto);
 
       LOG_INFO << "Hubtel DirectReceive result for clientReference="
                << clientReference
@@ -404,14 +438,13 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
       if (hubtelResult.responseCode == "0001") {
 
-        std::string promptMessage = "Authorize Payment by entering PIN on your mobile device. ";
+        std::string promptMessage =
+            "Authorize Payment by entering PIN on your mobile device. ";
 
         if (provider == "mtn-gh") {
-          promptMessage +=
-              "If no bill prompt appears, dial *170# to resume.";
+          promptMessage += "If no bill prompt appears, dial *170# to resume.";
         } else if (provider == "vodafone-gh" || provider == "tigo-gh") {
-          promptMessage +=
-              "If no bill prompt appears, dial *110# to resume.";
+          promptMessage += "If no bill prompt appears, dial *110# to resume.";
         }
 
         response.success = true;
@@ -423,7 +456,9 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
         response.result["selectedOptionValue"] = dto.getSelectedOptionValue();
       } else {
         response.success = false;
-        response.message = "Ticket created but failed to initiate mobile money prompt. " + hubtelResult.message;
+        response.message =
+            "Ticket created but failed to initiate mobile money prompt. " +
+            hubtelResult.message;
         response.error["code"] = constants::ERR_INTERNAL;
         response.error["message"] = "Direct payment initialization failed.";
         response.result["ticketId"] = result.getValueOfId();
@@ -458,20 +493,23 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
   try {
     // 1. Find the ticket by payment reference
     auto tickets = co_await ticketMapper.findBy(
-        Criteria(Tickets::Cols::_payment_reference, CompareOperator::EQ, paymentReference));
+        Criteria(Tickets::Cols::_payment_reference, CompareOperator::EQ,
+                 paymentReference));
 
     if (tickets.empty()) {
       dto::BaseApiResponse errorResponse;
       errorResponse.success = false;
       errorResponse.error["code"] = constants::ERR_DB_NOT_FOUND;
-      errorResponse.error["message"] = "Ticket not found with the provided payment reference.";
+      errorResponse.error["message"] =
+          "Ticket not found with the provided payment reference.";
       co_return errorResponse;
     }
 
     auto ticket = tickets[0];
 
     // 2. Check if already active (idempotency)
-    if (ticket.getValueOfIsActive() && ticket.getValueOfPaymentStatus() == constants::PaymentStatus::SUCCESS) {
+    if (ticket.getValueOfIsActive() &&
+        ticket.getValueOfPaymentStatus() == constants::PaymentStatus::SUCCESS) {
       dto::BaseApiResponse response;
       response.success = true;
       response.message = "Ticket is already active.";
@@ -511,7 +549,8 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
 
       co_await drawMapper.update(draw);
     } catch (const std::exception &e) {
-      LOG_ERROR << "Failed to update associated draw for ticket " << ticket.getValueOfId() << ": " << e.what();
+      LOG_ERROR << "Failed to update associated draw for ticket "
+                << ticket.getValueOfId() << ": " << e.what();
     }
 
     // 6. Update the associated Customer
@@ -556,18 +595,18 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
     try {
       std::string ticketAlias = ticket.getValueOfTicketAlias();
       std::string customerPhone = ticket.getValueOfCustomerPhone();
-      std::string smsMessage = "Your ticket " + ticketAlias +
-                               " for " + raffleName +
-                               " has been activated. Good luck!";
+      std::string smsMessage = "Your ticket " + ticketAlias + " for " +
+                               raffleName + " has been activated. Good luck!";
       raffle::services::HubtelApi hubtelApi;
       auto smsSent = co_await hubtelApi.SendSms(customerPhone, smsMessage);
       if (!smsSent) {
-        LOG_WARN << "SMS notification failed for ticket " << ticket.getValueOfId()
-                 << " (phone: " << customerPhone << ")";
+        LOG_WARN << "SMS notification failed for ticket "
+                 << ticket.getValueOfId() << " (phone: " << customerPhone
+                 << ")";
       }
     } catch (const std::exception &e) {
-      LOG_ERROR << "Exception sending SMS for ticket "
-                << ticket.getValueOfId() << ": " << e.what();
+      LOG_ERROR << "Exception sending SMS for ticket " << ticket.getValueOfId()
+                << ": " << e.what();
     }
 
     dto::BaseApiResponse response;
@@ -592,5 +631,6 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
     co_return errorResponse;
   }
 }
+
 
 } // namespace raffle::services

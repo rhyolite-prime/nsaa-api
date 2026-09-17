@@ -117,6 +117,7 @@ add_executable(${PROJECT_NAME} main.cc
         dto/PrizeCategoryDto.h
         dto/PrizeDto.h
         services/prize_config/PrizeConfigService.cc
+        dto/TicketSummaryRequestDto.h
 
 )
 

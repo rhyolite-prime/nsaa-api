@@ -357,6 +357,7 @@ Task<HttpResponsePtr> RaffleController::getActiveRaffles(HttpRequestPtr req) {
   co_return resp;
 }
 
+
 Task<HttpResponsePtr> RaffleController::getActiveRaffleOptions(HttpRequestPtr req) {
 
   auto raffleId = req->getParameter("raffleId");
@@ -369,6 +370,21 @@ Task<HttpResponsePtr> RaffleController::getActiveRaffleOptions(HttpRequestPtr re
   co_return resp;
 
 }
+
+
+Task<HttpResponsePtr> RaffleController::getRaffleStats(HttpRequestPtr req) {
+
+  auto raffleId = req->getParameter("raffleId");
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &raffleService = plugin->getRaffleService();
+
+  auto result = co_await raffleService.getRaffleStats(raffleId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
+}
+
 
 Task<HttpResponsePtr> RaffleController::getWeeklyRaffleSchedule(HttpRequestPtr req) {
 

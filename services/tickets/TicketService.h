@@ -10,6 +10,8 @@
 #include <drogon/drogon.h>
 #include <string>
 
+#include "dto/TicketSummaryRequestDto.h"
+
 namespace raffle::services {
 
 class TicketService {
