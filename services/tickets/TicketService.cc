@@ -414,8 +414,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
       dto::DirectReceiveMoneyDto directReceiveDto;
       directReceiveDto.setCustomerName("NSAA_" + dto.getCustomerPhone());
-      directReceiveDto.setCustomerEmail(dto.getCustomerPhone() +
-                                        "@nsaaplay.com");
+      directReceiveDto.setCustomerEmail(dto.getCustomerPhone() + "@nsaaplay.com");
       directReceiveDto.setCustomerMsisdn(dto.getCustomerPhone());
       directReceiveDto.setAmount(totalAmount);
 
@@ -436,8 +435,9 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
       if (hubtelResult.responseCode == "0001") {
 
-        std::string promptMessage =
-            "Authorize Payment by entering PIN on your mobile device. ";
+        std::ostringstream amountStream;
+        amountStream << std::fixed << std::setprecision(2) << totalAmount;
+        std::string promptMessage = "Authorize Payment of GHS " + amountStream.str() + " by entering PIN on your mobile device. ";
 
         if (provider == "mtn-gh") {
           promptMessage += "If no bill prompt appears, dial *170# to resume.";
