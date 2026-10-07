@@ -24,6 +24,7 @@ namespace raffle::dto {
         [[nodiscard]] const std::string& getEmail() const { return email_; }
         [[nodiscard]] const std::string& getPhoneNumber() const { return phone_number_; }
         [[nodiscard]] const std::string& getMessage() const { return message_; }
+        [[nodiscard]] const std::string& getSource() const { return source_; }
 
         // Setters
         void setName(const std::string& value) { name_ = value; }
@@ -32,6 +33,7 @@ namespace raffle::dto {
         void setEmail(const std::string& value) { email_ = value; }
         void setPhoneNumber(const std::string& value) { phone_number_ = value; }
         void setMessage(const std::string& value) { message_ = value; }
+        void setSource(const std::string& value) { source_ = value; }
 
 
 
@@ -43,6 +45,7 @@ namespace raffle::dto {
         std::string category_;
         std::string phone_number_;
         std::string message_;
+        std::string source_;
 
     };
 
@@ -61,8 +64,8 @@ namespace raffle::dto {
         }
 
 
-        if (json.isMember("subject") && !json["subject"].isNull()) {
-            subject_ = json["subject"].asString();
+        if (json.isMember("source") && !json["source"].isNull()) {
+            source_ = json["source"].asString();
         }
 
         if (json.isMember("email") && !json["email"].isNull()) {
