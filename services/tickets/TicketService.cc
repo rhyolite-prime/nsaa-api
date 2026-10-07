@@ -607,9 +607,9 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
 
       std::string smsMessage =
          "Your ticket " + ticketAlias + " for " + raffleName +
-         " has been activated. "
+         " raffle has been activated. "
          "Quantity: " + quantity + ", "
-         "Amount Paid: GHS" + amountStr + ". "
+         "Amount Paid: GHS " + amountStr + ". "
          "Good luck!";
 
       raffle::services::HubtelApi hubtelApi;
