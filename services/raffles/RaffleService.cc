@@ -998,8 +998,7 @@ const Tickets &drawWeightedTicket(const DrawEntrant &entrant,
 
 } // namespace
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::executeDraw(std::string raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
   CoroMapper<Draws> drawMapper(dbClient);
@@ -1242,8 +1241,7 @@ RaffleService::executeDraw(std::string raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::getDrawDetails(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::getDrawDetails(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
   CoroMapper<Draws> drawMapper(dbClient);
@@ -1393,8 +1391,7 @@ RaffleService::getDrawDetails(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::getDetails(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::getDetails(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -1448,8 +1445,7 @@ RaffleService::getDetails(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::activate(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::activate(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -1496,8 +1492,7 @@ RaffleService::activate(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::closeRaffle(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::closeRaffle(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -1539,8 +1534,7 @@ RaffleService::closeRaffle(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::completeRaffle(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::completeRaffle(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> mapper(dbClient);
 
@@ -1582,8 +1576,7 @@ RaffleService::completeRaffle(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::getRecentTicketHolders(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::getRecentTicketHolders(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   try {
     if (raffleId.empty()) {
@@ -1638,8 +1631,7 @@ RaffleService::getRecentTicketHolders(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::getTopTicketHolders(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::getTopTicketHolders(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   try {
     if (raffleId.empty()) {
