@@ -1015,8 +1015,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffle
           remainingWeight -= entrant.weight;
 
           // Credit the win to one of the entrant's bundles, weighted by size.
-          const Tickets &winningTicket =
-              drawWeightedTicket(entrant, filteredTickets, rng);
+          const Tickets &winningTicket = drawWeightedTicket(entrant, filteredTickets, rng);
 
           LOG_DEBUG << "--- Draw Pick " << (i + 1) << " ---";
           LOG_DEBUG << "Selected customer: " << entrant.customerId << " with "
