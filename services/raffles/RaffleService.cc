@@ -20,10 +20,14 @@
 #include "utils/DateUtils.h"
 #include "utils/StringUtils.h"
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <drogon/orm/CoroMapper.h>
 #include <drogon/orm/Mapper.h>
 #include <drogon/utils/coroutine.h>
 #include <trantor/utils/Logger.h>
+#include <unordered_map>
+#include <vector>
 
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
@@ -860,6 +864,140 @@ RaffleService::incrementEntries(const std::string &raffleId) {
   }
 }
 
+namespace {
+
+/// A bundle of tickets always counts for at least one entry, even if the
+/// stored quantity is missing or invalid.
+constexpr uint64_t kMinimumTicketWeight = 1;
+
+/// Number of draw entries a single ticket bundle carries. Each ticket bought
+/// for the winning colour is one entry, so a 10-ticket bundle is ten times as
+/// likely to be drawn as a 1-ticket bundle.
+uint64_t ticketWeight(const Tickets &ticket) {
+  const int32_t quantity = ticket.getValueOfQuantity();
+  if (quantity <= 0) {
+    return kMinimumTicketWeight;
+  }
+  return static_cast<uint64_t>(quantity);
+}
+
+/// One customer's stake in the draw: every bundle they bought for the winning
+/// colour, plus the combined weight (total number of tickets) of those bundles.
+struct DrawEntrant {
+  std::string customerId;
+  std::vector<std::size_t> ticketIndexes; // positions in the filtered pool
+  uint64_t weight = 0;
+};
+
+using EntrantPool = std::vector<DrawEntrant>;
+
+/// Groups the filtered tickets per customer and totals each customer's weight,
+/// so a customer's chance of winning is driven by how many tickets they bought
+/// for the colour rather than by how many times they checked out.
+/// A ticket with no customer id is treated as its own entrant so unrelated
+/// anonymous purchases are never merged into one stake.
+EntrantPool buildEntrantPool(const std::vector<Tickets> &tickets,
+                             uint64_t &totalWeight) {
+  std::unordered_map<std::string, std::size_t> indexByCustomer;
+  EntrantPool pool;
+  totalWeight = 0;
+
+  for (std::size_t i = 0; i < tickets.size(); ++i) {
+    const auto &ticket = tickets[i];
+    const std::string &customerId = ticket.getValueOfCustomerId();
+
+    if (ticket.getValueOfQuantity() <= 0) {
+      LOG_WARN << "Ticket " << ticket.getValueOfId() << " (number "
+               << ticket.getValueOfTicketNumber()
+               << ") has a non-positive quantity ("
+               << ticket.getValueOfQuantity()
+               << "); weighing it as a single entry.";
+    }
+
+    const std::string key = customerId.empty()
+                                ? "anonymous:" + ticket.getValueOfId()
+                                : "customer:" + customerId;
+
+    auto [it, inserted] = indexByCustomer.emplace(key, pool.size());
+    if (inserted) {
+      DrawEntrant entrant;
+      entrant.customerId = customerId;
+      pool.push_back(std::move(entrant));
+    }
+
+    auto &entrant = pool[it->second];
+    const uint64_t weight = ticketWeight(ticket);
+    entrant.ticketIndexes.push_back(i);
+    entrant.weight += weight;
+    totalWeight += weight;
+  }
+
+  return pool;
+}
+
+/// Draws one entrant with probability proportional to their weight, i.e.
+/// proportional to the number of tickets they bought for the winning colour.
+/// Returns pool.size() when there is nobody left to draw.
+std::size_t drawWeightedEntrant(const EntrantPool &pool, uint64_t totalWeight,
+                                std::mt19937_64 &rng) {
+  if (pool.empty()) {
+    return pool.size();
+  }
+
+  if (totalWeight == 0) {
+    // Defensive fallback: if everything weighs nothing, pick uniformly.
+    std::uniform_int_distribution<std::size_t> uniform(0, pool.size() - 1);
+    return uniform(rng);
+  }
+
+  // Roll inside [1, totalWeight] and walk the cumulative weights. A larger
+  // stake occupies a larger share of the interval, so it wins more often.
+  std::uniform_int_distribution<uint64_t> rollDistribution(1, totalWeight);
+  const uint64_t roll = rollDistribution(rng);
+
+  uint64_t cumulative = 0;
+  for (std::size_t i = 0; i < pool.size(); ++i) {
+    cumulative += pool[i].weight;
+    if (roll <= cumulative) {
+      return i;
+    }
+  }
+
+  return pool.size() - 1;
+}
+
+/// Picks which of an entrant's bundles is credited with the win, again in
+/// proportion to the number of tickets in each bundle.
+const Tickets &drawWeightedTicket(const DrawEntrant &entrant,
+                                  const std::vector<Tickets> &tickets,
+                                  std::mt19937_64 &rng) {
+  uint64_t weightSum = 0;
+  for (const auto index : entrant.ticketIndexes) {
+    weightSum += ticketWeight(tickets[index]);
+  }
+
+  if (weightSum == 0) {
+    std::uniform_int_distribution<std::size_t> uniform(
+        0, entrant.ticketIndexes.size() - 1);
+    return tickets[entrant.ticketIndexes[uniform(rng)]];
+  }
+
+  std::uniform_int_distribution<uint64_t> rollDistribution(1, weightSum);
+  const uint64_t roll = rollDistribution(rng);
+
+  uint64_t cumulative = 0;
+  for (const auto index : entrant.ticketIndexes) {
+    cumulative += ticketWeight(tickets[index]);
+    if (roll <= cumulative) {
+      return tickets[index];
+    }
+  }
+
+  return tickets[entrant.ticketIndexes.back()];
+}
+
+} // namespace
+
 drogon::Task<dto::BaseApiResponse>
 RaffleService::executeDraw(std::string raffleId) {
   auto dbClient = drogon::app().getDbClient();
@@ -894,9 +1032,11 @@ RaffleService::executeDraw(std::string raffleId) {
     }
     LOG_DEBUG << "Options loaded. Total options count: " << optionsArray.size();
 
-    // Initialize Random Number Generator
+    // Initialize Random Number Generator. A 64-bit engine gives us enough
+    // headroom to index the weighted pool of entries without modulo bias.
     std::random_device rd;
-    std::mt19937 rng(rd());
+    std::seed_seq seed{rd(), rd(), rd(), rd(), rd(), rd(), rd(), rd()};
+    std::mt19937_64 rng(seed);
 
     // --- ALGORITHM STEP 2: Pick an option at random as the winning option ---
     LOG_DEBUG << "Step 2: Picking a random winning option.";
@@ -941,12 +1081,39 @@ RaffleService::executeDraw(std::string raffleId) {
                 << totalCount << " tickets guessed correctly.";
 
       if (validCount > 0) {
-        // --- ALGORITHM STEP 5: Determine how many winners to draw ---
+        // --- ALGORITHM STEP 5: Build the weighted entrant pool ---
+        // Every ticket bought for the winning colour is one entry in the draw,
+        // so a customer's chance of winning is proportional to the number of
+        // tickets they bought for that colour, not to how many times they
+        // checked out. Bundles belonging to the same customer are merged into a
+        // single stake, which keeps the draw random while guaranteeing that one
+        // customer cannot take more than one prize in the same draw.
+        LOG_DEBUG << "Step 5: Building the weighted entrant pool.";
+        uint64_t totalWeight = 0;
+        EntrantPool entrantPool =
+            buildEntrantPool(filteredTickets, totalWeight);
+        const int uniqueCustomers = static_cast<int>(entrantPool.size());
+        LOG_DEBUG << "Weighted pool built: " << validCount << " ticket bundles "
+                  << "from " << uniqueCustomers << " customers carrying "
+                  << totalWeight << " entries in total.";
+
+        for (const auto &entrant : entrantPool) {
+          const double chance =
+              totalWeight > 0
+                  ? (100.0 * static_cast<double>(entrant.weight) /
+                     static_cast<double>(totalWeight))
+                  : 0.0;
+          LOG_DEBUG << "  customer " << entrant.customerId << " -> "
+                    << entrant.weight << " entries (" << chance << "%)";
+        }
+
+        // --- ALGORITHM STEP 6: Determine how many winners to draw ---
         int maximumWinners = activeRaffle.getValueOfMaximumWinners();
-        int actualWinners = std::min(validCount, maximumWinners);
-        LOG_DEBUG << "Step 5: Maximum winners set to " << maximumWinners
-                  << ". Actual winners to draw from the filtered pool: "
-                  << actualWinners;
+        int actualWinners =
+            std::max(0, std::min(uniqueCustomers, maximumWinners));
+        LOG_DEBUG << "Step 6: Maximum winners set to " << maximumWinners
+                  << ". Actual winners to draw from " << uniqueCustomers
+                  << " eligible customers: " << actualWinners;
 
         // Pull prize configuration
         Json::Value prizeConfigArray(Json::arrayValue);
@@ -961,20 +1128,39 @@ RaffleService::executeDraw(std::string raffleId) {
         LOG_DEBUG << "Prize configuration loaded. Total prize tiers: "
                   << prizeConfigArray.size();
 
-        // --- ALGORITHM STEP 6: Shuffle the filtered ticket pool ---
-        LOG_DEBUG << "Step 6: Shuffling the filtered ticket pool.";
-        std::shuffle(filteredTickets.begin(), filteredTickets.end(), rng);
-
-        // --- ALGORITHM STEP 7: Pick winners from the top of the shuffled valid
-        // pool ---
+        // --- ALGORITHM STEP 7: Draw winners one at a time, weighted by entries
+        // and without replacement ---
+        // The pool is drawn sequentially: a winner is picked from the interval
+        // spanned by every remaining entrant's weight, then removed (so the
+        // same customer cannot win twice) and the remaining total shrinks.
+        // Removing a big stake also frees up probability mass for the rest of
+        // the pool.
         LOG_DEBUG << "Step 7: Selecting winners and assigning prizes.";
+        uint64_t remainingWeight = totalWeight;
         for (int i = 0; i < actualWinners; ++i) {
-          auto winningTicket = filteredTickets[i];
+          const std::size_t entrantIndex =
+              drawWeightedEntrant(entrantPool, remainingWeight, rng);
+          if (entrantIndex >= entrantPool.size()) {
+            LOG_WARN << "Entrant pool exhausted before all winners were drawn.";
+            break;
+          }
+
+          const DrawEntrant entrant = entrantPool[entrantIndex];
+          entrantPool.erase(entrantPool.begin() + entrantIndex);
+          remainingWeight -= entrant.weight;
+
+          // Credit the win to one of the entrant's bundles, weighted by size.
+          const Tickets &winningTicket =
+              drawWeightedTicket(entrant, filteredTickets, rng);
 
           LOG_DEBUG << "--- Draw Pick " << (i + 1) << " ---";
+          LOG_DEBUG << "Selected customer: " << entrant.customerId << " with "
+                    << entrant.weight << " entries out of the " << totalWeight
+                    << " originally in the pool";
           LOG_DEBUG << "Selected winning ticket ID: "
                     << winningTicket.getValueOfId() << " (Ticket Number: "
-                    << winningTicket.getValueOfTicketNumber() << ")";
+                    << winningTicket.getValueOfTicketNumber() << ", Quantity: "
+                    << winningTicket.getValueOfQuantity() << ")";
 
           // Map the corresponding prize for the current winner's rank
           std::string prizeDescription;
@@ -997,8 +1183,17 @@ RaffleService::executeDraw(std::string raffleId) {
           winner.setPhoneNumber(winningTicket.getValueOfCustomerPhone());
 
           auto savedWinner = co_await winnerMapper.insert(winner);
-          winnersResult.append(
-              utils::StringUtils::snakeCaseToCamelCase(savedWinner.toJson()));
+          Json::Value winnerJson =
+              utils::StringUtils::snakeCaseToCamelCase(savedWinner.toJson());
+          // Audit trail: how much weight the winner held in the draw and how
+          // many tickets the credited bundle carried.
+          winnerJson["customerEntries"] =
+              static_cast<Json::UInt64>(entrant.weight);
+          winnerJson["totalDrawEntries"] =
+              static_cast<Json::UInt64>(totalWeight);
+          winnerJson["ticketQuantity"] =
+              static_cast<int>(winningTicket.getValueOfQuantity());
+          winnersResult.append(winnerJson);
           LOG_DEBUG << "Winner successfully saved to database. DB Record ID: "
                     << savedWinner.getValueOfId();
         }
