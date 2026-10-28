@@ -860,8 +860,7 @@ RaffleService::incrementEntries(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::executeDraw(std::string raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
   CoroMapper<Draws> drawMapper(dbClient);

@@ -4,6 +4,7 @@ project(ChopMoneyRaffleApi CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options(-fcoroutines)
@@ -122,18 +123,20 @@ add_executable(${PROJECT_NAME} main.cc
 )
 
 # ##############################################################################
-# If you include the drogon source code locally in your project, use this method
-# to add drogon 
-# add_subdirectory(drogon) 
-# target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
-#
-# and comment out the following lines
+find_package(OpenSSL REQUIRED)
+
+set(JWT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(JWT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(external_deps/Bcrypt)
+add_subdirectory(external_deps/jwt-cpp)
+
 find_package(Drogon CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         Drogon::Drogon
         bcrypt
-        jwt-cpp
+        jwt-cpp::jwt-cpp
         OpenSSL::SSL
         OpenSSL::Crypto
 )
@@ -186,9 +189,4 @@ target_sources(${PROJECT_NAME}
 
 target_compile_options(${PROJECT_NAME} PRIVATE "-include" "${CMAKE_CURRENT_SOURCE_DIR}/utils/codecvt_helper.h" "-Wno-deprecated-declarations")
 
-set(JWT_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(JWT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-
 add_subdirectory(test)
-add_subdirectory(external_deps/Bcrypt)
-add_subdirectory(external_deps/jwt-cpp)
