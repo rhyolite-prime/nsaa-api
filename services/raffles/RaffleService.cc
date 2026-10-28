@@ -864,7 +864,142 @@ RaffleService::incrementEntries(const std::string &raffleId) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffleId) {
+namespace {
+
+/// A bundle of tickets always counts for at least one entry, even if the
+/// stored quantity is missing or invalid.
+constexpr uint64_t kMinimumTicketWeight = 1;
+
+/// Number of draw entries a single ticket bundle carries. Each ticket bought
+/// for the winning colour is one entry, so a 10-ticket bundle is ten times as
+/// likely to be drawn as a 1-ticket bundle.
+uint64_t ticketWeight(const Tickets &ticket) {
+  const int32_t quantity = ticket.getValueOfQuantity();
+  if (quantity <= 0) {
+    return kMinimumTicketWeight;
+  }
+  return static_cast<uint64_t>(quantity);
+}
+
+/// One customer's stake in the draw: every bundle they bought for the winning
+/// colour, plus the combined weight (total number of tickets) of those bundles.
+struct DrawEntrant {
+  std::string customerId;
+  std::vector<std::size_t> ticketIndexes; // positions in the filtered pool
+  uint64_t weight = 0;
+};
+
+using EntrantPool = std::vector<DrawEntrant>;
+
+/// Groups the filtered tickets per customer and totals each customer's weight,
+/// so a customer's chance of winning is driven by how many tickets they bought
+/// for the colour rather than by how many times they checked out.
+/// A ticket with no customer id is treated as its own entrant so unrelated
+/// anonymous purchases are never merged into one stake.
+EntrantPool buildEntrantPool(const std::vector<Tickets> &tickets,
+                             uint64_t &totalWeight) {
+  std::unordered_map<std::string, std::size_t> indexByCustomer;
+  EntrantPool pool;
+  totalWeight = 0;
+
+  for (std::size_t i = 0; i < tickets.size(); ++i) {
+    const auto &ticket = tickets[i];
+    const std::string &customerId = ticket.getValueOfCustomerId();
+
+    if (ticket.getValueOfQuantity() <= 0) {
+      LOG_WARN << "Ticket " << ticket.getValueOfId() << " (number "
+               << ticket.getValueOfTicketNumber()
+               << ") has a non-positive quantity ("
+               << ticket.getValueOfQuantity()
+               << "); weighing it as a single entry.";
+    }
+
+    const std::string key = customerId.empty()
+                                ? "anonymous:" + ticket.getValueOfId()
+                                : "customer:" + customerId;
+
+    auto [it, inserted] = indexByCustomer.emplace(key, pool.size());
+    if (inserted) {
+      DrawEntrant entrant;
+      entrant.customerId = customerId;
+      pool.push_back(std::move(entrant));
+    }
+
+    auto &entrant = pool[it->second];
+    const uint64_t weight = ticketWeight(ticket);
+    entrant.ticketIndexes.push_back(i);
+    entrant.weight += weight;
+    totalWeight += weight;
+  }
+
+  return pool;
+}
+
+/// Draws one entrant with probability proportional to their weight, i.e.
+/// proportional to the number of tickets they bought for the winning colour.
+/// Returns pool.size() when there is nobody left to draw.
+std::size_t drawWeightedEntrant(const EntrantPool &pool, uint64_t totalWeight,
+                                std::mt19937_64 &rng) {
+  if (pool.empty()) {
+    return pool.size();
+  }
+
+  if (totalWeight == 0) {
+    // Defensive fallback: if everything weighs nothing, pick uniformly.
+    std::uniform_int_distribution<std::size_t> uniform(0, pool.size() - 1);
+    return uniform(rng);
+  }
+
+  // Roll inside [1, totalWeight] and walk the cumulative weights. A larger
+  // stake occupies a larger share of the interval, so it wins more often.
+  std::uniform_int_distribution<uint64_t> rollDistribution(1, totalWeight);
+  const uint64_t roll = rollDistribution(rng);
+
+  uint64_t cumulative = 0;
+  for (std::size_t i = 0; i < pool.size(); ++i) {
+    cumulative += pool[i].weight;
+    if (roll <= cumulative) {
+      return i;
+    }
+  }
+
+  return pool.size() - 1;
+}
+
+/// Picks which of an entrant's bundles is credited with the win, again in
+/// proportion to the number of tickets in each bundle.
+const Tickets &drawWeightedTicket(const DrawEntrant &entrant,
+                                  const std::vector<Tickets> &tickets,
+                                  std::mt19937_64 &rng) {
+  uint64_t weightSum = 0;
+  for (const auto index : entrant.ticketIndexes) {
+    weightSum += ticketWeight(tickets[index]);
+  }
+
+  if (weightSum == 0) {
+    std::uniform_int_distribution<std::size_t> uniform(
+        0, entrant.ticketIndexes.size() - 1);
+    return tickets[entrant.ticketIndexes[uniform(rng)]];
+  }
+
+  std::uniform_int_distribution<uint64_t> rollDistribution(1, weightSum);
+  const uint64_t roll = rollDistribution(rng);
+
+  uint64_t cumulative = 0;
+  for (const auto index : entrant.ticketIndexes) {
+    cumulative += ticketWeight(tickets[index]);
+    if (roll <= cumulative) {
+      return tickets[index];
+    }
+  }
+
+  return tickets[entrant.ticketIndexes.back()];
+}
+
+} // namespace
+
+drogon::Task<dto::BaseApiResponse>
+RaffleService::executeDraw(std::string raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
   CoroMapper<Draws> drawMapper(dbClient);
