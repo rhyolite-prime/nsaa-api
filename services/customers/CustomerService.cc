@@ -22,7 +22,7 @@
 #include "dto/CheckoutResponse.h"
 #include "dto/InitializeTicketPurchaseDto.h"
 #include "dto/WebCheckoutDto.h"
-#include "jwt-cpp/jwt.h"
+#include <jwt-cpp/jwt.h>
 #include "utils/IdGeneratorUtils.h"
 #include "utils/PasswordUtils.h"
 #include <iomanip>
@@ -313,7 +313,7 @@ CustomerService::validateCredentials(const dto::CustomerAuthDto &dto) {
                                        std::chrono::hours(24 * 120))
                        .set_payload_claim("customerId",
                                           jwt::claim(customer.getValueOfId()))
-                       .sign(jwt::algorithm::hs256{jwtSecurityKey});
+                       .sign(jwt::algorithm::hs256(jwtSecurityKey));
 
       response.success = true;
       response.message = "Authentication successful";
@@ -521,7 +521,7 @@ CustomerService::verifyOtp(const dto::CustomerVerifyOtpDto &dto) {
                                      std::chrono::hours(24 * 120))
                      .set_payload_claim("customerId",
                                         jwt::claim(customer.getValueOfId()))
-                     .sign(jwt::algorithm::hs256{jwtSecurityKey});
+                     .sign(jwt::algorithm::hs256(jwtSecurityKey));
 
     response.success = true;
     response.message = "Authentication successful";
@@ -701,8 +701,20 @@ CustomerService::changePin(const dto::ChangeCustomerPinDto &dto) {
   co_return response;
 }
 
-drogon::Task<dto::BaseApiResponse>
-CustomerService::getTransactionHistory(const std::string &customerId) {
+  static std::string paymentStatusToString(int status) {
+  switch (status) {
+    case constants::PaymentStatus::PAYMENT_INITIATED:
+      return "Payment Initiated";
+    case constants::PaymentStatus::SUCCESS:
+      return "Success";
+    case constants::PaymentStatus::PAYMENT_FAILED:
+      return "Payment Failed";
+    default:
+      return "Unknown";
+  }
+}
+
+drogon::Task<dto::BaseApiResponse> CustomerService::getTransactionHistory(const std::string &customerId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> mapper(dbClient);
 
@@ -715,6 +727,8 @@ CustomerService::getTransactionHistory(const std::string &customerId) {
     dto::BaseApiResponse response;
     response.success = true;
     Json::Value data = Json::arrayValue;
+
+
     for (const auto &ticket : tickets) {
       Json::Value item;
       item["id"] = ticket.getValueOfId();
@@ -726,7 +740,7 @@ CustomerService::getTransactionHistory(const std::string &customerId) {
       item["entryFee"] = ticket.getValueOfEntryFee();
       item["quantity"] = ticket.getValueOfQuantity();
       item["totalAmount"] = ticket.getValueOfTotalAmount();
-      item["paymentStatus"] = ticket.getValueOfPaymentStatus();
+      item["paymentStatus"] = paymentStatusToString(ticket.getValueOfPaymentStatus());
       item["createdAt"] = ticket.getValueOfCreatedAt().toDbStringLocal();
       item["ticketAlias"] = ticket.getValueOfTicketAlias();
       data.append(item);
@@ -737,8 +751,7 @@ CustomerService::getTransactionHistory(const std::string &customerId) {
     dto::BaseApiResponse errorResponse;
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] =
-        "Database error while fetching transaction history.";
+    errorResponse.error["message"] = "Database error while fetching transaction history.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   } catch (const std::exception &e) {
@@ -1144,7 +1157,7 @@ CustomerService::buyGuestTicket(const dto::InitializeTicketPurchaseDto &dto) {
                      .set_expires_at(std::chrono::system_clock::now() +
                                      std::chrono::hours(24 * 120))
                      .set_payload_claim("customerId", jwt::claim(customerId))
-                     .sign(jwt::algorithm::hs256{jwtSecurityKey});
+                     .sign(jwt::algorithm::hs256(jwtSecurityKey));
 
     // 2. Find active raffle
     auto activeRaffles = co_await raffleMapper.findBy(
