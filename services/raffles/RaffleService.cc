@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <ctime>
 #include <random>
+#include <stdexcept>
 #include <string>
 
 #include "RngLogs.h"
@@ -1000,15 +1001,28 @@ const Tickets &drawWeightedTicket(const DrawEntrant &entrant,
 
 drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffleId) {
   auto dbClient = drogon::app().getDbClient();
-  CoroMapper<Raffles> raffleMapper(dbClient);
-  CoroMapper<Draws> drawMapper(dbClient);
-  CoroMapper<Tickets> ticketMapper(dbClient);
-  CoroMapper<Winners> winnerMapper(dbClient);
 
   try {
     LOG_DEBUG << "Starting draw execution for raffleId: " << raffleId;
 
-    // 1. Get the active raffle
+    // Serialize draw requests for this raffle. Without the row lock, two
+    // overlapping requests can both observe an unfinished raffle and each
+    // insert up to maximum_winners winners. The transaction holds this lock
+    // until all winner rows and the completed status have been committed.
+    auto transaction = co_await dbClient->newTransactionCoro();
+    auto lockResult = co_await transaction->execSqlCoro(
+        "SELECT \"id\" FROM \"raffles\" WHERE \"id\" = $1 FOR UPDATE",
+        raffleId);
+    if (lockResult.empty()) {
+      throw std::runtime_error("Raffle not found: " + raffleId);
+    }
+
+    CoroMapper<Raffles> raffleMapper(transaction);
+    CoroMapper<Draws> drawMapper(transaction);
+    CoroMapper<Tickets> ticketMapper(transaction);
+    CoroMapper<Winners> winnerMapper(transaction);
+
+    // 1. Get the active raffle after taking the lock.
     auto activeRaffle = co_await raffleMapper.findByPrimaryKey(raffleId);
 
     // 2. Get the associated draw ID
@@ -1018,6 +1032,34 @@ drogon::Task<dto::BaseApiResponse> RaffleService::executeDraw(std::string raffle
 
     LOG_DEBUG << "Successfully fetched raffle and associated draw ID: "
               << draw.getValueOfId();
+
+    // A repeated request (or a retry after a prior partial/legacy execution)
+    // must return the recorded result rather than draw and insert winners again.
+    auto existingWinners = co_await winnerMapper.findBy(Criteria(
+        Winners::Cols::_draw_id, CompareOperator::EQ, draw.getValueOfId()));
+    if (activeRaffle.getValueOfStatus() ==
+            constants::RaffleStatus::DRAW_COMPLETED ||
+        !existingWinners.empty()) {
+      Json::Value winnersResult(Json::arrayValue);
+      for (const auto &winner : existingWinners) {
+        winnersResult.append(utils::StringUtils::snakeCaseToCamelCase(
+            winner.toJson()));
+      }
+
+      // If an older attempt saved winners before updating raffle status, repair
+      // the status while still holding the lock; do not award any more prizes.
+      if (activeRaffle.getValueOfStatus() !=
+          constants::RaffleStatus::DRAW_COMPLETED) {
+        activeRaffle.setStatus(constants::RaffleStatus::DRAW_COMPLETED);
+        co_await raffleMapper.update(activeRaffle);
+      }
+
+      dto::BaseApiResponse response;
+      response.success = true;
+      response.message = "Draw executed successfully";
+      response.result = winnersResult;
+      co_return response;
+    }
 
     // --- ALGORITHM STEP 1: Pull the options for that particular draw ---
     LOG_DEBUG << "Step 1: Pulling options for the draw.";
