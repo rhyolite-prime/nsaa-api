@@ -27,6 +27,7 @@ class RaffleController : public drogon::HttpController<RaffleController>
     ADD_METHOD_TO(RaffleController::getDrawDetails, std::string(PREFIX) + "draw-details/{1}", Get, Options);
     ADD_METHOD_TO(RaffleController::getDetails, std::string(PREFIX) + "details/{1}", Get, Options);
     ADD_METHOD_TO(RaffleController::getActiveRaffles, std::string(PREFIX) + "get-active-raffles", Get, Options);
+    ADD_METHOD_TO(RaffleController::getRaffleStats, std::string(PREFIX) + "get-raffle-stats", Get, Options); // for USSD
     ADD_METHOD_TO(RaffleController::getActiveRaffleOptions, std::string(PREFIX) + "get-active-raffle-options", Get, Options);
     ADD_METHOD_TO(RaffleController::getWeeklyRaffles, std::string(PREFIX) + "get-weekly", Get, Options);
     ADD_METHOD_TO(RaffleController::getWeeklyRaffleSchedule, std::string(PREFIX) + "get-weekly-schedule", Get, Options);
@@ -54,5 +55,6 @@ class RaffleController : public drogon::HttpController<RaffleController>
     Task<HttpResponsePtr> getActiveRaffles(HttpRequestPtr req);
     Task<HttpResponsePtr> getWeeklyRaffles(HttpRequestPtr req);
     Task<HttpResponsePtr> getActiveRaffleOptions(HttpRequestPtr req);
+    Task<HttpResponsePtr> getRaffleStats(HttpRequestPtr req);
     Task<HttpResponsePtr> getWeeklyRaffleSchedule(HttpRequestPtr req);
 };

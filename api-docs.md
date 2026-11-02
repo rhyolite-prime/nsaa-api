@@ -1342,6 +1342,114 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/prizes/get-all'
 
 ```
 
+## 25. Get Draw History
+
+**POST** `/cms/get-draw-history`
+
+### Description
+
+Gets Draw History
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/get-draw-history'
+```
+
+### Example Response
+
+```json
+
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "drawTime": "2026-09-08 18:00:00",
+        "id": "96ad67b2-abf9-4f46-b17c-018dfff56e03",
+        "name": "Tuesday Boom Raffle ",
+        "status": "DRAW COMPLETED",
+        "winningOption": "Red"
+      },
+      {
+        "drawTime": "2026-09-07 18:00:00",
+        "id": "cd3da8e8-2c01-4430-8e45-447bfa3a4d3e",
+        "name": "Super Monday Raffle",
+        "status": "DRAW COMPLETED",
+        "winningOption": "Green"
+      },
+      {
+        "drawTime": "2026-09-07 17:00:00",
+        "id": "2f5613e6-2ad9-4215-a9da-70381428a1b9",
+        "name": "Old School Reunion Draw",
+        "status": "DRAW COMPLETED",
+        "winningOption": "Blue"
+      },
+      {
+        "drawTime": "2026-09-04 18:45:00",
+        "id": "de63caac-bacb-4f63-8c4c-e95b9fb0b84d",
+        "name": "Mega Friday",
+        "status": "DRAW_COMPLETED",
+        "winningOption": "Green"
+      },
+      {
+        "drawTime": "2026-09-03 19:00:00",
+        "id": "66af3616-a59e-447d-b3f2-7f7132436c2f",
+        "name": "Super Thursday",
+        "status": "DRAW COMPLETED",
+        "winningOption": "Green"
+      },
+      {
+        "drawTime": "2026-09-02 17:30:00",
+        "id": "2763d198-ed03-455e-9af9-2568e87bd501",
+        "name": "Wednesday Action",
+        "status": "DRAW COMPLETED",
+        "winningOption": "Red"
+      },
+      {
+        "drawTime": "2026-08-31 16:00:00",
+        "id": "247a8687-055b-42ee-8a0d-ca8f1013c051",
+        "name": "Monday Extra ",
+        "status": "DRAW COMPLETED",
+        "winningOption": "Gold"
+      },
+      {
+        "drawTime": "2026-08-28 15:30:00",
+        "id": "9badd3a5-2b19-4dd4-b9a4-fe20bbceb3e5",
+        "name": "Super Friday Raffle",
+        "status": "DRAW COMPLETED",
+        "winningOption": "Red"
+      },
+      {
+        "drawTime": "2026-08-26 23:15:00",
+        "id": "a0af82ae-8b9b-4fc0-aad1-59baae8ccf29",
+        "name": "Wednesday Raffle",
+        "status": "DRAW COMPLETED",
+        "winningOption": "Green"
+      },
+      {
+        "drawTime": "2026-08-24 10:40:00",
+        "id": "b4ff904c-7645-4892-8792-b8bb147f9826",
+        "name": "Big Time Monday",
+        "status": "CLOSED",
+        "winningOption": ""
+      }
+    ],
+    "lowerBound": 1,
+    "pageNo": 1,
+    "pageSize": 10,
+    "totalCount": 11,
+    "totalPages": 2,
+    "upperBound": 10
+  },
+  "success": true,
+  "targetUrl": ""
+}
+
+```
+
+
 Common error responses:
 
 ```json
