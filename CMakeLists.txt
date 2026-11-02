@@ -37,6 +37,9 @@ add_executable(${PROJECT_NAME} main.cc
         services/users/UserService.h
         services/tickets/TicketService.h
         services/dashboard/DashboardService.h
+        services/dashboard/DashboardService.cc
+        services/reports/ReportService.h
+        services/reports/ReportService.cc
         services/customers/CustomerService.h
         services/transaction_audit/TransactionAuditService.h
         services/winners/WinnerService.h

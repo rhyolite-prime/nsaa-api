@@ -21,6 +21,7 @@
 #include "services/prize_config/PrizeConfigService.h"
 #include "services/quartz/QuartzApi.h"
 #include "services/raffles/RaffleService.h"
+#include "services/reports/ReportService.h"
 #include "services/redis/RedisCacheManager.h"
 #include "services/rng_logs/RngLogService.h"
 #include "services/roles/RoleService.h"
@@ -68,6 +69,7 @@ namespace raffle::plugins {
         services::SupportTicketService &getSupportTicketService() { return supportTicketService_; }
         services::PrizeConfigService &getPrizeConfigService() { return prizeConfigService_; }
         services::TicketCollectionService &getTicketCollectionService() { return ticketCollectionService_; }
+        services::ReportService &getReportService() { return reportService_; }
 
     private:
         services::RedisCacheManager redisCacheService_;
@@ -92,6 +94,7 @@ namespace raffle::plugins {
         services::SupportTicketService supportTicketService_;
         services::PrizeConfigService prizeConfigService_;
         services::TicketCollectionService ticketCollectionService_;
+        services::ReportService reportService_;
     };
 
 }
