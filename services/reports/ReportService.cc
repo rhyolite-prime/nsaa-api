@@ -113,7 +113,7 @@ ReportService::getSummary(const std::string &startDate,
     response.success = true;
 
     if (!ticketRows.empty()) {
-      auto &r = ticketRows[0];
+      const auto &r = ticketRows[0];
       response.result["totalTickets"] = (Json::UInt64)r["total_tickets"].as<uint64_t>();
       response.result["paidTickets"] = (Json::UInt64)r["paid_tickets"].as<uint64_t>();
       response.result["pendingTickets"] = (Json::UInt64)r["pending_tickets"].as<uint64_t>();
@@ -121,22 +121,22 @@ ReportService::getSummary(const std::string &startDate,
       response.result["totalQuantity"] = (Json::UInt64)r["total_quantity"].as<uint64_t>();
     }
     if (!winnerRows.empty()) {
-      auto &r = winnerRows[0];
+      const auto &r = winnerRows[0];
       response.result["totalWinners"] = (Json::UInt64)r["total_winners"].as<uint64_t>();
       response.result["pendingPayouts"] = (Json::UInt64)r["pending_payouts"].as<uint64_t>();
     }
     if (!customerRows.empty()) {
-      auto &r = customerRows[0];
+      const auto &r = customerRows[0];
       response.result["totalCustomers"] = (Json::UInt64)r["total_customers"].as<uint64_t>();
       response.result["activeCustomers"] = (Json::UInt64)r["active_customers"].as<uint64_t>();
     }
     if (!raffleRows.empty()) {
-      auto &r = raffleRows[0];
+      const auto &r = raffleRows[0];
       response.result["totalRaffles"] = (Json::UInt64)r["total_raffles"].as<uint64_t>();
       response.result["activeRaffles"] = (Json::UInt64)r["active_raffles"].as<uint64_t>();
     }
     if (!drawRows.empty()) {
-      auto &r = drawRows[0];
+      const auto &r = drawRows[0];
       response.result["totalDraws"] = (Json::UInt64)r["total_draws"].as<uint64_t>();
       response.result["completedDraws"] = (Json::UInt64)r["completed_draws"].as<uint64_t>();
     }

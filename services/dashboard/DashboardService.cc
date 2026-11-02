@@ -102,14 +102,14 @@ std::string drawStatusLabel(int32_t status) {
   }
 }
 
-drogon::Task<dto::BaseApiResponse> errorResponse(const std::string &message,
-                                                 const std::string &detail) {
+dto::BaseApiResponse errorResponse(const std::string &message,
+                                   const std::string &detail) {
   dto::BaseApiResponse response;
   response.success = false;
   response.error["code"] = constants::ERR_DB_QUERY;
   response.error["message"] = message;
   response.error["detail"] = detail;
-  co_return response;
+  return response;
 }
 
 } // namespace
@@ -264,7 +264,7 @@ DashboardService::getOverview(const std::string &startDate,
 
     co_return response;
   } catch (const DrogonDbException &e) {
-    co_return co_await errorResponse(
+    co_return errorResponse(
         "Database error while fetching dashboard overview.", e.base().what());
   } catch (const std::exception &e) {
     dto::BaseApiResponse err;
@@ -318,7 +318,7 @@ drogon::Task<dto::BaseApiResponse> DashboardService::getColourBreakdown(
     response.result["totalEntries"] = (Json::UInt64)totalEntries;
     co_return response;
   } catch (const DrogonDbException &e) {
-    co_return co_await errorResponse(
+    co_return errorResponse(
         "Database error while fetching colour breakdown.", e.base().what());
   } catch (const std::exception &e) {
     dto::BaseApiResponse err;
@@ -440,7 +440,7 @@ drogon::Task<dto::BaseApiResponse> DashboardService::getDrawStats(
     response.result["data"] = data;
     co_return response;
   } catch (const DrogonDbException &e) {
-    co_return co_await errorResponse(
+    co_return errorResponse(
         "Database error while fetching draw statistics.", e.base().what());
   } catch (const std::exception &e) {
     dto::BaseApiResponse err;
@@ -516,7 +516,7 @@ drogon::Task<dto::BaseApiResponse> DashboardService::getTopParticipants(
     response.result["totalCount"] = (Json::UInt64)data.size();
     co_return response;
   } catch (const DrogonDbException &e) {
-    co_return co_await errorResponse(
+    co_return errorResponse(
         "Database error while fetching top participants.", e.base().what());
   } catch (const std::exception &e) {
     dto::BaseApiResponse err;
@@ -574,7 +574,7 @@ drogon::Task<dto::BaseApiResponse> DashboardService::getRevenueTrend(
     response.result["totalTickets"] = (Json::UInt64)totalTickets;
     co_return response;
   } catch (const DrogonDbException &e) {
-    co_return co_await errorResponse(
+    co_return errorResponse(
         "Database error while fetching revenue trend.", e.base().what());
   } catch (const std::exception &e) {
     dto::BaseApiResponse err;
