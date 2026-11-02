@@ -172,7 +172,7 @@ drogon::Task<dto::BaseApiResponse> ReportService::getTicketSalesReport(
         "SELECT COUNT(*) AS total FROM tickets t "
         "WHERE ($1 = '' OR t.created_at >= NULLIF($1,'')::timestamp) "
         "AND ($2 = '' OR t.created_at < (NULLIF($2,'')::date + interval '1 day')) "
-        "AND ($3 = '' OR t.raffle_id = $3) "
+        "AND ($3 = '' OR t.raffle_id = NULLIF($3,'')::uuid) "
         "AND ($4 = '' OR t.payment_status = NULLIF($4,'')::int) "
         "AND ($5 = '' OR t.ticket_number ILIKE '%' || $5 || '%' "
         "OR t.customer_phone ILIKE '%' || $5 || '%')",
@@ -207,7 +207,7 @@ drogon::Task<dto::BaseApiResponse> ReportService::getTicketSalesReport(
         "FROM tickets t "
         "WHERE ($1 = '' OR t.created_at >= NULLIF($1,'')::timestamp) "
         "AND ($2 = '' OR t.created_at < (NULLIF($2,'')::date + interval '1 day')) "
-        "AND ($3 = '' OR t.raffle_id = $3) "
+        "AND ($3 = '' OR t.raffle_id = NULLIF($3,'')::uuid) "
         "AND ($4 = '' OR t.payment_status = NULLIF($4,'')::int) "
         "AND ($5 = '' OR t.ticket_number ILIKE '%' || $5 || '%' "
         "OR t.customer_phone ILIKE '%' || $5 || '%') "
@@ -295,7 +295,7 @@ drogon::Task<dto::BaseApiResponse> ReportService::getRevenueReport(
         "WHERE t.payment_status = 1 "
         "AND ($1 = '' OR t.created_at >= NULLIF($1,'')::timestamp) "
         "AND ($2 = '' OR t.created_at < (NULLIF($2,'')::date + interval '1 day')) "
-        "AND ($4 = '' OR t.raffle_id = $4) "
+        "AND ($4 = '' OR t.raffle_id = NULLIF($4,'')::uuid) "
         "GROUP BY bucket ORDER BY bucket ASC",
         startDate, endDate, bucket, raffleId);
 
@@ -353,7 +353,7 @@ drogon::Task<dto::BaseApiResponse> ReportService::getWinnersReport(
         "LEFT JOIN customers c ON c.id = w.customer_id "
         "WHERE ($1 = '' OR w.created_at >= NULLIF($1,'')::timestamp) "
         "AND ($2 = '' OR w.created_at < (NULLIF($2,'')::date + interval '1 day')) "
-        "AND ($3 = '' OR w.draw_id = $3) "
+        "AND ($3 = '' OR w.draw_id = NULLIF($3,'')::uuid) "
         "AND ($4 = '' OR w.status = NULLIF($4,'')::int) "
         "AND ($5 = '' OR w.phone_number ILIKE '%' || $5 || '%' "
         "OR c.msisdn ILIKE '%' || $5 || '%' "
@@ -391,7 +391,7 @@ drogon::Task<dto::BaseApiResponse> ReportService::getWinnersReport(
         "LEFT JOIN draws d ON d.id = w.draw_id "
         "WHERE ($1 = '' OR w.created_at >= NULLIF($1,'')::timestamp) "
         "AND ($2 = '' OR w.created_at < (NULLIF($2,'')::date + interval '1 day')) "
-        "AND ($3 = '' OR w.draw_id = $3) "
+        "AND ($3 = '' OR w.draw_id = NULLIF($3,'')::uuid) "
         "AND ($4 = '' OR w.status = NULLIF($4,'')::int) "
         "AND ($5 = '' OR w.phone_number ILIKE '%' || $5 || '%' "
         "OR c.msisdn ILIKE '%' || $5 || '%' "

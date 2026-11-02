@@ -291,7 +291,7 @@ drogon::Task<dto::BaseApiResponse> DashboardService::getColourBreakdown(
         "WHERE t.payment_status = 1 "
         "AND ($1 = '' OR t.created_at >= NULLIF($1,'')::timestamp) "
         "AND ($2 = '' OR t.created_at < (NULLIF($2,'')::date + interval '1 day')) "
-        "AND ($3 = '' OR t.raffle_id = $3) "
+        "AND ($3 = '' OR t.raffle_id = NULLIF($3,'')::uuid) "
         "GROUP BY t.selected_option_name, c.hex_color, c.emoji "
         "ORDER BY count DESC",
         startDate, endDate, raffleId);
@@ -340,7 +340,7 @@ drogon::Task<dto::BaseApiResponse> DashboardService::getDrawStats(
         "SELECT COUNT(*) AS total FROM draws d "
         "WHERE ($1 = '' OR d.draw_date >= NULLIF($1,'')::timestamp) "
         "AND ($2 = '' OR d.draw_date < (NULLIF($2,'')::date + interval '1 day')) "
-        "AND ($3 = '' OR d.raffle_id = $3)",
+        "AND ($3 = '' OR d.raffle_id = NULLIF($3,'')::uuid)",
         startDate, endDate, raffleId);
 
     uint64_t totalCount =
@@ -403,7 +403,7 @@ drogon::Task<dto::BaseApiResponse> DashboardService::getDrawStats(
         ") w ON w.draw_id = d.id "
         "WHERE ($1 = '' OR d.draw_date >= NULLIF($1,'')::timestamp) "
         "AND ($2 = '' OR d.draw_date < (NULLIF($2,'')::date + interval '1 day')) "
-        "AND ($3 = '' OR d.raffle_id = $3) "
+        "AND ($3 = '' OR d.raffle_id = NULLIF($3,'')::uuid) "
         "ORDER BY d.draw_date DESC LIMIT $4 OFFSET $5",
         startDate, endDate, raffleId, pageSize, offset);
 
@@ -545,7 +545,7 @@ drogon::Task<dto::BaseApiResponse> DashboardService::getRevenueTrend(
         "WHERE t.payment_status = 1 "
         "AND ($1 = '' OR t.created_at >= NULLIF($1,'')::timestamp) "
         "AND ($2 = '' OR t.created_at < (NULLIF($2,'')::date + interval '1 day')) "
-        "AND ($4 = '' OR t.raffle_id = $4) "
+        "AND ($4 = '' OR t.raffle_id = NULLIF($4,'')::uuid) "
         "GROUP BY bucket ORDER BY bucket ASC",
         startDate, endDate, bucket, raffleId);
 
