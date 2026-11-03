@@ -36,7 +36,7 @@ Task<HttpResponsePtr> TicketsController::getAll(HttpRequestPtr req) {
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &ticketService = plugin->getTicketService();
 
-  auto result = co_await ticketService.getAll(pageNo, pageSize, query, raffleId);
+  auto result = co_await ticketService.getAll(pageNo, pageSize, query, raffleId, status);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }
