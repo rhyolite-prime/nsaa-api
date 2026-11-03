@@ -11,6 +11,7 @@
 #include <drogon/orm/DbClient.h>
 #include <drogon/utils/coroutine.h>
 
+#include <cmath>
 #include <string>
 
 using namespace drogon::orm;
@@ -265,6 +266,80 @@ drogon::Task<dto::BaseApiResponse> ReportService::getTicketSalesReport(
     err.success = false;
     err.error["code"] = constants::ERR_DB_QUERY;
     err.error["message"] = "Database error while fetching ticket sales report.";
+    err.error["detail"] = e.base().what();
+    co_return err;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse err;
+    err.success = false;
+    err.error["code"] = constants::ERR_INTERNAL;
+    err.error["message"] = "Internal error.";
+    err.error["detail"] = e.what();
+    co_return err;
+  }
+}
+
+drogon::Task<dto::BaseApiResponse> ReportService::getTicketDistribution(
+    const std::string &startDate, const std::string &endDate,
+    const std::string &raffleId) {
+  auto dbClient = drogon::app().getDbClient();
+
+  try {
+    auto rows = co_await dbClient->execSqlCoro(
+        "SELECT t.selected_option_name AS name, "
+        "t.selected_option_value AS value, "
+        "COUNT(*) AS tickets, "
+        "COALESCE(SUM(t.quantity), 0) AS entries, "
+        "COALESCE(SUM(t.total_amount::numeric), 0) AS revenue "
+        "FROM tickets t "
+        "WHERE t.payment_status = 1 "
+        "AND ($1 = '' OR t.created_at >= NULLIF($1,'')::timestamp) "
+        "AND ($2 = '' OR t.created_at < (NULLIF($2,'')::date + interval '1 day')) "
+        "AND ($3 = '' OR t.raffle_id = NULLIF($3,'')::uuid) "
+        "GROUP BY t.selected_option_name, t.selected_option_value "
+        "ORDER BY entries DESC",
+        startDate, endDate, raffleId);
+
+    Json::Value data = Json::arrayValue;
+    uint64_t totalTickets = 0, totalEntries = 0;
+    double totalRevenue = 0.0;
+    for (const auto &row : rows) {
+      totalTickets += row["tickets"].as<uint64_t>();
+      totalEntries += row["entries"].as<uint64_t>();
+      totalRevenue += row["revenue"].isNull() ? 0.0 : row["revenue"].as<double>();
+    }
+
+    for (const auto &row : rows) {
+      Json::Value item;
+      item["name"] =
+          row["name"].isNull() ? "" : row["name"].as<std::string>();
+      item["value"] =
+          row["value"].isNull() ? "" : row["value"].as<std::string>();
+      uint64_t tickets = row["tickets"].as<uint64_t>();
+      uint64_t entries = row["entries"].as<uint64_t>();
+      double revenue =
+          row["revenue"].isNull() ? 0.0 : row["revenue"].as<double>();
+      item["tickets"] = (Json::UInt64)tickets;
+      item["entries"] = (Json::UInt64)entries;
+      item["revenue"] = revenue;
+      item["percentage"] = totalEntries > 0
+                               ? std::round((entries * 10000.0 / totalEntries)) / 100.0
+                               : 0.0;
+      data.append(item);
+    }
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["data"] = data;
+    response.result["totalTickets"] = (Json::UInt64)totalTickets;
+    response.result["totalEntries"] = (Json::UInt64)totalEntries;
+    response.result["totalRevenue"] = totalRevenue;
+    co_return response;
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse err;
+    err.success = false;
+    err.error["code"] = constants::ERR_DB_QUERY;
+    err.error["message"] =
+        "Database error while fetching ticket distribution.";
     err.error["detail"] = e.base().what();
     co_return err;
   } catch (const std::exception &e) {

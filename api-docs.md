@@ -1528,6 +1528,15 @@ pending payouts, customers, raffles, draws.
 
 Paginated ticket rows with status labels and `totalRevenue` for the page.
 
+### 7b. Ticket Distribution by Selected Option
+
+**GET** `/api/v1/reports/ticket-distribution?startDate=&endDate=&raffleId=`
+
+Returns `data[]` of `{ name, value, tickets, entries, revenue, percentage }`
+grouped by `selected_option_name`/`selected_option_value` (paid tickets only),
+plus `totalTickets`, `totalEntries`, `totalRevenue`. `percentage` is the share
+of total entries for that option.
+
 ### 8. Revenue Report
 
 **GET** `/api/v1/reports/revenue?startDate=&endDate=&groupBy=day|week|month&raffleId=`

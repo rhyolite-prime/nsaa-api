@@ -21,6 +21,10 @@ namespace raffle::services {
         // Paginated ticket sales report.
         drogon::Task<dto::BaseApiResponse> getTicketSalesReport(const std::string &startDate, const std::string &endDate, const std::string &raffleId, const std::string &paymentStatus, const std::string &query, int pageNo, int pageSize);
 
+        // Ticket distribution grouped by selected option (name/value) with
+        // ticket counts, entry quantities, revenue and percentage share.
+        drogon::Task<dto::BaseApiResponse> getTicketDistribution(const std::string &startDate, const std::string &endDate, const std::string &raffleId);
+
         // Revenue grouped by day | week | month.
         drogon::Task<dto::BaseApiResponse> getRevenueReport(const std::string &startDate, const std::string &endDate, const std::string &groupBy, const std::string &raffleId);
 

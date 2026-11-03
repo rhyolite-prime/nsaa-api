@@ -17,6 +17,7 @@ public:
 
   Task<HttpResponsePtr> getSummary(HttpRequestPtr req);
   Task<HttpResponsePtr> getTicketSalesReport(HttpRequestPtr req);
+  Task<HttpResponsePtr> getTicketDistribution(HttpRequestPtr req);
   Task<HttpResponsePtr> getRevenueReport(HttpRequestPtr req);
   Task<HttpResponsePtr> getWinnersReport(HttpRequestPtr req);
   Task<HttpResponsePtr> getCustomerReport(HttpRequestPtr req);
