@@ -1,8 +1,10 @@
 #include "TicketsController.h"
 
+#include "constants/ErrorCodes.h"
 #include "dto/BaseApiResponse.h"
 #include "dto/CreateTicketDto.h"
 #include "plugins/RaffleServicePlugin.h"
+#include "utils/TicketDateFilter.h"
 
 Task<HttpResponsePtr> TicketsController::getAll(HttpRequestPtr req) {
   int pageNo = 1;
@@ -33,10 +35,24 @@ Task<HttpResponsePtr> TicketsController::getAll(HttpRequestPtr req) {
     raffleId = "";
   }
 
+  const std::string startDate = req->getParameter("startDate");
+  const std::string endDate = req->getParameter("endDate");
+  if (!raffle::utils::isValidTicketDate(startDate) ||
+      !raffle::utils::isValidTicketDate(endDate)) {
+    raffle::dto::BaseApiResponse response;
+    response.success = false;
+    response.error["code"] = raffle::constants::ERR_VALIDATION;
+    response.error["message"] = "Invalid date parameter. Use ISO format YYYY-MM-DD.";
+    auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
+    resp->setStatusCode(k400BadRequest);
+    co_return resp;
+  }
+
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &ticketService = plugin->getTicketService();
 
-  auto result = co_await ticketService.getAll(pageNo, pageSize, query, raffleId, status);
+  auto result = co_await ticketService.getAll(pageNo, pageSize, query, raffleId, status,
+                                              startDate, endDate);
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 }

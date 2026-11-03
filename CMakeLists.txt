@@ -192,4 +192,5 @@ target_sources(${PROJECT_NAME}
 
 target_compile_options(${PROJECT_NAME} PRIVATE "-include" "${CMAKE_CURRENT_SOURCE_DIR}/utils/codecvt_helper.h" "-Wno-deprecated-declarations")
 
+enable_testing()
 add_subdirectory(test)
