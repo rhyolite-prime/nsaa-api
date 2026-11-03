@@ -1537,6 +1537,23 @@ grouped by `selected_option_name`/`selected_option_value` (paid tickets only),
 plus `totalTickets`, `totalEntries`, `totalRevenue`. `percentage` is the share
 of total entries for that option.
 
+### 7c. Draw Statistics (draw_statistics shape)
+
+**GET** `/api/v1/reports/draw-statistics?startDate=&endDate=&raffleId=&pageNo=&pageSize=`
+
+Paginated per-draw rows with snake_case keys: `id`, `draw_code`, `draw_date`,
+`status`, `winning_colour`, `total_entries`, `total_revenue`, `total_liability`,
+`unique_participants`, `winning_option_entries`, `total_winners`,
+`ultimate_winners`, `tier2_winners`, `tier3_winners`, `cashback_recipients`.
+
+### 7d. Customer Participation (customer_participation shape)
+
+**GET** `/api/v1/reports/customer-participation?startDate=&endDate=&query=&pageNo=&pageSize=`
+
+Paginated rows with snake_case keys: `id`, `msisdn`, `customer_name`,
+`draws_participated`, `total_tickets`, `total_spent`, `times_won`, `total_won`,
+`cashbacks_received`, `total_cashback`.
+
 ### 8. Revenue Report
 
 **GET** `/api/v1/reports/revenue?startDate=&endDate=&groupBy=day|week|month&raffleId=`
