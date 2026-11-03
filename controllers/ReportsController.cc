@@ -87,6 +87,22 @@ Task<HttpResponsePtr> ReportsController::getTicketSalesReport(HttpRequestPtr req
   co_return resp;
 }
 
+Task<HttpResponsePtr>
+ReportsController::getTicketDistribution(HttpRequestPtr req) {
+  bool ok = true;
+  auto errResp = co_await validateDates(req, ok);
+  if (!ok)
+    co_return errResp;
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &reportService = plugin->getReportService();
+
+  auto result = co_await reportService.getTicketDistribution(
+      param(req, "startDate"), param(req, "endDate"), param(req, "raffleId"));
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
+
 Task<HttpResponsePtr> ReportsController::getRevenueReport(HttpRequestPtr req) {
   bool ok = true;
   auto errResp = co_await validateDates(req, ok);
