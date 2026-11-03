@@ -1466,3 +1466,109 @@ Common error responses:
   "message": "Unauthorized"
 }
 ```
+---
+
+# 📊 Dashboard & Reporting Endpoints
+
+All endpoints below are `GET` and return the standard `BaseApiResponse` envelope
+(`result`, `success`, `message`, `error`). Date filters accept ISO dates
+(`YYYY-MM-DD`); `startDate` is inclusive, `endDate` covers the whole day.
+
+## Dashboard (feeds the UI index/dashboard page)
+
+### 1. Dashboard Overview — KPI cards
+
+**GET** `/api/v1/dashboard/overview?startDate=&endDate=`
+
+Returns `totalRevenue`, `activeEntries`, `totalWinners`, `pendingPayouts` plus
+period-over-period `revenueChange`/`revenueTrend` (and the same for entries,
+winners, pending payouts), and totals for customers, raffles and draws.
+
+### 2. Colour / Entry Breakdown
+
+**GET** `/api/v1/dashboard/colour-breakdown?startDate=&endDate=&raffleId=`
+
+Returns `data[]` of `{ name, count, revenue, hexColor, emoji }` and
+`totalEntries`.
+
+### 3. Draw Statistics Ledger
+
+**GET** `/api/v1/dashboard/draw-stats?startDate=&endDate=&raffleId=&pageNo=&pageSize=`
+
+Paginated per-draw stats: `drawCode`, `drawDate`, `status`, `winningColour`,
+`entries`, `totalPool`, `totalPrizes`, `uniqueParticipants`,
+`winningColourEntries`, `totalWinners`, `ultimateWinners`, `tier2Winners`,
+`tier3Winners`, `cashbackRecipients`.
+
+### 4. Top Participants
+
+**GET** `/api/v1/dashboard/top-participants?startDate=&endDate=&limit=`
+
+Returns `data[]` of `{ msisdn, customerName, drawsParticipated, totalTickets,
+totalSpent, timesWon, totalWon, cashbacksReceived }` ordered by total tickets.
+
+### 5. Revenue Trend
+
+**GET** `/api/v1/dashboard/revenue-trend?startDate=&endDate=&interval=day|week|month&raffleId=`
+
+Time series of `{ period, revenue, tickets, participants }`.
+
+## Reports
+
+### 6. Report Summary
+
+**GET** `/api/v1/reports/summary?startDate=&endDate=`
+
+Aggregate counts: tickets (total/paid/pending, revenue, quantity), winners,
+pending payouts, customers, raffles, draws.
+
+### 7. Ticket Sales Report
+
+**GET** `/api/v1/reports/tickets?startDate=&endDate=&raffleId=&paymentStatus=&query=&pageNo=&pageSize=`
+
+Paginated ticket rows with status labels and `totalRevenue` for the page.
+
+### 7b. Ticket Distribution by Selected Option
+
+**GET** `/api/v1/reports/ticket-distribution?startDate=&endDate=&raffleId=`
+
+Returns `data[]` of `{ name, value, tickets, entries, revenue, percentage }`
+grouped by `selected_option_name`/`selected_option_value` (paid tickets only),
+plus `totalTickets`, `totalEntries`, `totalRevenue`. `percentage` is the share
+of total entries for that option.
+
+### 7c. Draw Statistics (draw_statistics shape)
+
+**GET** `/api/v1/reports/draw-statistics?startDate=&endDate=&raffleId=&pageNo=&pageSize=`
+
+Paginated per-draw rows with snake_case keys: `id`, `draw_code`, `draw_date`,
+`status`, `winning_colour`, `total_entries`, `total_revenue`, `total_liability`,
+`unique_participants`, `winning_option_entries`, `total_winners`,
+`ultimate_winners`, `tier2_winners`, `tier3_winners`, `cashback_recipients`.
+
+### 7d. Customer Participation (customer_participation shape)
+
+**GET** `/api/v1/reports/customer-participation?startDate=&endDate=&query=&pageNo=&pageSize=`
+
+Paginated rows with snake_case keys: `id`, `msisdn`, `customer_name`,
+`draws_participated`, `total_tickets`, `total_spent`, `times_won`, `total_won`,
+`cashbacks_received`, `total_cashback`.
+
+### 8. Revenue Report
+
+**GET** `/api/v1/reports/revenue?startDate=&endDate=&groupBy=day|week|month&raffleId=`
+
+Revenue grouped by period with tickets, entries and unique participants.
+
+### 9. Winners Report
+
+**GET** `/api/v1/reports/winners?startDate=&endDate=&drawId=&status=&query=&pageNo=&pageSize=`
+
+Paginated winners joined with customer and draw info, with payout details and
+status labels.
+
+### 10. Customer Report
+
+**GET** `/api/v1/reports/customers?startDate=&endDate=&query=&isActive=&pageNo=&pageSize=`
+
+Paginated customer activity with spend/win totals.
