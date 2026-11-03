@@ -405,7 +405,7 @@ drogon::Task<dto::BaseApiResponse> DashboardService::getDrawStats(
         "AND ($2 = '' OR d.draw_date < (NULLIF($2,'')::date + interval '1 day')) "
         "AND ($3 = '' OR d.raffle_id = NULLIF($3,'')::uuid) "
         "ORDER BY d.draw_date DESC LIMIT $4 OFFSET $5",
-        startDate, endDate, raffleId, pageSize, offset);
+        startDate, endDate, raffleId, (long long)pageSize, (long long)offset);
 
     for (const auto &row : rows) {
       Json::Value item;
@@ -481,7 +481,7 @@ drogon::Task<dto::BaseApiResponse> DashboardService::getTopParticipants(
         "c.number_of_wins, c.total_won "
         "ORDER BY total_tickets DESC, total_spent DESC "
         "LIMIT $3",
-        startDate, endDate, limit);
+        startDate, endDate, (long long)limit);
 
     Json::Value data = Json::arrayValue;
     for (const auto &row : rows) {

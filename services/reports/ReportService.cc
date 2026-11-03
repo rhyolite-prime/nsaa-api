@@ -212,7 +212,7 @@ drogon::Task<dto::BaseApiResponse> ReportService::getTicketSalesReport(
         "AND ($5 = '' OR t.ticket_number ILIKE '%' || $5 || '%' "
         "OR t.customer_phone ILIKE '%' || $5 || '%') "
         "ORDER BY t.created_at DESC LIMIT $6 OFFSET $7",
-        startDate, endDate, raffleId, paymentStatus, query, pageSize, offset);
+        startDate, endDate, raffleId, paymentStatus, query, (long long)pageSize, (long long)offset);
 
     double totalRevenue = 0.0;
     for (const auto &row : rows) {
@@ -397,7 +397,7 @@ drogon::Task<dto::BaseApiResponse> ReportService::getWinnersReport(
         "OR c.msisdn ILIKE '%' || $5 || '%' "
         "OR w.prize_description ILIKE '%' || $5 || '%') "
         "ORDER BY w.created_at DESC LIMIT $6 OFFSET $7",
-        startDate, endDate, drawId, status, query, pageSize, offset);
+        startDate, endDate, drawId, status, query, (long long)pageSize, (long long)offset);
 
     for (const auto &row : rows) {
       Json::Value item;
@@ -507,7 +507,7 @@ drogon::Task<dto::BaseApiResponse> ReportService::getCustomerReport(
         "OR c.email ILIKE '%' || $3 || '%') "
         "AND ($4 = '' OR c.is_active = NULLIF($4,'')::boolean) "
         "ORDER BY c.created_at DESC LIMIT $5 OFFSET $6",
-        startDate, endDate, query, isActive, pageSize, offset);
+        startDate, endDate, query, isActive, (long long)pageSize, (long long)offset);
 
     for (const auto &row : rows) {
       Json::Value item;
