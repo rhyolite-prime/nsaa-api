@@ -103,6 +103,47 @@ ReportsController::getTicketDistribution(HttpRequestPtr req) {
   co_return resp;
 }
 
+Task<HttpResponsePtr> ReportsController::getDrawStatistics(HttpRequestPtr req) {
+  bool ok = true;
+  auto errResp = co_await validateDates(req, ok);
+  if (!ok)
+    co_return errResp;
+
+  int pageNo = intParam(req, "pageNo", 1);
+  int pageSize = intParam(req, "pageSize", 10);
+  sanitizePaging(pageNo, pageSize);
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &reportService = plugin->getReportService();
+
+  auto result = co_await reportService.getDrawStatistics(
+      param(req, "startDate"), param(req, "endDate"), param(req, "raffleId"),
+      pageNo, pageSize);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
+
+Task<HttpResponsePtr>
+ReportsController::getCustomerParticipation(HttpRequestPtr req) {
+  bool ok = true;
+  auto errResp = co_await validateDates(req, ok);
+  if (!ok)
+    co_return errResp;
+
+  int pageNo = intParam(req, "pageNo", 1);
+  int pageSize = intParam(req, "pageSize", 10);
+  sanitizePaging(pageNo, pageSize);
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &reportService = plugin->getReportService();
+
+  auto result = co_await reportService.getCustomerParticipation(
+      param(req, "startDate"), param(req, "endDate"), param(req, "query"),
+      pageNo, pageSize);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+}
+
 Task<HttpResponsePtr> ReportsController::getRevenueReport(HttpRequestPtr req) {
   bool ok = true;
   auto errResp = co_await validateDates(req, ok);

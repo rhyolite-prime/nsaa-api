@@ -25,6 +25,12 @@ namespace raffle::services {
         // ticket counts, entry quantities, revenue and percentage share.
         drogon::Task<dto::BaseApiResponse> getTicketDistribution(const std::string &startDate, const std::string &endDate, const std::string &raffleId);
 
+        // Per-draw statistics ledger (mirrors the draw_statistics view shape).
+        drogon::Task<dto::BaseApiResponse> getDrawStatistics(const std::string &startDate, const std::string &endDate, const std::string &raffleId, int pageNo, int pageSize);
+
+        // Customer participation ledger (mirrors the customer_participation view shape).
+        drogon::Task<dto::BaseApiResponse> getCustomerParticipation(const std::string &startDate, const std::string &endDate, const std::string &query, int pageNo, int pageSize);
+
         // Revenue grouped by day | week | month.
         drogon::Task<dto::BaseApiResponse> getRevenueReport(const std::string &startDate, const std::string &endDate, const std::string &groupBy, const std::string &raffleId);
 
