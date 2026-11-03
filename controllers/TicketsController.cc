@@ -23,6 +23,11 @@ Task<HttpResponsePtr> TicketsController::getAll(HttpRequestPtr req) {
     query = "";
   }
 
+  std::string status = req->getParameter("status");
+  if (status.empty()) {
+    status = "";
+  }
+
   std::string raffleId = req->getParameter("raffleId");
   if (raffleId.empty()) {
     raffleId = "";
