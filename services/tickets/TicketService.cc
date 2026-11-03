@@ -14,6 +14,7 @@
 #include "dto/CreateTicketDto.h"
 #include "dto/WebCheckoutDto.h"
 #include "utils/IdGeneratorUtils.h"
+#include "utils/TicketDateFilter.h"
 #include <algorithm>
 #include <drogon/orm/CoroMapper.h>
 #include <drogon/orm/DbClient.h>
@@ -31,24 +32,51 @@ using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
 
-drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query, const std::string &raffleId, const std::string &status) {
+drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query, const std::string &raffleId, const std::string &status, const std::string &startDate, const std::string &endDate) {
+
+  if (!utils::isValidTicketDate(startDate) || !utils::isValidTicketDate(endDate)) {
+    dto::BaseApiResponse response;
+    response.success = false;
+    response.error["code"] = constants::ERR_VALIDATION;
+    response.error["message"] = "Invalid date parameter. Use ISO format YYYY-MM-DD.";
+    co_return response;
+  }
 
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Tickets> mapper(dbClient);
 
   Criteria searchCriteria;
+  bool criteriaSet = false;
+  auto addCriteria = [&](const Criteria &criteria) {
+    if (criteriaSet)
+      searchCriteria = searchCriteria && criteria;
+    else {
+      searchCriteria = criteria;
+      criteriaSet = true;
+    }
+  };
+
   if (!query.empty()) {
     std::string likeQuery = "%" + query + "%";
-    searchCriteria = Criteria(Tickets::Cols::_customer_phone,  CompareOperator::Like, likeQuery) || Criteria(Tickets::Cols::_ticket_number, CompareOperator::Like, likeQuery);
+    addCriteria(Criteria(Tickets::Cols::_customer_phone, CompareOperator::Like, likeQuery) ||
+                Criteria(Tickets::Cols::_ticket_number, CompareOperator::Like, likeQuery));
   }
 
   if (!raffleId.empty()) {
-    searchCriteria =
-        Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ, raffleId);
+    addCriteria(Criteria(Tickets::Cols::_raffle_id, CompareOperator::EQ, raffleId));
   }
 
   if (!status.empty()) {
-    searchCriteria = Criteria(Tickets::Cols::_payment_status, CompareOperator::EQ, std::stoi(status));
+    addCriteria(Criteria(Tickets::Cols::_payment_status, CompareOperator::EQ, std::stoi(status)));
+  }
+
+  if (!startDate.empty()) {
+    addCriteria(Criteria(Tickets::Cols::_created_at, CompareOperator::GE,
+                         utils::ticketDateStart(startDate)));
+  }
+  if (!endDate.empty()) {
+    addCriteria(Criteria(Tickets::Cols::_created_at, CompareOperator::LE,
+                         utils::ticketDateEnd(endDate)));
   }
 
   try {

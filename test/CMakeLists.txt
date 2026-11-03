@@ -12,3 +12,6 @@ add_executable(${PROJECT_NAME} test_main.cc)
 target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
 
 ParseAndAddDrogonTests(${PROJECT_NAME})
+
+add_executable(ticket_date_filter_test ticket_date_filter_test.cc)
+add_test(NAME ticket_date_filter_test COMMAND ticket_date_filter_test)

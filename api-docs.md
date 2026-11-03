@@ -1572,3 +1572,13 @@ status labels.
 **GET** `/api/v1/reports/customers?startDate=&endDate=&query=&isActive=&pageNo=&pageSize=`
 
 Paginated customer activity with spend/win totals.
+
+## List Tickets
+
+**GET** `/api/v1/ticket/get-all?pageNo=&pageSize=&query=&raffleId=&status=&startDate=&endDate=`
+
+All query parameters are optional. `startDate` and `endDate` are calendar dates
+in `YYYY-MM-DD` format and filter tickets by `createdAt`. Both bounds are
+inclusive; `endDate` includes the entire day. Either bound can be used alone,
+and date filters are combined with the other supplied filters. Invalid dates
+return `400 Bad Request`.
