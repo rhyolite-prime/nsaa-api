@@ -70,10 +70,10 @@ ReportService::getSummary(const std::string &startDate,
 
   try {
     auto ticketRows = co_await dbClient->execSqlCoro(
-        "SELECT COUNT(*) AS total_tickets, "
-        "COUNT(*) FILTER (WHERE payment_status = 1) AS paid_tickets, "
-        "COUNT(*) FILTER (WHERE payment_status = 0) AS pending_tickets, "
-        "COALESCE(SUM(total_amount::numeric), 0) AS total_revenue, "
+        "SELECT COALESCE(SUM(quantity), 0) AS total_tickets, "
+        "COALESCE(SUM(quantity) FILTER (WHERE is_active = true), 0) AS paid_tickets, "
+        "COALESCE(SUM(quantity) FILTER (WHERE is_active = false), 0) AS pending_tickets, "
+        "COALESCE(SUM(total_amount::numeric) FILTER (WHERE is_active = true), 0) AS total_revenue, "
         "COALESCE(SUM(quantity), 0) AS total_quantity "
         "FROM tickets "
         "WHERE ($1 = '' OR created_at >= NULLIF($1,'')::timestamp) "
