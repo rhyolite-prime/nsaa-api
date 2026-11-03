@@ -11,6 +11,8 @@ public:
     ADD_METHOD_TO(ReportsController::getSummary, std::string(PREFIX) + "summary", Get, Options);
     ADD_METHOD_TO(ReportsController::getTicketSalesReport, std::string(PREFIX) + "tickets", Get, Options);
     ADD_METHOD_TO(ReportsController::getTicketDistribution, std::string(PREFIX) + "ticket-distribution", Get, Options);
+    ADD_METHOD_TO(ReportsController::getDrawStatistics, std::string(PREFIX) + "draw-statistics", Get, Options);
+    ADD_METHOD_TO(ReportsController::getCustomerParticipation, std::string(PREFIX) + "customer-participation", Get, Options);
     ADD_METHOD_TO(ReportsController::getRevenueReport, std::string(PREFIX) + "revenue", Get, Options);
     ADD_METHOD_TO(ReportsController::getWinnersReport, std::string(PREFIX) + "winners", Get, Options);
     ADD_METHOD_TO(ReportsController::getCustomerReport, std::string(PREFIX) + "customers", Get, Options);
