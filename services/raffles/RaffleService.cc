@@ -2185,8 +2185,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getWeeklyRaffleSchedule() {
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-RaffleService::getRaffleSummary(const std::string &raffleId) {
+drogon::Task<dto::BaseApiResponse> RaffleService::getRaffleSummary(const std::string &raffleId) {
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<Raffles> raffleMapper(dbClient);
 
@@ -2360,6 +2359,11 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getRaffleStats(const std::stri
     errorResponse.error["detail"] = e.what();
     co_return errorResponse;
   }
+}
+
+
+ drogon::Task<dto::BaseApiResponse> RaffleService::getPricesFromAllActiveRaffles() {
+
 }
 
 } // namespace raffle::services
