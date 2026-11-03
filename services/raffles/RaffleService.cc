@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <ctime>
 #include <random>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -2362,8 +2363,56 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getRaffleStats(const std::stri
 }
 
 
- drogon::Task<dto::BaseApiResponse> RaffleService::getPricesFromAllActiveRaffles() {
+drogon::Task<dto::BaseApiResponse> RaffleService::getPricesFromAllActiveRaffles() {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Raffles> mapper(dbClient);
 
+  try {
+    auto raffles = co_await mapper.findBy(
+        Criteria(Raffles::Cols::_status, CompareOperator::EQ,
+                 constants::RaffleStatus::ACTIVE));
+
+    Json::Value data(Json::arrayValue);
+    for (const auto &raffle : raffles) {
+      const std::string &prizeText = raffle.getValueOfPrizeConfig();
+      if (prizeText.empty()) {
+        continue;
+      }
+
+      Json::Value prizes;
+      Json::CharReaderBuilder readerBuilder;
+      std::string errors;
+      std::istringstream stream(prizeText);
+      if (Json::parseFromStream(readerBuilder, stream, &prizes, &errors) &&
+          prizes.isArray()) {
+        for (const auto &prize : prizes) {
+          data.append(prize);
+        }
+      } else {
+        LOG_ERROR << "Invalid prize configuration for raffle "
+                  << raffle.getValueOfId() << ": " << errors;
+      }
+    }
+
+    dto::BaseApiResponse response;
+    response.success = true;
+    response.result["data"] = data;
+    co_return response;
+  } catch (const DrogonDbException &e) {
+    dto::BaseApiResponse response;
+    response.success = false;
+    response.error["code"] = constants::ERR_DB_QUERY;
+    response.error["message"] = "Database error while fetching active raffle prizes.";
+    response.error["detail"] = e.base().what();
+    co_return response;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse response;
+    response.success = false;
+    response.error["code"] = constants::ERR_INTERNAL;
+    response.error["message"] = "Internal error.";
+    response.error["detail"] = e.what();
+    co_return response;
+  }
 }
 
 } // namespace raffle::services
