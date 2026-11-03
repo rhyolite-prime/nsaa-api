@@ -2368,9 +2368,7 @@ drogon::Task<dto::BaseApiResponse> RaffleService::getPricesFromAllActiveRaffles(
   CoroMapper<Raffles> mapper(dbClient);
 
   try {
-    auto raffles = co_await mapper.findBy(
-        Criteria(Raffles::Cols::_status, CompareOperator::EQ,
-                 constants::RaffleStatus::ACTIVE));
+    auto raffles = co_await mapper.findBy(Criteria(Raffles::Cols::_status, CompareOperator::EQ, constants::RaffleStatus::ACTIVE));
 
     Json::Value data(Json::arrayValue);
     for (const auto &raffle : raffles) {
