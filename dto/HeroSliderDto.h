@@ -13,7 +13,21 @@ namespace raffle::dto {
     public:
         HeroSliderDto() = default;
 
+        /**
+         * @brief Populates the dto from a json body.
+         * Every field present in the json body is flagged as "provided" so that
+         * partial updates can tell an omitted field from an empty one.
+         */
         void fromJson(const Json::Value& json);
+
+        // Presence flags (true when the field was supplied by the client)
+        [[nodiscard]] bool hasHeadline() const { return has_headline_; }
+        [[nodiscard]] bool hasCopy() const { return has_copy_; }
+        [[nodiscard]] bool hasImageUrl() const { return has_image_url_; }
+        [[nodiscard]] bool hasCtaPrimary() const { return has_cta_primary_; }
+        [[nodiscard]] bool hasCtaSecondary() const { return has_cta_secondary_; }
+        [[nodiscard]] bool hasDisplayOrder() const { return has_display_order_; }
+        [[nodiscard]] bool hasIsActive() const { return has_is_active_; }
 
         // Getters
         [[nodiscard]] const std::string& getHeadline() const { return headline_; }
@@ -25,13 +39,13 @@ namespace raffle::dto {
         [[nodiscard]] bool isActive() const { return is_active_; }
 
         // Setters
-        void setHeadline(const std::string& value) { headline_ = value; }
-        void setCopy(const std::string& value) { copy_ = value; }
-        void setImageUrl(const std::string& value) { image_url_ = value; }
-        void setCtaPrimary(const std::string& value) { cta_primary_ = value; }
-        void setCtaSecondary(const std::string& value) { cta_secondary_ = value; }
-        void setDisplayOrder(int value) { display_order_ = value; }
-        void setIsActive(bool value) { is_active_ = value; }
+        void setHeadline(const std::string& value) { headline_ = value; has_headline_ = true; }
+        void setCopy(const std::string& value) { copy_ = value; has_copy_ = true; }
+        void setImageUrl(const std::string& value) { image_url_ = value; has_image_url_ = true; }
+        void setCtaPrimary(const std::string& value) { cta_primary_ = value; has_cta_primary_ = true; }
+        void setCtaSecondary(const std::string& value) { cta_secondary_ = value; has_cta_secondary_ = true; }
+        void setDisplayOrder(int value) { display_order_ = value; has_display_order_ = true; }
+        void setIsActive(bool value) { is_active_ = value; has_is_active_ = true; }
 
     private:
 
@@ -43,36 +57,44 @@ namespace raffle::dto {
         int display_order_ = 0;
         bool is_active_ = true;
 
+        bool has_headline_ = false;
+        bool has_copy_ = false;
+        bool has_image_url_ = false;
+        bool has_cta_primary_ = false;
+        bool has_cta_secondary_ = false;
+        bool has_display_order_ = false;
+        bool has_is_active_ = false;
+
     };
 
     inline void HeroSliderDto::fromJson(const Json::Value& json) {
 
         if (json.isMember("headline") && !json["headline"].isNull()) {
-            headline_ = json["headline"].asString();
+            setHeadline(json["headline"].asString());
         }
 
         if (json.isMember("copy") && !json["copy"].isNull()) {
-            copy_ = json["copy"].asString();
+            setCopy(json["copy"].asString());
         }
 
         if (json.isMember("imageUrl") && !json["imageUrl"].isNull()) {
-            image_url_ = json["imageUrl"].asString();
+            setImageUrl(json["imageUrl"].asString());
         }
 
         if (json.isMember("ctaPrimary") && !json["ctaPrimary"].isNull()) {
-            cta_primary_ = json["ctaPrimary"].asString();
+            setCtaPrimary(json["ctaPrimary"].asString());
         }
 
         if (json.isMember("ctaSecondary") && !json["ctaSecondary"].isNull()) {
-            cta_secondary_ = json["ctaSecondary"].asString();
+            setCtaSecondary(json["ctaSecondary"].asString());
         }
 
         if (json.isMember("displayOrder") && !json["displayOrder"].isNull()) {
-            display_order_ = json["displayOrder"].asInt();
+            setDisplayOrder(json["displayOrder"].asInt());
         }
 
         if (json.isMember("isActive") && !json["isActive"].isNull()) {
-            is_active_ = json["isActive"].asBool();
+            setIsActive(json["isActive"].asBool());
         }
 
     }

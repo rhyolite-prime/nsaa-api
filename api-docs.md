@@ -135,6 +135,120 @@ Fetches hero section slides for the frontend.
 
 ---
 
+## 4b. Create Hero Slide (Admin)
+
+**POST** `/api/v1/cms/hero-sliders/create`
+
+### Description
+
+Creates a hero slide. The slide image is sent as a file and is uploaded to
+Cloudinary by the API; the returned secure url is stored on the slide, so the
+request **must not** contain an `imageUrl` field.
+
+### Request Body
+
+`multipart/form-data`
+
+| Field          | Type   | Required | Description                                                        |
+| -------------- | ------ | -------- | ------------------------------------------------------------------ |
+| `image`        | file   | ✅ Yes   | Slide image (`png`, `jpg`, `gif`, `bmp`, `webp`, `svg`); max 5MB     |
+| `headline`     | string | ✅ Yes   | Slide headline                                                      |
+| `copy`         | string | ❌ No    | Supporting copy                                                     |
+| `ctaPrimary`   | string | ❌ No    | Primary call to action label/value                                  |
+| `ctaSecondary` | string | ❌ No    | Secondary call to action label/value                                |
+| `displayOrder` | int    | ❌ No    | Order of the slide, defaults to `0`                                 |
+| `isActive`     | bool   | ❌ No    | `true`/`false` (also accepts `1`/`0`), defaults to `true`           |
+
+### Example Request
+
+```
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/hero-sliders/create' \
+  --form 'image=@/path/to/hero.png' \
+  --form 'headline=Play and win big' \
+  --form 'copy=Buy a ticket today' \
+  --form 'ctaPrimary=Buy now' \
+  --form 'displayOrder=1' \
+  --form 'isActive=true'
+```
+
+### Response
+
+```json
+{
+  "error": null,
+  "message": "Hero slide created successfully",
+  "result": { "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7" },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+### Response Codes
+
+* `201 Created` – Slide created, image uploaded to Cloudinary
+* `400 Bad Request` – Missing image/headline, unsupported image or invalid field
+* `502 Bad Gateway` – The image could not be uploaded to Cloudinary
+* `500 Internal Server Error` – Database or server error
+
+---
+
+## 4c. Update Hero Slide (Admin)
+
+**PUT** `/api/v1/cms/hero-sliders/update/{id}`
+
+### Description
+
+Updates a hero slide. Every field is optional and only the supplied fields are
+changed. When an `image` file is sent, it is uploaded to Cloudinary and replaces
+the stored `imageUrl`; when it is omitted the current image is kept.
+
+### Request Body
+
+`multipart/form-data`
+
+| Field          | Type   | Required | Description                                                    |
+| -------------- | ------ | -------- | -------------------------------------------------------------- |
+| `image`        | file   | ❌ No    | New slide image; replaces the stored one when present           |
+| `headline`     | string | ❌ No    | Slide headline (cannot be empty)                                |
+| `copy`         | string | ❌ No    | Supporting copy                                                 |
+| `ctaPrimary`   | string | ❌ No    | Primary call to action label/value                              |
+| `ctaSecondary` | string | ❌ No    | Secondary call to action label/value                            |
+| `displayOrder` | int    | ❌ No    | Order of the slide                                              |
+| `isActive`     | bool   | ❌ No    | `true`/`false` (also accepts `1`/`0`)                           |
+
+A JSON body (`application/json`, same field names, `imageUrl` instead of a file)
+is still accepted for updates that do not change the image.
+
+### Example Request
+
+```
+curl --location --request PUT 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/hero-sliders/update/7c9e6679-7425-40de-944b-e07fc1f90ae7' \
+  --form 'headline=Play and win bigger' \
+  --form 'image=@/path/to/hero-v2.jpg'
+```
+
+### Response
+
+```json
+{
+  "error": null,
+  "message": "Hero slide updated successfully",
+  "result": { "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7" },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+### Response Codes
+
+* `200 OK` – Slide updated
+* `400 Bad Request` – Unsupported image, invalid field value or not multipart/form-data
+* `404 Not Found` – Slide not found
+* `502 Bad Gateway` – The image could not be uploaded to Cloudinary
+* `500 Internal Server Error` – Database or server error
+
+---
+
 ## 5. Get Banners
 
 **GET** `/cms/banners`

@@ -1,6 +1,13 @@
 #include "CmsController.h"
 #include "plugins/RaffleServicePlugin.h"
 #include "constants/ErrorCodes.h"
+#include "services/cloudinary_api/CloudinaryApi.h"
+
+#include <drogon/MultiPart.h>
+
+#include <algorithm>
+#include <cctype>
+#include <optional>
 
 //public
 
@@ -211,27 +218,273 @@ Task<HttpResponsePtr> CmsController::getAllHeroSlides(HttpRequestPtr req) {
 }
 
 
-Task<HttpResponsePtr> CmsController::createHeroSlides(HttpRequestPtr req) {
+namespace {
 
-    auto jsonBody = req->getJsonObject();
+    // Largest image accepted for a hero slide (Cloudinary's free plan allows up to 10MB).
+    constexpr size_t kMaxHeroSlideImageSize = 5 * 1024 * 1024;
 
-    if (!jsonBody) {
+    // Name of the multipart form field that carries the hero slide image.
+    constexpr const char *kHeroSlideImageField = "image";
+
+    // Cloudinary folder the hero slide images are stored in.
+    constexpr const char *kHeroSlideImageFolder = "hero-slides";
+
+    HttpResponsePtr jsonError(const std::string &message,
+                              HttpStatusCode statusCode = k400BadRequest,
+                              int errorCode = raffle::constants::ERR_VALIDATION) {
         raffle::dto::BaseApiResponse response;
         response.success = false;
-        response.error["message"] = "Invalid JSON body";
+        response.message = message;
+        response.error["code"] = errorCode;
+        response.error["message"] = message;
         auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-        resp->setStatusCode(k400BadRequest);
-        co_return resp;
+        resp->setStatusCode(statusCode);
+        return resp;
+    }
+
+    HttpResponsePtr jsonResult(const raffle::dto::BaseApiResponse &result) {
+        auto statusCode = k200OK;
+        if (!result.success) {
+            if (result.error.isMember("code")) {
+                const auto code = result.error["code"].asInt();
+                if (code == raffle::constants::ERR_VALIDATION ||
+                    code == raffle::constants::ERR_MISSING_PARAMETER) {
+                    statusCode = k400BadRequest;
+                } else if (code == raffle::constants::ERR_RESOURCE_NOT_FOUND ||
+                           code == raffle::constants::ERR_DB_NOT_FOUND) {
+                    statusCode = k404NotFound;
+                } else {
+                    statusCode = k500InternalServerError;
+                }
+            } else {
+                statusCode = k500InternalServerError;
+            }
+        }
+        auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+        resp->setStatusCode(statusCode);
+        return resp;
+    }
+
+    /**
+     * @brief Reads a string field of a multipart body.
+     */
+    std::string formField(const MultiPartParser &parser, const std::string &key) {
+        const auto &params = parser.getParameters();
+        auto it = params.find(key);
+        return it == params.end() ? "" : it->second;
+    }
+
+    /**
+     * @brief Tells whether a field was part of the multipart body.
+     */
+    bool formHasField(const MultiPartParser &parser, const std::string &key) {
+        const auto &params = parser.getParameters();
+        return params.find(key) != params.end();
+    }
+
+    /**
+     * @brief Reads an integer field of a multipart body.
+     * @return An empty optional when the field is absent or not a number.
+     */
+    std::optional<int> formIntField(const MultiPartParser &parser, const std::string &key) {
+        auto value = formField(parser, key);
+        if (value.empty()) {
+            return std::nullopt;
+        }
+        try {
+            return std::stoi(value);
+        } catch (const std::exception &) {
+            return std::nullopt;
+        }
+    }
+
+    /**
+     * @brief Reads a boolean field of a multipart body.
+     * Accepts "true"/"false" as well as "1"/"0".
+     * @return An empty optional when the field is absent or not a boolean.
+     */
+    std::optional<bool> formBoolField(const MultiPartParser &parser, const std::string &key) {
+        auto value = formField(parser, key);
+        if (value.empty()) {
+            return std::nullopt;
+        }
+        std::transform(value.begin(), value.end(), value.begin(),
+                       [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+        if (value == "true" || value == "1") {
+            return true;
+        }
+        if (value == "false" || value == "0") {
+            return false;
+        }
+        return std::nullopt;
+    }
+
+    /**
+     * @brief Picks the image out of the uploaded files.
+     *
+     * Whatever the field name used by the client ("image", "file", "imageFile",
+     * ...) the first uploaded file is used, as long as it is an image.
+     */
+    const HttpFile *uploadedImage(const MultiPartParser &parser) {
+
+        const auto &files = parser.getFiles();
+        if (files.empty()) {
+            return nullptr;
+        }
+
+        for (const auto &file : files) {
+            if (file.getItemName() == kHeroSlideImageField) {
+                return &file;
+            }
+        }
+
+        return &files.front();
+    }
+
+    bool isSupportedImage(const HttpFile &file) {
+
+        if (file.fileLength() == 0 || file.fileData() == nullptr) {
+            return false;
+        }
+
+        if (file.getFileType() == FT_IMAGE) {
+            return true;
+        }
+
+        // The file name is not always reliable (a browser may send a generic
+        // name), so fall back to the extension and then to the mime type.
+        static const std::vector<std::string> extensions = {
+            "png", "jpg", "jpeg", "gif", "bmp", "webp", "svg", "tif", "tiff", "avif"};
+
+        std::string extension(file.getFileExtension());
+        std::transform(extension.begin(), extension.end(), extension.begin(),
+                       [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+        if (std::find(extensions.begin(), extensions.end(), extension) != extensions.end()) {
+            return true;
+        }
+
+        return !raffle::services::CloudinaryApi::mimeTypeForFile(file.getFileName()).empty();
+    }
+
+    /**
+     * @brief Outcome of uploading the image that comes with a hero slide form.
+     */
+    struct ImageUploadResult {
+        bool provided = false;   // a file was part of the form
+        bool success = false;    // the file was uploaded to cloudinary
+        std::string url;         // cloudinary secure url when successful
+        std::string errorMessage;
+        HttpStatusCode errorStatus = k400BadRequest;
+        int errorCode = raffle::constants::ERR_VALIDATION;
+    };
+
+    /**
+     * @brief Uploads the image of a hero slide form to cloudinary.
+     *
+     * The image is optional here, callers decide whether it is required.
+     */
+    drogon::Task<ImageUploadResult> uploadHeroSlideImage(const MultiPartParser &parser,
+                                                        raffle::services::CloudinaryApi &cloudinaryApi) {
+
+        ImageUploadResult upload;
+
+        const auto *image = uploadedImage(parser);
+        if (image == nullptr) {
+            co_return upload;
+        }
+
+        upload.provided = true;
+
+        if (!isSupportedImage(*image)) {
+            upload.errorMessage = "The uploaded file is not a supported image (png, jpg, gif, bmp, webp or svg).";
+            co_return upload;
+        }
+
+        if (image->fileLength() > kMaxHeroSlideImageSize) {
+            upload.errorMessage = "The image is too large. The maximum allowed size is 5MB.";
+            co_return upload;
+        }
+
+        std::string fileName = image->getFileName().empty() ? "hero-slide" : image->getFileName();
+        std::string contentType = raffle::services::CloudinaryApi::mimeTypeForFile(fileName);
+        if (contentType.empty()) {
+            contentType = raffle::services::CloudinaryApi::mimeTypeForFile(std::string(image->getFileExtension()));
+        }
+
+        auto imageUrl = co_await cloudinaryApi.uploadFile(image->fileData(),
+                                                         image->fileLength(),
+                                                         fileName,
+                                                         contentType,
+                                                         kHeroSlideImageFolder);
+
+        if (!imageUrl.has_value() || imageUrl->empty()) {
+            upload.errorMessage = "Failed to upload the image, please try again.";
+            upload.errorStatus = k502BadGateway;
+            upload.errorCode = raffle::constants::ERR_INTERNAL;
+            co_return upload;
+        }
+
+        upload.success = true;
+        upload.url = *imageUrl;
+        co_return upload;
+    }
+
+}
+
+Task<HttpResponsePtr> CmsController::createHeroSlides(HttpRequestPtr req) {
+
+    MultiPartParser parser;
+    if (parser.parse(req) != 0) {
+        co_return jsonError("The request must be sent as multipart/form-data with the slide fields and the image file.");
     }
 
     raffle::dto::HeroSliderDto dto;
-    dto.fromJson(*jsonBody);
+    dto.setHeadline(formField(parser, "headline"));
+    dto.setCopy(formField(parser, "copy"));
+    dto.setCtaPrimary(formField(parser, "ctaPrimary"));
+    dto.setCtaSecondary(formField(parser, "ctaSecondary"));
+
+    // validate the text fields before spending an upload on cloudinary
+    if (dto.getHeadline().empty()) {
+        co_return jsonError("Headline is required to create a hero slide.");
+    }
+
+    if (auto displayOrder = formIntField(parser, "displayOrder"); displayOrder.has_value()) {
+        dto.setDisplayOrder(*displayOrder);
+    } else if (!formField(parser, "displayOrder").empty()) {
+        co_return jsonError("displayOrder must be a number.");
+    }
+
+    if (auto isActive = formBoolField(parser, "isActive"); isActive.has_value()) {
+        dto.setIsActive(*isActive);
+    } else if (!formField(parser, "isActive").empty()) {
+        co_return jsonError("isActive must be either true or false.");
+    }
 
     auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &heroSliderService = plugin->getHeroSliderService();
 
-    auto result = co_await heroSliderService.create(dto);
+    // the image goes to cloudinary, the returned url is what we persist
+    auto upload = co_await uploadHeroSlideImage(parser, plugin->getCloudinaryApi());
+
+    if (!upload.provided) {
+        co_return jsonError("An image file is required to create a hero slide.");
+    }
+
+    if (!upload.success) {
+        co_return jsonError(upload.errorMessage, upload.errorStatus, upload.errorCode);
+    }
+
+    dto.setImageUrl(upload.url);
+
+    auto result = co_await plugin->getHeroSliderService().create(dto);
+
+    if (!result.success) {
+        co_return jsonResult(result);
+    }
+
     auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    resp->setStatusCode(k201Created);
     co_return resp;
 
 }
@@ -239,26 +492,77 @@ Task<HttpResponsePtr> CmsController::createHeroSlides(HttpRequestPtr req) {
 
 Task<HttpResponsePtr> CmsController::updateHeroSlides(HttpRequestPtr req, std::string id) {
 
-    auto jsonBody = req->getJsonObject();
+    if (id.empty()) {
+        co_return jsonError("Hero slide id is required.");
+    }
 
-    if (!jsonBody) {
-        raffle::dto::BaseApiResponse response;
-        response.success = false;
-        response.error["message"] = "Invalid JSON body";
-        auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
-        resp->setStatusCode(k400BadRequest);
-        co_return resp;
+    MultiPartParser parser;
+    const bool isMultipart = parser.parse(req) == 0;
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+
+    if (!isMultipart) {
+        // A plain json body is still accepted for updates that do not change
+        // the image, so existing clients keep working.
+        auto jsonBody = req->getJsonObject();
+        if (!jsonBody) {
+            co_return jsonError("Send the slide fields as multipart/form-data, "
+                                "including an image file when the image has to change.");
+        }
+
+        raffle::dto::HeroSliderDto jsonDto;
+        jsonDto.fromJson(*jsonBody);
+
+        auto &sliderService = plugin->getHeroSliderService();
+        co_return jsonResult(co_await sliderService.update(jsonDto, id));
     }
 
     raffle::dto::HeroSliderDto dto;
-    dto.fromJson(*jsonBody);
 
-    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
-    auto &heroSliderService = plugin->getHeroSliderService();
+    // when an image is part of the form it replaces the stored one
+    auto upload = co_await uploadHeroSlideImage(parser, plugin->getCloudinaryApi());
 
-    auto result = co_await heroSliderService.update(dto,id);
-    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
-    co_return resp;
+    if (upload.provided && !upload.success) {
+        co_return jsonError(upload.errorMessage, upload.errorStatus, upload.errorCode);
+    }
+
+    if (upload.success) {
+        dto.setImageUrl(upload.url);
+    }
+
+    // every other field is optional, only the ones that were supplied are updated
+    if (formHasField(parser, "headline")) {
+        if (formField(parser, "headline").empty()) {
+            co_return jsonError("Headline cannot be empty.");
+        }
+        dto.setHeadline(formField(parser, "headline"));
+    }
+    if (formHasField(parser, "copy")) {
+        dto.setCopy(formField(parser, "copy"));
+    }
+    if (formHasField(parser, "ctaPrimary")) {
+        dto.setCtaPrimary(formField(parser, "ctaPrimary"));
+    }
+    if (formHasField(parser, "ctaSecondary")) {
+        dto.setCtaSecondary(formField(parser, "ctaSecondary"));
+    }
+    if (formHasField(parser, "displayOrder")) {
+        auto displayOrder = formIntField(parser, "displayOrder");
+        if (!displayOrder.has_value()) {
+            co_return jsonError("displayOrder must be a number.");
+        }
+        dto.setDisplayOrder(*displayOrder);
+    }
+    if (formHasField(parser, "isActive")) {
+        auto isActive = formBoolField(parser, "isActive");
+        if (!isActive.has_value()) {
+            co_return jsonError("isActive must be either true or false.");
+        }
+        dto.setIsActive(*isActive);
+    }
+
+    auto result = co_await plugin->getHeroSliderService().update(dto, id);
+    co_return jsonResult(result);
 
 }
 
