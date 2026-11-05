@@ -18,10 +18,10 @@ class CmsController : public drogon::HttpController<CmsController>
     ADD_METHOD_TO(CmsController::createContact, std::string(PREFIX) + "contact", Post, Options);
     //admin
     //hero-slides
-    ADD_METHOD_TO(CmsController::getAllHeroSlides, std::string(PREFIX) + "hero-slides/get-all", Get, Options);
-    ADD_METHOD_TO(CmsController::createHeroSlides, std::string(PREFIX) + "hero-slides/create", Post, Options);
-    ADD_METHOD_TO(CmsController::updateHeroSlides, std::string(PREFIX) + "hero-slides/update/{1}", Put, Options);
-    ADD_METHOD_TO(CmsController::deleteHeroSlides, std::string(PREFIX) + "hero-slides/delete/{1}", Delete, Options);
+    ADD_METHOD_TO(CmsController::getAllHeroSlides, std::string(PREFIX) + "hero-sliders/get-all", Get, Options);
+    ADD_METHOD_TO(CmsController::createHeroSlides, std::string(PREFIX) + "hero-sliders/create", Post, Options);
+    ADD_METHOD_TO(CmsController::updateHeroSlides, std::string(PREFIX) + "hero-sliders/update/{1}", Put, Options);
+    ADD_METHOD_TO(CmsController::deleteHeroSlides, std::string(PREFIX) + "hero-sliders/delete/{1}", Delete, Options);
     //banners
     ADD_METHOD_TO(CmsController::getAllBanners, std::string(PREFIX) + "banners/get-all", Get, Options);
     ADD_METHOD_TO(CmsController::createBanner, std::string(PREFIX) + "banners/create", Post, Options);

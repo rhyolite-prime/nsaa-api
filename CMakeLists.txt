@@ -122,6 +122,8 @@ add_executable(${PROJECT_NAME} main.cc
         dto/PrizeDto.h
         services/prize_config/PrizeConfigService.cc
         dto/TicketSummaryRequestDto.h
+        services/cloudinary_api/CloudinaryApi.h
+        services/cloudinary_api/CloudinaryApi.cc
 
 )
 
