@@ -10,7 +10,6 @@
 
 namespace raffle::services {
 
-    class CloudinaryApi {
 
         drogon::Task<std::string> uploadFile();
 
