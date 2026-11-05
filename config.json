@@ -365,9 +365,9 @@
             "ClientSecret": "qkggakvr"
         },
         "CloudinarySettings": {
-            "Cloud": "rhyoliteprime",
-            "ApiKey": "463334685473211",
-            "ApiSecret": "g4Zno5_yBU42Us_Fvz5jaaH0sJI"
+            "Cloud": "",
+            "ApiKey": "",
+            "ApiSecret": ""
         },
         "Permissions": [
             {
