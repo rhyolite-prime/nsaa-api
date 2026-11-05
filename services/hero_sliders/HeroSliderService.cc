@@ -104,31 +104,55 @@ drogon::Task<dto::BaseApiResponse> HeroSliderService::create(const dto::HeroSlid
   auto dbClient = drogon::app().getDbClient();
   CoroMapper<HeroSlides> mapper(dbClient);
 
+  dto::BaseApiResponse response;
+
+  if (dto.getHeadline().empty()) {
+    response.success = false;
+    response.message = "Headline is required.";
+    response.error["code"] = constants::ERR_VALIDATION;
+    response.error["message"] = "Headline is required.";
+    co_return response;
+  }
+
+  // The image is uploaded by the controller, the url is what gets persisted.
+  if (dto.getImageUrl().empty()) {
+    response.success = false;
+    response.message = "Image is required.";
+    response.error["code"] = constants::ERR_VALIDATION;
+    response.error["message"] = "Image is required.";
+    co_return response;
+  }
+
   try {
     HeroSlides newSlide;
     newSlide.setHeadline(dto.getHeadline());
-    newSlide.setCopy(dto.getCopy());
     newSlide.setImageUrl(dto.getImageUrl());
-    newSlide.setCtaPrimary(dto.getCtaPrimary());
-    newSlide.setCtaSecondary(dto.getCtaSecondary());
     newSlide.setDisplayOrder(dto.getDisplayOrder());
     newSlide.setIsActive(dto.isActive());
 
+    // Optional columns are left out so that the database defaults apply.
+    if (!dto.getCopy().empty()) {
+      newSlide.setCopy(dto.getCopy());
+    }
+    if (!dto.getCtaPrimary().empty()) {
+      newSlide.setCtaPrimary(dto.getCtaPrimary());
+    }
+    if (!dto.getCtaSecondary().empty()) {
+      newSlide.setCtaSecondary(dto.getCtaSecondary());
+    }
 
     auto result = co_await mapper.insert(newSlide);
 
-    dto::BaseApiResponse response;
     response.success = true;
-    response.result["message"] = "Heroslide created successfully";
-
-    response.result = result.getValueOfId();
+    response.message = "Hero slide created successfully";
+    response.result["id"] = result.getValueOfId();
     co_return response;
 
   } catch (const DrogonDbException &e) {
     dto::BaseApiResponse errorResponse;
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] = "Database error while creating color.";
+    errorResponse.error["message"] = "Database error while creating hero slide.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   } catch (const std::exception &e) {
@@ -149,30 +173,73 @@ drogon::Task<dto::BaseApiResponse> HeroSliderService::update(const dto::HeroSlid
     auto mp = CoroMapper<HeroSlides>(dbClient);
 
     dto::BaseApiResponse response;
+
+    if (id.empty()) {
+        response.success = false;
+        response.message = "Hero slide id is required.";
+        response.error["code"] = constants::ERR_VALIDATION;
+        response.error["message"] = "Hero slide id is required.";
+        co_return response;
+    }
+
     try {
-        auto heroSlides = co_await mp.findOne(Criteria(HeroSlides::Cols::_id, CompareOperator::EQ, id));
+        auto heroSlide = co_await mp.findOne(Criteria(HeroSlides::Cols::_id, CompareOperator::EQ, id));
 
-        heroSlides.setHeadline(dto.getHeadline());
-        heroSlides.setCopy(dto.getCopy());
-        heroSlides.setImageUrl(dto.getImageUrl());
-        heroSlides.setCtaPrimary(dto.getCtaPrimary());
-        heroSlides.setCtaSecondary(dto.getCtaSecondary());
-        heroSlides.setDisplayOrder(dto.getDisplayOrder());
-        heroSlides.setIsActive(dto.isActive());
+        // Only the fields supplied by the client are changed, so a partial
+        // update can never wipe the image url or any other column.
+        if (dto.hasHeadline()) {
+            if (dto.getHeadline().empty()) {
+                response.success = false;
+                response.message = "Headline cannot be empty.";
+                response.error["code"] = constants::ERR_VALIDATION;
+                response.error["message"] = "Headline cannot be empty.";
+                co_return response;
+            }
+            heroSlide.setHeadline(dto.getHeadline());
+        }
+        if (dto.hasCopy()) {
+            heroSlide.setCopy(dto.getCopy());
+        }
+        if (dto.hasImageUrl()) {
+            heroSlide.setImageUrl(dto.getImageUrl());
+        }
+        if (dto.hasCtaPrimary()) {
+            heroSlide.setCtaPrimary(dto.getCtaPrimary());
+        }
+        if (dto.hasCtaSecondary()) {
+            heroSlide.setCtaSecondary(dto.getCtaSecondary());
+        }
+        if (dto.hasDisplayOrder()) {
+            heroSlide.setDisplayOrder(dto.getDisplayOrder());
+        }
+        if (dto.hasIsActive()) {
+            heroSlide.setIsActive(dto.isActive());
+        }
 
-        co_await mp.update(heroSlides);
+        heroSlide.setUpdatedAt(trantor::Date::now());
+
+        co_await mp.update(heroSlide);
 
         response.success = true;
-        response.message = "Category updated successfully";
+        response.message = "Hero slide updated successfully";
+        response.result["id"] = id;
 
     } catch (const UnexpectedRows &e) {
         response.success = false;
-        response.message = "Category not found";
+        response.message = "Hero slide not found";
         response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+        response.error["message"] = "Hero slide not found";
     } catch (const DrogonDbException &e) {
         response.success = false;
-        response.message = "Failed to update category";
+        response.message = "Failed to update hero slide";
+        response.error["code"] = constants::ERR_DB_QUERY;
+        response.error["message"] = "Failed to update hero slide";
         response.error["detail"] = e.base().what();
+    } catch (const std::exception &e) {
+        response.success = false;
+        response.message = "Internal error.";
+        response.error["code"] = constants::ERR_INTERNAL;
+        response.error["detail"] = e.what();
     }
     co_return response;
 

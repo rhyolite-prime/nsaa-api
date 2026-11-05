@@ -10,6 +10,7 @@
 
 #include "services/affiliate_partners/AffiliatePartnerService.h"
 #include "services/banners/BannerService.h"
+#include "services/cloudinary_api/CloudinaryApi.h"
 #include "services/customers/CustomerService.h"
 #include "services/dashboard/DashboardService.h"
 #include "services/draws/DrawService.h"
@@ -64,6 +65,7 @@ namespace raffle::plugins {
         services::BannerService &getBannerService() { return bannerService_; }
         services::FaqService &getFaqService() { return faqService_; }
         services::HeroSliderService &getHeroSliderService() { return heroSliderService_; }
+        services::CloudinaryApi &getCloudinaryApi() { return cloudinaryApi_; }
         services::MediaLibraryService &getMediaLibraryService() { return mediaLibraryService_; }
         services::PageService &getPageService() { return pageService_; }
         services::SupportTicketService &getSupportTicketService() { return supportTicketService_; }
@@ -89,6 +91,7 @@ namespace raffle::plugins {
         services::BannerService bannerService_;
         services::FaqService faqService_;
         services::HeroSliderService heroSliderService_;
+        services::CloudinaryApi cloudinaryApi_;
         services::MediaLibraryService mediaLibraryService_;
         services::PageService pageService_;
         services::SupportTicketService supportTicketService_;
