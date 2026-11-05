@@ -6,8 +6,11 @@
 #include <drogon/HttpAppFramework.h>
 #include <drogon/HttpClient.h>
 
+#include "utils/IdGeneratorUtils.h"
+
 namespace raffle::services {
 
+    // may accept a file stream
     drogon::Task<std::string> CloudinaryApi::uploadFile() {
 
         // upload the thumbnail to cloudinary ...
@@ -19,7 +22,8 @@ namespace raffle::services {
         auto now = std::chrono::system_clock::now();
         auto timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count());
 
-        const std::string& publicId = "";
+        const std::string& publicId = utils::IdGeneratorUtils::generateGuid();
+
         std::string stringToSign = "folder=thumbnails&public_id=" + publicId +
                                    "&timestamp=" + timestamp + apiSecret;
         std::string signature = drogon::utils::getSha256(stringToSign);
