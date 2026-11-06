@@ -1,3 +1,4 @@
+
 /**
  *
  *  PartnerActivityLogs.h
@@ -38,7 +39,10 @@ namespace drogon_model
 {
 namespace ChopMoneyRaffle
 {
+
+
 class AffiliatePartners;
+
 
 class PartnerActivityLogs
 {
@@ -55,14 +59,19 @@ class PartnerActivityLogs
         static const std::string _ip_address;
         static const std::string _user_agent;
         static const std::string _created_at;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -201,6 +210,7 @@ class PartnerActivityLogs
     void setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 10;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -208,10 +218,12 @@ class PartnerActivityLogs
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
     AffiliatePartners getAffiliatePartners(const drogon::orm::DbClientPtr &clientPtr) const;
     void getAffiliatePartners(const drogon::orm::DbClientPtr &clientPtr,
                               const std::function<void(AffiliatePartners)> &rcb,
                               const drogon::orm::ExceptionCallback &ecb) const;
+
   private:
     friend drogon::orm::Mapper<PartnerActivityLogs>;
     friend drogon::orm::BaseBuilder<PartnerActivityLogs, true, true>;
@@ -237,6 +249,7 @@ class PartnerActivityLogs
     std::shared_ptr<std::string> ipAddress_;
     std::shared_ptr<std::string> userAgent_;
     std::shared_ptr<::trantor::Date> createdAt_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -252,13 +265,19 @@ class PartnerActivityLogs
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -268,20 +287,24 @@ class PartnerActivityLogs
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "partner_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "activity_type,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "activity_category,";
@@ -289,10 +312,12 @@ class PartnerActivityLogs
         }
         sql += "severity,";
         ++parametersCount;
+
         if(!dirtyFlag_[4])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "description,";
@@ -300,15 +325,18 @@ class PartnerActivityLogs
         }
         sql += "metadata,";
         ++parametersCount;
+
         if(!dirtyFlag_[6])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[7])
         {
             sql += "ip_address,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[8])
         {
             sql += "user_agent,";
@@ -316,10 +344,12 @@ class PartnerActivityLogs
         }
         sql += "created_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[9])
         {
             needSelection=true;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -328,79 +358,116 @@ class PartnerActivityLogs
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[9])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -409,9 +476,11 @@ class PartnerActivityLogs
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace ChopMoneyRaffle
+
 } // namespace drogon_model

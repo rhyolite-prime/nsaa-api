@@ -14,6 +14,8 @@
 namespace raffle::services {
 
 
+    class  CloudinaryApi
+    {
     public:
         /**
          * @brief Resolves the mime type of a file from its file name.
@@ -40,7 +42,7 @@ namespace raffle::services {
             size_t length,
             const std::string &fileName,
             const std::string &contentType = "",
-            const std::string &folder = "hero-slides");
+            const std::string &folder = "nsaa");
 
         /**
          * @brief Uploads a file that already lives on disk to Cloudinary.

@@ -1,3 +1,4 @@
+
 /**
  *
  *  RngLogs.cc
@@ -6,23 +7,40 @@
  */
 
 #include "RngLogs.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
+
+
 const std::string RngLogs::Cols::_id = "\"id\"";
+
 const std::string RngLogs::Cols::_draw_id = "\"draw_id\"";
+
 const std::string RngLogs::Cols::_rng_type = "\"rng_type\"";
+
 const std::string RngLogs::Cols::_seed_value = "\"seed_value\"";
+
 const std::string RngLogs::Cols::_generated_value = "\"generated_value\"";
+
 const std::string RngLogs::Cols::_metadata = "\"metadata\"";
+
 const std::string RngLogs::Cols::_generated_at = "\"generated_at\"";
+
 const std::string RngLogs::Cols::_created_by = "\"created_by\"";
+
+
 const std::string RngLogs::primaryKeyName = "id";
+
+
 const bool RngLogs::hasPrimaryKey = true;
+
 const std::string RngLogs::tableName = "\"rng_logs\"";
 
 const std::vector<typename RngLogs::MetaData> RngLogs::metaData_={
@@ -34,6 +52,7 @@ const std::vector<typename RngLogs::MetaData> RngLogs::metaData_={
 {"metadata","std::string","jsonb",0,0,0,0},
 {"generated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"created_by","std::string","character varying",100,0,0,0}
+
 };
 const std::string &RngLogs::getColumnName(size_t index) noexcept(false)
 {
@@ -44,35 +63,55 @@ RngLogs::RngLogs(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["draw_id"].isNull())
         {
+
             drawId_=std::make_shared<std::string>(r["draw_id"].as<std::string>());
+
         }
+
         if(!r["rng_type"].isNull())
         {
+
             rngType_=std::make_shared<std::string>(r["rng_type"].as<std::string>());
+
         }
+
         if(!r["seed_value"].isNull())
         {
+
             seedValue_=std::make_shared<std::string>(r["seed_value"].as<std::string>());
+
         }
+
         if(!r["generated_value"].isNull())
         {
+
             generatedValue_=std::make_shared<std::string>(r["generated_value"].as<std::string>());
+
         }
+
         if(!r["metadata"].isNull())
         {
+
             metadata_=std::make_shared<std::string>(r["metadata"].as<std::string>());
+
         }
+
         if(!r["generated_at"].isNull())
         {
             auto timeStr = r["generated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -90,10 +129,14 @@ RngLogs::RngLogs(const Row &r, const ssize_t indexOffset) noexcept
                 generatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["created_by"].isNull())
         {
+
             createdBy_=std::make_shared<std::string>(r["created_by"].as<std::string>());
+
         }
+
     }
     else
     {
@@ -104,42 +147,62 @@ RngLogs::RngLogs(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             drawId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             rngType_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             seedValue_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             generatedValue_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             metadata_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -157,11 +220,15 @@ RngLogs::RngLogs(const Row &r, const ssize_t indexOffset) noexcept
                 generatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             createdBy_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
     }
 
 }
@@ -173,6 +240,7 @@ RngLogs::RngLogs(const Json::Value &pJson, const std::vector<std::string> &pMasq
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -181,6 +249,7 @@ RngLogs::RngLogs(const Json::Value &pJson, const std::vector<std::string> &pMasq
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -189,6 +258,7 @@ RngLogs::RngLogs(const Json::Value &pJson, const std::vector<std::string> &pMasq
             drawId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -197,6 +267,7 @@ RngLogs::RngLogs(const Json::Value &pJson, const std::vector<std::string> &pMasq
             rngType_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -205,6 +276,7 @@ RngLogs::RngLogs(const Json::Value &pJson, const std::vector<std::string> &pMasq
             seedValue_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -213,6 +285,7 @@ RngLogs::RngLogs(const Json::Value &pJson, const std::vector<std::string> &pMasq
             generatedValue_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -221,6 +294,7 @@ RngLogs::RngLogs(const Json::Value &pJson, const std::vector<std::string> &pMasq
             metadata_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -229,6 +303,7 @@ RngLogs::RngLogs(const Json::Value &pJson, const std::vector<std::string> &pMasq
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -247,6 +322,7 @@ RngLogs::RngLogs(const Json::Value &pJson, const std::vector<std::string> &pMasq
             }
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -255,10 +331,12 @@ RngLogs::RngLogs(const Json::Value &pJson, const std::vector<std::string> &pMasq
             createdBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
+
 }
 
 RngLogs::RngLogs(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -267,6 +345,7 @@ RngLogs::RngLogs(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("draw_id"))
     {
         dirtyFlag_[1]=true;
@@ -275,6 +354,7 @@ RngLogs::RngLogs(const Json::Value &pJson) noexcept(false)
             drawId_=std::make_shared<std::string>(pJson["draw_id"].asString());
         }
     }
+
     if(pJson.isMember("rng_type"))
     {
         dirtyFlag_[2]=true;
@@ -283,6 +363,7 @@ RngLogs::RngLogs(const Json::Value &pJson) noexcept(false)
             rngType_=std::make_shared<std::string>(pJson["rng_type"].asString());
         }
     }
+
     if(pJson.isMember("seed_value"))
     {
         dirtyFlag_[3]=true;
@@ -291,6 +372,7 @@ RngLogs::RngLogs(const Json::Value &pJson) noexcept(false)
             seedValue_=std::make_shared<std::string>(pJson["seed_value"].asString());
         }
     }
+
     if(pJson.isMember("generated_value"))
     {
         dirtyFlag_[4]=true;
@@ -299,6 +381,7 @@ RngLogs::RngLogs(const Json::Value &pJson) noexcept(false)
             generatedValue_=std::make_shared<std::string>(pJson["generated_value"].asString());
         }
     }
+
     if(pJson.isMember("metadata"))
     {
         dirtyFlag_[5]=true;
@@ -307,6 +390,7 @@ RngLogs::RngLogs(const Json::Value &pJson) noexcept(false)
             metadata_=std::make_shared<std::string>(pJson["metadata"].asString());
         }
     }
+
     if(pJson.isMember("generated_at"))
     {
         dirtyFlag_[6]=true;
@@ -315,6 +399,7 @@ RngLogs::RngLogs(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["generated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -333,6 +418,7 @@ RngLogs::RngLogs(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("created_by"))
     {
         dirtyFlag_[7]=true;
@@ -341,6 +427,7 @@ RngLogs::RngLogs(const Json::Value &pJson) noexcept(false)
             createdBy_=std::make_shared<std::string>(pJson["created_by"].asString());
         }
     }
+
 }
 
 void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
@@ -351,6 +438,7 @@ void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -358,6 +446,7 @@ void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -366,6 +455,7 @@ void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
             drawId_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -374,6 +464,7 @@ void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
             rngType_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -382,6 +473,7 @@ void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
             seedValue_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -390,6 +482,7 @@ void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
             generatedValue_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -398,6 +491,7 @@ void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
             metadata_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -406,6 +500,7 @@ void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -424,6 +519,7 @@ void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -432,10 +528,12 @@ void RngLogs::updateByMasqueradedJson(const Json::Value &pJson,
             createdBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
+
 }
 
 void RngLogs::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -443,6 +541,7 @@ void RngLogs::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("draw_id"))
     {
         dirtyFlag_[1] = true;
@@ -451,6 +550,7 @@ void RngLogs::updateByJson(const Json::Value &pJson) noexcept(false)
             drawId_=std::make_shared<std::string>(pJson["draw_id"].asString());
         }
     }
+
     if(pJson.isMember("rng_type"))
     {
         dirtyFlag_[2] = true;
@@ -459,6 +559,7 @@ void RngLogs::updateByJson(const Json::Value &pJson) noexcept(false)
             rngType_=std::make_shared<std::string>(pJson["rng_type"].asString());
         }
     }
+
     if(pJson.isMember("seed_value"))
     {
         dirtyFlag_[3] = true;
@@ -467,6 +568,7 @@ void RngLogs::updateByJson(const Json::Value &pJson) noexcept(false)
             seedValue_=std::make_shared<std::string>(pJson["seed_value"].asString());
         }
     }
+
     if(pJson.isMember("generated_value"))
     {
         dirtyFlag_[4] = true;
@@ -475,6 +577,7 @@ void RngLogs::updateByJson(const Json::Value &pJson) noexcept(false)
             generatedValue_=std::make_shared<std::string>(pJson["generated_value"].asString());
         }
     }
+
     if(pJson.isMember("metadata"))
     {
         dirtyFlag_[5] = true;
@@ -483,6 +586,7 @@ void RngLogs::updateByJson(const Json::Value &pJson) noexcept(false)
             metadata_=std::make_shared<std::string>(pJson["metadata"].asString());
         }
     }
+
     if(pJson.isMember("generated_at"))
     {
         dirtyFlag_[6] = true;
@@ -491,6 +595,7 @@ void RngLogs::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["generated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -509,6 +614,7 @@ void RngLogs::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("created_by"))
     {
         dirtyFlag_[7] = true;
@@ -517,6 +623,7 @@ void RngLogs::updateByJson(const Json::Value &pJson) noexcept(false)
             createdBy_=std::make_shared<std::string>(pJson["created_by"].asString());
         }
     }
+
 }
 
 const std::string &RngLogs::getValueOfId() const noexcept
@@ -724,6 +831,7 @@ void RngLogs::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &RngLogs::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -735,12 +843,14 @@ const std::vector<std::string> &RngLogs::insertColumns() noexcept
         "metadata",
         "generated_at",
         "created_by"
+
     };
     return inCols;
 }
 
 void RngLogs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -752,6 +862,7 @@ void RngLogs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getDrawId())
@@ -763,6 +874,7 @@ void RngLogs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getRngType())
@@ -774,6 +886,7 @@ void RngLogs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getSeedValue())
@@ -785,6 +898,7 @@ void RngLogs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getGeneratedValue())
@@ -796,6 +910,7 @@ void RngLogs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getMetadata())
@@ -807,6 +922,7 @@ void RngLogs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getGeneratedAt())
@@ -818,6 +934,7 @@ void RngLogs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getCreatedBy())
@@ -829,48 +946,59 @@ void RngLogs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> RngLogs::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     return ret;
 }
 
 void RngLogs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -882,6 +1010,7 @@ void RngLogs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getDrawId())
@@ -893,6 +1022,7 @@ void RngLogs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getRngType())
@@ -904,6 +1034,7 @@ void RngLogs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getSeedValue())
@@ -915,6 +1046,7 @@ void RngLogs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getGeneratedValue())
@@ -926,6 +1058,7 @@ void RngLogs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getMetadata())
@@ -937,6 +1070,7 @@ void RngLogs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getGeneratedAt())
@@ -948,6 +1082,7 @@ void RngLogs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getCreatedBy())
@@ -959,74 +1094,100 @@ void RngLogs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value RngLogs::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getDrawId())
     {
+
         ret["draw_id"]=getValueOfDrawId();
+
     }
     else
     {
         ret["draw_id"]=Json::Value();
     }
+
     if(getRngType())
     {
+
         ret["rng_type"]=getValueOfRngType();
+
     }
     else
     {
         ret["rng_type"]=Json::Value();
     }
+
     if(getSeedValue())
     {
+
         ret["seed_value"]=getValueOfSeedValue();
+
     }
     else
     {
         ret["seed_value"]=Json::Value();
     }
+
     if(getGeneratedValue())
     {
+
         ret["generated_value"]=getValueOfGeneratedValue();
+
     }
     else
     {
         ret["generated_value"]=Json::Value();
     }
+
     if(getMetadata())
     {
+
         ret["metadata"]=getValueOfMetadata();
+
     }
     else
     {
         ret["metadata"]=Json::Value();
     }
+
     if(getGeneratedAt())
     {
+
         ret["generated_at"]=getGeneratedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["generated_at"]=Json::Value();
     }
+
     if(getCreatedBy())
     {
+
         ret["created_by"]=getValueOfCreatedBy();
+
     }
     else
     {
         ret["created_by"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1041,216 +1202,277 @@ Json::Value RngLogs::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 8)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getDrawId())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfDrawId();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getRngType())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfRngType();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getSeedValue())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfSeedValue();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getGeneratedValue())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfGeneratedValue();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getMetadata())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfMetadata();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getGeneratedAt())
             {
+
                 ret[pMasqueradingVector[6]]=getGeneratedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getCreatedBy())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfCreatedBy();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getDrawId())
     {
+
         ret["draw_id"]=getValueOfDrawId();
+
     }
     else
     {
         ret["draw_id"]=Json::Value();
     }
+
     if(getRngType())
     {
+
         ret["rng_type"]=getValueOfRngType();
+
     }
     else
     {
         ret["rng_type"]=Json::Value();
     }
+
     if(getSeedValue())
     {
+
         ret["seed_value"]=getValueOfSeedValue();
+
     }
     else
     {
         ret["seed_value"]=Json::Value();
     }
+
     if(getGeneratedValue())
     {
+
         ret["generated_value"]=getValueOfGeneratedValue();
+
     }
     else
     {
         ret["generated_value"]=Json::Value();
     }
+
     if(getMetadata())
     {
+
         ret["metadata"]=getValueOfMetadata();
+
     }
     else
     {
         ret["metadata"]=Json::Value();
     }
+
     if(getGeneratedAt())
     {
+
         ret["generated_at"]=getGeneratedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["generated_at"]=Json::Value();
     }
+
     if(getCreatedBy())
     {
+
         ret["created_by"]=getValueOfCreatedBy();
+
     }
     else
     {
         ret["created_by"]=Json::Value();
     }
+
     return ret;
 }
 
 bool RngLogs::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("draw_id"))
     {
         if(!validJsonOfField(1, "draw_id", pJson["draw_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("rng_type"))
     {
         if(!validJsonOfField(2, "rng_type", pJson["rng_type"], err, true))
             return false;
     }
+
     else
     {
         err="The rng_type column cannot be null";
         return false;
     }
+
     if(pJson.isMember("seed_value"))
     {
         if(!validJsonOfField(3, "seed_value", pJson["seed_value"], err, true))
             return false;
     }
+
     if(pJson.isMember("generated_value"))
     {
         if(!validJsonOfField(4, "generated_value", pJson["generated_value"], err, true))
             return false;
     }
+
     else
     {
         err="The generated_value column cannot be null";
         return false;
     }
+
     if(pJson.isMember("metadata"))
     {
         if(!validJsonOfField(5, "metadata", pJson["metadata"], err, true))
             return false;
     }
+
     if(pJson.isMember("generated_at"))
     {
         if(!validJsonOfField(6, "generated_at", pJson["generated_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_by"))
     {
         if(!validJsonOfField(7, "created_by", pJson["created_by"], err, true))
             return false;
     }
+
     return true;
 }
 bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1263,6 +1485,7 @@ bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1270,7 +1493,9 @@ bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1278,7 +1503,9 @@ bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1286,12 +1513,15 @@ bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[2] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1299,7 +1529,9 @@ bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1307,12 +1539,15 @@ bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[4] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1320,7 +1555,9 @@ bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1328,7 +1565,9 @@ bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -1336,7 +1575,9 @@ bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1347,51 +1588,61 @@ bool RngLogs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool RngLogs::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("draw_id"))
     {
         if(!validJsonOfField(1, "draw_id", pJson["draw_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("rng_type"))
     {
         if(!validJsonOfField(2, "rng_type", pJson["rng_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("seed_value"))
     {
         if(!validJsonOfField(3, "seed_value", pJson["seed_value"], err, false))
             return false;
     }
+
     if(pJson.isMember("generated_value"))
     {
         if(!validJsonOfField(4, "generated_value", pJson["generated_value"], err, false))
             return false;
     }
+
     if(pJson.isMember("metadata"))
     {
         if(!validJsonOfField(5, "metadata", pJson["metadata"], err, false))
             return false;
     }
+
     if(pJson.isMember("generated_at"))
     {
         if(!validJsonOfField(6, "generated_at", pJson["generated_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_by"))
     {
         if(!validJsonOfField(7, "created_by", pJson["created_by"], err, false))
             return false;
     }
+
     return true;
 }
 bool RngLogs::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1404,51 +1655,61 @@ bool RngLogs::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1465,132 +1726,166 @@ bool RngLogs::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

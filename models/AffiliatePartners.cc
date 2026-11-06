@@ -1,3 +1,4 @@
+
 /**
  *
  *  AffiliatePartners.cc
@@ -6,57 +7,108 @@
  */
 
 #include "AffiliatePartners.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
+
+
 const std::string AffiliatePartners::Cols::_id = "\"id\"";
+
 const std::string AffiliatePartners::Cols::_name = "\"name\"";
+
 const std::string AffiliatePartners::Cols::_identifier = "\"identifier\"";
+
 const std::string AffiliatePartners::Cols::_contact_name = "\"contact_name\"";
+
 const std::string AffiliatePartners::Cols::_contact_email = "\"contact_email\"";
+
 const std::string AffiliatePartners::Cols::_contact_phone = "\"contact_phone\"";
+
 const std::string AffiliatePartners::Cols::_billing_email = "\"billing_email\"";
+
 const std::string AffiliatePartners::Cols::_country = "\"country\"";
+
 const std::string AffiliatePartners::Cols::_currency = "\"currency\"";
+
 const std::string AffiliatePartners::Cols::_status = "\"status\"";
+
 const std::string AffiliatePartners::Cols::_ussd_code = "\"ussd_code\"";
+
 const std::string AffiliatePartners::Cols::_wssd_service_url = "\"wssd_service_url\"";
+
 const std::string AffiliatePartners::Cols::_sub_account_enabled = "\"sub_account_enabled\"";
+
 const std::string AffiliatePartners::Cols::_require_two_factor_auth = "\"require_two_factor_auth\"";
+
 const std::string AffiliatePartners::Cols::_organization_logo = "\"organization_logo\"";
+
 const std::string AffiliatePartners::Cols::_commission_rate = "\"commission_rate\"";
+
 const std::string AffiliatePartners::Cols::_commission_type = "\"commission_type\"";
+
 const std::string AffiliatePartners::Cols::_payment_due_date = "\"payment_due_date\"";
+
 const std::string AffiliatePartners::Cols::_minimum_payout_threshold = "\"minimum_payout_threshold\"";
+
 const std::string AffiliatePartners::Cols::_payment_method = "\"payment_method\"";
+
 const std::string AffiliatePartners::Cols::_settlement_details = "\"settlement_details\"";
+
 const std::string AffiliatePartners::Cols::_max_raffles_per_week = "\"max_raffles_per_week\"";
+
 const std::string AffiliatePartners::Cols::_requires_approval = "\"requires_approval\"";
+
 const std::string AffiliatePartners::Cols::_total_tickets_sold = "\"total_tickets_sold\"";
+
 const std::string AffiliatePartners::Cols::_total_revenue_generated = "\"total_revenue_generated\"";
+
 const std::string AffiliatePartners::Cols::_total_commission_earned = "\"total_commission_earned\"";
+
 const std::string AffiliatePartners::Cols::_last_payout_date = "\"last_payout_date\"";
+
 const std::string AffiliatePartners::Cols::_api_key = "\"api_key\"";
+
 const std::string AffiliatePartners::Cols::_api_secret = "\"api_secret\"";
+
 const std::string AffiliatePartners::Cols::_ip_whitelist = "\"ip_whitelist\"";
+
 const std::string AffiliatePartners::Cols::_webhook_secret = "\"webhook_secret\"";
+
 const std::string AffiliatePartners::Cols::_tax_id = "\"tax_id\"";
+
 const std::string AffiliatePartners::Cols::_legal_entity_name = "\"legal_entity_name\"";
+
 const std::string AffiliatePartners::Cols::_kyc_verified = "\"kyc_verified\"";
+
 const std::string AffiliatePartners::Cols::_agreement_accepted_at = "\"agreement_accepted_at\"";
+
 const std::string AffiliatePartners::Cols::_agreement_version = "\"agreement_version\"";
+
 const std::string AffiliatePartners::Cols::_support_priority = "\"support_priority\"";
+
 const std::string AffiliatePartners::Cols::_notes = "\"notes\"";
+
 const std::string AffiliatePartners::Cols::_created_at = "\"created_at\"";
+
 const std::string AffiliatePartners::Cols::_updated_at = "\"updated_at\"";
+
 const std::string AffiliatePartners::Cols::_partnership_type = "\"partnership_type\"";
+
 const std::string AffiliatePartners::Cols::_region_or_state = "\"region_or_state\"";
+
+
 const std::string AffiliatePartners::primaryKeyName = "id";
+
+
 const bool AffiliatePartners::hasPrimaryKey = true;
+
 const std::string AffiliatePartners::tableName = "\"affiliate_partners\"";
 
 const std::vector<typename AffiliatePartners::MetaData> AffiliatePartners::metaData_={
@@ -102,6 +154,7 @@ const std::vector<typename AffiliatePartners::MetaData> AffiliatePartners::metaD
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"partnership_type","std::string","character varying",20,0,0,0},
 {"region_or_state","std::string","character varying",20,0,0,0}
+
 };
 const std::string &AffiliatePartners::getColumnName(size_t index) noexcept(false)
 {
@@ -112,62 +165,105 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["name"].isNull())
         {
+
             name_=std::make_shared<std::string>(r["name"].as<std::string>());
+
         }
+
         if(!r["identifier"].isNull())
         {
+
             identifier_=std::make_shared<std::string>(r["identifier"].as<std::string>());
+
         }
+
         if(!r["contact_name"].isNull())
         {
+
             contactName_=std::make_shared<std::string>(r["contact_name"].as<std::string>());
+
         }
+
         if(!r["contact_email"].isNull())
         {
+
             contactEmail_=std::make_shared<std::string>(r["contact_email"].as<std::string>());
+
         }
+
         if(!r["contact_phone"].isNull())
         {
+
             contactPhone_=std::make_shared<std::string>(r["contact_phone"].as<std::string>());
+
         }
+
         if(!r["billing_email"].isNull())
         {
+
             billingEmail_=std::make_shared<std::string>(r["billing_email"].as<std::string>());
+
         }
+
         if(!r["country"].isNull())
         {
+
             country_=std::make_shared<std::string>(r["country"].as<std::string>());
+
         }
+
         if(!r["currency"].isNull())
         {
+
             currency_=std::make_shared<std::string>(r["currency"].as<std::string>());
+
         }
+
         if(!r["status"].isNull())
         {
+
             status_=std::make_shared<std::string>(r["status"].as<std::string>());
+
         }
+
         if(!r["ussd_code"].isNull())
         {
+
             ussdCode_=std::make_shared<std::string>(r["ussd_code"].as<std::string>());
+
         }
+
         if(!r["wssd_service_url"].isNull())
         {
+
             wssdServiceUrl_=std::make_shared<std::string>(r["wssd_service_url"].as<std::string>());
+
         }
+
         if(!r["sub_account_enabled"].isNull())
         {
+
             subAccountEnabled_=std::make_shared<bool>(r["sub_account_enabled"].as<bool>());
+
         }
+
         if(!r["require_two_factor_auth"].isNull())
         {
+
             requireTwoFactorAuth_=std::make_shared<bool>(r["require_two_factor_auth"].as<bool>());
+
         }
+
         if(!r["organization_logo"].isNull())
         {
             auto str = r["organization_logo"].as<std::string_view>();
@@ -177,55 +273,90 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
                 organizationLogo_=std::make_shared<std::vector<char>>(drogon::utils::hexToBinaryVector(str.data()+2,str.length()-2));
             }
         }
+
         if(!r["commission_rate"].isNull())
         {
+
             commissionRate_=std::make_shared<std::string>(r["commission_rate"].as<std::string>());
+
         }
+
         if(!r["commission_type"].isNull())
         {
+
             commissionType_=std::make_shared<std::string>(r["commission_type"].as<std::string>());
+
         }
+
         if(!r["payment_due_date"].isNull())
         {
+
             paymentDueDate_=std::make_shared<int32_t>(r["payment_due_date"].as<int32_t>());
+
         }
+
         if(!r["minimum_payout_threshold"].isNull())
         {
+
             minimumPayoutThreshold_=std::make_shared<std::string>(r["minimum_payout_threshold"].as<std::string>());
+
         }
+
         if(!r["payment_method"].isNull())
         {
+
             paymentMethod_=std::make_shared<std::string>(r["payment_method"].as<std::string>());
+
         }
+
         if(!r["settlement_details"].isNull())
         {
+
             settlementDetails_=std::make_shared<std::string>(r["settlement_details"].as<std::string>());
+
         }
+
         if(!r["max_raffles_per_week"].isNull())
         {
+
             maxRafflesPerWeek_=std::make_shared<int32_t>(r["max_raffles_per_week"].as<int32_t>());
+
         }
+
         if(!r["requires_approval"].isNull())
         {
+
             requiresApproval_=std::make_shared<bool>(r["requires_approval"].as<bool>());
+
         }
+
         if(!r["total_tickets_sold"].isNull())
         {
+
             totalTicketsSold_=std::make_shared<int32_t>(r["total_tickets_sold"].as<int32_t>());
+
         }
+
         if(!r["total_revenue_generated"].isNull())
         {
+
             totalRevenueGenerated_=std::make_shared<std::string>(r["total_revenue_generated"].as<std::string>());
+
         }
+
         if(!r["total_commission_earned"].isNull())
         {
+
             totalCommissionEarned_=std::make_shared<std::string>(r["total_commission_earned"].as<std::string>());
+
         }
+
         if(!r["last_payout_date"].isNull())
         {
             auto timeStr = r["last_payout_date"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -243,39 +374,62 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
                 lastPayoutDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["api_key"].isNull())
         {
+
             apiKey_=std::make_shared<std::string>(r["api_key"].as<std::string>());
+
         }
+
         if(!r["api_secret"].isNull())
         {
+
             apiSecret_=std::make_shared<std::string>(r["api_secret"].as<std::string>());
+
         }
+
         if(!r["ip_whitelist"].isNull())
         {
+
             ipWhitelist_=std::make_shared<std::string>(r["ip_whitelist"].as<std::string>());
+
         }
+
         if(!r["webhook_secret"].isNull())
         {
+
             webhookSecret_=std::make_shared<std::string>(r["webhook_secret"].as<std::string>());
+
         }
+
         if(!r["tax_id"].isNull())
         {
+
             taxId_=std::make_shared<std::string>(r["tax_id"].as<std::string>());
+
         }
+
         if(!r["legal_entity_name"].isNull())
         {
+
             legalEntityName_=std::make_shared<std::string>(r["legal_entity_name"].as<std::string>());
+
         }
+
         if(!r["kyc_verified"].isNull())
         {
+
             kycVerified_=std::make_shared<bool>(r["kyc_verified"].as<bool>());
+
         }
+
         if(!r["agreement_accepted_at"].isNull())
         {
             auto timeStr = r["agreement_accepted_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -293,23 +447,34 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
                 agreementAcceptedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["agreement_version"].isNull())
         {
+
             agreementVersion_=std::make_shared<std::string>(r["agreement_version"].as<std::string>());
+
         }
+
         if(!r["support_priority"].isNull())
         {
+
             supportPriority_=std::make_shared<std::string>(r["support_priority"].as<std::string>());
+
         }
+
         if(!r["notes"].isNull())
         {
+
             notes_=std::make_shared<std::string>(r["notes"].as<std::string>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -327,11 +492,13 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -349,14 +516,21 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["partnership_type"].isNull())
         {
+
             partnershipType_=std::make_shared<std::string>(r["partnership_type"].as<std::string>());
+
         }
+
         if(!r["region_or_state"].isNull())
         {
+
             regionOrState_=std::make_shared<std::string>(r["region_or_state"].as<std::string>());
+
         }
+
     }
     else
     {
@@ -367,76 +541,119 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             name_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             identifier_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             contactName_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             contactEmail_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             contactPhone_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             billingEmail_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             country_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
+
             currency_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
+
             status_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 10;
         if(!r[index].isNull())
         {
+
             ussdCode_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 11;
         if(!r[index].isNull())
         {
+
             wssdServiceUrl_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 12;
         if(!r[index].isNull())
         {
+
             subAccountEnabled_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 13;
         if(!r[index].isNull())
         {
+
             requireTwoFactorAuth_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 14;
         if(!r[index].isNull())
         {
@@ -447,67 +664,102 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
                 organizationLogo_=std::make_shared<std::vector<char>>(drogon::utils::hexToBinaryVector(str.data()+2,str.length()-2));
             }
         }
+
         index = offset + 15;
         if(!r[index].isNull())
         {
+
             commissionRate_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 16;
         if(!r[index].isNull())
         {
+
             commissionType_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 17;
         if(!r[index].isNull())
         {
+
             paymentDueDate_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 18;
         if(!r[index].isNull())
         {
+
             minimumPayoutThreshold_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 19;
         if(!r[index].isNull())
         {
+
             paymentMethod_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 20;
         if(!r[index].isNull())
         {
+
             settlementDetails_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 21;
         if(!r[index].isNull())
         {
+
             maxRafflesPerWeek_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 22;
         if(!r[index].isNull())
         {
+
             requiresApproval_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 23;
         if(!r[index].isNull())
         {
+
             totalTicketsSold_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 24;
         if(!r[index].isNull())
         {
+
             totalRevenueGenerated_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 25;
         if(!r[index].isNull())
         {
+
             totalCommissionEarned_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 26;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -525,47 +777,70 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
                 lastPayoutDate_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 27;
         if(!r[index].isNull())
         {
+
             apiKey_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 28;
         if(!r[index].isNull())
         {
+
             apiSecret_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 29;
         if(!r[index].isNull())
         {
+
             ipWhitelist_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 30;
         if(!r[index].isNull())
         {
+
             webhookSecret_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 31;
         if(!r[index].isNull())
         {
+
             taxId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 32;
         if(!r[index].isNull())
         {
+
             legalEntityName_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 33;
         if(!r[index].isNull())
         {
+
             kycVerified_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 34;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -583,27 +858,38 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
                 agreementAcceptedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 35;
         if(!r[index].isNull())
         {
+
             agreementVersion_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 36;
         if(!r[index].isNull())
         {
+
             supportPriority_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 37;
         if(!r[index].isNull())
         {
+
             notes_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 38;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -621,12 +907,14 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 39;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -644,16 +932,23 @@ AffiliatePartners::AffiliatePartners(const Row &r, const ssize_t indexOffset) no
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 40;
         if(!r[index].isNull())
         {
+
             partnershipType_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 41;
         if(!r[index].isNull())
         {
+
             regionOrState_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
     }
 
 }
@@ -665,6 +960,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -673,6 +969,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -681,6 +978,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             name_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -689,6 +987,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             identifier_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -697,6 +996,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             contactName_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -705,6 +1005,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             contactEmail_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -713,6 +1014,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             contactPhone_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -721,6 +1023,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             billingEmail_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -729,6 +1032,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             country_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -737,6 +1041,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             currency_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -745,6 +1050,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             status_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -753,6 +1059,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             ussdCode_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -761,6 +1068,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             wssdServiceUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -769,6 +1077,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             subAccountEnabled_=std::make_shared<bool>(pJson[pMasqueradingVector[12]].asBool());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -777,6 +1086,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             requireTwoFactorAuth_=std::make_shared<bool>(pJson[pMasqueradingVector[13]].asBool());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -786,6 +1096,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             organizationLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -794,6 +1105,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             commissionRate_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
         }
     }
+
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
     {
         dirtyFlag_[16] = true;
@@ -802,6 +1114,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             commissionType_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
         }
     }
+
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
     {
         dirtyFlag_[17] = true;
@@ -810,6 +1123,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             paymentDueDate_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[17]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
     {
         dirtyFlag_[18] = true;
@@ -818,6 +1132,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             minimumPayoutThreshold_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
         }
     }
+
     if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
     {
         dirtyFlag_[19] = true;
@@ -826,6 +1141,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             paymentMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[19]].asString());
         }
     }
+
     if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
     {
         dirtyFlag_[20] = true;
@@ -834,6 +1150,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             settlementDetails_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
         }
     }
+
     if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
     {
         dirtyFlag_[21] = true;
@@ -842,6 +1159,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             maxRafflesPerWeek_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[21]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
     {
         dirtyFlag_[22] = true;
@@ -850,6 +1168,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             requiresApproval_=std::make_shared<bool>(pJson[pMasqueradingVector[22]].asBool());
         }
     }
+
     if(!pMasqueradingVector[23].empty() && pJson.isMember(pMasqueradingVector[23]))
     {
         dirtyFlag_[23] = true;
@@ -858,6 +1177,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             totalTicketsSold_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[23]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[24].empty() && pJson.isMember(pMasqueradingVector[24]))
     {
         dirtyFlag_[24] = true;
@@ -866,6 +1186,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             totalRevenueGenerated_=std::make_shared<std::string>(pJson[pMasqueradingVector[24]].asString());
         }
     }
+
     if(!pMasqueradingVector[25].empty() && pJson.isMember(pMasqueradingVector[25]))
     {
         dirtyFlag_[25] = true;
@@ -874,6 +1195,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             totalCommissionEarned_=std::make_shared<std::string>(pJson[pMasqueradingVector[25]].asString());
         }
     }
+
     if(!pMasqueradingVector[26].empty() && pJson.isMember(pMasqueradingVector[26]))
     {
         dirtyFlag_[26] = true;
@@ -882,6 +1204,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             auto timeStr = pJson[pMasqueradingVector[26]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -900,6 +1223,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             }
         }
     }
+
     if(!pMasqueradingVector[27].empty() && pJson.isMember(pMasqueradingVector[27]))
     {
         dirtyFlag_[27] = true;
@@ -908,6 +1232,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             apiKey_=std::make_shared<std::string>(pJson[pMasqueradingVector[27]].asString());
         }
     }
+
     if(!pMasqueradingVector[28].empty() && pJson.isMember(pMasqueradingVector[28]))
     {
         dirtyFlag_[28] = true;
@@ -916,6 +1241,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             apiSecret_=std::make_shared<std::string>(pJson[pMasqueradingVector[28]].asString());
         }
     }
+
     if(!pMasqueradingVector[29].empty() && pJson.isMember(pMasqueradingVector[29]))
     {
         dirtyFlag_[29] = true;
@@ -924,6 +1250,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             ipWhitelist_=std::make_shared<std::string>(pJson[pMasqueradingVector[29]].asString());
         }
     }
+
     if(!pMasqueradingVector[30].empty() && pJson.isMember(pMasqueradingVector[30]))
     {
         dirtyFlag_[30] = true;
@@ -932,6 +1259,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             webhookSecret_=std::make_shared<std::string>(pJson[pMasqueradingVector[30]].asString());
         }
     }
+
     if(!pMasqueradingVector[31].empty() && pJson.isMember(pMasqueradingVector[31]))
     {
         dirtyFlag_[31] = true;
@@ -940,6 +1268,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             taxId_=std::make_shared<std::string>(pJson[pMasqueradingVector[31]].asString());
         }
     }
+
     if(!pMasqueradingVector[32].empty() && pJson.isMember(pMasqueradingVector[32]))
     {
         dirtyFlag_[32] = true;
@@ -948,6 +1277,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             legalEntityName_=std::make_shared<std::string>(pJson[pMasqueradingVector[32]].asString());
         }
     }
+
     if(!pMasqueradingVector[33].empty() && pJson.isMember(pMasqueradingVector[33]))
     {
         dirtyFlag_[33] = true;
@@ -956,6 +1286,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             kycVerified_=std::make_shared<bool>(pJson[pMasqueradingVector[33]].asBool());
         }
     }
+
     if(!pMasqueradingVector[34].empty() && pJson.isMember(pMasqueradingVector[34]))
     {
         dirtyFlag_[34] = true;
@@ -964,6 +1295,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             auto timeStr = pJson[pMasqueradingVector[34]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -982,6 +1314,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             }
         }
     }
+
     if(!pMasqueradingVector[35].empty() && pJson.isMember(pMasqueradingVector[35]))
     {
         dirtyFlag_[35] = true;
@@ -990,6 +1323,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             agreementVersion_=std::make_shared<std::string>(pJson[pMasqueradingVector[35]].asString());
         }
     }
+
     if(!pMasqueradingVector[36].empty() && pJson.isMember(pMasqueradingVector[36]))
     {
         dirtyFlag_[36] = true;
@@ -998,6 +1332,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             supportPriority_=std::make_shared<std::string>(pJson[pMasqueradingVector[36]].asString());
         }
     }
+
     if(!pMasqueradingVector[37].empty() && pJson.isMember(pMasqueradingVector[37]))
     {
         dirtyFlag_[37] = true;
@@ -1006,6 +1341,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             notes_=std::make_shared<std::string>(pJson[pMasqueradingVector[37]].asString());
         }
     }
+
     if(!pMasqueradingVector[38].empty() && pJson.isMember(pMasqueradingVector[38]))
     {
         dirtyFlag_[38] = true;
@@ -1014,6 +1350,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             auto timeStr = pJson[pMasqueradingVector[38]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1032,6 +1369,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             }
         }
     }
+
     if(!pMasqueradingVector[39].empty() && pJson.isMember(pMasqueradingVector[39]))
     {
         dirtyFlag_[39] = true;
@@ -1040,6 +1378,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             auto timeStr = pJson[pMasqueradingVector[39]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1058,6 +1397,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             }
         }
     }
+
     if(!pMasqueradingVector[40].empty() && pJson.isMember(pMasqueradingVector[40]))
     {
         dirtyFlag_[40] = true;
@@ -1066,6 +1406,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             partnershipType_=std::make_shared<std::string>(pJson[pMasqueradingVector[40]].asString());
         }
     }
+
     if(!pMasqueradingVector[41].empty() && pJson.isMember(pMasqueradingVector[41]))
     {
         dirtyFlag_[41] = true;
@@ -1074,10 +1415,12 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson, const std::vector
             regionOrState_=std::make_shared<std::string>(pJson[pMasqueradingVector[41]].asString());
         }
     }
+
 }
 
 AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -1086,6 +1429,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("name"))
     {
         dirtyFlag_[1]=true;
@@ -1094,6 +1438,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             name_=std::make_shared<std::string>(pJson["name"].asString());
         }
     }
+
     if(pJson.isMember("identifier"))
     {
         dirtyFlag_[2]=true;
@@ -1102,6 +1447,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             identifier_=std::make_shared<std::string>(pJson["identifier"].asString());
         }
     }
+
     if(pJson.isMember("contact_name"))
     {
         dirtyFlag_[3]=true;
@@ -1110,6 +1456,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             contactName_=std::make_shared<std::string>(pJson["contact_name"].asString());
         }
     }
+
     if(pJson.isMember("contact_email"))
     {
         dirtyFlag_[4]=true;
@@ -1118,6 +1465,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             contactEmail_=std::make_shared<std::string>(pJson["contact_email"].asString());
         }
     }
+
     if(pJson.isMember("contact_phone"))
     {
         dirtyFlag_[5]=true;
@@ -1126,6 +1474,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             contactPhone_=std::make_shared<std::string>(pJson["contact_phone"].asString());
         }
     }
+
     if(pJson.isMember("billing_email"))
     {
         dirtyFlag_[6]=true;
@@ -1134,6 +1483,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             billingEmail_=std::make_shared<std::string>(pJson["billing_email"].asString());
         }
     }
+
     if(pJson.isMember("country"))
     {
         dirtyFlag_[7]=true;
@@ -1142,6 +1492,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             country_=std::make_shared<std::string>(pJson["country"].asString());
         }
     }
+
     if(pJson.isMember("currency"))
     {
         dirtyFlag_[8]=true;
@@ -1150,6 +1501,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             currency_=std::make_shared<std::string>(pJson["currency"].asString());
         }
     }
+
     if(pJson.isMember("status"))
     {
         dirtyFlag_[9]=true;
@@ -1158,6 +1510,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             status_=std::make_shared<std::string>(pJson["status"].asString());
         }
     }
+
     if(pJson.isMember("ussd_code"))
     {
         dirtyFlag_[10]=true;
@@ -1166,6 +1519,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             ussdCode_=std::make_shared<std::string>(pJson["ussd_code"].asString());
         }
     }
+
     if(pJson.isMember("wssd_service_url"))
     {
         dirtyFlag_[11]=true;
@@ -1174,6 +1528,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             wssdServiceUrl_=std::make_shared<std::string>(pJson["wssd_service_url"].asString());
         }
     }
+
     if(pJson.isMember("sub_account_enabled"))
     {
         dirtyFlag_[12]=true;
@@ -1182,6 +1537,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             subAccountEnabled_=std::make_shared<bool>(pJson["sub_account_enabled"].asBool());
         }
     }
+
     if(pJson.isMember("require_two_factor_auth"))
     {
         dirtyFlag_[13]=true;
@@ -1190,6 +1546,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             requireTwoFactorAuth_=std::make_shared<bool>(pJson["require_two_factor_auth"].asBool());
         }
     }
+
     if(pJson.isMember("organization_logo"))
     {
         dirtyFlag_[14]=true;
@@ -1199,6 +1556,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             organizationLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
     if(pJson.isMember("commission_rate"))
     {
         dirtyFlag_[15]=true;
@@ -1207,6 +1565,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             commissionRate_=std::make_shared<std::string>(pJson["commission_rate"].asString());
         }
     }
+
     if(pJson.isMember("commission_type"))
     {
         dirtyFlag_[16]=true;
@@ -1215,6 +1574,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             commissionType_=std::make_shared<std::string>(pJson["commission_type"].asString());
         }
     }
+
     if(pJson.isMember("payment_due_date"))
     {
         dirtyFlag_[17]=true;
@@ -1223,6 +1583,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             paymentDueDate_=std::make_shared<int32_t>((int32_t)pJson["payment_due_date"].asInt64());
         }
     }
+
     if(pJson.isMember("minimum_payout_threshold"))
     {
         dirtyFlag_[18]=true;
@@ -1231,6 +1592,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             minimumPayoutThreshold_=std::make_shared<std::string>(pJson["minimum_payout_threshold"].asString());
         }
     }
+
     if(pJson.isMember("payment_method"))
     {
         dirtyFlag_[19]=true;
@@ -1239,6 +1601,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             paymentMethod_=std::make_shared<std::string>(pJson["payment_method"].asString());
         }
     }
+
     if(pJson.isMember("settlement_details"))
     {
         dirtyFlag_[20]=true;
@@ -1247,6 +1610,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             settlementDetails_=std::make_shared<std::string>(pJson["settlement_details"].asString());
         }
     }
+
     if(pJson.isMember("max_raffles_per_week"))
     {
         dirtyFlag_[21]=true;
@@ -1255,6 +1619,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             maxRafflesPerWeek_=std::make_shared<int32_t>((int32_t)pJson["max_raffles_per_week"].asInt64());
         }
     }
+
     if(pJson.isMember("requires_approval"))
     {
         dirtyFlag_[22]=true;
@@ -1263,6 +1628,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             requiresApproval_=std::make_shared<bool>(pJson["requires_approval"].asBool());
         }
     }
+
     if(pJson.isMember("total_tickets_sold"))
     {
         dirtyFlag_[23]=true;
@@ -1271,6 +1637,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             totalTicketsSold_=std::make_shared<int32_t>((int32_t)pJson["total_tickets_sold"].asInt64());
         }
     }
+
     if(pJson.isMember("total_revenue_generated"))
     {
         dirtyFlag_[24]=true;
@@ -1279,6 +1646,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             totalRevenueGenerated_=std::make_shared<std::string>(pJson["total_revenue_generated"].asString());
         }
     }
+
     if(pJson.isMember("total_commission_earned"))
     {
         dirtyFlag_[25]=true;
@@ -1287,6 +1655,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             totalCommissionEarned_=std::make_shared<std::string>(pJson["total_commission_earned"].asString());
         }
     }
+
     if(pJson.isMember("last_payout_date"))
     {
         dirtyFlag_[26]=true;
@@ -1295,6 +1664,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["last_payout_date"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1313,6 +1683,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("api_key"))
     {
         dirtyFlag_[27]=true;
@@ -1321,6 +1692,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             apiKey_=std::make_shared<std::string>(pJson["api_key"].asString());
         }
     }
+
     if(pJson.isMember("api_secret"))
     {
         dirtyFlag_[28]=true;
@@ -1329,6 +1701,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             apiSecret_=std::make_shared<std::string>(pJson["api_secret"].asString());
         }
     }
+
     if(pJson.isMember("ip_whitelist"))
     {
         dirtyFlag_[29]=true;
@@ -1337,6 +1710,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             ipWhitelist_=std::make_shared<std::string>(pJson["ip_whitelist"].asString());
         }
     }
+
     if(pJson.isMember("webhook_secret"))
     {
         dirtyFlag_[30]=true;
@@ -1345,6 +1719,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             webhookSecret_=std::make_shared<std::string>(pJson["webhook_secret"].asString());
         }
     }
+
     if(pJson.isMember("tax_id"))
     {
         dirtyFlag_[31]=true;
@@ -1353,6 +1728,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             taxId_=std::make_shared<std::string>(pJson["tax_id"].asString());
         }
     }
+
     if(pJson.isMember("legal_entity_name"))
     {
         dirtyFlag_[32]=true;
@@ -1361,6 +1737,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             legalEntityName_=std::make_shared<std::string>(pJson["legal_entity_name"].asString());
         }
     }
+
     if(pJson.isMember("kyc_verified"))
     {
         dirtyFlag_[33]=true;
@@ -1369,6 +1746,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             kycVerified_=std::make_shared<bool>(pJson["kyc_verified"].asBool());
         }
     }
+
     if(pJson.isMember("agreement_accepted_at"))
     {
         dirtyFlag_[34]=true;
@@ -1377,6 +1755,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["agreement_accepted_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1395,6 +1774,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("agreement_version"))
     {
         dirtyFlag_[35]=true;
@@ -1403,6 +1783,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             agreementVersion_=std::make_shared<std::string>(pJson["agreement_version"].asString());
         }
     }
+
     if(pJson.isMember("support_priority"))
     {
         dirtyFlag_[36]=true;
@@ -1411,6 +1792,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             supportPriority_=std::make_shared<std::string>(pJson["support_priority"].asString());
         }
     }
+
     if(pJson.isMember("notes"))
     {
         dirtyFlag_[37]=true;
@@ -1419,6 +1801,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             notes_=std::make_shared<std::string>(pJson["notes"].asString());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[38]=true;
@@ -1427,6 +1810,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1445,6 +1829,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[39]=true;
@@ -1453,6 +1838,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1471,6 +1857,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("partnership_type"))
     {
         dirtyFlag_[40]=true;
@@ -1479,6 +1866,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             partnershipType_=std::make_shared<std::string>(pJson["partnership_type"].asString());
         }
     }
+
     if(pJson.isMember("region_or_state"))
     {
         dirtyFlag_[41]=true;
@@ -1487,6 +1875,7 @@ AffiliatePartners::AffiliatePartners(const Json::Value &pJson) noexcept(false)
             regionOrState_=std::make_shared<std::string>(pJson["region_or_state"].asString());
         }
     }
+
 }
 
 void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
@@ -1497,6 +1886,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -1504,6 +1894,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -1512,6 +1903,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             name_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -1520,6 +1912,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             identifier_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -1528,6 +1921,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             contactName_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -1536,6 +1930,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             contactEmail_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -1544,6 +1939,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             contactPhone_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -1552,6 +1948,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             billingEmail_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -1560,6 +1957,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             country_=std::make_shared<std::string>(pJson[pMasqueradingVector[7]].asString());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -1568,6 +1966,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             currency_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -1576,6 +1975,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             status_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -1584,6 +1984,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             ussdCode_=std::make_shared<std::string>(pJson[pMasqueradingVector[10]].asString());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -1592,6 +1993,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             wssdServiceUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -1600,6 +2002,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             subAccountEnabled_=std::make_shared<bool>(pJson[pMasqueradingVector[12]].asBool());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -1608,6 +2011,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             requireTwoFactorAuth_=std::make_shared<bool>(pJson[pMasqueradingVector[13]].asBool());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -1617,6 +2021,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             organizationLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -1625,6 +2030,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             commissionRate_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
         }
     }
+
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
     {
         dirtyFlag_[16] = true;
@@ -1633,6 +2039,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             commissionType_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
         }
     }
+
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
     {
         dirtyFlag_[17] = true;
@@ -1641,6 +2048,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             paymentDueDate_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[17]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
     {
         dirtyFlag_[18] = true;
@@ -1649,6 +2057,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             minimumPayoutThreshold_=std::make_shared<std::string>(pJson[pMasqueradingVector[18]].asString());
         }
     }
+
     if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
     {
         dirtyFlag_[19] = true;
@@ -1657,6 +2066,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             paymentMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[19]].asString());
         }
     }
+
     if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
     {
         dirtyFlag_[20] = true;
@@ -1665,6 +2075,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             settlementDetails_=std::make_shared<std::string>(pJson[pMasqueradingVector[20]].asString());
         }
     }
+
     if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
     {
         dirtyFlag_[21] = true;
@@ -1673,6 +2084,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             maxRafflesPerWeek_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[21]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
     {
         dirtyFlag_[22] = true;
@@ -1681,6 +2093,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             requiresApproval_=std::make_shared<bool>(pJson[pMasqueradingVector[22]].asBool());
         }
     }
+
     if(!pMasqueradingVector[23].empty() && pJson.isMember(pMasqueradingVector[23]))
     {
         dirtyFlag_[23] = true;
@@ -1689,6 +2102,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             totalTicketsSold_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[23]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[24].empty() && pJson.isMember(pMasqueradingVector[24]))
     {
         dirtyFlag_[24] = true;
@@ -1697,6 +2111,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             totalRevenueGenerated_=std::make_shared<std::string>(pJson[pMasqueradingVector[24]].asString());
         }
     }
+
     if(!pMasqueradingVector[25].empty() && pJson.isMember(pMasqueradingVector[25]))
     {
         dirtyFlag_[25] = true;
@@ -1705,6 +2120,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             totalCommissionEarned_=std::make_shared<std::string>(pJson[pMasqueradingVector[25]].asString());
         }
     }
+
     if(!pMasqueradingVector[26].empty() && pJson.isMember(pMasqueradingVector[26]))
     {
         dirtyFlag_[26] = true;
@@ -1713,6 +2129,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[26]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1731,6 +2148,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[27].empty() && pJson.isMember(pMasqueradingVector[27]))
     {
         dirtyFlag_[27] = true;
@@ -1739,6 +2157,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             apiKey_=std::make_shared<std::string>(pJson[pMasqueradingVector[27]].asString());
         }
     }
+
     if(!pMasqueradingVector[28].empty() && pJson.isMember(pMasqueradingVector[28]))
     {
         dirtyFlag_[28] = true;
@@ -1747,6 +2166,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             apiSecret_=std::make_shared<std::string>(pJson[pMasqueradingVector[28]].asString());
         }
     }
+
     if(!pMasqueradingVector[29].empty() && pJson.isMember(pMasqueradingVector[29]))
     {
         dirtyFlag_[29] = true;
@@ -1755,6 +2175,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             ipWhitelist_=std::make_shared<std::string>(pJson[pMasqueradingVector[29]].asString());
         }
     }
+
     if(!pMasqueradingVector[30].empty() && pJson.isMember(pMasqueradingVector[30]))
     {
         dirtyFlag_[30] = true;
@@ -1763,6 +2184,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             webhookSecret_=std::make_shared<std::string>(pJson[pMasqueradingVector[30]].asString());
         }
     }
+
     if(!pMasqueradingVector[31].empty() && pJson.isMember(pMasqueradingVector[31]))
     {
         dirtyFlag_[31] = true;
@@ -1771,6 +2193,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             taxId_=std::make_shared<std::string>(pJson[pMasqueradingVector[31]].asString());
         }
     }
+
     if(!pMasqueradingVector[32].empty() && pJson.isMember(pMasqueradingVector[32]))
     {
         dirtyFlag_[32] = true;
@@ -1779,6 +2202,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             legalEntityName_=std::make_shared<std::string>(pJson[pMasqueradingVector[32]].asString());
         }
     }
+
     if(!pMasqueradingVector[33].empty() && pJson.isMember(pMasqueradingVector[33]))
     {
         dirtyFlag_[33] = true;
@@ -1787,6 +2211,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             kycVerified_=std::make_shared<bool>(pJson[pMasqueradingVector[33]].asBool());
         }
     }
+
     if(!pMasqueradingVector[34].empty() && pJson.isMember(pMasqueradingVector[34]))
     {
         dirtyFlag_[34] = true;
@@ -1795,6 +2220,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[34]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1813,6 +2239,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[35].empty() && pJson.isMember(pMasqueradingVector[35]))
     {
         dirtyFlag_[35] = true;
@@ -1821,6 +2248,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             agreementVersion_=std::make_shared<std::string>(pJson[pMasqueradingVector[35]].asString());
         }
     }
+
     if(!pMasqueradingVector[36].empty() && pJson.isMember(pMasqueradingVector[36]))
     {
         dirtyFlag_[36] = true;
@@ -1829,6 +2257,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             supportPriority_=std::make_shared<std::string>(pJson[pMasqueradingVector[36]].asString());
         }
     }
+
     if(!pMasqueradingVector[37].empty() && pJson.isMember(pMasqueradingVector[37]))
     {
         dirtyFlag_[37] = true;
@@ -1837,6 +2266,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             notes_=std::make_shared<std::string>(pJson[pMasqueradingVector[37]].asString());
         }
     }
+
     if(!pMasqueradingVector[38].empty() && pJson.isMember(pMasqueradingVector[38]))
     {
         dirtyFlag_[38] = true;
@@ -1845,6 +2275,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[38]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1863,6 +2294,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[39].empty() && pJson.isMember(pMasqueradingVector[39]))
     {
         dirtyFlag_[39] = true;
@@ -1871,6 +2303,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[39]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1889,6 +2322,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[40].empty() && pJson.isMember(pMasqueradingVector[40]))
     {
         dirtyFlag_[40] = true;
@@ -1897,6 +2331,7 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             partnershipType_=std::make_shared<std::string>(pJson[pMasqueradingVector[40]].asString());
         }
     }
+
     if(!pMasqueradingVector[41].empty() && pJson.isMember(pMasqueradingVector[41]))
     {
         dirtyFlag_[41] = true;
@@ -1905,10 +2340,12 @@ void AffiliatePartners::updateByMasqueradedJson(const Json::Value &pJson,
             regionOrState_=std::make_shared<std::string>(pJson[pMasqueradingVector[41]].asString());
         }
     }
+
 }
 
 void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -1916,6 +2353,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("name"))
     {
         dirtyFlag_[1] = true;
@@ -1924,6 +2362,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             name_=std::make_shared<std::string>(pJson["name"].asString());
         }
     }
+
     if(pJson.isMember("identifier"))
     {
         dirtyFlag_[2] = true;
@@ -1932,6 +2371,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             identifier_=std::make_shared<std::string>(pJson["identifier"].asString());
         }
     }
+
     if(pJson.isMember("contact_name"))
     {
         dirtyFlag_[3] = true;
@@ -1940,6 +2380,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             contactName_=std::make_shared<std::string>(pJson["contact_name"].asString());
         }
     }
+
     if(pJson.isMember("contact_email"))
     {
         dirtyFlag_[4] = true;
@@ -1948,6 +2389,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             contactEmail_=std::make_shared<std::string>(pJson["contact_email"].asString());
         }
     }
+
     if(pJson.isMember("contact_phone"))
     {
         dirtyFlag_[5] = true;
@@ -1956,6 +2398,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             contactPhone_=std::make_shared<std::string>(pJson["contact_phone"].asString());
         }
     }
+
     if(pJson.isMember("billing_email"))
     {
         dirtyFlag_[6] = true;
@@ -1964,6 +2407,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             billingEmail_=std::make_shared<std::string>(pJson["billing_email"].asString());
         }
     }
+
     if(pJson.isMember("country"))
     {
         dirtyFlag_[7] = true;
@@ -1972,6 +2416,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             country_=std::make_shared<std::string>(pJson["country"].asString());
         }
     }
+
     if(pJson.isMember("currency"))
     {
         dirtyFlag_[8] = true;
@@ -1980,6 +2425,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             currency_=std::make_shared<std::string>(pJson["currency"].asString());
         }
     }
+
     if(pJson.isMember("status"))
     {
         dirtyFlag_[9] = true;
@@ -1988,6 +2434,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             status_=std::make_shared<std::string>(pJson["status"].asString());
         }
     }
+
     if(pJson.isMember("ussd_code"))
     {
         dirtyFlag_[10] = true;
@@ -1996,6 +2443,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             ussdCode_=std::make_shared<std::string>(pJson["ussd_code"].asString());
         }
     }
+
     if(pJson.isMember("wssd_service_url"))
     {
         dirtyFlag_[11] = true;
@@ -2004,6 +2452,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             wssdServiceUrl_=std::make_shared<std::string>(pJson["wssd_service_url"].asString());
         }
     }
+
     if(pJson.isMember("sub_account_enabled"))
     {
         dirtyFlag_[12] = true;
@@ -2012,6 +2461,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             subAccountEnabled_=std::make_shared<bool>(pJson["sub_account_enabled"].asBool());
         }
     }
+
     if(pJson.isMember("require_two_factor_auth"))
     {
         dirtyFlag_[13] = true;
@@ -2020,6 +2470,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             requireTwoFactorAuth_=std::make_shared<bool>(pJson["require_two_factor_auth"].asBool());
         }
     }
+
     if(pJson.isMember("organization_logo"))
     {
         dirtyFlag_[14] = true;
@@ -2029,6 +2480,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             organizationLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
     if(pJson.isMember("commission_rate"))
     {
         dirtyFlag_[15] = true;
@@ -2037,6 +2489,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             commissionRate_=std::make_shared<std::string>(pJson["commission_rate"].asString());
         }
     }
+
     if(pJson.isMember("commission_type"))
     {
         dirtyFlag_[16] = true;
@@ -2045,6 +2498,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             commissionType_=std::make_shared<std::string>(pJson["commission_type"].asString());
         }
     }
+
     if(pJson.isMember("payment_due_date"))
     {
         dirtyFlag_[17] = true;
@@ -2053,6 +2507,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             paymentDueDate_=std::make_shared<int32_t>((int32_t)pJson["payment_due_date"].asInt64());
         }
     }
+
     if(pJson.isMember("minimum_payout_threshold"))
     {
         dirtyFlag_[18] = true;
@@ -2061,6 +2516,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             minimumPayoutThreshold_=std::make_shared<std::string>(pJson["minimum_payout_threshold"].asString());
         }
     }
+
     if(pJson.isMember("payment_method"))
     {
         dirtyFlag_[19] = true;
@@ -2069,6 +2525,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             paymentMethod_=std::make_shared<std::string>(pJson["payment_method"].asString());
         }
     }
+
     if(pJson.isMember("settlement_details"))
     {
         dirtyFlag_[20] = true;
@@ -2077,6 +2534,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             settlementDetails_=std::make_shared<std::string>(pJson["settlement_details"].asString());
         }
     }
+
     if(pJson.isMember("max_raffles_per_week"))
     {
         dirtyFlag_[21] = true;
@@ -2085,6 +2543,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             maxRafflesPerWeek_=std::make_shared<int32_t>((int32_t)pJson["max_raffles_per_week"].asInt64());
         }
     }
+
     if(pJson.isMember("requires_approval"))
     {
         dirtyFlag_[22] = true;
@@ -2093,6 +2552,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             requiresApproval_=std::make_shared<bool>(pJson["requires_approval"].asBool());
         }
     }
+
     if(pJson.isMember("total_tickets_sold"))
     {
         dirtyFlag_[23] = true;
@@ -2101,6 +2561,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             totalTicketsSold_=std::make_shared<int32_t>((int32_t)pJson["total_tickets_sold"].asInt64());
         }
     }
+
     if(pJson.isMember("total_revenue_generated"))
     {
         dirtyFlag_[24] = true;
@@ -2109,6 +2570,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             totalRevenueGenerated_=std::make_shared<std::string>(pJson["total_revenue_generated"].asString());
         }
     }
+
     if(pJson.isMember("total_commission_earned"))
     {
         dirtyFlag_[25] = true;
@@ -2117,6 +2579,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             totalCommissionEarned_=std::make_shared<std::string>(pJson["total_commission_earned"].asString());
         }
     }
+
     if(pJson.isMember("last_payout_date"))
     {
         dirtyFlag_[26] = true;
@@ -2125,6 +2588,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["last_payout_date"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -2143,6 +2607,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("api_key"))
     {
         dirtyFlag_[27] = true;
@@ -2151,6 +2616,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             apiKey_=std::make_shared<std::string>(pJson["api_key"].asString());
         }
     }
+
     if(pJson.isMember("api_secret"))
     {
         dirtyFlag_[28] = true;
@@ -2159,6 +2625,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             apiSecret_=std::make_shared<std::string>(pJson["api_secret"].asString());
         }
     }
+
     if(pJson.isMember("ip_whitelist"))
     {
         dirtyFlag_[29] = true;
@@ -2167,6 +2634,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             ipWhitelist_=std::make_shared<std::string>(pJson["ip_whitelist"].asString());
         }
     }
+
     if(pJson.isMember("webhook_secret"))
     {
         dirtyFlag_[30] = true;
@@ -2175,6 +2643,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             webhookSecret_=std::make_shared<std::string>(pJson["webhook_secret"].asString());
         }
     }
+
     if(pJson.isMember("tax_id"))
     {
         dirtyFlag_[31] = true;
@@ -2183,6 +2652,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             taxId_=std::make_shared<std::string>(pJson["tax_id"].asString());
         }
     }
+
     if(pJson.isMember("legal_entity_name"))
     {
         dirtyFlag_[32] = true;
@@ -2191,6 +2661,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             legalEntityName_=std::make_shared<std::string>(pJson["legal_entity_name"].asString());
         }
     }
+
     if(pJson.isMember("kyc_verified"))
     {
         dirtyFlag_[33] = true;
@@ -2199,6 +2670,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             kycVerified_=std::make_shared<bool>(pJson["kyc_verified"].asBool());
         }
     }
+
     if(pJson.isMember("agreement_accepted_at"))
     {
         dirtyFlag_[34] = true;
@@ -2207,6 +2679,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["agreement_accepted_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -2225,6 +2698,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("agreement_version"))
     {
         dirtyFlag_[35] = true;
@@ -2233,6 +2707,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             agreementVersion_=std::make_shared<std::string>(pJson["agreement_version"].asString());
         }
     }
+
     if(pJson.isMember("support_priority"))
     {
         dirtyFlag_[36] = true;
@@ -2241,6 +2716,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             supportPriority_=std::make_shared<std::string>(pJson["support_priority"].asString());
         }
     }
+
     if(pJson.isMember("notes"))
     {
         dirtyFlag_[37] = true;
@@ -2249,6 +2725,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             notes_=std::make_shared<std::string>(pJson["notes"].asString());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[38] = true;
@@ -2257,6 +2734,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -2275,6 +2753,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[39] = true;
@@ -2283,6 +2762,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -2301,6 +2781,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("partnership_type"))
     {
         dirtyFlag_[40] = true;
@@ -2309,6 +2790,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             partnershipType_=std::make_shared<std::string>(pJson["partnership_type"].asString());
         }
     }
+
     if(pJson.isMember("region_or_state"))
     {
         dirtyFlag_[41] = true;
@@ -2317,6 +2799,7 @@ void AffiliatePartners::updateByJson(const Json::Value &pJson) noexcept(false)
             regionOrState_=std::make_shared<std::string>(pJson["region_or_state"].asString());
         }
     }
+
 }
 
 const std::string &AffiliatePartners::getValueOfId() const noexcept
@@ -3394,6 +3877,7 @@ void AffiliatePartners::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &AffiliatePartners::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -3439,12 +3923,14 @@ const std::vector<std::string> &AffiliatePartners::insertColumns() noexcept
         "updated_at",
         "partnership_type",
         "region_or_state"
+
     };
     return inCols;
 }
 
 void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -3456,6 +3942,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getName())
@@ -3467,6 +3954,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getIdentifier())
@@ -3478,6 +3966,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getContactName())
@@ -3489,6 +3978,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getContactEmail())
@@ -3500,6 +3990,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getContactPhone())
@@ -3511,6 +4002,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getBillingEmail())
@@ -3522,6 +4014,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getCountry())
@@ -3533,6 +4026,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getCurrency())
@@ -3544,6 +4038,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getStatus())
@@ -3555,6 +4050,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getUssdCode())
@@ -3566,6 +4062,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getWssdServiceUrl())
@@ -3577,6 +4074,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getSubAccountEnabled())
@@ -3588,6 +4086,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getRequireTwoFactorAuth())
@@ -3599,6 +4098,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getOrganizationLogo())
@@ -3610,6 +4110,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getCommissionRate())
@@ -3621,6 +4122,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[16])
     {
         if(getCommissionType())
@@ -3632,6 +4134,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[17])
     {
         if(getPaymentDueDate())
@@ -3643,6 +4146,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[18])
     {
         if(getMinimumPayoutThreshold())
@@ -3654,6 +4158,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[19])
     {
         if(getPaymentMethod())
@@ -3665,6 +4170,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[20])
     {
         if(getSettlementDetails())
@@ -3676,6 +4182,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[21])
     {
         if(getMaxRafflesPerWeek())
@@ -3687,6 +4194,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[22])
     {
         if(getRequiresApproval())
@@ -3698,6 +4206,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[23])
     {
         if(getTotalTicketsSold())
@@ -3709,6 +4218,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[24])
     {
         if(getTotalRevenueGenerated())
@@ -3720,6 +4230,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[25])
     {
         if(getTotalCommissionEarned())
@@ -3731,6 +4242,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[26])
     {
         if(getLastPayoutDate())
@@ -3742,6 +4254,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[27])
     {
         if(getApiKey())
@@ -3753,6 +4266,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[28])
     {
         if(getApiSecret())
@@ -3764,6 +4278,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[29])
     {
         if(getIpWhitelist())
@@ -3775,6 +4290,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[30])
     {
         if(getWebhookSecret())
@@ -3786,6 +4302,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[31])
     {
         if(getTaxId())
@@ -3797,6 +4314,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[32])
     {
         if(getLegalEntityName())
@@ -3808,6 +4326,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[33])
     {
         if(getKycVerified())
@@ -3819,6 +4338,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[34])
     {
         if(getAgreementAcceptedAt())
@@ -3830,6 +4350,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[35])
     {
         if(getAgreementVersion())
@@ -3841,6 +4362,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[36])
     {
         if(getSupportPriority())
@@ -3852,6 +4374,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[37])
     {
         if(getNotes())
@@ -3863,6 +4386,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[38])
     {
         if(getCreatedAt())
@@ -3874,6 +4398,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[39])
     {
         if(getUpdatedAt())
@@ -3885,6 +4410,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[40])
     {
         if(getPartnershipType())
@@ -3896,6 +4422,7 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[41])
     {
         if(getRegionOrState())
@@ -3907,184 +4434,229 @@ void AffiliatePartners::outputArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> AffiliatePartners::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     if(dirtyFlag_[10])
     {
         ret.push_back(getColumnName(10));
     }
+
     if(dirtyFlag_[11])
     {
         ret.push_back(getColumnName(11));
     }
+
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
     }
+
     if(dirtyFlag_[13])
     {
         ret.push_back(getColumnName(13));
     }
+
     if(dirtyFlag_[14])
     {
         ret.push_back(getColumnName(14));
     }
+
     if(dirtyFlag_[15])
     {
         ret.push_back(getColumnName(15));
     }
+
     if(dirtyFlag_[16])
     {
         ret.push_back(getColumnName(16));
     }
+
     if(dirtyFlag_[17])
     {
         ret.push_back(getColumnName(17));
     }
+
     if(dirtyFlag_[18])
     {
         ret.push_back(getColumnName(18));
     }
+
     if(dirtyFlag_[19])
     {
         ret.push_back(getColumnName(19));
     }
+
     if(dirtyFlag_[20])
     {
         ret.push_back(getColumnName(20));
     }
+
     if(dirtyFlag_[21])
     {
         ret.push_back(getColumnName(21));
     }
+
     if(dirtyFlag_[22])
     {
         ret.push_back(getColumnName(22));
     }
+
     if(dirtyFlag_[23])
     {
         ret.push_back(getColumnName(23));
     }
+
     if(dirtyFlag_[24])
     {
         ret.push_back(getColumnName(24));
     }
+
     if(dirtyFlag_[25])
     {
         ret.push_back(getColumnName(25));
     }
+
     if(dirtyFlag_[26])
     {
         ret.push_back(getColumnName(26));
     }
+
     if(dirtyFlag_[27])
     {
         ret.push_back(getColumnName(27));
     }
+
     if(dirtyFlag_[28])
     {
         ret.push_back(getColumnName(28));
     }
+
     if(dirtyFlag_[29])
     {
         ret.push_back(getColumnName(29));
     }
+
     if(dirtyFlag_[30])
     {
         ret.push_back(getColumnName(30));
     }
+
     if(dirtyFlag_[31])
     {
         ret.push_back(getColumnName(31));
     }
+
     if(dirtyFlag_[32])
     {
         ret.push_back(getColumnName(32));
     }
+
     if(dirtyFlag_[33])
     {
         ret.push_back(getColumnName(33));
     }
+
     if(dirtyFlag_[34])
     {
         ret.push_back(getColumnName(34));
     }
+
     if(dirtyFlag_[35])
     {
         ret.push_back(getColumnName(35));
     }
+
     if(dirtyFlag_[36])
     {
         ret.push_back(getColumnName(36));
     }
+
     if(dirtyFlag_[37])
     {
         ret.push_back(getColumnName(37));
     }
+
     if(dirtyFlag_[38])
     {
         ret.push_back(getColumnName(38));
     }
+
     if(dirtyFlag_[39])
     {
         ret.push_back(getColumnName(39));
     }
+
     if(dirtyFlag_[40])
     {
         ret.push_back(getColumnName(40));
     }
+
     if(dirtyFlag_[41])
     {
         ret.push_back(getColumnName(41));
     }
+
     return ret;
 }
 
 void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -4096,6 +4668,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getName())
@@ -4107,6 +4680,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getIdentifier())
@@ -4118,6 +4692,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getContactName())
@@ -4129,6 +4704,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getContactEmail())
@@ -4140,6 +4716,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getContactPhone())
@@ -4151,6 +4728,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getBillingEmail())
@@ -4162,6 +4740,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getCountry())
@@ -4173,6 +4752,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getCurrency())
@@ -4184,6 +4764,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getStatus())
@@ -4195,6 +4776,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getUssdCode())
@@ -4206,6 +4788,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getWssdServiceUrl())
@@ -4217,6 +4800,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getSubAccountEnabled())
@@ -4228,6 +4812,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getRequireTwoFactorAuth())
@@ -4239,6 +4824,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getOrganizationLogo())
@@ -4250,6 +4836,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getCommissionRate())
@@ -4261,6 +4848,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[16])
     {
         if(getCommissionType())
@@ -4272,6 +4860,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[17])
     {
         if(getPaymentDueDate())
@@ -4283,6 +4872,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[18])
     {
         if(getMinimumPayoutThreshold())
@@ -4294,6 +4884,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[19])
     {
         if(getPaymentMethod())
@@ -4305,6 +4896,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[20])
     {
         if(getSettlementDetails())
@@ -4316,6 +4908,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[21])
     {
         if(getMaxRafflesPerWeek())
@@ -4327,6 +4920,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[22])
     {
         if(getRequiresApproval())
@@ -4338,6 +4932,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[23])
     {
         if(getTotalTicketsSold())
@@ -4349,6 +4944,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[24])
     {
         if(getTotalRevenueGenerated())
@@ -4360,6 +4956,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[25])
     {
         if(getTotalCommissionEarned())
@@ -4371,6 +4968,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[26])
     {
         if(getLastPayoutDate())
@@ -4382,6 +4980,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[27])
     {
         if(getApiKey())
@@ -4393,6 +4992,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[28])
     {
         if(getApiSecret())
@@ -4404,6 +5004,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[29])
     {
         if(getIpWhitelist())
@@ -4415,6 +5016,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[30])
     {
         if(getWebhookSecret())
@@ -4426,6 +5028,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[31])
     {
         if(getTaxId())
@@ -4437,6 +5040,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[32])
     {
         if(getLegalEntityName())
@@ -4448,6 +5052,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[33])
     {
         if(getKycVerified())
@@ -4459,6 +5064,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[34])
     {
         if(getAgreementAcceptedAt())
@@ -4470,6 +5076,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[35])
     {
         if(getAgreementVersion())
@@ -4481,6 +5088,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[36])
     {
         if(getSupportPriority())
@@ -4492,6 +5100,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[37])
     {
         if(getNotes())
@@ -4503,6 +5112,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[38])
     {
         if(getCreatedAt())
@@ -4514,6 +5124,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[39])
     {
         if(getUpdatedAt())
@@ -4525,6 +5136,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[40])
     {
         if(getPartnershipType())
@@ -4536,6 +5148,7 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[41])
     {
         if(getRegionOrState())
@@ -4547,346 +5160,474 @@ void AffiliatePartners::updateArgs(drogon::orm::internal::SqlBinder &binder) con
             binder << nullptr;
         }
     }
+
 }
 Json::Value AffiliatePartners::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getName())
     {
+
         ret["name"]=getValueOfName();
+
     }
     else
     {
         ret["name"]=Json::Value();
     }
+
     if(getIdentifier())
     {
+
         ret["identifier"]=getValueOfIdentifier();
+
     }
     else
     {
         ret["identifier"]=Json::Value();
     }
+
     if(getContactName())
     {
+
         ret["contact_name"]=getValueOfContactName();
+
     }
     else
     {
         ret["contact_name"]=Json::Value();
     }
+
     if(getContactEmail())
     {
+
         ret["contact_email"]=getValueOfContactEmail();
+
     }
     else
     {
         ret["contact_email"]=Json::Value();
     }
+
     if(getContactPhone())
     {
+
         ret["contact_phone"]=getValueOfContactPhone();
+
     }
     else
     {
         ret["contact_phone"]=Json::Value();
     }
+
     if(getBillingEmail())
     {
+
         ret["billing_email"]=getValueOfBillingEmail();
+
     }
     else
     {
         ret["billing_email"]=Json::Value();
     }
+
     if(getCountry())
     {
+
         ret["country"]=getValueOfCountry();
+
     }
     else
     {
         ret["country"]=Json::Value();
     }
+
     if(getCurrency())
     {
+
         ret["currency"]=getValueOfCurrency();
+
     }
     else
     {
         ret["currency"]=Json::Value();
     }
+
     if(getStatus())
     {
+
         ret["status"]=getValueOfStatus();
+
     }
     else
     {
         ret["status"]=Json::Value();
     }
+
     if(getUssdCode())
     {
+
         ret["ussd_code"]=getValueOfUssdCode();
+
     }
     else
     {
         ret["ussd_code"]=Json::Value();
     }
+
     if(getWssdServiceUrl())
     {
+
         ret["wssd_service_url"]=getValueOfWssdServiceUrl();
+
     }
     else
     {
         ret["wssd_service_url"]=Json::Value();
     }
+
     if(getSubAccountEnabled())
     {
+
         ret["sub_account_enabled"]=getValueOfSubAccountEnabled();
+
     }
     else
     {
         ret["sub_account_enabled"]=Json::Value();
     }
+
     if(getRequireTwoFactorAuth())
     {
+
         ret["require_two_factor_auth"]=getValueOfRequireTwoFactorAuth();
+
     }
     else
     {
         ret["require_two_factor_auth"]=Json::Value();
     }
+
     if(getOrganizationLogo())
     {
+
         ret["organization_logo"]=drogon::utils::base64Encode((const unsigned char *)getOrganizationLogo()->data(),getOrganizationLogo()->size());
+
     }
     else
     {
         ret["organization_logo"]=Json::Value();
     }
+
     if(getCommissionRate())
     {
+
         ret["commission_rate"]=getValueOfCommissionRate();
+
     }
     else
     {
         ret["commission_rate"]=Json::Value();
     }
+
     if(getCommissionType())
     {
+
         ret["commission_type"]=getValueOfCommissionType();
+
     }
     else
     {
         ret["commission_type"]=Json::Value();
     }
+
     if(getPaymentDueDate())
     {
+
         ret["payment_due_date"]=getValueOfPaymentDueDate();
+
     }
     else
     {
         ret["payment_due_date"]=Json::Value();
     }
+
     if(getMinimumPayoutThreshold())
     {
+
         ret["minimum_payout_threshold"]=getValueOfMinimumPayoutThreshold();
+
     }
     else
     {
         ret["minimum_payout_threshold"]=Json::Value();
     }
+
     if(getPaymentMethod())
     {
+
         ret["payment_method"]=getValueOfPaymentMethod();
+
     }
     else
     {
         ret["payment_method"]=Json::Value();
     }
+
     if(getSettlementDetails())
     {
+
         ret["settlement_details"]=getValueOfSettlementDetails();
+
     }
     else
     {
         ret["settlement_details"]=Json::Value();
     }
+
     if(getMaxRafflesPerWeek())
     {
+
         ret["max_raffles_per_week"]=getValueOfMaxRafflesPerWeek();
+
     }
     else
     {
         ret["max_raffles_per_week"]=Json::Value();
     }
+
     if(getRequiresApproval())
     {
+
         ret["requires_approval"]=getValueOfRequiresApproval();
+
     }
     else
     {
         ret["requires_approval"]=Json::Value();
     }
+
     if(getTotalTicketsSold())
     {
+
         ret["total_tickets_sold"]=getValueOfTotalTicketsSold();
+
     }
     else
     {
         ret["total_tickets_sold"]=Json::Value();
     }
+
     if(getTotalRevenueGenerated())
     {
+
         ret["total_revenue_generated"]=getValueOfTotalRevenueGenerated();
+
     }
     else
     {
         ret["total_revenue_generated"]=Json::Value();
     }
+
     if(getTotalCommissionEarned())
     {
+
         ret["total_commission_earned"]=getValueOfTotalCommissionEarned();
+
     }
     else
     {
         ret["total_commission_earned"]=Json::Value();
     }
+
     if(getLastPayoutDate())
     {
+
         ret["last_payout_date"]=getLastPayoutDate()->toDbStringLocal();
+
     }
     else
     {
         ret["last_payout_date"]=Json::Value();
     }
+
     if(getApiKey())
     {
+
         ret["api_key"]=getValueOfApiKey();
+
     }
     else
     {
         ret["api_key"]=Json::Value();
     }
+
     if(getApiSecret())
     {
+
         ret["api_secret"]=getValueOfApiSecret();
+
     }
     else
     {
         ret["api_secret"]=Json::Value();
     }
+
     if(getIpWhitelist())
     {
+
         ret["ip_whitelist"]=getValueOfIpWhitelist();
+
     }
     else
     {
         ret["ip_whitelist"]=Json::Value();
     }
+
     if(getWebhookSecret())
     {
+
         ret["webhook_secret"]=getValueOfWebhookSecret();
+
     }
     else
     {
         ret["webhook_secret"]=Json::Value();
     }
+
     if(getTaxId())
     {
+
         ret["tax_id"]=getValueOfTaxId();
+
     }
     else
     {
         ret["tax_id"]=Json::Value();
     }
+
     if(getLegalEntityName())
     {
+
         ret["legal_entity_name"]=getValueOfLegalEntityName();
+
     }
     else
     {
         ret["legal_entity_name"]=Json::Value();
     }
+
     if(getKycVerified())
     {
+
         ret["kyc_verified"]=getValueOfKycVerified();
+
     }
     else
     {
         ret["kyc_verified"]=Json::Value();
     }
+
     if(getAgreementAcceptedAt())
     {
+
         ret["agreement_accepted_at"]=getAgreementAcceptedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["agreement_accepted_at"]=Json::Value();
     }
+
     if(getAgreementVersion())
     {
+
         ret["agreement_version"]=getValueOfAgreementVersion();
+
     }
     else
     {
         ret["agreement_version"]=Json::Value();
     }
+
     if(getSupportPriority())
     {
+
         ret["support_priority"]=getValueOfSupportPriority();
+
     }
     else
     {
         ret["support_priority"]=Json::Value();
     }
+
     if(getNotes())
     {
+
         ret["notes"]=getValueOfNotes();
+
     }
     else
     {
         ret["notes"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     if(getPartnershipType())
     {
+
         ret["partnership_type"]=getValueOfPartnershipType();
+
     }
     else
     {
         ret["partnership_type"]=Json::Value();
     }
+
     if(getRegionOrState())
     {
+
         ret["region_or_state"]=getValueOfRegionOrState();
+
     }
     else
     {
         ret["region_or_state"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -4901,1027 +5642,1325 @@ Json::Value AffiliatePartners::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 42)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getName())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfName();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getIdentifier())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfIdentifier();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getContactName())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfContactName();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getContactEmail())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfContactEmail();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getContactPhone())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfContactPhone();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getBillingEmail())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfBillingEmail();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getCountry())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfCountry();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getCurrency())
             {
+
                 ret[pMasqueradingVector[8]]=getValueOfCurrency();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getStatus())
             {
+
                 ret[pMasqueradingVector[9]]=getValueOfStatus();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[10].empty())
         {
             if(getUssdCode())
             {
+
                 ret[pMasqueradingVector[10]]=getValueOfUssdCode();
+
             }
             else
             {
                 ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[11].empty())
         {
             if(getWssdServiceUrl())
             {
+
                 ret[pMasqueradingVector[11]]=getValueOfWssdServiceUrl();
+
             }
             else
             {
                 ret[pMasqueradingVector[11]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[12].empty())
         {
             if(getSubAccountEnabled())
             {
+
                 ret[pMasqueradingVector[12]]=getValueOfSubAccountEnabled();
+
             }
             else
             {
                 ret[pMasqueradingVector[12]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[13].empty())
         {
             if(getRequireTwoFactorAuth())
             {
+
                 ret[pMasqueradingVector[13]]=getValueOfRequireTwoFactorAuth();
+
             }
             else
             {
                 ret[pMasqueradingVector[13]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[14].empty())
         {
             if(getOrganizationLogo())
             {
+
                 ret[pMasqueradingVector[14]]=drogon::utils::base64Encode((const unsigned char *)getOrganizationLogo()->data(),getOrganizationLogo()->size());
+
             }
             else
             {
                 ret[pMasqueradingVector[14]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[15].empty())
         {
             if(getCommissionRate())
             {
+
                 ret[pMasqueradingVector[15]]=getValueOfCommissionRate();
+
             }
             else
             {
                 ret[pMasqueradingVector[15]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[16].empty())
         {
             if(getCommissionType())
             {
+
                 ret[pMasqueradingVector[16]]=getValueOfCommissionType();
+
             }
             else
             {
                 ret[pMasqueradingVector[16]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[17].empty())
         {
             if(getPaymentDueDate())
             {
+
                 ret[pMasqueradingVector[17]]=getValueOfPaymentDueDate();
+
             }
             else
             {
                 ret[pMasqueradingVector[17]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[18].empty())
         {
             if(getMinimumPayoutThreshold())
             {
+
                 ret[pMasqueradingVector[18]]=getValueOfMinimumPayoutThreshold();
+
             }
             else
             {
                 ret[pMasqueradingVector[18]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[19].empty())
         {
             if(getPaymentMethod())
             {
+
                 ret[pMasqueradingVector[19]]=getValueOfPaymentMethod();
+
             }
             else
             {
                 ret[pMasqueradingVector[19]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[20].empty())
         {
             if(getSettlementDetails())
             {
+
                 ret[pMasqueradingVector[20]]=getValueOfSettlementDetails();
+
             }
             else
             {
                 ret[pMasqueradingVector[20]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[21].empty())
         {
             if(getMaxRafflesPerWeek())
             {
+
                 ret[pMasqueradingVector[21]]=getValueOfMaxRafflesPerWeek();
+
             }
             else
             {
                 ret[pMasqueradingVector[21]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[22].empty())
         {
             if(getRequiresApproval())
             {
+
                 ret[pMasqueradingVector[22]]=getValueOfRequiresApproval();
+
             }
             else
             {
                 ret[pMasqueradingVector[22]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[23].empty())
         {
             if(getTotalTicketsSold())
             {
+
                 ret[pMasqueradingVector[23]]=getValueOfTotalTicketsSold();
+
             }
             else
             {
                 ret[pMasqueradingVector[23]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[24].empty())
         {
             if(getTotalRevenueGenerated())
             {
+
                 ret[pMasqueradingVector[24]]=getValueOfTotalRevenueGenerated();
+
             }
             else
             {
                 ret[pMasqueradingVector[24]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[25].empty())
         {
             if(getTotalCommissionEarned())
             {
+
                 ret[pMasqueradingVector[25]]=getValueOfTotalCommissionEarned();
+
             }
             else
             {
                 ret[pMasqueradingVector[25]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[26].empty())
         {
             if(getLastPayoutDate())
             {
+
                 ret[pMasqueradingVector[26]]=getLastPayoutDate()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[26]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[27].empty())
         {
             if(getApiKey())
             {
+
                 ret[pMasqueradingVector[27]]=getValueOfApiKey();
+
             }
             else
             {
                 ret[pMasqueradingVector[27]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[28].empty())
         {
             if(getApiSecret())
             {
+
                 ret[pMasqueradingVector[28]]=getValueOfApiSecret();
+
             }
             else
             {
                 ret[pMasqueradingVector[28]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[29].empty())
         {
             if(getIpWhitelist())
             {
+
                 ret[pMasqueradingVector[29]]=getValueOfIpWhitelist();
+
             }
             else
             {
                 ret[pMasqueradingVector[29]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[30].empty())
         {
             if(getWebhookSecret())
             {
+
                 ret[pMasqueradingVector[30]]=getValueOfWebhookSecret();
+
             }
             else
             {
                 ret[pMasqueradingVector[30]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[31].empty())
         {
             if(getTaxId())
             {
+
                 ret[pMasqueradingVector[31]]=getValueOfTaxId();
+
             }
             else
             {
                 ret[pMasqueradingVector[31]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[32].empty())
         {
             if(getLegalEntityName())
             {
+
                 ret[pMasqueradingVector[32]]=getValueOfLegalEntityName();
+
             }
             else
             {
                 ret[pMasqueradingVector[32]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[33].empty())
         {
             if(getKycVerified())
             {
+
                 ret[pMasqueradingVector[33]]=getValueOfKycVerified();
+
             }
             else
             {
                 ret[pMasqueradingVector[33]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[34].empty())
         {
             if(getAgreementAcceptedAt())
             {
+
                 ret[pMasqueradingVector[34]]=getAgreementAcceptedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[34]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[35].empty())
         {
             if(getAgreementVersion())
             {
+
                 ret[pMasqueradingVector[35]]=getValueOfAgreementVersion();
+
             }
             else
             {
                 ret[pMasqueradingVector[35]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[36].empty())
         {
             if(getSupportPriority())
             {
+
                 ret[pMasqueradingVector[36]]=getValueOfSupportPriority();
+
             }
             else
             {
                 ret[pMasqueradingVector[36]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[37].empty())
         {
             if(getNotes())
             {
+
                 ret[pMasqueradingVector[37]]=getValueOfNotes();
+
             }
             else
             {
                 ret[pMasqueradingVector[37]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[38].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[38]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[38]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[39].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[39]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[39]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[40].empty())
         {
             if(getPartnershipType())
             {
+
                 ret[pMasqueradingVector[40]]=getValueOfPartnershipType();
+
             }
             else
             {
                 ret[pMasqueradingVector[40]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[41].empty())
         {
             if(getRegionOrState())
             {
+
                 ret[pMasqueradingVector[41]]=getValueOfRegionOrState();
+
             }
             else
             {
                 ret[pMasqueradingVector[41]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getName())
     {
+
         ret["name"]=getValueOfName();
+
     }
     else
     {
         ret["name"]=Json::Value();
     }
+
     if(getIdentifier())
     {
+
         ret["identifier"]=getValueOfIdentifier();
+
     }
     else
     {
         ret["identifier"]=Json::Value();
     }
+
     if(getContactName())
     {
+
         ret["contact_name"]=getValueOfContactName();
+
     }
     else
     {
         ret["contact_name"]=Json::Value();
     }
+
     if(getContactEmail())
     {
+
         ret["contact_email"]=getValueOfContactEmail();
+
     }
     else
     {
         ret["contact_email"]=Json::Value();
     }
+
     if(getContactPhone())
     {
+
         ret["contact_phone"]=getValueOfContactPhone();
+
     }
     else
     {
         ret["contact_phone"]=Json::Value();
     }
+
     if(getBillingEmail())
     {
+
         ret["billing_email"]=getValueOfBillingEmail();
+
     }
     else
     {
         ret["billing_email"]=Json::Value();
     }
+
     if(getCountry())
     {
+
         ret["country"]=getValueOfCountry();
+
     }
     else
     {
         ret["country"]=Json::Value();
     }
+
     if(getCurrency())
     {
+
         ret["currency"]=getValueOfCurrency();
+
     }
     else
     {
         ret["currency"]=Json::Value();
     }
+
     if(getStatus())
     {
+
         ret["status"]=getValueOfStatus();
+
     }
     else
     {
         ret["status"]=Json::Value();
     }
+
     if(getUssdCode())
     {
+
         ret["ussd_code"]=getValueOfUssdCode();
+
     }
     else
     {
         ret["ussd_code"]=Json::Value();
     }
+
     if(getWssdServiceUrl())
     {
+
         ret["wssd_service_url"]=getValueOfWssdServiceUrl();
+
     }
     else
     {
         ret["wssd_service_url"]=Json::Value();
     }
+
     if(getSubAccountEnabled())
     {
+
         ret["sub_account_enabled"]=getValueOfSubAccountEnabled();
+
     }
     else
     {
         ret["sub_account_enabled"]=Json::Value();
     }
+
     if(getRequireTwoFactorAuth())
     {
+
         ret["require_two_factor_auth"]=getValueOfRequireTwoFactorAuth();
+
     }
     else
     {
         ret["require_two_factor_auth"]=Json::Value();
     }
+
     if(getOrganizationLogo())
     {
+
         ret["organization_logo"]=drogon::utils::base64Encode((const unsigned char *)getOrganizationLogo()->data(),getOrganizationLogo()->size());
+
     }
     else
     {
         ret["organization_logo"]=Json::Value();
     }
+
     if(getCommissionRate())
     {
+
         ret["commission_rate"]=getValueOfCommissionRate();
+
     }
     else
     {
         ret["commission_rate"]=Json::Value();
     }
+
     if(getCommissionType())
     {
+
         ret["commission_type"]=getValueOfCommissionType();
+
     }
     else
     {
         ret["commission_type"]=Json::Value();
     }
+
     if(getPaymentDueDate())
     {
+
         ret["payment_due_date"]=getValueOfPaymentDueDate();
+
     }
     else
     {
         ret["payment_due_date"]=Json::Value();
     }
+
     if(getMinimumPayoutThreshold())
     {
+
         ret["minimum_payout_threshold"]=getValueOfMinimumPayoutThreshold();
+
     }
     else
     {
         ret["minimum_payout_threshold"]=Json::Value();
     }
+
     if(getPaymentMethod())
     {
+
         ret["payment_method"]=getValueOfPaymentMethod();
+
     }
     else
     {
         ret["payment_method"]=Json::Value();
     }
+
     if(getSettlementDetails())
     {
+
         ret["settlement_details"]=getValueOfSettlementDetails();
+
     }
     else
     {
         ret["settlement_details"]=Json::Value();
     }
+
     if(getMaxRafflesPerWeek())
     {
+
         ret["max_raffles_per_week"]=getValueOfMaxRafflesPerWeek();
+
     }
     else
     {
         ret["max_raffles_per_week"]=Json::Value();
     }
+
     if(getRequiresApproval())
     {
+
         ret["requires_approval"]=getValueOfRequiresApproval();
+
     }
     else
     {
         ret["requires_approval"]=Json::Value();
     }
+
     if(getTotalTicketsSold())
     {
+
         ret["total_tickets_sold"]=getValueOfTotalTicketsSold();
+
     }
     else
     {
         ret["total_tickets_sold"]=Json::Value();
     }
+
     if(getTotalRevenueGenerated())
     {
+
         ret["total_revenue_generated"]=getValueOfTotalRevenueGenerated();
+
     }
     else
     {
         ret["total_revenue_generated"]=Json::Value();
     }
+
     if(getTotalCommissionEarned())
     {
+
         ret["total_commission_earned"]=getValueOfTotalCommissionEarned();
+
     }
     else
     {
         ret["total_commission_earned"]=Json::Value();
     }
+
     if(getLastPayoutDate())
     {
+
         ret["last_payout_date"]=getLastPayoutDate()->toDbStringLocal();
+
     }
     else
     {
         ret["last_payout_date"]=Json::Value();
     }
+
     if(getApiKey())
     {
+
         ret["api_key"]=getValueOfApiKey();
+
     }
     else
     {
         ret["api_key"]=Json::Value();
     }
+
     if(getApiSecret())
     {
+
         ret["api_secret"]=getValueOfApiSecret();
+
     }
     else
     {
         ret["api_secret"]=Json::Value();
     }
+
     if(getIpWhitelist())
     {
+
         ret["ip_whitelist"]=getValueOfIpWhitelist();
+
     }
     else
     {
         ret["ip_whitelist"]=Json::Value();
     }
+
     if(getWebhookSecret())
     {
+
         ret["webhook_secret"]=getValueOfWebhookSecret();
+
     }
     else
     {
         ret["webhook_secret"]=Json::Value();
     }
+
     if(getTaxId())
     {
+
         ret["tax_id"]=getValueOfTaxId();
+
     }
     else
     {
         ret["tax_id"]=Json::Value();
     }
+
     if(getLegalEntityName())
     {
+
         ret["legal_entity_name"]=getValueOfLegalEntityName();
+
     }
     else
     {
         ret["legal_entity_name"]=Json::Value();
     }
+
     if(getKycVerified())
     {
+
         ret["kyc_verified"]=getValueOfKycVerified();
+
     }
     else
     {
         ret["kyc_verified"]=Json::Value();
     }
+
     if(getAgreementAcceptedAt())
     {
+
         ret["agreement_accepted_at"]=getAgreementAcceptedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["agreement_accepted_at"]=Json::Value();
     }
+
     if(getAgreementVersion())
     {
+
         ret["agreement_version"]=getValueOfAgreementVersion();
+
     }
     else
     {
         ret["agreement_version"]=Json::Value();
     }
+
     if(getSupportPriority())
     {
+
         ret["support_priority"]=getValueOfSupportPriority();
+
     }
     else
     {
         ret["support_priority"]=Json::Value();
     }
+
     if(getNotes())
     {
+
         ret["notes"]=getValueOfNotes();
+
     }
     else
     {
         ret["notes"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     if(getPartnershipType())
     {
+
         ret["partnership_type"]=getValueOfPartnershipType();
+
     }
     else
     {
         ret["partnership_type"]=Json::Value();
     }
+
     if(getRegionOrState())
     {
+
         ret["region_or_state"]=getValueOfRegionOrState();
+
     }
     else
     {
         ret["region_or_state"]=Json::Value();
     }
+
     return ret;
 }
 
 bool AffiliatePartners::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("name"))
     {
         if(!validJsonOfField(1, "name", pJson["name"], err, true))
             return false;
     }
+
     else
     {
         err="The name column cannot be null";
         return false;
     }
+
     if(pJson.isMember("identifier"))
     {
         if(!validJsonOfField(2, "identifier", pJson["identifier"], err, true))
             return false;
     }
+
     if(pJson.isMember("contact_name"))
     {
         if(!validJsonOfField(3, "contact_name", pJson["contact_name"], err, true))
             return false;
     }
+
     if(pJson.isMember("contact_email"))
     {
         if(!validJsonOfField(4, "contact_email", pJson["contact_email"], err, true))
             return false;
     }
+
     if(pJson.isMember("contact_phone"))
     {
         if(!validJsonOfField(5, "contact_phone", pJson["contact_phone"], err, true))
             return false;
     }
+
     if(pJson.isMember("billing_email"))
     {
         if(!validJsonOfField(6, "billing_email", pJson["billing_email"], err, true))
             return false;
     }
+
     if(pJson.isMember("country"))
     {
         if(!validJsonOfField(7, "country", pJson["country"], err, true))
             return false;
     }
+
     if(pJson.isMember("currency"))
     {
         if(!validJsonOfField(8, "currency", pJson["currency"], err, true))
             return false;
     }
+
     if(pJson.isMember("status"))
     {
         if(!validJsonOfField(9, "status", pJson["status"], err, true))
             return false;
     }
+
     if(pJson.isMember("ussd_code"))
     {
         if(!validJsonOfField(10, "ussd_code", pJson["ussd_code"], err, true))
             return false;
     }
+
     if(pJson.isMember("wssd_service_url"))
     {
         if(!validJsonOfField(11, "wssd_service_url", pJson["wssd_service_url"], err, true))
             return false;
     }
+
     if(pJson.isMember("sub_account_enabled"))
     {
         if(!validJsonOfField(12, "sub_account_enabled", pJson["sub_account_enabled"], err, true))
             return false;
     }
+
     if(pJson.isMember("require_two_factor_auth"))
     {
         if(!validJsonOfField(13, "require_two_factor_auth", pJson["require_two_factor_auth"], err, true))
             return false;
     }
+
     if(pJson.isMember("organization_logo"))
     {
         if(!validJsonOfField(14, "organization_logo", pJson["organization_logo"], err, true))
             return false;
     }
+
     if(pJson.isMember("commission_rate"))
     {
         if(!validJsonOfField(15, "commission_rate", pJson["commission_rate"], err, true))
             return false;
     }
+
     if(pJson.isMember("commission_type"))
     {
         if(!validJsonOfField(16, "commission_type", pJson["commission_type"], err, true))
             return false;
     }
+
     if(pJson.isMember("payment_due_date"))
     {
         if(!validJsonOfField(17, "payment_due_date", pJson["payment_due_date"], err, true))
             return false;
     }
+
     if(pJson.isMember("minimum_payout_threshold"))
     {
         if(!validJsonOfField(18, "minimum_payout_threshold", pJson["minimum_payout_threshold"], err, true))
             return false;
     }
+
     if(pJson.isMember("payment_method"))
     {
         if(!validJsonOfField(19, "payment_method", pJson["payment_method"], err, true))
             return false;
     }
+
     if(pJson.isMember("settlement_details"))
     {
         if(!validJsonOfField(20, "settlement_details", pJson["settlement_details"], err, true))
             return false;
     }
+
     if(pJson.isMember("max_raffles_per_week"))
     {
         if(!validJsonOfField(21, "max_raffles_per_week", pJson["max_raffles_per_week"], err, true))
             return false;
     }
+
     if(pJson.isMember("requires_approval"))
     {
         if(!validJsonOfField(22, "requires_approval", pJson["requires_approval"], err, true))
             return false;
     }
+
     if(pJson.isMember("total_tickets_sold"))
     {
         if(!validJsonOfField(23, "total_tickets_sold", pJson["total_tickets_sold"], err, true))
             return false;
     }
+
     if(pJson.isMember("total_revenue_generated"))
     {
         if(!validJsonOfField(24, "total_revenue_generated", pJson["total_revenue_generated"], err, true))
             return false;
     }
+
     if(pJson.isMember("total_commission_earned"))
     {
         if(!validJsonOfField(25, "total_commission_earned", pJson["total_commission_earned"], err, true))
             return false;
     }
+
     if(pJson.isMember("last_payout_date"))
     {
         if(!validJsonOfField(26, "last_payout_date", pJson["last_payout_date"], err, true))
             return false;
     }
+
     if(pJson.isMember("api_key"))
     {
         if(!validJsonOfField(27, "api_key", pJson["api_key"], err, true))
             return false;
     }
+
     if(pJson.isMember("api_secret"))
     {
         if(!validJsonOfField(28, "api_secret", pJson["api_secret"], err, true))
             return false;
     }
+
     if(pJson.isMember("ip_whitelist"))
     {
         if(!validJsonOfField(29, "ip_whitelist", pJson["ip_whitelist"], err, true))
             return false;
     }
+
     if(pJson.isMember("webhook_secret"))
     {
         if(!validJsonOfField(30, "webhook_secret", pJson["webhook_secret"], err, true))
             return false;
     }
+
     if(pJson.isMember("tax_id"))
     {
         if(!validJsonOfField(31, "tax_id", pJson["tax_id"], err, true))
             return false;
     }
+
     if(pJson.isMember("legal_entity_name"))
     {
         if(!validJsonOfField(32, "legal_entity_name", pJson["legal_entity_name"], err, true))
             return false;
     }
+
     if(pJson.isMember("kyc_verified"))
     {
         if(!validJsonOfField(33, "kyc_verified", pJson["kyc_verified"], err, true))
             return false;
     }
+
     if(pJson.isMember("agreement_accepted_at"))
     {
         if(!validJsonOfField(34, "agreement_accepted_at", pJson["agreement_accepted_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("agreement_version"))
     {
         if(!validJsonOfField(35, "agreement_version", pJson["agreement_version"], err, true))
             return false;
     }
+
     if(pJson.isMember("support_priority"))
     {
         if(!validJsonOfField(36, "support_priority", pJson["support_priority"], err, true))
             return false;
     }
+
     if(pJson.isMember("notes"))
     {
         if(!validJsonOfField(37, "notes", pJson["notes"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(38, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(39, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("partnership_type"))
     {
         if(!validJsonOfField(40, "partnership_type", pJson["partnership_type"], err, true))
             return false;
     }
+
     if(pJson.isMember("region_or_state"))
     {
         if(!validJsonOfField(41, "region_or_state", pJson["region_or_state"], err, true))
             return false;
     }
+
     return true;
 }
 bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -5934,6 +6973,7 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -5941,7 +6981,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -5949,12 +6991,15 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -5962,7 +7007,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -5970,7 +7017,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -5978,7 +7027,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -5986,7 +7037,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -5994,7 +7047,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -6002,7 +7057,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -6010,7 +7067,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -6018,7 +7077,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[10].empty())
       {
           if(pJson.isMember(pMasqueradingVector[10]))
@@ -6026,7 +7087,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[11].empty())
       {
           if(pJson.isMember(pMasqueradingVector[11]))
@@ -6034,7 +7097,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[12].empty())
       {
           if(pJson.isMember(pMasqueradingVector[12]))
@@ -6042,7 +7107,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[13].empty())
       {
           if(pJson.isMember(pMasqueradingVector[13]))
@@ -6050,7 +7117,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[14].empty())
       {
           if(pJson.isMember(pMasqueradingVector[14]))
@@ -6058,7 +7127,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[15].empty())
       {
           if(pJson.isMember(pMasqueradingVector[15]))
@@ -6066,7 +7137,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[16].empty())
       {
           if(pJson.isMember(pMasqueradingVector[16]))
@@ -6074,7 +7147,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[17].empty())
       {
           if(pJson.isMember(pMasqueradingVector[17]))
@@ -6082,7 +7157,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[18].empty())
       {
           if(pJson.isMember(pMasqueradingVector[18]))
@@ -6090,7 +7167,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[19].empty())
       {
           if(pJson.isMember(pMasqueradingVector[19]))
@@ -6098,7 +7177,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[20].empty())
       {
           if(pJson.isMember(pMasqueradingVector[20]))
@@ -6106,7 +7187,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[21].empty())
       {
           if(pJson.isMember(pMasqueradingVector[21]))
@@ -6114,7 +7197,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(21, pMasqueradingVector[21], pJson[pMasqueradingVector[21]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[22].empty())
       {
           if(pJson.isMember(pMasqueradingVector[22]))
@@ -6122,7 +7207,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[23].empty())
       {
           if(pJson.isMember(pMasqueradingVector[23]))
@@ -6130,7 +7217,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(23, pMasqueradingVector[23], pJson[pMasqueradingVector[23]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[24].empty())
       {
           if(pJson.isMember(pMasqueradingVector[24]))
@@ -6138,7 +7227,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(24, pMasqueradingVector[24], pJson[pMasqueradingVector[24]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[25].empty())
       {
           if(pJson.isMember(pMasqueradingVector[25]))
@@ -6146,7 +7237,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(25, pMasqueradingVector[25], pJson[pMasqueradingVector[25]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[26].empty())
       {
           if(pJson.isMember(pMasqueradingVector[26]))
@@ -6154,7 +7247,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(26, pMasqueradingVector[26], pJson[pMasqueradingVector[26]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[27].empty())
       {
           if(pJson.isMember(pMasqueradingVector[27]))
@@ -6162,7 +7257,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(27, pMasqueradingVector[27], pJson[pMasqueradingVector[27]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[28].empty())
       {
           if(pJson.isMember(pMasqueradingVector[28]))
@@ -6170,7 +7267,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(28, pMasqueradingVector[28], pJson[pMasqueradingVector[28]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[29].empty())
       {
           if(pJson.isMember(pMasqueradingVector[29]))
@@ -6178,7 +7277,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(29, pMasqueradingVector[29], pJson[pMasqueradingVector[29]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[30].empty())
       {
           if(pJson.isMember(pMasqueradingVector[30]))
@@ -6186,7 +7287,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(30, pMasqueradingVector[30], pJson[pMasqueradingVector[30]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[31].empty())
       {
           if(pJson.isMember(pMasqueradingVector[31]))
@@ -6194,7 +7297,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(31, pMasqueradingVector[31], pJson[pMasqueradingVector[31]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[32].empty())
       {
           if(pJson.isMember(pMasqueradingVector[32]))
@@ -6202,7 +7307,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(32, pMasqueradingVector[32], pJson[pMasqueradingVector[32]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[33].empty())
       {
           if(pJson.isMember(pMasqueradingVector[33]))
@@ -6210,7 +7317,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(33, pMasqueradingVector[33], pJson[pMasqueradingVector[33]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[34].empty())
       {
           if(pJson.isMember(pMasqueradingVector[34]))
@@ -6218,7 +7327,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(34, pMasqueradingVector[34], pJson[pMasqueradingVector[34]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[35].empty())
       {
           if(pJson.isMember(pMasqueradingVector[35]))
@@ -6226,7 +7337,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(35, pMasqueradingVector[35], pJson[pMasqueradingVector[35]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[36].empty())
       {
           if(pJson.isMember(pMasqueradingVector[36]))
@@ -6234,7 +7347,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(36, pMasqueradingVector[36], pJson[pMasqueradingVector[36]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[37].empty())
       {
           if(pJson.isMember(pMasqueradingVector[37]))
@@ -6242,7 +7357,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(37, pMasqueradingVector[37], pJson[pMasqueradingVector[37]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[38].empty())
       {
           if(pJson.isMember(pMasqueradingVector[38]))
@@ -6250,7 +7367,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(38, pMasqueradingVector[38], pJson[pMasqueradingVector[38]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[39].empty())
       {
           if(pJson.isMember(pMasqueradingVector[39]))
@@ -6258,7 +7377,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(39, pMasqueradingVector[39], pJson[pMasqueradingVector[39]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[40].empty())
       {
           if(pJson.isMember(pMasqueradingVector[40]))
@@ -6266,7 +7387,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(40, pMasqueradingVector[40], pJson[pMasqueradingVector[40]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[41].empty())
       {
           if(pJson.isMember(pMasqueradingVector[41]))
@@ -6274,7 +7397,9 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
               if(!validJsonOfField(41, pMasqueradingVector[41], pJson[pMasqueradingVector[41]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -6285,221 +7410,265 @@ bool AffiliatePartners::validateMasqueradedJsonForCreation(const Json::Value &pJ
 }
 bool AffiliatePartners::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("name"))
     {
         if(!validJsonOfField(1, "name", pJson["name"], err, false))
             return false;
     }
+
     if(pJson.isMember("identifier"))
     {
         if(!validJsonOfField(2, "identifier", pJson["identifier"], err, false))
             return false;
     }
+
     if(pJson.isMember("contact_name"))
     {
         if(!validJsonOfField(3, "contact_name", pJson["contact_name"], err, false))
             return false;
     }
+
     if(pJson.isMember("contact_email"))
     {
         if(!validJsonOfField(4, "contact_email", pJson["contact_email"], err, false))
             return false;
     }
+
     if(pJson.isMember("contact_phone"))
     {
         if(!validJsonOfField(5, "contact_phone", pJson["contact_phone"], err, false))
             return false;
     }
+
     if(pJson.isMember("billing_email"))
     {
         if(!validJsonOfField(6, "billing_email", pJson["billing_email"], err, false))
             return false;
     }
+
     if(pJson.isMember("country"))
     {
         if(!validJsonOfField(7, "country", pJson["country"], err, false))
             return false;
     }
+
     if(pJson.isMember("currency"))
     {
         if(!validJsonOfField(8, "currency", pJson["currency"], err, false))
             return false;
     }
+
     if(pJson.isMember("status"))
     {
         if(!validJsonOfField(9, "status", pJson["status"], err, false))
             return false;
     }
+
     if(pJson.isMember("ussd_code"))
     {
         if(!validJsonOfField(10, "ussd_code", pJson["ussd_code"], err, false))
             return false;
     }
+
     if(pJson.isMember("wssd_service_url"))
     {
         if(!validJsonOfField(11, "wssd_service_url", pJson["wssd_service_url"], err, false))
             return false;
     }
+
     if(pJson.isMember("sub_account_enabled"))
     {
         if(!validJsonOfField(12, "sub_account_enabled", pJson["sub_account_enabled"], err, false))
             return false;
     }
+
     if(pJson.isMember("require_two_factor_auth"))
     {
         if(!validJsonOfField(13, "require_two_factor_auth", pJson["require_two_factor_auth"], err, false))
             return false;
     }
+
     if(pJson.isMember("organization_logo"))
     {
         if(!validJsonOfField(14, "organization_logo", pJson["organization_logo"], err, false))
             return false;
     }
+
     if(pJson.isMember("commission_rate"))
     {
         if(!validJsonOfField(15, "commission_rate", pJson["commission_rate"], err, false))
             return false;
     }
+
     if(pJson.isMember("commission_type"))
     {
         if(!validJsonOfField(16, "commission_type", pJson["commission_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("payment_due_date"))
     {
         if(!validJsonOfField(17, "payment_due_date", pJson["payment_due_date"], err, false))
             return false;
     }
+
     if(pJson.isMember("minimum_payout_threshold"))
     {
         if(!validJsonOfField(18, "minimum_payout_threshold", pJson["minimum_payout_threshold"], err, false))
             return false;
     }
+
     if(pJson.isMember("payment_method"))
     {
         if(!validJsonOfField(19, "payment_method", pJson["payment_method"], err, false))
             return false;
     }
+
     if(pJson.isMember("settlement_details"))
     {
         if(!validJsonOfField(20, "settlement_details", pJson["settlement_details"], err, false))
             return false;
     }
+
     if(pJson.isMember("max_raffles_per_week"))
     {
         if(!validJsonOfField(21, "max_raffles_per_week", pJson["max_raffles_per_week"], err, false))
             return false;
     }
+
     if(pJson.isMember("requires_approval"))
     {
         if(!validJsonOfField(22, "requires_approval", pJson["requires_approval"], err, false))
             return false;
     }
+
     if(pJson.isMember("total_tickets_sold"))
     {
         if(!validJsonOfField(23, "total_tickets_sold", pJson["total_tickets_sold"], err, false))
             return false;
     }
+
     if(pJson.isMember("total_revenue_generated"))
     {
         if(!validJsonOfField(24, "total_revenue_generated", pJson["total_revenue_generated"], err, false))
             return false;
     }
+
     if(pJson.isMember("total_commission_earned"))
     {
         if(!validJsonOfField(25, "total_commission_earned", pJson["total_commission_earned"], err, false))
             return false;
     }
+
     if(pJson.isMember("last_payout_date"))
     {
         if(!validJsonOfField(26, "last_payout_date", pJson["last_payout_date"], err, false))
             return false;
     }
+
     if(pJson.isMember("api_key"))
     {
         if(!validJsonOfField(27, "api_key", pJson["api_key"], err, false))
             return false;
     }
+
     if(pJson.isMember("api_secret"))
     {
         if(!validJsonOfField(28, "api_secret", pJson["api_secret"], err, false))
             return false;
     }
+
     if(pJson.isMember("ip_whitelist"))
     {
         if(!validJsonOfField(29, "ip_whitelist", pJson["ip_whitelist"], err, false))
             return false;
     }
+
     if(pJson.isMember("webhook_secret"))
     {
         if(!validJsonOfField(30, "webhook_secret", pJson["webhook_secret"], err, false))
             return false;
     }
+
     if(pJson.isMember("tax_id"))
     {
         if(!validJsonOfField(31, "tax_id", pJson["tax_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("legal_entity_name"))
     {
         if(!validJsonOfField(32, "legal_entity_name", pJson["legal_entity_name"], err, false))
             return false;
     }
+
     if(pJson.isMember("kyc_verified"))
     {
         if(!validJsonOfField(33, "kyc_verified", pJson["kyc_verified"], err, false))
             return false;
     }
+
     if(pJson.isMember("agreement_accepted_at"))
     {
         if(!validJsonOfField(34, "agreement_accepted_at", pJson["agreement_accepted_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("agreement_version"))
     {
         if(!validJsonOfField(35, "agreement_version", pJson["agreement_version"], err, false))
             return false;
     }
+
     if(pJson.isMember("support_priority"))
     {
         if(!validJsonOfField(36, "support_priority", pJson["support_priority"], err, false))
             return false;
     }
+
     if(pJson.isMember("notes"))
     {
         if(!validJsonOfField(37, "notes", pJson["notes"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(38, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(39, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("partnership_type"))
     {
         if(!validJsonOfField(40, "partnership_type", pJson["partnership_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("region_or_state"))
     {
         if(!validJsonOfField(41, "region_or_state", pJson["region_or_state"], err, false))
             return false;
     }
+
     return true;
 }
 bool AffiliatePartners::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -6512,221 +7681,265 @@ bool AffiliatePartners::validateMasqueradedJsonForUpdate(const Json::Value &pJso
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
       {
           if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
       {
           if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
       {
           if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
       {
           if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
       {
           if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
       {
           if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
       {
           if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
       {
           if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[19].empty() && pJson.isMember(pMasqueradingVector[19]))
       {
           if(!validJsonOfField(19, pMasqueradingVector[19], pJson[pMasqueradingVector[19]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[20].empty() && pJson.isMember(pMasqueradingVector[20]))
       {
           if(!validJsonOfField(20, pMasqueradingVector[20], pJson[pMasqueradingVector[20]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[21].empty() && pJson.isMember(pMasqueradingVector[21]))
       {
           if(!validJsonOfField(21, pMasqueradingVector[21], pJson[pMasqueradingVector[21]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[22].empty() && pJson.isMember(pMasqueradingVector[22]))
       {
           if(!validJsonOfField(22, pMasqueradingVector[22], pJson[pMasqueradingVector[22]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[23].empty() && pJson.isMember(pMasqueradingVector[23]))
       {
           if(!validJsonOfField(23, pMasqueradingVector[23], pJson[pMasqueradingVector[23]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[24].empty() && pJson.isMember(pMasqueradingVector[24]))
       {
           if(!validJsonOfField(24, pMasqueradingVector[24], pJson[pMasqueradingVector[24]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[25].empty() && pJson.isMember(pMasqueradingVector[25]))
       {
           if(!validJsonOfField(25, pMasqueradingVector[25], pJson[pMasqueradingVector[25]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[26].empty() && pJson.isMember(pMasqueradingVector[26]))
       {
           if(!validJsonOfField(26, pMasqueradingVector[26], pJson[pMasqueradingVector[26]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[27].empty() && pJson.isMember(pMasqueradingVector[27]))
       {
           if(!validJsonOfField(27, pMasqueradingVector[27], pJson[pMasqueradingVector[27]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[28].empty() && pJson.isMember(pMasqueradingVector[28]))
       {
           if(!validJsonOfField(28, pMasqueradingVector[28], pJson[pMasqueradingVector[28]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[29].empty() && pJson.isMember(pMasqueradingVector[29]))
       {
           if(!validJsonOfField(29, pMasqueradingVector[29], pJson[pMasqueradingVector[29]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[30].empty() && pJson.isMember(pMasqueradingVector[30]))
       {
           if(!validJsonOfField(30, pMasqueradingVector[30], pJson[pMasqueradingVector[30]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[31].empty() && pJson.isMember(pMasqueradingVector[31]))
       {
           if(!validJsonOfField(31, pMasqueradingVector[31], pJson[pMasqueradingVector[31]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[32].empty() && pJson.isMember(pMasqueradingVector[32]))
       {
           if(!validJsonOfField(32, pMasqueradingVector[32], pJson[pMasqueradingVector[32]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[33].empty() && pJson.isMember(pMasqueradingVector[33]))
       {
           if(!validJsonOfField(33, pMasqueradingVector[33], pJson[pMasqueradingVector[33]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[34].empty() && pJson.isMember(pMasqueradingVector[34]))
       {
           if(!validJsonOfField(34, pMasqueradingVector[34], pJson[pMasqueradingVector[34]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[35].empty() && pJson.isMember(pMasqueradingVector[35]))
       {
           if(!validJsonOfField(35, pMasqueradingVector[35], pJson[pMasqueradingVector[35]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[36].empty() && pJson.isMember(pMasqueradingVector[36]))
       {
           if(!validJsonOfField(36, pMasqueradingVector[36], pJson[pMasqueradingVector[36]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[37].empty() && pJson.isMember(pMasqueradingVector[37]))
       {
           if(!validJsonOfField(37, pMasqueradingVector[37], pJson[pMasqueradingVector[37]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[38].empty() && pJson.isMember(pMasqueradingVector[38]))
       {
           if(!validJsonOfField(38, pMasqueradingVector[38], pJson[pMasqueradingVector[38]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[39].empty() && pJson.isMember(pMasqueradingVector[39]))
       {
           if(!validJsonOfField(39, pMasqueradingVector[39], pJson[pMasqueradingVector[39]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[40].empty() && pJson.isMember(pMasqueradingVector[40]))
       {
           if(!validJsonOfField(40, pMasqueradingVector[40], pJson[pMasqueradingVector[40]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[41].empty() && pJson.isMember(pMasqueradingVector[41]))
       {
           if(!validJsonOfField(41, pMasqueradingVector[41], pJson[pMasqueradingVector[41]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -6743,651 +7956,821 @@ bool AffiliatePartners::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 10)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 10)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 10)";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 150)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 150)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 150)";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 30)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 30)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 30)";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 150)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 150)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 150)";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 10)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 10)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 10)";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 10:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 11:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 150)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 150)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 150)";
                 return false;
             }
+
             break;
+
         case 12:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 13:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 14:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 15:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 16:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 17:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 18:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 19:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 20:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 21:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 22:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 23:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 24:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 25:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 26:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 27:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 28:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 29:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 30:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 31:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 32:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 33:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 34:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 35:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 36:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 37:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 38:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 39:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 40:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 41:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

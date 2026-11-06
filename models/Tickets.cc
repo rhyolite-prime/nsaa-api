@@ -1,3 +1,4 @@
+
 /**
  *
  *  Tickets.cc
@@ -6,34 +7,62 @@
  */
 
 #include "Tickets.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
+
+
 const std::string Tickets::Cols::_id = "\"id\"";
+
 const std::string Tickets::Cols::_ticket_number = "\"ticket_number\"";
+
 const std::string Tickets::Cols::_draw_id = "\"draw_id\"";
+
 const std::string Tickets::Cols::_customer_id = "\"customer_id\"";
+
 const std::string Tickets::Cols::_selected_option_value = "\"selected_option_value\"";
+
 const std::string Tickets::Cols::_selected_option_name = "\"selected_option_name\"";
+
 const std::string Tickets::Cols::_entry_fee = "\"entry_fee\"";
+
 const std::string Tickets::Cols::_quantity = "\"quantity\"";
+
 const std::string Tickets::Cols::_total_amount = "\"total_amount\"";
+
 const std::string Tickets::Cols::_payment_reference = "\"payment_reference\"";
+
 const std::string Tickets::Cols::_payment_status = "\"payment_status\"";
+
 const std::string Tickets::Cols::_payment_method = "\"payment_method\"";
+
 const std::string Tickets::Cols::_purchase_channel = "\"purchase_channel\"";
+
 const std::string Tickets::Cols::_is_active = "\"is_active\"";
+
 const std::string Tickets::Cols::_customer_phone = "\"customer_phone\"";
+
 const std::string Tickets::Cols::_raffle_id = "\"raffle_id\"";
+
 const std::string Tickets::Cols::_ticket_alias = "\"ticket_alias\"";
+
 const std::string Tickets::Cols::_created_at = "\"created_at\"";
+
 const std::string Tickets::Cols::_updated_at = "\"updated_at\"";
+
+
 const std::string Tickets::primaryKeyName = "id";
+
+
 const bool Tickets::hasPrimaryKey = true;
+
 const std::string Tickets::tableName = "\"tickets\"";
 
 const std::vector<typename Tickets::MetaData> Tickets::metaData_={
@@ -56,6 +85,7 @@ const std::vector<typename Tickets::MetaData> Tickets::metaData_={
 {"ticket_alias","std::string","character varying",10,0,0,0},
 {"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+
 };
 const std::string &Tickets::getColumnName(size_t index) noexcept(false)
 {
@@ -66,79 +96,132 @@ Tickets::Tickets(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["ticket_number"].isNull())
         {
+
             ticketNumber_=std::make_shared<std::string>(r["ticket_number"].as<std::string>());
+
         }
+
         if(!r["draw_id"].isNull())
         {
+
             drawId_=std::make_shared<std::string>(r["draw_id"].as<std::string>());
+
         }
+
         if(!r["customer_id"].isNull())
         {
+
             customerId_=std::make_shared<std::string>(r["customer_id"].as<std::string>());
+
         }
+
         if(!r["selected_option_value"].isNull())
         {
+
             selectedOptionValue_=std::make_shared<std::string>(r["selected_option_value"].as<std::string>());
+
         }
+
         if(!r["selected_option_name"].isNull())
         {
+
             selectedOptionName_=std::make_shared<std::string>(r["selected_option_name"].as<std::string>());
+
         }
+
         if(!r["entry_fee"].isNull())
         {
+
             entryFee_=std::make_shared<std::string>(r["entry_fee"].as<std::string>());
+
         }
+
         if(!r["quantity"].isNull())
         {
+
             quantity_=std::make_shared<int32_t>(r["quantity"].as<int32_t>());
+
         }
+
         if(!r["total_amount"].isNull())
         {
+
             totalAmount_=std::make_shared<std::string>(r["total_amount"].as<std::string>());
+
         }
+
         if(!r["payment_reference"].isNull())
         {
+
             paymentReference_=std::make_shared<std::string>(r["payment_reference"].as<std::string>());
+
         }
+
         if(!r["payment_status"].isNull())
         {
+
             paymentStatus_=std::make_shared<int32_t>(r["payment_status"].as<int32_t>());
+
         }
+
         if(!r["payment_method"].isNull())
         {
+
             paymentMethod_=std::make_shared<std::string>(r["payment_method"].as<std::string>());
+
         }
+
         if(!r["purchase_channel"].isNull())
         {
+
             purchaseChannel_=std::make_shared<std::string>(r["purchase_channel"].as<std::string>());
+
         }
+
         if(!r["is_active"].isNull())
         {
+
             isActive_=std::make_shared<bool>(r["is_active"].as<bool>());
+
         }
+
         if(!r["customer_phone"].isNull())
         {
+
             customerPhone_=std::make_shared<std::string>(r["customer_phone"].as<std::string>());
+
         }
+
         if(!r["raffle_id"].isNull())
         {
+
             raffleId_=std::make_shared<std::string>(r["raffle_id"].as<std::string>());
+
         }
+
         if(!r["ticket_alias"].isNull())
         {
+
             ticketAlias_=std::make_shared<std::string>(r["ticket_alias"].as<std::string>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -156,11 +239,13 @@ Tickets::Tickets(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -178,6 +263,7 @@ Tickets::Tickets(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -188,97 +274,150 @@ Tickets::Tickets(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             ticketNumber_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             drawId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             customerId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             selectedOptionValue_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             selectedOptionName_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             entryFee_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             quantity_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
+
             totalAmount_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
+
             paymentReference_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 10;
         if(!r[index].isNull())
         {
+
             paymentStatus_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 11;
         if(!r[index].isNull())
         {
+
             paymentMethod_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 12;
         if(!r[index].isNull())
         {
+
             purchaseChannel_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 13;
         if(!r[index].isNull())
         {
+
             isActive_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 14;
         if(!r[index].isNull())
         {
+
             customerPhone_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 15;
         if(!r[index].isNull())
         {
+
             raffleId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 16;
         if(!r[index].isNull())
         {
+
             ticketAlias_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 17;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -296,12 +435,14 @@ Tickets::Tickets(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 18;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -319,6 +460,7 @@ Tickets::Tickets(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -330,6 +472,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -338,6 +481,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -346,6 +490,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             ticketNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -354,6 +499,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             drawId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -362,6 +508,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             customerId_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -370,6 +517,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             selectedOptionValue_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -378,6 +526,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             selectedOptionName_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -386,6 +535,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             entryFee_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -394,6 +544,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             quantity_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[7]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -402,6 +553,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             totalAmount_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -410,6 +562,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             paymentReference_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -418,6 +571,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             paymentStatus_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[10]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -426,6 +580,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             paymentMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -434,6 +589,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             purchaseChannel_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -442,6 +598,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[13]].asBool());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -450,6 +607,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             customerPhone_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -458,6 +616,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             raffleId_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
         }
     }
+
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
     {
         dirtyFlag_[16] = true;
@@ -466,6 +625,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
         }
     }
+
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
     {
         dirtyFlag_[17] = true;
@@ -474,6 +634,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             auto timeStr = pJson[pMasqueradingVector[17]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -492,6 +653,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             }
         }
     }
+
     if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
     {
         dirtyFlag_[18] = true;
@@ -500,6 +662,7 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             auto timeStr = pJson[pMasqueradingVector[18]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -518,10 +681,12 @@ Tickets::Tickets(const Json::Value &pJson, const std::vector<std::string> &pMasq
             }
         }
     }
+
 }
 
 Tickets::Tickets(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -530,6 +695,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("ticket_number"))
     {
         dirtyFlag_[1]=true;
@@ -538,6 +704,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             ticketNumber_=std::make_shared<std::string>(pJson["ticket_number"].asString());
         }
     }
+
     if(pJson.isMember("draw_id"))
     {
         dirtyFlag_[2]=true;
@@ -546,6 +713,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             drawId_=std::make_shared<std::string>(pJson["draw_id"].asString());
         }
     }
+
     if(pJson.isMember("customer_id"))
     {
         dirtyFlag_[3]=true;
@@ -554,6 +722,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             customerId_=std::make_shared<std::string>(pJson["customer_id"].asString());
         }
     }
+
     if(pJson.isMember("selected_option_value"))
     {
         dirtyFlag_[4]=true;
@@ -562,6 +731,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             selectedOptionValue_=std::make_shared<std::string>(pJson["selected_option_value"].asString());
         }
     }
+
     if(pJson.isMember("selected_option_name"))
     {
         dirtyFlag_[5]=true;
@@ -570,6 +740,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             selectedOptionName_=std::make_shared<std::string>(pJson["selected_option_name"].asString());
         }
     }
+
     if(pJson.isMember("entry_fee"))
     {
         dirtyFlag_[6]=true;
@@ -578,6 +749,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             entryFee_=std::make_shared<std::string>(pJson["entry_fee"].asString());
         }
     }
+
     if(pJson.isMember("quantity"))
     {
         dirtyFlag_[7]=true;
@@ -586,6 +758,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             quantity_=std::make_shared<int32_t>((int32_t)pJson["quantity"].asInt64());
         }
     }
+
     if(pJson.isMember("total_amount"))
     {
         dirtyFlag_[8]=true;
@@ -594,6 +767,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             totalAmount_=std::make_shared<std::string>(pJson["total_amount"].asString());
         }
     }
+
     if(pJson.isMember("payment_reference"))
     {
         dirtyFlag_[9]=true;
@@ -602,6 +776,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             paymentReference_=std::make_shared<std::string>(pJson["payment_reference"].asString());
         }
     }
+
     if(pJson.isMember("payment_status"))
     {
         dirtyFlag_[10]=true;
@@ -610,6 +785,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             paymentStatus_=std::make_shared<int32_t>((int32_t)pJson["payment_status"].asInt64());
         }
     }
+
     if(pJson.isMember("payment_method"))
     {
         dirtyFlag_[11]=true;
@@ -618,6 +794,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             paymentMethod_=std::make_shared<std::string>(pJson["payment_method"].asString());
         }
     }
+
     if(pJson.isMember("purchase_channel"))
     {
         dirtyFlag_[12]=true;
@@ -626,6 +803,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             purchaseChannel_=std::make_shared<std::string>(pJson["purchase_channel"].asString());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[13]=true;
@@ -634,6 +812,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("customer_phone"))
     {
         dirtyFlag_[14]=true;
@@ -642,6 +821,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             customerPhone_=std::make_shared<std::string>(pJson["customer_phone"].asString());
         }
     }
+
     if(pJson.isMember("raffle_id"))
     {
         dirtyFlag_[15]=true;
@@ -650,6 +830,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             raffleId_=std::make_shared<std::string>(pJson["raffle_id"].asString());
         }
     }
+
     if(pJson.isMember("ticket_alias"))
     {
         dirtyFlag_[16]=true;
@@ -658,6 +839,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[17]=true;
@@ -666,6 +848,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -684,6 +867,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[18]=true;
@@ -692,6 +876,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -710,6 +895,7 @@ Tickets::Tickets(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
@@ -720,6 +906,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -727,6 +914,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -735,6 +923,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             ticketNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -743,6 +932,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             drawId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -751,6 +941,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             customerId_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -759,6 +950,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             selectedOptionValue_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -767,6 +959,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             selectedOptionName_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -775,6 +968,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             entryFee_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -783,6 +977,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             quantity_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[7]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -791,6 +986,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             totalAmount_=std::make_shared<std::string>(pJson[pMasqueradingVector[8]].asString());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -799,6 +995,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             paymentReference_=std::make_shared<std::string>(pJson[pMasqueradingVector[9]].asString());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -807,6 +1004,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             paymentStatus_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[10]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -815,6 +1013,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             paymentMethod_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
         }
     }
+
     if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
     {
         dirtyFlag_[12] = true;
@@ -823,6 +1022,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             purchaseChannel_=std::make_shared<std::string>(pJson[pMasqueradingVector[12]].asString());
         }
     }
+
     if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
     {
         dirtyFlag_[13] = true;
@@ -831,6 +1031,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[13]].asBool());
         }
     }
+
     if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
     {
         dirtyFlag_[14] = true;
@@ -839,6 +1040,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             customerPhone_=std::make_shared<std::string>(pJson[pMasqueradingVector[14]].asString());
         }
     }
+
     if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
     {
         dirtyFlag_[15] = true;
@@ -847,6 +1049,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             raffleId_=std::make_shared<std::string>(pJson[pMasqueradingVector[15]].asString());
         }
     }
+
     if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
     {
         dirtyFlag_[16] = true;
@@ -855,6 +1058,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             ticketAlias_=std::make_shared<std::string>(pJson[pMasqueradingVector[16]].asString());
         }
     }
+
     if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
     {
         dirtyFlag_[17] = true;
@@ -863,6 +1067,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[17]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -881,6 +1086,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
     {
         dirtyFlag_[18] = true;
@@ -889,6 +1095,7 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[18]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -907,10 +1114,12 @@ void Tickets::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -918,6 +1127,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("ticket_number"))
     {
         dirtyFlag_[1] = true;
@@ -926,6 +1136,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             ticketNumber_=std::make_shared<std::string>(pJson["ticket_number"].asString());
         }
     }
+
     if(pJson.isMember("draw_id"))
     {
         dirtyFlag_[2] = true;
@@ -934,6 +1145,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             drawId_=std::make_shared<std::string>(pJson["draw_id"].asString());
         }
     }
+
     if(pJson.isMember("customer_id"))
     {
         dirtyFlag_[3] = true;
@@ -942,6 +1154,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             customerId_=std::make_shared<std::string>(pJson["customer_id"].asString());
         }
     }
+
     if(pJson.isMember("selected_option_value"))
     {
         dirtyFlag_[4] = true;
@@ -950,6 +1163,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             selectedOptionValue_=std::make_shared<std::string>(pJson["selected_option_value"].asString());
         }
     }
+
     if(pJson.isMember("selected_option_name"))
     {
         dirtyFlag_[5] = true;
@@ -958,6 +1172,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             selectedOptionName_=std::make_shared<std::string>(pJson["selected_option_name"].asString());
         }
     }
+
     if(pJson.isMember("entry_fee"))
     {
         dirtyFlag_[6] = true;
@@ -966,6 +1181,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             entryFee_=std::make_shared<std::string>(pJson["entry_fee"].asString());
         }
     }
+
     if(pJson.isMember("quantity"))
     {
         dirtyFlag_[7] = true;
@@ -974,6 +1190,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             quantity_=std::make_shared<int32_t>((int32_t)pJson["quantity"].asInt64());
         }
     }
+
     if(pJson.isMember("total_amount"))
     {
         dirtyFlag_[8] = true;
@@ -982,6 +1199,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             totalAmount_=std::make_shared<std::string>(pJson["total_amount"].asString());
         }
     }
+
     if(pJson.isMember("payment_reference"))
     {
         dirtyFlag_[9] = true;
@@ -990,6 +1208,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             paymentReference_=std::make_shared<std::string>(pJson["payment_reference"].asString());
         }
     }
+
     if(pJson.isMember("payment_status"))
     {
         dirtyFlag_[10] = true;
@@ -998,6 +1217,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             paymentStatus_=std::make_shared<int32_t>((int32_t)pJson["payment_status"].asInt64());
         }
     }
+
     if(pJson.isMember("payment_method"))
     {
         dirtyFlag_[11] = true;
@@ -1006,6 +1226,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             paymentMethod_=std::make_shared<std::string>(pJson["payment_method"].asString());
         }
     }
+
     if(pJson.isMember("purchase_channel"))
     {
         dirtyFlag_[12] = true;
@@ -1014,6 +1235,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             purchaseChannel_=std::make_shared<std::string>(pJson["purchase_channel"].asString());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[13] = true;
@@ -1022,6 +1244,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("customer_phone"))
     {
         dirtyFlag_[14] = true;
@@ -1030,6 +1253,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             customerPhone_=std::make_shared<std::string>(pJson["customer_phone"].asString());
         }
     }
+
     if(pJson.isMember("raffle_id"))
     {
         dirtyFlag_[15] = true;
@@ -1038,6 +1262,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             raffleId_=std::make_shared<std::string>(pJson["raffle_id"].asString());
         }
     }
+
     if(pJson.isMember("ticket_alias"))
     {
         dirtyFlag_[16] = true;
@@ -1046,6 +1271,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             ticketAlias_=std::make_shared<std::string>(pJson["ticket_alias"].asString());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[17] = true;
@@ -1054,6 +1280,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1072,6 +1299,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[18] = true;
@@ -1080,6 +1308,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -1098,6 +1327,7 @@ void Tickets::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &Tickets::getValueOfId() const noexcept
@@ -1557,6 +1787,7 @@ void Tickets::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &Tickets::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -1579,12 +1810,14 @@ const std::vector<std::string> &Tickets::insertColumns() noexcept
         "ticket_alias",
         "created_at",
         "updated_at"
+
     };
     return inCols;
 }
 
 void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1596,6 +1829,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTicketNumber())
@@ -1607,6 +1841,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getDrawId())
@@ -1618,6 +1853,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getCustomerId())
@@ -1629,6 +1865,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getSelectedOptionValue())
@@ -1640,6 +1877,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getSelectedOptionName())
@@ -1651,6 +1889,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getEntryFee())
@@ -1662,6 +1901,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getQuantity())
@@ -1673,6 +1913,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getTotalAmount())
@@ -1684,6 +1925,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getPaymentReference())
@@ -1695,6 +1937,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getPaymentStatus())
@@ -1706,6 +1949,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getPaymentMethod())
@@ -1717,6 +1961,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getPurchaseChannel())
@@ -1728,6 +1973,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getIsActive())
@@ -1739,6 +1985,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getCustomerPhone())
@@ -1750,6 +1997,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getRaffleId())
@@ -1761,6 +2009,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[16])
     {
         if(getTicketAlias())
@@ -1772,6 +2021,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[17])
     {
         if(getCreatedAt())
@@ -1783,6 +2033,7 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[18])
     {
         if(getUpdatedAt())
@@ -1794,92 +2045,114 @@ void Tickets::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> Tickets::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     if(dirtyFlag_[10])
     {
         ret.push_back(getColumnName(10));
     }
+
     if(dirtyFlag_[11])
     {
         ret.push_back(getColumnName(11));
     }
+
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
     }
+
     if(dirtyFlag_[13])
     {
         ret.push_back(getColumnName(13));
     }
+
     if(dirtyFlag_[14])
     {
         ret.push_back(getColumnName(14));
     }
+
     if(dirtyFlag_[15])
     {
         ret.push_back(getColumnName(15));
     }
+
     if(dirtyFlag_[16])
     {
         ret.push_back(getColumnName(16));
     }
+
     if(dirtyFlag_[17])
     {
         ret.push_back(getColumnName(17));
     }
+
     if(dirtyFlag_[18])
     {
         ret.push_back(getColumnName(18));
     }
+
     return ret;
 }
 
 void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1891,6 +2164,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTicketNumber())
@@ -1902,6 +2176,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getDrawId())
@@ -1913,6 +2188,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getCustomerId())
@@ -1924,6 +2200,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getSelectedOptionValue())
@@ -1935,6 +2212,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getSelectedOptionName())
@@ -1946,6 +2224,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getEntryFee())
@@ -1957,6 +2236,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getQuantity())
@@ -1968,6 +2248,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getTotalAmount())
@@ -1979,6 +2260,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getPaymentReference())
@@ -1990,6 +2272,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getPaymentStatus())
@@ -2001,6 +2284,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getPaymentMethod())
@@ -2012,6 +2296,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[12])
     {
         if(getPurchaseChannel())
@@ -2023,6 +2308,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[13])
     {
         if(getIsActive())
@@ -2034,6 +2320,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[14])
     {
         if(getCustomerPhone())
@@ -2045,6 +2332,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[15])
     {
         if(getRaffleId())
@@ -2056,6 +2344,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[16])
     {
         if(getTicketAlias())
@@ -2067,6 +2356,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[17])
     {
         if(getCreatedAt())
@@ -2078,6 +2368,7 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[18])
     {
         if(getUpdatedAt())
@@ -2089,162 +2380,221 @@ void Tickets::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value Tickets::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTicketNumber())
     {
+
         ret["ticket_number"]=getValueOfTicketNumber();
+
     }
     else
     {
         ret["ticket_number"]=Json::Value();
     }
+
     if(getDrawId())
     {
+
         ret["draw_id"]=getValueOfDrawId();
+
     }
     else
     {
         ret["draw_id"]=Json::Value();
     }
+
     if(getCustomerId())
     {
+
         ret["customer_id"]=getValueOfCustomerId();
+
     }
     else
     {
         ret["customer_id"]=Json::Value();
     }
+
     if(getSelectedOptionValue())
     {
+
         ret["selected_option_value"]=getValueOfSelectedOptionValue();
+
     }
     else
     {
         ret["selected_option_value"]=Json::Value();
     }
+
     if(getSelectedOptionName())
     {
+
         ret["selected_option_name"]=getValueOfSelectedOptionName();
+
     }
     else
     {
         ret["selected_option_name"]=Json::Value();
     }
+
     if(getEntryFee())
     {
+
         ret["entry_fee"]=getValueOfEntryFee();
+
     }
     else
     {
         ret["entry_fee"]=Json::Value();
     }
+
     if(getQuantity())
     {
+
         ret["quantity"]=getValueOfQuantity();
+
     }
     else
     {
         ret["quantity"]=Json::Value();
     }
+
     if(getTotalAmount())
     {
+
         ret["total_amount"]=getValueOfTotalAmount();
+
     }
     else
     {
         ret["total_amount"]=Json::Value();
     }
+
     if(getPaymentReference())
     {
+
         ret["payment_reference"]=getValueOfPaymentReference();
+
     }
     else
     {
         ret["payment_reference"]=Json::Value();
     }
+
     if(getPaymentStatus())
     {
+
         ret["payment_status"]=getValueOfPaymentStatus();
+
     }
     else
     {
         ret["payment_status"]=Json::Value();
     }
+
     if(getPaymentMethod())
     {
+
         ret["payment_method"]=getValueOfPaymentMethod();
+
     }
     else
     {
         ret["payment_method"]=Json::Value();
     }
+
     if(getPurchaseChannel())
     {
+
         ret["purchase_channel"]=getValueOfPurchaseChannel();
+
     }
     else
     {
         ret["purchase_channel"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getCustomerPhone())
     {
+
         ret["customer_phone"]=getValueOfCustomerPhone();
+
     }
     else
     {
         ret["customer_phone"]=Json::Value();
     }
+
     if(getRaffleId())
     {
+
         ret["raffle_id"]=getValueOfRaffleId();
+
     }
     else
     {
         ret["raffle_id"]=Json::Value();
     }
+
     if(getTicketAlias())
     {
+
         ret["ticket_alias"]=getValueOfTicketAlias();
+
     }
     else
     {
         ret["ticket_alias"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -2259,495 +2609,636 @@ Json::Value Tickets::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 19)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getTicketNumber())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfTicketNumber();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getDrawId())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfDrawId();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getCustomerId())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfCustomerId();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getSelectedOptionValue())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfSelectedOptionValue();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getSelectedOptionName())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfSelectedOptionName();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getEntryFee())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfEntryFee();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getQuantity())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfQuantity();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getTotalAmount())
             {
+
                 ret[pMasqueradingVector[8]]=getValueOfTotalAmount();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getPaymentReference())
             {
+
                 ret[pMasqueradingVector[9]]=getValueOfPaymentReference();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[10].empty())
         {
             if(getPaymentStatus())
             {
+
                 ret[pMasqueradingVector[10]]=getValueOfPaymentStatus();
+
             }
             else
             {
                 ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[11].empty())
         {
             if(getPaymentMethod())
             {
+
                 ret[pMasqueradingVector[11]]=getValueOfPaymentMethod();
+
             }
             else
             {
                 ret[pMasqueradingVector[11]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[12].empty())
         {
             if(getPurchaseChannel())
             {
+
                 ret[pMasqueradingVector[12]]=getValueOfPurchaseChannel();
+
             }
             else
             {
                 ret[pMasqueradingVector[12]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[13].empty())
         {
             if(getIsActive())
             {
+
                 ret[pMasqueradingVector[13]]=getValueOfIsActive();
+
             }
             else
             {
                 ret[pMasqueradingVector[13]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[14].empty())
         {
             if(getCustomerPhone())
             {
+
                 ret[pMasqueradingVector[14]]=getValueOfCustomerPhone();
+
             }
             else
             {
                 ret[pMasqueradingVector[14]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[15].empty())
         {
             if(getRaffleId())
             {
+
                 ret[pMasqueradingVector[15]]=getValueOfRaffleId();
+
             }
             else
             {
                 ret[pMasqueradingVector[15]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[16].empty())
         {
             if(getTicketAlias())
             {
+
                 ret[pMasqueradingVector[16]]=getValueOfTicketAlias();
+
             }
             else
             {
                 ret[pMasqueradingVector[16]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[17].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[17]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[17]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[18].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[18]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[18]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTicketNumber())
     {
+
         ret["ticket_number"]=getValueOfTicketNumber();
+
     }
     else
     {
         ret["ticket_number"]=Json::Value();
     }
+
     if(getDrawId())
     {
+
         ret["draw_id"]=getValueOfDrawId();
+
     }
     else
     {
         ret["draw_id"]=Json::Value();
     }
+
     if(getCustomerId())
     {
+
         ret["customer_id"]=getValueOfCustomerId();
+
     }
     else
     {
         ret["customer_id"]=Json::Value();
     }
+
     if(getSelectedOptionValue())
     {
+
         ret["selected_option_value"]=getValueOfSelectedOptionValue();
+
     }
     else
     {
         ret["selected_option_value"]=Json::Value();
     }
+
     if(getSelectedOptionName())
     {
+
         ret["selected_option_name"]=getValueOfSelectedOptionName();
+
     }
     else
     {
         ret["selected_option_name"]=Json::Value();
     }
+
     if(getEntryFee())
     {
+
         ret["entry_fee"]=getValueOfEntryFee();
+
     }
     else
     {
         ret["entry_fee"]=Json::Value();
     }
+
     if(getQuantity())
     {
+
         ret["quantity"]=getValueOfQuantity();
+
     }
     else
     {
         ret["quantity"]=Json::Value();
     }
+
     if(getTotalAmount())
     {
+
         ret["total_amount"]=getValueOfTotalAmount();
+
     }
     else
     {
         ret["total_amount"]=Json::Value();
     }
+
     if(getPaymentReference())
     {
+
         ret["payment_reference"]=getValueOfPaymentReference();
+
     }
     else
     {
         ret["payment_reference"]=Json::Value();
     }
+
     if(getPaymentStatus())
     {
+
         ret["payment_status"]=getValueOfPaymentStatus();
+
     }
     else
     {
         ret["payment_status"]=Json::Value();
     }
+
     if(getPaymentMethod())
     {
+
         ret["payment_method"]=getValueOfPaymentMethod();
+
     }
     else
     {
         ret["payment_method"]=Json::Value();
     }
+
     if(getPurchaseChannel())
     {
+
         ret["purchase_channel"]=getValueOfPurchaseChannel();
+
     }
     else
     {
         ret["purchase_channel"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getCustomerPhone())
     {
+
         ret["customer_phone"]=getValueOfCustomerPhone();
+
     }
     else
     {
         ret["customer_phone"]=Json::Value();
     }
+
     if(getRaffleId())
     {
+
         ret["raffle_id"]=getValueOfRaffleId();
+
     }
     else
     {
         ret["raffle_id"]=Json::Value();
     }
+
     if(getTicketAlias())
     {
+
         ret["ticket_alias"]=getValueOfTicketAlias();
+
     }
     else
     {
         ret["ticket_alias"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool Tickets::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("ticket_number"))
     {
         if(!validJsonOfField(1, "ticket_number", pJson["ticket_number"], err, true))
             return false;
     }
+
     else
     {
         err="The ticket_number column cannot be null";
         return false;
     }
+
     if(pJson.isMember("draw_id"))
     {
         if(!validJsonOfField(2, "draw_id", pJson["draw_id"], err, true))
             return false;
     }
+
     else
     {
         err="The draw_id column cannot be null";
         return false;
     }
+
     if(pJson.isMember("customer_id"))
     {
         if(!validJsonOfField(3, "customer_id", pJson["customer_id"], err, true))
             return false;
     }
+
     else
     {
         err="The customer_id column cannot be null";
         return false;
     }
+
     if(pJson.isMember("selected_option_value"))
     {
         if(!validJsonOfField(4, "selected_option_value", pJson["selected_option_value"], err, true))
             return false;
     }
+
     if(pJson.isMember("selected_option_name"))
     {
         if(!validJsonOfField(5, "selected_option_name", pJson["selected_option_name"], err, true))
             return false;
     }
+
     if(pJson.isMember("entry_fee"))
     {
         if(!validJsonOfField(6, "entry_fee", pJson["entry_fee"], err, true))
             return false;
     }
+
     if(pJson.isMember("quantity"))
     {
         if(!validJsonOfField(7, "quantity", pJson["quantity"], err, true))
             return false;
     }
+
     if(pJson.isMember("total_amount"))
     {
         if(!validJsonOfField(8, "total_amount", pJson["total_amount"], err, true))
             return false;
     }
+
     else
     {
         err="The total_amount column cannot be null";
         return false;
     }
+
     if(pJson.isMember("payment_reference"))
     {
         if(!validJsonOfField(9, "payment_reference", pJson["payment_reference"], err, true))
             return false;
     }
+
     if(pJson.isMember("payment_status"))
     {
         if(!validJsonOfField(10, "payment_status", pJson["payment_status"], err, true))
             return false;
     }
+
     if(pJson.isMember("payment_method"))
     {
         if(!validJsonOfField(11, "payment_method", pJson["payment_method"], err, true))
             return false;
     }
+
     if(pJson.isMember("purchase_channel"))
     {
         if(!validJsonOfField(12, "purchase_channel", pJson["purchase_channel"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(13, "is_active", pJson["is_active"], err, true))
             return false;
     }
+
     if(pJson.isMember("customer_phone"))
     {
         if(!validJsonOfField(14, "customer_phone", pJson["customer_phone"], err, true))
             return false;
     }
+
     if(pJson.isMember("raffle_id"))
     {
         if(!validJsonOfField(15, "raffle_id", pJson["raffle_id"], err, true))
             return false;
     }
+
     else
     {
         err="The raffle_id column cannot be null";
         return false;
     }
+
     if(pJson.isMember("ticket_alias"))
     {
         if(!validJsonOfField(16, "ticket_alias", pJson["ticket_alias"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(17, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(18, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -2760,6 +3251,7 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -2767,7 +3259,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -2775,12 +3269,15 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -2788,12 +3285,15 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[2] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -2801,12 +3301,15 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[3] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -2814,7 +3317,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -2822,7 +3327,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -2830,7 +3337,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -2838,7 +3347,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -2846,12 +3357,15 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[8] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -2859,7 +3373,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[10].empty())
       {
           if(pJson.isMember(pMasqueradingVector[10]))
@@ -2867,7 +3383,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[11].empty())
       {
           if(pJson.isMember(pMasqueradingVector[11]))
@@ -2875,7 +3393,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[12].empty())
       {
           if(pJson.isMember(pMasqueradingVector[12]))
@@ -2883,7 +3403,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[13].empty())
       {
           if(pJson.isMember(pMasqueradingVector[13]))
@@ -2891,7 +3413,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[14].empty())
       {
           if(pJson.isMember(pMasqueradingVector[14]))
@@ -2899,7 +3423,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[15].empty())
       {
           if(pJson.isMember(pMasqueradingVector[15]))
@@ -2907,12 +3433,15 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[15] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[16].empty())
       {
           if(pJson.isMember(pMasqueradingVector[16]))
@@ -2920,7 +3449,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[17].empty())
       {
           if(pJson.isMember(pMasqueradingVector[17]))
@@ -2928,7 +3459,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[18].empty())
       {
           if(pJson.isMember(pMasqueradingVector[18]))
@@ -2936,7 +3469,9 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2947,106 +3482,127 @@ bool Tickets::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool Tickets::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("ticket_number"))
     {
         if(!validJsonOfField(1, "ticket_number", pJson["ticket_number"], err, false))
             return false;
     }
+
     if(pJson.isMember("draw_id"))
     {
         if(!validJsonOfField(2, "draw_id", pJson["draw_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("customer_id"))
     {
         if(!validJsonOfField(3, "customer_id", pJson["customer_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("selected_option_value"))
     {
         if(!validJsonOfField(4, "selected_option_value", pJson["selected_option_value"], err, false))
             return false;
     }
+
     if(pJson.isMember("selected_option_name"))
     {
         if(!validJsonOfField(5, "selected_option_name", pJson["selected_option_name"], err, false))
             return false;
     }
+
     if(pJson.isMember("entry_fee"))
     {
         if(!validJsonOfField(6, "entry_fee", pJson["entry_fee"], err, false))
             return false;
     }
+
     if(pJson.isMember("quantity"))
     {
         if(!validJsonOfField(7, "quantity", pJson["quantity"], err, false))
             return false;
     }
+
     if(pJson.isMember("total_amount"))
     {
         if(!validJsonOfField(8, "total_amount", pJson["total_amount"], err, false))
             return false;
     }
+
     if(pJson.isMember("payment_reference"))
     {
         if(!validJsonOfField(9, "payment_reference", pJson["payment_reference"], err, false))
             return false;
     }
+
     if(pJson.isMember("payment_status"))
     {
         if(!validJsonOfField(10, "payment_status", pJson["payment_status"], err, false))
             return false;
     }
+
     if(pJson.isMember("payment_method"))
     {
         if(!validJsonOfField(11, "payment_method", pJson["payment_method"], err, false))
             return false;
     }
+
     if(pJson.isMember("purchase_channel"))
     {
         if(!validJsonOfField(12, "purchase_channel", pJson["purchase_channel"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(13, "is_active", pJson["is_active"], err, false))
             return false;
     }
+
     if(pJson.isMember("customer_phone"))
     {
         if(!validJsonOfField(14, "customer_phone", pJson["customer_phone"], err, false))
             return false;
     }
+
     if(pJson.isMember("raffle_id"))
     {
         if(!validJsonOfField(15, "raffle_id", pJson["raffle_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("ticket_alias"))
     {
         if(!validJsonOfField(16, "ticket_alias", pJson["ticket_alias"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(17, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(18, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool Tickets::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -3059,106 +3615,127 @@ bool Tickets::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
       {
           if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
       {
           if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
       {
           if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[14].empty() && pJson.isMember(pMasqueradingVector[14]))
       {
           if(!validJsonOfField(14, pMasqueradingVector[14], pJson[pMasqueradingVector[14]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[15].empty() && pJson.isMember(pMasqueradingVector[15]))
       {
           if(!validJsonOfField(15, pMasqueradingVector[15], pJson[pMasqueradingVector[15]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[16].empty() && pJson.isMember(pMasqueradingVector[16]))
       {
           if(!validJsonOfField(16, pMasqueradingVector[16], pJson[pMasqueradingVector[16]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[17].empty() && pJson.isMember(pMasqueradingVector[17]))
       {
           if(!validJsonOfField(17, pMasqueradingVector[17], pJson[pMasqueradingVector[17]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[18].empty() && pJson.isMember(pMasqueradingVector[18]))
       {
           if(!validJsonOfField(18, pMasqueradingVector[18], pJson[pMasqueradingVector[18]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -3175,290 +3752,368 @@ bool Tickets::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 10:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 11:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 12:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 13:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 14:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 15:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 16:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 10)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 10)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 10)";
                 return false;
             }
+
             break;
+
         case 17:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 18:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

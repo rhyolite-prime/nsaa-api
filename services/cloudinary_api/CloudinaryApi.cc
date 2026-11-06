@@ -24,9 +24,6 @@ namespace raffle::services {
 
         constexpr const char *kCloudinaryHost = "https://api.cloudinary.com";
 
-        // Cloudinary accepts both SHA-1 and SHA-256 digests; SHA-256 is used here.
-        constexpr const char *kSignatureAlgorithm = "sha256";
-
         // API v1.1 is required for sha256 signatures, the url is
         // /v1_1/:cloud_name/:resource_type/upload
         constexpr const char *kUploadPathPrefix = "/v1_1/";
@@ -37,10 +34,11 @@ namespace raffle::services {
          * Every field sent with the upload (file, cloud name, resource type and
          * api key excluded) is sorted alphabetically, joined as name=value pairs
          * with '&' and the api secret is appended without any separator. The
-         * resulting string is hashed with SHA-256.
+         * resulting string is hashed with SHA-256 (or SHA-1 if configured).
          */
         std::string buildSignature(const std::unordered_map<std::string, std::string> &paramsToSign,
-                                   const std::string &apiSecret) {
+                                   const std::string &apiSecret,
+                                   const std::string &signatureAlgorithm = "sha256") {
 
             std::vector<std::string> keys;
             keys.reserve(paramsToSign.size());
@@ -58,13 +56,21 @@ namespace raffle::services {
             }
 
             stringToSign += apiSecret;
+            LOG_DEBUG << "[CloudinaryApi] string to sign: " << stringToSign;
+
+            if (signatureAlgorithm == "sha1") {
+                return drogon::utils::getSha1(stringToSign);
+            }
             return drogon::utils::getSha256(stringToSign);
         }
 
         /**
          * @brief Reads the Cloudinary credentials from the custom config.
          */
-        bool readCredentials(std::string &cloud, std::string &apiKey, std::string &apiSecret) {
+        bool readCredentials(std::string &cloud,
+                             std::string &apiKey,
+                             std::string &apiSecret,
+                             std::string &signatureAlgorithm) {
 
             if (!drogon::app().getCustomConfig().isMember("CloudinarySettings")) {
                 LOG_ERROR << "[CloudinaryApi] Missing CloudinarySettings in the custom config";
@@ -75,6 +81,7 @@ namespace raffle::services {
             cloud = settings.get("Cloud", "").asString();
             apiKey = settings.get("ApiKey", "").asString();
             apiSecret = settings.get("ApiSecret", "").asString();
+            signatureAlgorithm = settings.get("SignatureAlgorithm", "sha256").asString();
 
             if (cloud.empty() || apiKey.empty() || apiSecret.empty()) {
                 LOG_ERROR << "[CloudinaryApi] CloudinarySettings is not configured "
@@ -135,8 +142,9 @@ namespace raffle::services {
             std::string cloud;
             std::string apiKey;
             std::string apiSecret;
+            std::string signatureAlgorithm;
 
-            if (!readCredentials(cloud, apiKey, apiSecret)) {
+            if (!readCredentials(cloud, apiKey, apiSecret, signatureAlgorithm)) {
                 co_return std::nullopt;
             }
 
@@ -153,11 +161,12 @@ namespace raffle::services {
             const std::string publicId = utils::IdGeneratorUtils::generateGuid();
 
             std::unordered_map<std::string, std::string> paramsToSign = {
-                {"folder", folder},
                 {"public_id", publicId},
                 {"timestamp", timestamp},
-                {"signature_algorithm", kSignatureAlgorithm},
             };
+            if (!folder.empty()) {
+                paramsToSign["folder"] = folder;
+            }
 
             // The multipart request needs to know the mime type of the part,
             // fall back to a binary stream when the client did not provide one.
@@ -178,7 +187,7 @@ namespace raffle::services {
             for (const auto &[key, value] : paramsToSign) {
                 req->setParameter(key, value);
             }
-            req->setParameter("signature", buildSignature(paramsToSign, apiSecret));
+            req->setParameter("signature", buildSignature(paramsToSign, apiSecret, signatureAlgorithm));
 
             auto client = drogon::HttpClient::newHttpClient(kCloudinaryHost);
 

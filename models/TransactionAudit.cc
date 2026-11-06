@@ -1,3 +1,4 @@
+
 /**
  *
  *  TransactionAudit.cc
@@ -6,23 +7,40 @@
  */
 
 #include "TransactionAudit.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
+
+
 const std::string TransactionAudit::Cols::_id = "\"id\"";
+
 const std::string TransactionAudit::Cols::_table_name = "\"table_name\"";
+
 const std::string TransactionAudit::Cols::_record_id = "\"record_id\"";
+
 const std::string TransactionAudit::Cols::_action = "\"action\"";
+
 const std::string TransactionAudit::Cols::_old_values = "\"old_values\"";
+
 const std::string TransactionAudit::Cols::_new_values = "\"new_values\"";
+
 const std::string TransactionAudit::Cols::_changed_by = "\"changed_by\"";
+
 const std::string TransactionAudit::Cols::_changed_at = "\"changed_at\"";
+
+
 const std::string TransactionAudit::primaryKeyName = "id";
+
+
 const bool TransactionAudit::hasPrimaryKey = true;
+
 const std::string TransactionAudit::tableName = "\"transaction_audit\"";
 
 const std::vector<typename TransactionAudit::MetaData> TransactionAudit::metaData_={
@@ -34,6 +52,7 @@ const std::vector<typename TransactionAudit::MetaData> TransactionAudit::metaDat
 {"new_values","std::string","jsonb",0,0,0,0},
 {"changed_by","std::string","character varying",100,0,0,0},
 {"changed_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+
 };
 const std::string &TransactionAudit::getColumnName(size_t index) noexcept(false)
 {
@@ -44,39 +63,62 @@ TransactionAudit::TransactionAudit(const Row &r, const ssize_t indexOffset) noex
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["table_name"].isNull())
         {
+
             tableName_=std::make_shared<std::string>(r["table_name"].as<std::string>());
+
         }
+
         if(!r["record_id"].isNull())
         {
+
             recordId_=std::make_shared<std::string>(r["record_id"].as<std::string>());
+
         }
+
         if(!r["action"].isNull())
         {
+
             action_=std::make_shared<std::string>(r["action"].as<std::string>());
+
         }
+
         if(!r["old_values"].isNull())
         {
+
             oldValues_=std::make_shared<std::string>(r["old_values"].as<std::string>());
+
         }
+
         if(!r["new_values"].isNull())
         {
+
             newValues_=std::make_shared<std::string>(r["new_values"].as<std::string>());
+
         }
+
         if(!r["changed_by"].isNull())
         {
+
             changedBy_=std::make_shared<std::string>(r["changed_by"].as<std::string>());
+
         }
+
         if(!r["changed_at"].isNull())
         {
             auto timeStr = r["changed_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -94,6 +136,7 @@ TransactionAudit::TransactionAudit(const Row &r, const ssize_t indexOffset) noex
                 changedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -104,47 +147,70 @@ TransactionAudit::TransactionAudit(const Row &r, const ssize_t indexOffset) noex
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             tableName_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             recordId_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             action_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             oldValues_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             newValues_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             changedBy_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -162,6 +228,7 @@ TransactionAudit::TransactionAudit(const Row &r, const ssize_t indexOffset) noex
                 changedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -173,6 +240,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson, const std::vector<s
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -181,6 +249,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson, const std::vector<s
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -189,6 +258,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson, const std::vector<s
             tableName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -197,6 +267,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson, const std::vector<s
             recordId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -205,6 +276,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson, const std::vector<s
             action_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -213,6 +285,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson, const std::vector<s
             oldValues_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -221,6 +294,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson, const std::vector<s
             newValues_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -229,6 +303,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson, const std::vector<s
             changedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -237,6 +312,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson, const std::vector<s
             auto timeStr = pJson[pMasqueradingVector[7]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -255,10 +331,12 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson, const std::vector<s
             }
         }
     }
+
 }
 
 TransactionAudit::TransactionAudit(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -267,6 +345,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("table_name"))
     {
         dirtyFlag_[1]=true;
@@ -275,6 +354,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson) noexcept(false)
             tableName_=std::make_shared<std::string>(pJson["table_name"].asString());
         }
     }
+
     if(pJson.isMember("record_id"))
     {
         dirtyFlag_[2]=true;
@@ -283,6 +363,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson) noexcept(false)
             recordId_=std::make_shared<std::string>(pJson["record_id"].asString());
         }
     }
+
     if(pJson.isMember("action"))
     {
         dirtyFlag_[3]=true;
@@ -291,6 +372,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson) noexcept(false)
             action_=std::make_shared<std::string>(pJson["action"].asString());
         }
     }
+
     if(pJson.isMember("old_values"))
     {
         dirtyFlag_[4]=true;
@@ -299,6 +381,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson) noexcept(false)
             oldValues_=std::make_shared<std::string>(pJson["old_values"].asString());
         }
     }
+
     if(pJson.isMember("new_values"))
     {
         dirtyFlag_[5]=true;
@@ -307,6 +390,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson) noexcept(false)
             newValues_=std::make_shared<std::string>(pJson["new_values"].asString());
         }
     }
+
     if(pJson.isMember("changed_by"))
     {
         dirtyFlag_[6]=true;
@@ -315,6 +399,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson) noexcept(false)
             changedBy_=std::make_shared<std::string>(pJson["changed_by"].asString());
         }
     }
+
     if(pJson.isMember("changed_at"))
     {
         dirtyFlag_[7]=true;
@@ -323,6 +408,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["changed_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -341,6 +427,7 @@ TransactionAudit::TransactionAudit(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
@@ -351,6 +438,7 @@ void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -358,6 +446,7 @@ void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -366,6 +455,7 @@ void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
             tableName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -374,6 +464,7 @@ void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
             recordId_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -382,6 +473,7 @@ void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
             action_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -390,6 +482,7 @@ void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
             oldValues_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -398,6 +491,7 @@ void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
             newValues_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -406,6 +500,7 @@ void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
             changedBy_=std::make_shared<std::string>(pJson[pMasqueradingVector[6]].asString());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -414,6 +509,7 @@ void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[7]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -432,10 +528,12 @@ void TransactionAudit::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void TransactionAudit::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -443,6 +541,7 @@ void TransactionAudit::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("table_name"))
     {
         dirtyFlag_[1] = true;
@@ -451,6 +550,7 @@ void TransactionAudit::updateByJson(const Json::Value &pJson) noexcept(false)
             tableName_=std::make_shared<std::string>(pJson["table_name"].asString());
         }
     }
+
     if(pJson.isMember("record_id"))
     {
         dirtyFlag_[2] = true;
@@ -459,6 +559,7 @@ void TransactionAudit::updateByJson(const Json::Value &pJson) noexcept(false)
             recordId_=std::make_shared<std::string>(pJson["record_id"].asString());
         }
     }
+
     if(pJson.isMember("action"))
     {
         dirtyFlag_[3] = true;
@@ -467,6 +568,7 @@ void TransactionAudit::updateByJson(const Json::Value &pJson) noexcept(false)
             action_=std::make_shared<std::string>(pJson["action"].asString());
         }
     }
+
     if(pJson.isMember("old_values"))
     {
         dirtyFlag_[4] = true;
@@ -475,6 +577,7 @@ void TransactionAudit::updateByJson(const Json::Value &pJson) noexcept(false)
             oldValues_=std::make_shared<std::string>(pJson["old_values"].asString());
         }
     }
+
     if(pJson.isMember("new_values"))
     {
         dirtyFlag_[5] = true;
@@ -483,6 +586,7 @@ void TransactionAudit::updateByJson(const Json::Value &pJson) noexcept(false)
             newValues_=std::make_shared<std::string>(pJson["new_values"].asString());
         }
     }
+
     if(pJson.isMember("changed_by"))
     {
         dirtyFlag_[6] = true;
@@ -491,6 +595,7 @@ void TransactionAudit::updateByJson(const Json::Value &pJson) noexcept(false)
             changedBy_=std::make_shared<std::string>(pJson["changed_by"].asString());
         }
     }
+
     if(pJson.isMember("changed_at"))
     {
         dirtyFlag_[7] = true;
@@ -499,6 +604,7 @@ void TransactionAudit::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["changed_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -517,6 +623,7 @@ void TransactionAudit::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &TransactionAudit::getValueOfId() const noexcept
@@ -719,6 +826,7 @@ void TransactionAudit::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &TransactionAudit::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -730,12 +838,14 @@ const std::vector<std::string> &TransactionAudit::insertColumns() noexcept
         "new_values",
         "changed_by",
         "changed_at"
+
     };
     return inCols;
 }
 
 void TransactionAudit::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -747,6 +857,7 @@ void TransactionAudit::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTableName())
@@ -758,6 +869,7 @@ void TransactionAudit::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getRecordId())
@@ -769,6 +881,7 @@ void TransactionAudit::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getAction())
@@ -780,6 +893,7 @@ void TransactionAudit::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getOldValues())
@@ -791,6 +905,7 @@ void TransactionAudit::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getNewValues())
@@ -802,6 +917,7 @@ void TransactionAudit::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getChangedBy())
@@ -813,6 +929,7 @@ void TransactionAudit::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getChangedAt())
@@ -824,48 +941,59 @@ void TransactionAudit::outputArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> TransactionAudit::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     return ret;
 }
 
 void TransactionAudit::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -877,6 +1005,7 @@ void TransactionAudit::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTableName())
@@ -888,6 +1017,7 @@ void TransactionAudit::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getRecordId())
@@ -899,6 +1029,7 @@ void TransactionAudit::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getAction())
@@ -910,6 +1041,7 @@ void TransactionAudit::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getOldValues())
@@ -921,6 +1053,7 @@ void TransactionAudit::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getNewValues())
@@ -932,6 +1065,7 @@ void TransactionAudit::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getChangedBy())
@@ -943,6 +1077,7 @@ void TransactionAudit::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getChangedAt())
@@ -954,74 +1089,100 @@ void TransactionAudit::updateArgs(drogon::orm::internal::SqlBinder &binder) cons
             binder << nullptr;
         }
     }
+
 }
 Json::Value TransactionAudit::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTableName())
     {
+
         ret["table_name"]=getValueOfTableName();
+
     }
     else
     {
         ret["table_name"]=Json::Value();
     }
+
     if(getRecordId())
     {
+
         ret["record_id"]=getValueOfRecordId();
+
     }
     else
     {
         ret["record_id"]=Json::Value();
     }
+
     if(getAction())
     {
+
         ret["action"]=getValueOfAction();
+
     }
     else
     {
         ret["action"]=Json::Value();
     }
+
     if(getOldValues())
     {
+
         ret["old_values"]=getValueOfOldValues();
+
     }
     else
     {
         ret["old_values"]=Json::Value();
     }
+
     if(getNewValues())
     {
+
         ret["new_values"]=getValueOfNewValues();
+
     }
     else
     {
         ret["new_values"]=Json::Value();
     }
+
     if(getChangedBy())
     {
+
         ret["changed_by"]=getValueOfChangedBy();
+
     }
     else
     {
         ret["changed_by"]=Json::Value();
     }
+
     if(getChangedAt())
     {
+
         ret["changed_at"]=getChangedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["changed_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1036,221 +1197,283 @@ Json::Value TransactionAudit::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 8)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getTableName())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfTableName();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getRecordId())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfRecordId();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getAction())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfAction();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getOldValues())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfOldValues();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getNewValues())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfNewValues();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getChangedBy())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfChangedBy();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getChangedAt())
             {
+
                 ret[pMasqueradingVector[7]]=getChangedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTableName())
     {
+
         ret["table_name"]=getValueOfTableName();
+
     }
     else
     {
         ret["table_name"]=Json::Value();
     }
+
     if(getRecordId())
     {
+
         ret["record_id"]=getValueOfRecordId();
+
     }
     else
     {
         ret["record_id"]=Json::Value();
     }
+
     if(getAction())
     {
+
         ret["action"]=getValueOfAction();
+
     }
     else
     {
         ret["action"]=Json::Value();
     }
+
     if(getOldValues())
     {
+
         ret["old_values"]=getValueOfOldValues();
+
     }
     else
     {
         ret["old_values"]=Json::Value();
     }
+
     if(getNewValues())
     {
+
         ret["new_values"]=getValueOfNewValues();
+
     }
     else
     {
         ret["new_values"]=Json::Value();
     }
+
     if(getChangedBy())
     {
+
         ret["changed_by"]=getValueOfChangedBy();
+
     }
     else
     {
         ret["changed_by"]=Json::Value();
     }
+
     if(getChangedAt())
     {
+
         ret["changed_at"]=getChangedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["changed_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool TransactionAudit::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("table_name"))
     {
         if(!validJsonOfField(1, "table_name", pJson["table_name"], err, true))
             return false;
     }
+
     else
     {
         err="The table_name column cannot be null";
         return false;
     }
+
     if(pJson.isMember("record_id"))
     {
         if(!validJsonOfField(2, "record_id", pJson["record_id"], err, true))
             return false;
     }
+
     else
     {
         err="The record_id column cannot be null";
         return false;
     }
+
     if(pJson.isMember("action"))
     {
         if(!validJsonOfField(3, "action", pJson["action"], err, true))
             return false;
     }
+
     else
     {
         err="The action column cannot be null";
         return false;
     }
+
     if(pJson.isMember("old_values"))
     {
         if(!validJsonOfField(4, "old_values", pJson["old_values"], err, true))
             return false;
     }
+
     if(pJson.isMember("new_values"))
     {
         if(!validJsonOfField(5, "new_values", pJson["new_values"], err, true))
             return false;
     }
+
     if(pJson.isMember("changed_by"))
     {
         if(!validJsonOfField(6, "changed_by", pJson["changed_by"], err, true))
             return false;
     }
+
     if(pJson.isMember("changed_at"))
     {
         if(!validJsonOfField(7, "changed_at", pJson["changed_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1263,6 +1486,7 @@ bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJs
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1270,7 +1494,9 @@ bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1278,12 +1504,15 @@ bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1291,12 +1520,15 @@ bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[2] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1304,12 +1536,15 @@ bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[3] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1317,7 +1552,9 @@ bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1325,7 +1562,9 @@ bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1333,7 +1572,9 @@ bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -1341,7 +1582,9 @@ bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJs
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1352,51 +1595,61 @@ bool TransactionAudit::validateMasqueradedJsonForCreation(const Json::Value &pJs
 }
 bool TransactionAudit::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("table_name"))
     {
         if(!validJsonOfField(1, "table_name", pJson["table_name"], err, false))
             return false;
     }
+
     if(pJson.isMember("record_id"))
     {
         if(!validJsonOfField(2, "record_id", pJson["record_id"], err, false))
             return false;
     }
+
     if(pJson.isMember("action"))
     {
         if(!validJsonOfField(3, "action", pJson["action"], err, false))
             return false;
     }
+
     if(pJson.isMember("old_values"))
     {
         if(!validJsonOfField(4, "old_values", pJson["old_values"], err, false))
             return false;
     }
+
     if(pJson.isMember("new_values"))
     {
         if(!validJsonOfField(5, "new_values", pJson["new_values"], err, false))
             return false;
     }
+
     if(pJson.isMember("changed_by"))
     {
         if(!validJsonOfField(6, "changed_by", pJson["changed_by"], err, false))
             return false;
     }
+
     if(pJson.isMember("changed_at"))
     {
         if(!validJsonOfField(7, "changed_at", pJson["changed_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool TransactionAudit::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1409,51 +1662,61 @@ bool TransactionAudit::validateMasqueradedJsonForUpdate(const Json::Value &pJson
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1470,125 +1733,159 @@ bool TransactionAudit::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 10)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 10)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 10)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

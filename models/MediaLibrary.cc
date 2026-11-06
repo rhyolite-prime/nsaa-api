@@ -1,3 +1,4 @@
+
 /**
  *
  *  MediaLibrary.cc
@@ -6,25 +7,44 @@
  */
 
 #include "MediaLibrary.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
+
+
 const std::string MediaLibrary::Cols::_id = "\"id\"";
+
 const std::string MediaLibrary::Cols::_title = "\"title\"";
+
 const std::string MediaLibrary::Cols::_file_url = "\"file_url\"";
+
 const std::string MediaLibrary::Cols::_file_type = "\"file_type\"";
+
 const std::string MediaLibrary::Cols::_file_size = "\"file_size\"";
+
 const std::string MediaLibrary::Cols::_category = "\"category\"";
+
 const std::string MediaLibrary::Cols::_download_count = "\"download_count\"";
+
 const std::string MediaLibrary::Cols::_is_active = "\"is_active\"";
+
 const std::string MediaLibrary::Cols::_created_at = "\"created_at\"";
+
 const std::string MediaLibrary::Cols::_updated_at = "\"updated_at\"";
+
+
 const std::string MediaLibrary::primaryKeyName = "id";
+
+
 const bool MediaLibrary::hasPrimaryKey = true;
+
 const std::string MediaLibrary::tableName = "\"media_library\"";
 
 const std::vector<typename MediaLibrary::MetaData> MediaLibrary::metaData_={
@@ -38,6 +58,7 @@ const std::vector<typename MediaLibrary::MetaData> MediaLibrary::metaData_={
 {"is_active","bool","boolean",1,0,0,1},
 {"created_at","::trantor::Date","timestamp with time zone",0,0,0,1},
 {"updated_at","::trantor::Date","timestamp with time zone",0,0,0,0}
+
 };
 const std::string &MediaLibrary::getColumnName(size_t index) noexcept(false)
 {
@@ -48,43 +69,69 @@ MediaLibrary::MediaLibrary(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["title"].isNull())
         {
+
             title_=std::make_shared<std::string>(r["title"].as<std::string>());
+
         }
+
         if(!r["file_url"].isNull())
         {
+
             fileUrl_=std::make_shared<std::string>(r["file_url"].as<std::string>());
+
         }
+
         if(!r["file_type"].isNull())
         {
+
             fileType_=std::make_shared<std::string>(r["file_type"].as<std::string>());
+
         }
+
         if(!r["file_size"].isNull())
         {
+
             fileSize_=std::make_shared<int32_t>(r["file_size"].as<int32_t>());
+
         }
+
         if(!r["category"].isNull())
         {
+
             category_=std::make_shared<std::string>(r["category"].as<std::string>());
+
         }
+
         if(!r["download_count"].isNull())
         {
+
             downloadCount_=std::make_shared<int32_t>(r["download_count"].as<int32_t>());
+
         }
+
         if(!r["is_active"].isNull())
         {
+
             isActive_=std::make_shared<bool>(r["is_active"].as<bool>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -102,11 +149,13 @@ MediaLibrary::MediaLibrary(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -124,6 +173,7 @@ MediaLibrary::MediaLibrary(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -134,52 +184,78 @@ MediaLibrary::MediaLibrary(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             title_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             fileUrl_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             fileType_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             fileSize_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             category_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             downloadCount_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             isActive_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -197,12 +273,14 @@ MediaLibrary::MediaLibrary(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -220,6 +298,7 @@ MediaLibrary::MediaLibrary(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -231,6 +310,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -239,6 +319,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -247,6 +328,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             title_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -255,6 +337,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             fileUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -263,6 +346,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             fileType_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -271,6 +355,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             fileSize_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -279,6 +364,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             category_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -287,6 +373,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             downloadCount_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -295,6 +382,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[7]].asBool());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -303,6 +391,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             auto timeStr = pJson[pMasqueradingVector[8]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -321,6 +410,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             }
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -329,6 +419,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             auto timeStr = pJson[pMasqueradingVector[9]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -347,10 +438,12 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson, const std::vector<std::stri
             }
         }
     }
+
 }
 
 MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -359,6 +452,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("title"))
     {
         dirtyFlag_[1]=true;
@@ -367,6 +461,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             title_=std::make_shared<std::string>(pJson["title"].asString());
         }
     }
+
     if(pJson.isMember("file_url"))
     {
         dirtyFlag_[2]=true;
@@ -375,6 +470,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             fileUrl_=std::make_shared<std::string>(pJson["file_url"].asString());
         }
     }
+
     if(pJson.isMember("file_type"))
     {
         dirtyFlag_[3]=true;
@@ -383,6 +479,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             fileType_=std::make_shared<std::string>(pJson["file_type"].asString());
         }
     }
+
     if(pJson.isMember("file_size"))
     {
         dirtyFlag_[4]=true;
@@ -391,6 +488,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             fileSize_=std::make_shared<int32_t>((int32_t)pJson["file_size"].asInt64());
         }
     }
+
     if(pJson.isMember("category"))
     {
         dirtyFlag_[5]=true;
@@ -399,6 +497,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             category_=std::make_shared<std::string>(pJson["category"].asString());
         }
     }
+
     if(pJson.isMember("download_count"))
     {
         dirtyFlag_[6]=true;
@@ -407,6 +506,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             downloadCount_=std::make_shared<int32_t>((int32_t)pJson["download_count"].asInt64());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[7]=true;
@@ -415,6 +515,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[8]=true;
@@ -423,6 +524,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -441,6 +543,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[9]=true;
@@ -449,6 +552,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -467,6 +571,7 @@ MediaLibrary::MediaLibrary(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
@@ -477,6 +582,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -484,6 +590,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -492,6 +599,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             title_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -500,6 +608,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             fileUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -508,6 +617,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             fileType_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -516,6 +626,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             fileSize_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -524,6 +635,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             category_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -532,6 +644,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             downloadCount_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -540,6 +653,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[7]].asBool());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -548,6 +662,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[8]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -566,6 +681,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -574,6 +690,7 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[9]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -592,10 +709,12 @@ void MediaLibrary::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -603,6 +722,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("title"))
     {
         dirtyFlag_[1] = true;
@@ -611,6 +731,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             title_=std::make_shared<std::string>(pJson["title"].asString());
         }
     }
+
     if(pJson.isMember("file_url"))
     {
         dirtyFlag_[2] = true;
@@ -619,6 +740,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             fileUrl_=std::make_shared<std::string>(pJson["file_url"].asString());
         }
     }
+
     if(pJson.isMember("file_type"))
     {
         dirtyFlag_[3] = true;
@@ -627,6 +749,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             fileType_=std::make_shared<std::string>(pJson["file_type"].asString());
         }
     }
+
     if(pJson.isMember("file_size"))
     {
         dirtyFlag_[4] = true;
@@ -635,6 +758,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             fileSize_=std::make_shared<int32_t>((int32_t)pJson["file_size"].asInt64());
         }
     }
+
     if(pJson.isMember("category"))
     {
         dirtyFlag_[5] = true;
@@ -643,6 +767,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             category_=std::make_shared<std::string>(pJson["category"].asString());
         }
     }
+
     if(pJson.isMember("download_count"))
     {
         dirtyFlag_[6] = true;
@@ -651,6 +776,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             downloadCount_=std::make_shared<int32_t>((int32_t)pJson["download_count"].asInt64());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[7] = true;
@@ -659,6 +785,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[8] = true;
@@ -667,6 +794,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -685,6 +813,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[9] = true;
@@ -693,6 +822,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -711,6 +841,7 @@ void MediaLibrary::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &MediaLibrary::getValueOfId() const noexcept
@@ -937,6 +1068,7 @@ void MediaLibrary::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &MediaLibrary::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -950,12 +1082,14 @@ const std::vector<std::string> &MediaLibrary::insertColumns() noexcept
         "is_active",
         "created_at",
         "updated_at"
+
     };
     return inCols;
 }
 
 void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -967,6 +1101,7 @@ void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTitle())
@@ -978,6 +1113,7 @@ void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getFileUrl())
@@ -989,6 +1125,7 @@ void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getFileType())
@@ -1000,6 +1137,7 @@ void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getFileSize())
@@ -1011,6 +1149,7 @@ void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getCategory())
@@ -1022,6 +1161,7 @@ void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getDownloadCount())
@@ -1033,6 +1173,7 @@ void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getIsActive())
@@ -1044,6 +1185,7 @@ void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getCreatedAt())
@@ -1055,6 +1197,7 @@ void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getUpdatedAt())
@@ -1066,56 +1209,69 @@ void MediaLibrary::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> MediaLibrary::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     return ret;
 }
 
 void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1127,6 +1283,7 @@ void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getTitle())
@@ -1138,6 +1295,7 @@ void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getFileUrl())
@@ -1149,6 +1307,7 @@ void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getFileType())
@@ -1160,6 +1319,7 @@ void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getFileSize())
@@ -1171,6 +1331,7 @@ void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getCategory())
@@ -1182,6 +1343,7 @@ void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getDownloadCount())
@@ -1193,6 +1355,7 @@ void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getIsActive())
@@ -1204,6 +1367,7 @@ void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getCreatedAt())
@@ -1215,6 +1379,7 @@ void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getUpdatedAt())
@@ -1226,90 +1391,122 @@ void MediaLibrary::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value MediaLibrary::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTitle())
     {
+
         ret["title"]=getValueOfTitle();
+
     }
     else
     {
         ret["title"]=Json::Value();
     }
+
     if(getFileUrl())
     {
+
         ret["file_url"]=getValueOfFileUrl();
+
     }
     else
     {
         ret["file_url"]=Json::Value();
     }
+
     if(getFileType())
     {
+
         ret["file_type"]=getValueOfFileType();
+
     }
     else
     {
         ret["file_type"]=Json::Value();
     }
+
     if(getFileSize())
     {
+
         ret["file_size"]=getValueOfFileSize();
+
     }
     else
     {
         ret["file_size"]=Json::Value();
     }
+
     if(getCategory())
     {
+
         ret["category"]=getValueOfCategory();
+
     }
     else
     {
         ret["category"]=Json::Value();
     }
+
     if(getDownloadCount())
     {
+
         ret["download_count"]=getValueOfDownloadCount();
+
     }
     else
     {
         ret["download_count"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1324,274 +1521,351 @@ Json::Value MediaLibrary::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 10)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getTitle())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfTitle();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getFileUrl())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfFileUrl();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getFileType())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfFileType();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getFileSize())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfFileSize();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getCategory())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfCategory();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getDownloadCount())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfDownloadCount();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getIsActive())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfIsActive();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[8]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[9]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getTitle())
     {
+
         ret["title"]=getValueOfTitle();
+
     }
     else
     {
         ret["title"]=Json::Value();
     }
+
     if(getFileUrl())
     {
+
         ret["file_url"]=getValueOfFileUrl();
+
     }
     else
     {
         ret["file_url"]=Json::Value();
     }
+
     if(getFileType())
     {
+
         ret["file_type"]=getValueOfFileType();
+
     }
     else
     {
         ret["file_type"]=Json::Value();
     }
+
     if(getFileSize())
     {
+
         ret["file_size"]=getValueOfFileSize();
+
     }
     else
     {
         ret["file_size"]=Json::Value();
     }
+
     if(getCategory())
     {
+
         ret["category"]=getValueOfCategory();
+
     }
     else
     {
         ret["category"]=Json::Value();
     }
+
     if(getDownloadCount())
     {
+
         ret["download_count"]=getValueOfDownloadCount();
+
     }
     else
     {
         ret["download_count"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool MediaLibrary::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("title"))
     {
         if(!validJsonOfField(1, "title", pJson["title"], err, true))
             return false;
     }
+
     else
     {
         err="The title column cannot be null";
         return false;
     }
+
     if(pJson.isMember("file_url"))
     {
         if(!validJsonOfField(2, "file_url", pJson["file_url"], err, true))
             return false;
     }
+
     else
     {
         err="The file_url column cannot be null";
         return false;
     }
+
     if(pJson.isMember("file_type"))
     {
         if(!validJsonOfField(3, "file_type", pJson["file_type"], err, true))
             return false;
     }
+
     else
     {
         err="The file_type column cannot be null";
         return false;
     }
+
     if(pJson.isMember("file_size"))
     {
         if(!validJsonOfField(4, "file_size", pJson["file_size"], err, true))
             return false;
     }
+
     if(pJson.isMember("category"))
     {
         if(!validJsonOfField(5, "category", pJson["category"], err, true))
             return false;
     }
+
     if(pJson.isMember("download_count"))
     {
         if(!validJsonOfField(6, "download_count", pJson["download_count"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(7, "is_active", pJson["is_active"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(8, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     else
     {
         err="The created_at column cannot be null";
         return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(9, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1604,6 +1878,7 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1611,7 +1886,9 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1619,12 +1896,15 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1632,12 +1912,15 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[2] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1645,12 +1928,15 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[3] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1658,7 +1944,9 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1666,7 +1954,9 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1674,7 +1964,9 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -1682,7 +1974,9 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -1690,12 +1984,15 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[8] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -1703,7 +2000,9 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1714,61 +2013,73 @@ bool MediaLibrary::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool MediaLibrary::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("title"))
     {
         if(!validJsonOfField(1, "title", pJson["title"], err, false))
             return false;
     }
+
     if(pJson.isMember("file_url"))
     {
         if(!validJsonOfField(2, "file_url", pJson["file_url"], err, false))
             return false;
     }
+
     if(pJson.isMember("file_type"))
     {
         if(!validJsonOfField(3, "file_type", pJson["file_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("file_size"))
     {
         if(!validJsonOfField(4, "file_size", pJson["file_size"], err, false))
             return false;
     }
+
     if(pJson.isMember("category"))
     {
         if(!validJsonOfField(5, "category", pJson["category"], err, false))
             return false;
     }
+
     if(pJson.isMember("download_count"))
     {
         if(!validJsonOfField(6, "download_count", pJson["download_count"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(7, "is_active", pJson["is_active"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(8, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(9, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool MediaLibrary::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1781,61 +2092,73 @@ bool MediaLibrary::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1852,157 +2175,199 @@ bool MediaLibrary::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 500)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 500)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 500)";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

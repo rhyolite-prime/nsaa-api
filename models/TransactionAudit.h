@@ -1,3 +1,4 @@
+
 /**
  *
  *  TransactionAudit.h
@@ -39,6 +40,8 @@ namespace drogon_model
 namespace ChopMoneyRaffle
 {
 
+
+
 class TransactionAudit
 {
   public:
@@ -52,14 +55,19 @@ class TransactionAudit
         static const std::string _new_values;
         static const std::string _changed_by;
         static const std::string _changed_at;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -179,6 +187,7 @@ class TransactionAudit
     void setChangedAtToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 8;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -186,6 +195,7 @@ class TransactionAudit
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<TransactionAudit>;
     friend drogon::orm::BaseBuilder<TransactionAudit, true, true>;
@@ -209,6 +219,7 @@ class TransactionAudit
     std::shared_ptr<std::string> newValues_;
     std::shared_ptr<std::string> changedBy_;
     std::shared_ptr<::trantor::Date> changedAt_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -224,13 +235,19 @@ class TransactionAudit
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -240,35 +257,42 @@ class TransactionAudit
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "table_name,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[2])
         {
             sql += "record_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "action,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "old_values,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "new_values,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[6])
         {
             sql += "changed_by,";
@@ -276,10 +300,12 @@ class TransactionAudit
         }
         sql += "changed_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[7])
         {
             needSelection=true;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -288,61 +314,90 @@ class TransactionAudit
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -351,9 +406,11 @@ class TransactionAudit
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace ChopMoneyRaffle
+
 } // namespace drogon_model

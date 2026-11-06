@@ -1,3 +1,4 @@
+
 /**
  *
  *  AffiliatePartners.h
@@ -38,6 +39,8 @@ namespace drogon_model
 {
 namespace ChopMoneyRaffle
 {
+
+
 
 class AffiliatePartners
 {
@@ -86,14 +89,19 @@ class AffiliatePartners
         static const std::string _updated_at;
         static const std::string _partnership_type;
         static const std::string _region_or_state;
+
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
+
     static const std::string primaryKeyName;
+
     using PrimaryKeyType = std::string;
     const PrimaryKeyType &getPrimaryKey() const;
+
+
 
     /**
      * @brief constructor
@@ -545,6 +553,7 @@ class AffiliatePartners
     void setRegionOrStateToNull() noexcept;
 
 
+
     static size_t getColumnNumber() noexcept {  return 42;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
@@ -552,6 +561,7 @@ class AffiliatePartners
     std::string toString() const;
     Json::Value toMasqueradedJson(const std::vector<std::string> &pMasqueradingVector) const;
     /// Relationship interfaces
+
   private:
     friend drogon::orm::Mapper<AffiliatePartners>;
     friend drogon::orm::BaseBuilder<AffiliatePartners, true, true>;
@@ -609,6 +619,7 @@ class AffiliatePartners
     std::shared_ptr<::trantor::Date> updatedAt_;
     std::shared_ptr<std::string> partnershipType_;
     std::shared_ptr<std::string> regionOrState_;
+
     struct MetaData
     {
         const std::string colName_;
@@ -624,13 +635,19 @@ class AffiliatePartners
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
+
         static const std::string sql="select * from " + tableName + " where id = $1";
+
+
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
+
         static const std::string sql="delete from " + tableName + " where id = $1";
+
+
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -640,10 +657,12 @@ class AffiliatePartners
         needSelection = false;
         sql += "id,";
         ++parametersCount;
+
         if(!dirtyFlag_[0])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[1])
         {
             sql += "name,";
@@ -651,25 +670,30 @@ class AffiliatePartners
         }
         sql += "identifier,";
         ++parametersCount;
+
         if(!dirtyFlag_[2])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[3])
         {
             sql += "contact_name,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[4])
         {
             sql += "contact_email,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[5])
         {
             sql += "contact_phone,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[6])
         {
             sql += "billing_email,";
@@ -677,27 +701,32 @@ class AffiliatePartners
         }
         sql += "country,";
         ++parametersCount;
+
         if(!dirtyFlag_[7])
         {
             needSelection=true;
         }
         sql += "currency,";
         ++parametersCount;
+
         if(!dirtyFlag_[8])
         {
             needSelection=true;
         }
         sql += "status,";
         ++parametersCount;
+
         if(!dirtyFlag_[9])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[10])
         {
             sql += "ussd_code,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[11])
         {
             sql += "wssd_service_url,";
@@ -705,16 +734,19 @@ class AffiliatePartners
         }
         sql += "sub_account_enabled,";
         ++parametersCount;
+
         if(!dirtyFlag_[12])
         {
             needSelection=true;
         }
         sql += "require_two_factor_auth,";
         ++parametersCount;
+
         if(!dirtyFlag_[13])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[14])
         {
             sql += "organization_logo,";
@@ -722,16 +754,19 @@ class AffiliatePartners
         }
         sql += "commission_rate,";
         ++parametersCount;
+
         if(!dirtyFlag_[15])
         {
             needSelection=true;
         }
         sql += "commission_type,";
         ++parametersCount;
+
         if(!dirtyFlag_[16])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[17])
         {
             sql += "payment_due_date,";
@@ -739,20 +774,24 @@ class AffiliatePartners
         }
         sql += "minimum_payout_threshold,";
         ++parametersCount;
+
         if(!dirtyFlag_[18])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[19])
         {
             sql += "payment_method,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[20])
         {
             sql += "settlement_details,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[21])
         {
             sql += "max_raffles_per_week,";
@@ -760,58 +799,69 @@ class AffiliatePartners
         }
         sql += "requires_approval,";
         ++parametersCount;
+
         if(!dirtyFlag_[22])
         {
             needSelection=true;
         }
         sql += "total_tickets_sold,";
         ++parametersCount;
+
         if(!dirtyFlag_[23])
         {
             needSelection=true;
         }
         sql += "total_revenue_generated,";
         ++parametersCount;
+
         if(!dirtyFlag_[24])
         {
             needSelection=true;
         }
         sql += "total_commission_earned,";
         ++parametersCount;
+
         if(!dirtyFlag_[25])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[26])
         {
             sql += "last_payout_date,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[27])
         {
             sql += "api_key,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[28])
         {
             sql += "api_secret,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[29])
         {
             sql += "ip_whitelist,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[30])
         {
             sql += "webhook_secret,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[31])
         {
             sql += "tax_id,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[32])
         {
             sql += "legal_entity_name,";
@@ -819,15 +869,18 @@ class AffiliatePartners
         }
         sql += "kyc_verified,";
         ++parametersCount;
+
         if(!dirtyFlag_[33])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[34])
         {
             sql += "agreement_accepted_at,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[35])
         {
             sql += "agreement_version,";
@@ -835,10 +888,12 @@ class AffiliatePartners
         }
         sql += "support_priority,";
         ++parametersCount;
+
         if(!dirtyFlag_[36])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[37])
         {
             sql += "notes,";
@@ -846,25 +901,30 @@ class AffiliatePartners
         }
         sql += "created_at,";
         ++parametersCount;
+
         if(!dirtyFlag_[38])
         {
             needSelection=true;
         }
+
         if(dirtyFlag_[39])
         {
             sql += "updated_at,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[40])
         {
             sql += "partnership_type,";
             ++parametersCount;
         }
+
         if(dirtyFlag_[41])
         {
             sql += "region_or_state,";
             ++parametersCount;
         }
+
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -873,291 +933,437 @@ class AffiliatePartners
         else
             sql += ") values (";
 
+
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+
         if(dirtyFlag_[0])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[1])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[2])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[3])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[4])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[5])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[6])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[7])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[8])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[9])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[10])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[11])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[12])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[13])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[14])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[15])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[16])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[17])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[18])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[19])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[20])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[21])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[22])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[23])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[24])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[25])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[26])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[27])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[28])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[29])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[30])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[31])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[32])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[33])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[34])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[35])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[36])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[37])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[38])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         else
         {
             sql +="default,";
         }
+
         if(dirtyFlag_[39])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[40])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(dirtyFlag_[41])
         {
+
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
             sql.append(placeholderStr, n);
+
         }
+
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
         }
+
         if(needSelection)
         {
             sql.append(") returning *");
@@ -1166,9 +1372,11 @@ class AffiliatePartners
         {
             sql.append(1, ')');
         }
+
         LOG_TRACE << sql;
         return sql;
     }
 };
 } // namespace ChopMoneyRaffle
+
 } // namespace drogon_model

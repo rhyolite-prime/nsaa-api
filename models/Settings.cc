@@ -1,3 +1,4 @@
+
 /**
  *
  *  Settings.cc
@@ -6,27 +7,48 @@
  */
 
 #include "Settings.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
+
+
 const std::string Settings::Cols::_id = "\"id\"";
+
 const std::string Settings::Cols::_business_name = "\"business_name\"";
+
 const std::string Settings::Cols::_email = "\"email\"";
+
 const std::string Settings::Cols::_phone_number = "\"phone_number\"";
+
 const std::string Settings::Cols::_default_currency = "\"default_currency\"";
+
 const std::string Settings::Cols::_currency_code = "\"currency_code\"";
+
 const std::string Settings::Cols::_business_logo = "\"business_logo\"";
+
 const std::string Settings::Cols::_automated_draw_initiation = "\"automated_draw_initiation\"";
+
 const std::string Settings::Cols::_draw_buffer_time_in_mins = "\"draw_buffer_time_in_mins\"";
+
 const std::string Settings::Cols::_require_two_factor_auth = "\"require_two_factor_auth\"";
+
 const std::string Settings::Cols::_created_at = "\"created_at\"";
+
 const std::string Settings::Cols::_updated_at = "\"updated_at\"";
+
+
 const std::string Settings::primaryKeyName = "id";
+
+
 const bool Settings::hasPrimaryKey = true;
+
 const std::string Settings::tableName = "\"settings\"";
 
 const std::vector<typename Settings::MetaData> Settings::metaData_={
@@ -42,6 +64,7 @@ const std::vector<typename Settings::MetaData> Settings::metaData_={
 {"require_two_factor_auth","bool","boolean",1,0,0,0},
 {"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
 {"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+
 };
 const std::string &Settings::getColumnName(size_t index) noexcept(false)
 {
@@ -52,30 +75,49 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["business_name"].isNull())
         {
+
             businessName_=std::make_shared<std::string>(r["business_name"].as<std::string>());
+
         }
+
         if(!r["email"].isNull())
         {
+
             email_=std::make_shared<std::string>(r["email"].as<std::string>());
+
         }
+
         if(!r["phone_number"].isNull())
         {
+
             phoneNumber_=std::make_shared<std::string>(r["phone_number"].as<std::string>());
+
         }
+
         if(!r["default_currency"].isNull())
         {
+
             defaultCurrency_=std::make_shared<std::string>(r["default_currency"].as<std::string>());
+
         }
+
         if(!r["currency_code"].isNull())
         {
+
             currencyCode_=std::make_shared<std::string>(r["currency_code"].as<std::string>());
+
         }
+
         if(!r["business_logo"].isNull())
         {
             auto str = r["business_logo"].as<std::string_view>();
@@ -85,23 +127,34 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
                 businessLogo_=std::make_shared<std::vector<char>>(drogon::utils::hexToBinaryVector(str.data()+2,str.length()-2));
             }
         }
+
         if(!r["automated_draw_initiation"].isNull())
         {
+
             automatedDrawInitiation_=std::make_shared<bool>(r["automated_draw_initiation"].as<bool>());
+
         }
+
         if(!r["draw_buffer_time_in_mins"].isNull())
         {
+
             drawBufferTimeInMins_=std::make_shared<int32_t>(r["draw_buffer_time_in_mins"].as<int32_t>());
+
         }
+
         if(!r["require_two_factor_auth"].isNull())
         {
+
             requireTwoFactorAuth_=std::make_shared<bool>(r["require_two_factor_auth"].as<bool>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -119,11 +172,13 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -141,6 +196,7 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -151,36 +207,55 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             businessName_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             email_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             phoneNumber_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             defaultCurrency_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             currencyCode_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
@@ -191,27 +266,38 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
                 businessLogo_=std::make_shared<std::vector<char>>(drogon::utils::hexToBinaryVector(str.data()+2,str.length()-2));
             }
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             automatedDrawInitiation_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
+
             drawBufferTimeInMins_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
+
             requireTwoFactorAuth_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 10;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -229,12 +315,14 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 11;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -252,6 +340,7 @@ Settings::Settings(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -263,6 +352,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -271,6 +361,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -279,6 +370,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             businessName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -287,6 +379,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             email_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -295,6 +388,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -303,6 +397,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             defaultCurrency_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -311,6 +406,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             currencyCode_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -320,6 +416,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             businessLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -328,6 +425,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             automatedDrawInitiation_=std::make_shared<bool>(pJson[pMasqueradingVector[7]].asBool());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -336,6 +434,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             drawBufferTimeInMins_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[8]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -344,6 +443,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             requireTwoFactorAuth_=std::make_shared<bool>(pJson[pMasqueradingVector[9]].asBool());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -352,6 +452,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             auto timeStr = pJson[pMasqueradingVector[10]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -370,6 +471,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             }
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -378,6 +480,7 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             auto timeStr = pJson[pMasqueradingVector[11]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -396,10 +499,12 @@ Settings::Settings(const Json::Value &pJson, const std::vector<std::string> &pMa
             }
         }
     }
+
 }
 
 Settings::Settings(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -408,6 +513,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("business_name"))
     {
         dirtyFlag_[1]=true;
@@ -416,6 +522,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             businessName_=std::make_shared<std::string>(pJson["business_name"].asString());
         }
     }
+
     if(pJson.isMember("email"))
     {
         dirtyFlag_[2]=true;
@@ -424,6 +531,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             email_=std::make_shared<std::string>(pJson["email"].asString());
         }
     }
+
     if(pJson.isMember("phone_number"))
     {
         dirtyFlag_[3]=true;
@@ -432,6 +540,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
         }
     }
+
     if(pJson.isMember("default_currency"))
     {
         dirtyFlag_[4]=true;
@@ -440,6 +549,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             defaultCurrency_=std::make_shared<std::string>(pJson["default_currency"].asString());
         }
     }
+
     if(pJson.isMember("currency_code"))
     {
         dirtyFlag_[5]=true;
@@ -448,6 +558,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             currencyCode_=std::make_shared<std::string>(pJson["currency_code"].asString());
         }
     }
+
     if(pJson.isMember("business_logo"))
     {
         dirtyFlag_[6]=true;
@@ -457,6 +568,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             businessLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
     if(pJson.isMember("automated_draw_initiation"))
     {
         dirtyFlag_[7]=true;
@@ -465,6 +577,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             automatedDrawInitiation_=std::make_shared<bool>(pJson["automated_draw_initiation"].asBool());
         }
     }
+
     if(pJson.isMember("draw_buffer_time_in_mins"))
     {
         dirtyFlag_[8]=true;
@@ -473,6 +586,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             drawBufferTimeInMins_=std::make_shared<int32_t>((int32_t)pJson["draw_buffer_time_in_mins"].asInt64());
         }
     }
+
     if(pJson.isMember("require_two_factor_auth"))
     {
         dirtyFlag_[9]=true;
@@ -481,6 +595,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             requireTwoFactorAuth_=std::make_shared<bool>(pJson["require_two_factor_auth"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[10]=true;
@@ -489,6 +604,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -507,6 +623,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[11]=true;
@@ -515,6 +632,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -533,6 +651,7 @@ Settings::Settings(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void Settings::updateByMasqueradedJson(const Json::Value &pJson,
@@ -543,6 +662,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -550,6 +670,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -558,6 +679,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             businessName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -566,6 +688,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             email_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -574,6 +697,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             phoneNumber_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -582,6 +706,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             defaultCurrency_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -590,6 +715,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             currencyCode_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -599,6 +725,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             businessLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -607,6 +734,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             automatedDrawInitiation_=std::make_shared<bool>(pJson[pMasqueradingVector[7]].asBool());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -615,6 +743,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             drawBufferTimeInMins_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[8]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -623,6 +752,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             requireTwoFactorAuth_=std::make_shared<bool>(pJson[pMasqueradingVector[9]].asBool());
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -631,6 +761,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[10]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -649,6 +780,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
     {
         dirtyFlag_[11] = true;
@@ -657,6 +789,7 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[11]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -675,10 +808,12 @@ void Settings::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -686,6 +821,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("business_name"))
     {
         dirtyFlag_[1] = true;
@@ -694,6 +830,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             businessName_=std::make_shared<std::string>(pJson["business_name"].asString());
         }
     }
+
     if(pJson.isMember("email"))
     {
         dirtyFlag_[2] = true;
@@ -702,6 +839,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             email_=std::make_shared<std::string>(pJson["email"].asString());
         }
     }
+
     if(pJson.isMember("phone_number"))
     {
         dirtyFlag_[3] = true;
@@ -710,6 +848,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             phoneNumber_=std::make_shared<std::string>(pJson["phone_number"].asString());
         }
     }
+
     if(pJson.isMember("default_currency"))
     {
         dirtyFlag_[4] = true;
@@ -718,6 +857,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             defaultCurrency_=std::make_shared<std::string>(pJson["default_currency"].asString());
         }
     }
+
     if(pJson.isMember("currency_code"))
     {
         dirtyFlag_[5] = true;
@@ -726,6 +866,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             currencyCode_=std::make_shared<std::string>(pJson["currency_code"].asString());
         }
     }
+
     if(pJson.isMember("business_logo"))
     {
         dirtyFlag_[6] = true;
@@ -735,6 +876,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             businessLogo_=std::make_shared<std::vector<char>>(drogon::utils::base64DecodeToVector(str));
         }
     }
+
     if(pJson.isMember("automated_draw_initiation"))
     {
         dirtyFlag_[7] = true;
@@ -743,6 +885,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             automatedDrawInitiation_=std::make_shared<bool>(pJson["automated_draw_initiation"].asBool());
         }
     }
+
     if(pJson.isMember("draw_buffer_time_in_mins"))
     {
         dirtyFlag_[8] = true;
@@ -751,6 +894,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             drawBufferTimeInMins_=std::make_shared<int32_t>((int32_t)pJson["draw_buffer_time_in_mins"].asInt64());
         }
     }
+
     if(pJson.isMember("require_two_factor_auth"))
     {
         dirtyFlag_[9] = true;
@@ -759,6 +903,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             requireTwoFactorAuth_=std::make_shared<bool>(pJson["require_two_factor_auth"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[10] = true;
@@ -767,6 +912,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -785,6 +931,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[11] = true;
@@ -793,6 +940,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -811,6 +959,7 @@ void Settings::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &Settings::getValueOfId() const noexcept
@@ -1098,6 +1247,7 @@ void Settings::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &Settings::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -1113,12 +1263,14 @@ const std::vector<std::string> &Settings::insertColumns() noexcept
         "require_two_factor_auth",
         "created_at",
         "updated_at"
+
     };
     return inCols;
 }
 
 void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1130,6 +1282,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getBusinessName())
@@ -1141,6 +1294,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getEmail())
@@ -1152,6 +1306,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPhoneNumber())
@@ -1163,6 +1318,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getDefaultCurrency())
@@ -1174,6 +1330,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getCurrencyCode())
@@ -1185,6 +1342,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getBusinessLogo())
@@ -1196,6 +1354,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getAutomatedDrawInitiation())
@@ -1207,6 +1366,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getDrawBufferTimeInMins())
@@ -1218,6 +1378,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getRequireTwoFactorAuth())
@@ -1229,6 +1390,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getCreatedAt())
@@ -1240,6 +1402,7 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getUpdatedAt())
@@ -1251,64 +1414,79 @@ void Settings::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> Settings::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     if(dirtyFlag_[10])
     {
         ret.push_back(getColumnName(10));
     }
+
     if(dirtyFlag_[11])
     {
         ret.push_back(getColumnName(11));
     }
+
     return ret;
 }
 
 void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1320,6 +1498,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getBusinessName())
@@ -1331,6 +1510,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getEmail())
@@ -1342,6 +1522,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getPhoneNumber())
@@ -1353,6 +1534,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getDefaultCurrency())
@@ -1364,6 +1546,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getCurrencyCode())
@@ -1375,6 +1558,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getBusinessLogo())
@@ -1386,6 +1570,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getAutomatedDrawInitiation())
@@ -1397,6 +1582,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getDrawBufferTimeInMins())
@@ -1408,6 +1594,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getRequireTwoFactorAuth())
@@ -1419,6 +1606,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getCreatedAt())
@@ -1430,6 +1618,7 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[11])
     {
         if(getUpdatedAt())
@@ -1441,106 +1630,144 @@ void Settings::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value Settings::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getBusinessName())
     {
+
         ret["business_name"]=getValueOfBusinessName();
+
     }
     else
     {
         ret["business_name"]=Json::Value();
     }
+
     if(getEmail())
     {
+
         ret["email"]=getValueOfEmail();
+
     }
     else
     {
         ret["email"]=Json::Value();
     }
+
     if(getPhoneNumber())
     {
+
         ret["phone_number"]=getValueOfPhoneNumber();
+
     }
     else
     {
         ret["phone_number"]=Json::Value();
     }
+
     if(getDefaultCurrency())
     {
+
         ret["default_currency"]=getValueOfDefaultCurrency();
+
     }
     else
     {
         ret["default_currency"]=Json::Value();
     }
+
     if(getCurrencyCode())
     {
+
         ret["currency_code"]=getValueOfCurrencyCode();
+
     }
     else
     {
         ret["currency_code"]=Json::Value();
     }
+
     if(getBusinessLogo())
     {
+
         ret["business_logo"]=drogon::utils::base64Encode((const unsigned char *)getBusinessLogo()->data(),getBusinessLogo()->size());
+
     }
     else
     {
         ret["business_logo"]=Json::Value();
     }
+
     if(getAutomatedDrawInitiation())
     {
+
         ret["automated_draw_initiation"]=getValueOfAutomatedDrawInitiation();
+
     }
     else
     {
         ret["automated_draw_initiation"]=Json::Value();
     }
+
     if(getDrawBufferTimeInMins())
     {
+
         ret["draw_buffer_time_in_mins"]=getValueOfDrawBufferTimeInMins();
+
     }
     else
     {
         ret["draw_buffer_time_in_mins"]=Json::Value();
     }
+
     if(getRequireTwoFactorAuth())
     {
+
         ret["require_two_factor_auth"]=getValueOfRequireTwoFactorAuth();
+
     }
     else
     {
         ret["require_two_factor_auth"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1555,327 +1782,419 @@ Json::Value Settings::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 12)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getBusinessName())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfBusinessName();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getEmail())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfEmail();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getPhoneNumber())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfPhoneNumber();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getDefaultCurrency())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfDefaultCurrency();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getCurrencyCode())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfCurrencyCode();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getBusinessLogo())
             {
+
                 ret[pMasqueradingVector[6]]=drogon::utils::base64Encode((const unsigned char *)getBusinessLogo()->data(),getBusinessLogo()->size());
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getAutomatedDrawInitiation())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfAutomatedDrawInitiation();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getDrawBufferTimeInMins())
             {
+
                 ret[pMasqueradingVector[8]]=getValueOfDrawBufferTimeInMins();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getRequireTwoFactorAuth())
             {
+
                 ret[pMasqueradingVector[9]]=getValueOfRequireTwoFactorAuth();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[10].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[10]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[11].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[11]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[11]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getBusinessName())
     {
+
         ret["business_name"]=getValueOfBusinessName();
+
     }
     else
     {
         ret["business_name"]=Json::Value();
     }
+
     if(getEmail())
     {
+
         ret["email"]=getValueOfEmail();
+
     }
     else
     {
         ret["email"]=Json::Value();
     }
+
     if(getPhoneNumber())
     {
+
         ret["phone_number"]=getValueOfPhoneNumber();
+
     }
     else
     {
         ret["phone_number"]=Json::Value();
     }
+
     if(getDefaultCurrency())
     {
+
         ret["default_currency"]=getValueOfDefaultCurrency();
+
     }
     else
     {
         ret["default_currency"]=Json::Value();
     }
+
     if(getCurrencyCode())
     {
+
         ret["currency_code"]=getValueOfCurrencyCode();
+
     }
     else
     {
         ret["currency_code"]=Json::Value();
     }
+
     if(getBusinessLogo())
     {
+
         ret["business_logo"]=drogon::utils::base64Encode((const unsigned char *)getBusinessLogo()->data(),getBusinessLogo()->size());
+
     }
     else
     {
         ret["business_logo"]=Json::Value();
     }
+
     if(getAutomatedDrawInitiation())
     {
+
         ret["automated_draw_initiation"]=getValueOfAutomatedDrawInitiation();
+
     }
     else
     {
         ret["automated_draw_initiation"]=Json::Value();
     }
+
     if(getDrawBufferTimeInMins())
     {
+
         ret["draw_buffer_time_in_mins"]=getValueOfDrawBufferTimeInMins();
+
     }
     else
     {
         ret["draw_buffer_time_in_mins"]=Json::Value();
     }
+
     if(getRequireTwoFactorAuth())
     {
+
         ret["require_two_factor_auth"]=getValueOfRequireTwoFactorAuth();
+
     }
     else
     {
         ret["require_two_factor_auth"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool Settings::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("business_name"))
     {
         if(!validJsonOfField(1, "business_name", pJson["business_name"], err, true))
             return false;
     }
+
     else
     {
         err="The business_name column cannot be null";
         return false;
     }
+
     if(pJson.isMember("email"))
     {
         if(!validJsonOfField(2, "email", pJson["email"], err, true))
             return false;
     }
+
     else
     {
         err="The email column cannot be null";
         return false;
     }
+
     if(pJson.isMember("phone_number"))
     {
         if(!validJsonOfField(3, "phone_number", pJson["phone_number"], err, true))
             return false;
     }
+
     else
     {
         err="The phone_number column cannot be null";
         return false;
     }
+
     if(pJson.isMember("default_currency"))
     {
         if(!validJsonOfField(4, "default_currency", pJson["default_currency"], err, true))
             return false;
     }
+
     else
     {
         err="The default_currency column cannot be null";
         return false;
     }
+
     if(pJson.isMember("currency_code"))
     {
         if(!validJsonOfField(5, "currency_code", pJson["currency_code"], err, true))
             return false;
     }
+
     else
     {
         err="The currency_code column cannot be null";
         return false;
     }
+
     if(pJson.isMember("business_logo"))
     {
         if(!validJsonOfField(6, "business_logo", pJson["business_logo"], err, true))
             return false;
     }
+
     if(pJson.isMember("automated_draw_initiation"))
     {
         if(!validJsonOfField(7, "automated_draw_initiation", pJson["automated_draw_initiation"], err, true))
             return false;
     }
+
     if(pJson.isMember("draw_buffer_time_in_mins"))
     {
         if(!validJsonOfField(8, "draw_buffer_time_in_mins", pJson["draw_buffer_time_in_mins"], err, true))
             return false;
     }
+
     if(pJson.isMember("require_two_factor_auth"))
     {
         if(!validJsonOfField(9, "require_two_factor_auth", pJson["require_two_factor_auth"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(10, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(11, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1888,6 +2207,7 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1895,7 +2215,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1903,12 +2225,15 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1916,12 +2241,15 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[2] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1929,12 +2257,15 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[3] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1942,12 +2273,15 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[4] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1955,12 +2289,15 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[5] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1968,7 +2305,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -1976,7 +2315,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -1984,7 +2325,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -1992,7 +2335,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[10].empty())
       {
           if(pJson.isMember(pMasqueradingVector[10]))
@@ -2000,7 +2345,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[11].empty())
       {
           if(pJson.isMember(pMasqueradingVector[11]))
@@ -2008,7 +2355,9 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2019,71 +2368,85 @@ bool Settings::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool Settings::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("business_name"))
     {
         if(!validJsonOfField(1, "business_name", pJson["business_name"], err, false))
             return false;
     }
+
     if(pJson.isMember("email"))
     {
         if(!validJsonOfField(2, "email", pJson["email"], err, false))
             return false;
     }
+
     if(pJson.isMember("phone_number"))
     {
         if(!validJsonOfField(3, "phone_number", pJson["phone_number"], err, false))
             return false;
     }
+
     if(pJson.isMember("default_currency"))
     {
         if(!validJsonOfField(4, "default_currency", pJson["default_currency"], err, false))
             return false;
     }
+
     if(pJson.isMember("currency_code"))
     {
         if(!validJsonOfField(5, "currency_code", pJson["currency_code"], err, false))
             return false;
     }
+
     if(pJson.isMember("business_logo"))
     {
         if(!validJsonOfField(6, "business_logo", pJson["business_logo"], err, false))
             return false;
     }
+
     if(pJson.isMember("automated_draw_initiation"))
     {
         if(!validJsonOfField(7, "automated_draw_initiation", pJson["automated_draw_initiation"], err, false))
             return false;
     }
+
     if(pJson.isMember("draw_buffer_time_in_mins"))
     {
         if(!validJsonOfField(8, "draw_buffer_time_in_mins", pJson["draw_buffer_time_in_mins"], err, false))
             return false;
     }
+
     if(pJson.isMember("require_two_factor_auth"))
     {
         if(!validJsonOfField(9, "require_two_factor_auth", pJson["require_two_factor_auth"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(10, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(11, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool Settings::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -2096,71 +2459,85 @@ bool Settings::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
       {
           if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
       {
           if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2177,187 +2554,237 @@ bool Settings::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 150)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 150)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 150)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 150)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 150)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 150)";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 20)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 20)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 20)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 10:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 11:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

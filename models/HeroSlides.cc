@@ -1,3 +1,4 @@
+
 /**
  *
  *  HeroSlides.cc
@@ -6,25 +7,44 @@
  */
 
 #include "HeroSlides.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
+
+
 const std::string HeroSlides::Cols::_id = "\"id\"";
+
 const std::string HeroSlides::Cols::_headline = "\"headline\"";
+
 const std::string HeroSlides::Cols::_copy = "\"copy\"";
+
 const std::string HeroSlides::Cols::_image_url = "\"image_url\"";
+
 const std::string HeroSlides::Cols::_cta_primary = "\"cta_primary\"";
+
 const std::string HeroSlides::Cols::_cta_secondary = "\"cta_secondary\"";
+
 const std::string HeroSlides::Cols::_display_order = "\"display_order\"";
+
 const std::string HeroSlides::Cols::_is_active = "\"is_active\"";
+
 const std::string HeroSlides::Cols::_created_at = "\"created_at\"";
+
 const std::string HeroSlides::Cols::_updated_at = "\"updated_at\"";
+
+
 const std::string HeroSlides::primaryKeyName = "id";
+
+
 const bool HeroSlides::hasPrimaryKey = true;
+
 const std::string HeroSlides::tableName = "\"hero_slides\"";
 
 const std::vector<typename HeroSlides::MetaData> HeroSlides::metaData_={
@@ -36,8 +56,9 @@ const std::vector<typename HeroSlides::MetaData> HeroSlides::metaData_={
 {"cta_secondary","std::string","character varying",255,0,0,0},
 {"display_order","int32_t","integer",4,0,0,1},
 {"is_active","bool","boolean",1,0,0,1},
-{"created_at","::trantor::Date","timestamp with time zone",0,0,0,1},
+{"created_at","::trantor::Date","timestamp with time zone",0,0,0,0},
 {"updated_at","::trantor::Date","timestamp with time zone",0,0,0,0}
+
 };
 const std::string &HeroSlides::getColumnName(size_t index) noexcept(false)
 {
@@ -48,43 +69,69 @@ HeroSlides::HeroSlides(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["headline"].isNull())
         {
+
             headline_=std::make_shared<std::string>(r["headline"].as<std::string>());
+
         }
+
         if(!r["copy"].isNull())
         {
+
             copy_=std::make_shared<std::string>(r["copy"].as<std::string>());
+
         }
+
         if(!r["image_url"].isNull())
         {
+
             imageUrl_=std::make_shared<std::string>(r["image_url"].as<std::string>());
+
         }
+
         if(!r["cta_primary"].isNull())
         {
+
             ctaPrimary_=std::make_shared<std::string>(r["cta_primary"].as<std::string>());
+
         }
+
         if(!r["cta_secondary"].isNull())
         {
+
             ctaSecondary_=std::make_shared<std::string>(r["cta_secondary"].as<std::string>());
+
         }
+
         if(!r["display_order"].isNull())
         {
+
             displayOrder_=std::make_shared<int32_t>(r["display_order"].as<int32_t>());
+
         }
+
         if(!r["is_active"].isNull())
         {
+
             isActive_=std::make_shared<bool>(r["is_active"].as<bool>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -102,11 +149,13 @@ HeroSlides::HeroSlides(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -124,6 +173,7 @@ HeroSlides::HeroSlides(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -134,52 +184,78 @@ HeroSlides::HeroSlides(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             headline_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             copy_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             imageUrl_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             ctaPrimary_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             ctaSecondary_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             displayOrder_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             isActive_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -197,12 +273,14 @@ HeroSlides::HeroSlides(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -220,6 +298,7 @@ HeroSlides::HeroSlides(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -231,6 +310,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -239,6 +319,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -247,6 +328,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             headline_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -255,6 +337,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             copy_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -263,6 +346,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             imageUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -271,6 +355,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             ctaPrimary_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -279,6 +364,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             ctaSecondary_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -287,6 +373,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             displayOrder_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -295,6 +382,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[7]].asBool());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -303,6 +391,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             auto timeStr = pJson[pMasqueradingVector[8]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -321,6 +410,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             }
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -329,6 +419,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             auto timeStr = pJson[pMasqueradingVector[9]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -347,10 +438,12 @@ HeroSlides::HeroSlides(const Json::Value &pJson, const std::vector<std::string> 
             }
         }
     }
+
 }
 
 HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -359,6 +452,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("headline"))
     {
         dirtyFlag_[1]=true;
@@ -367,6 +461,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             headline_=std::make_shared<std::string>(pJson["headline"].asString());
         }
     }
+
     if(pJson.isMember("copy"))
     {
         dirtyFlag_[2]=true;
@@ -375,6 +470,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             copy_=std::make_shared<std::string>(pJson["copy"].asString());
         }
     }
+
     if(pJson.isMember("image_url"))
     {
         dirtyFlag_[3]=true;
@@ -383,6 +479,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             imageUrl_=std::make_shared<std::string>(pJson["image_url"].asString());
         }
     }
+
     if(pJson.isMember("cta_primary"))
     {
         dirtyFlag_[4]=true;
@@ -391,6 +488,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             ctaPrimary_=std::make_shared<std::string>(pJson["cta_primary"].asString());
         }
     }
+
     if(pJson.isMember("cta_secondary"))
     {
         dirtyFlag_[5]=true;
@@ -399,6 +497,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             ctaSecondary_=std::make_shared<std::string>(pJson["cta_secondary"].asString());
         }
     }
+
     if(pJson.isMember("display_order"))
     {
         dirtyFlag_[6]=true;
@@ -407,6 +506,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             displayOrder_=std::make_shared<int32_t>((int32_t)pJson["display_order"].asInt64());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[7]=true;
@@ -415,6 +515,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[8]=true;
@@ -423,6 +524,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -441,6 +543,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[9]=true;
@@ -449,6 +552,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -467,6 +571,7 @@ HeroSlides::HeroSlides(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
@@ -477,6 +582,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -484,6 +590,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -492,6 +599,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             headline_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -500,6 +608,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             copy_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -508,6 +617,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             imageUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -516,6 +626,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             ctaPrimary_=std::make_shared<std::string>(pJson[pMasqueradingVector[4]].asString());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -524,6 +635,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             ctaSecondary_=std::make_shared<std::string>(pJson[pMasqueradingVector[5]].asString());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -532,6 +644,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             displayOrder_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -540,6 +653,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[7]].asBool());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -548,6 +662,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[8]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -566,6 +681,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -574,6 +690,7 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[9]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -592,10 +709,12 @@ void HeroSlides::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -603,6 +722,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("headline"))
     {
         dirtyFlag_[1] = true;
@@ -611,6 +731,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             headline_=std::make_shared<std::string>(pJson["headline"].asString());
         }
     }
+
     if(pJson.isMember("copy"))
     {
         dirtyFlag_[2] = true;
@@ -619,6 +740,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             copy_=std::make_shared<std::string>(pJson["copy"].asString());
         }
     }
+
     if(pJson.isMember("image_url"))
     {
         dirtyFlag_[3] = true;
@@ -627,6 +749,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             imageUrl_=std::make_shared<std::string>(pJson["image_url"].asString());
         }
     }
+
     if(pJson.isMember("cta_primary"))
     {
         dirtyFlag_[4] = true;
@@ -635,6 +758,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             ctaPrimary_=std::make_shared<std::string>(pJson["cta_primary"].asString());
         }
     }
+
     if(pJson.isMember("cta_secondary"))
     {
         dirtyFlag_[5] = true;
@@ -643,6 +767,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             ctaSecondary_=std::make_shared<std::string>(pJson["cta_secondary"].asString());
         }
     }
+
     if(pJson.isMember("display_order"))
     {
         dirtyFlag_[6] = true;
@@ -651,6 +776,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             displayOrder_=std::make_shared<int32_t>((int32_t)pJson["display_order"].asInt64());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[7] = true;
@@ -659,6 +785,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[8] = true;
@@ -667,6 +794,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -685,6 +813,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[9] = true;
@@ -693,6 +822,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -711,6 +841,7 @@ void HeroSlides::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &HeroSlides::getValueOfId() const noexcept
@@ -915,6 +1046,11 @@ void HeroSlides::setCreatedAt(const ::trantor::Date &pCreatedAt) noexcept
     createdAt_ = std::make_shared<::trantor::Date>(pCreatedAt);
     dirtyFlag_[8] = true;
 }
+void HeroSlides::setCreatedAtToNull() noexcept
+{
+    createdAt_.reset();
+    dirtyFlag_[8] = true;
+}
 
 const ::trantor::Date &HeroSlides::getValueOfUpdatedAt() const noexcept
 {
@@ -942,6 +1078,7 @@ void HeroSlides::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &HeroSlides::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -955,12 +1092,14 @@ const std::vector<std::string> &HeroSlides::insertColumns() noexcept
         "is_active",
         "created_at",
         "updated_at"
+
     };
     return inCols;
 }
 
 void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -972,6 +1111,7 @@ void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getHeadline())
@@ -983,6 +1123,7 @@ void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getCopy())
@@ -994,6 +1135,7 @@ void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getImageUrl())
@@ -1005,6 +1147,7 @@ void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getCtaPrimary())
@@ -1016,6 +1159,7 @@ void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getCtaSecondary())
@@ -1027,6 +1171,7 @@ void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getDisplayOrder())
@@ -1038,6 +1183,7 @@ void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getIsActive())
@@ -1049,6 +1195,7 @@ void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getCreatedAt())
@@ -1060,6 +1207,7 @@ void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getUpdatedAt())
@@ -1071,56 +1219,69 @@ void HeroSlides::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> HeroSlides::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     return ret;
 }
 
 void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1132,6 +1293,7 @@ void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getHeadline())
@@ -1143,6 +1305,7 @@ void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getCopy())
@@ -1154,6 +1317,7 @@ void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getImageUrl())
@@ -1165,6 +1329,7 @@ void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getCtaPrimary())
@@ -1176,6 +1341,7 @@ void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getCtaSecondary())
@@ -1187,6 +1353,7 @@ void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getDisplayOrder())
@@ -1198,6 +1365,7 @@ void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getIsActive())
@@ -1209,6 +1377,7 @@ void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getCreatedAt())
@@ -1220,6 +1389,7 @@ void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getUpdatedAt())
@@ -1231,90 +1401,122 @@ void HeroSlides::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value HeroSlides::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getHeadline())
     {
+
         ret["headline"]=getValueOfHeadline();
+
     }
     else
     {
         ret["headline"]=Json::Value();
     }
+
     if(getCopy())
     {
+
         ret["copy"]=getValueOfCopy();
+
     }
     else
     {
         ret["copy"]=Json::Value();
     }
+
     if(getImageUrl())
     {
+
         ret["image_url"]=getValueOfImageUrl();
+
     }
     else
     {
         ret["image_url"]=Json::Value();
     }
+
     if(getCtaPrimary())
     {
+
         ret["cta_primary"]=getValueOfCtaPrimary();
+
     }
     else
     {
         ret["cta_primary"]=Json::Value();
     }
+
     if(getCtaSecondary())
     {
+
         ret["cta_secondary"]=getValueOfCtaSecondary();
+
     }
     else
     {
         ret["cta_secondary"]=Json::Value();
     }
+
     if(getDisplayOrder())
     {
+
         ret["display_order"]=getValueOfDisplayOrder();
+
     }
     else
     {
         ret["display_order"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1329,269 +1531,339 @@ Json::Value HeroSlides::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 10)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getHeadline())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfHeadline();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getCopy())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfCopy();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getImageUrl())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfImageUrl();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getCtaPrimary())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfCtaPrimary();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getCtaSecondary())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfCtaSecondary();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getDisplayOrder())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfDisplayOrder();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getIsActive())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfIsActive();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[8]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[9]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getHeadline())
     {
+
         ret["headline"]=getValueOfHeadline();
+
     }
     else
     {
         ret["headline"]=Json::Value();
     }
+
     if(getCopy())
     {
+
         ret["copy"]=getValueOfCopy();
+
     }
     else
     {
         ret["copy"]=Json::Value();
     }
+
     if(getImageUrl())
     {
+
         ret["image_url"]=getValueOfImageUrl();
+
     }
     else
     {
         ret["image_url"]=Json::Value();
     }
+
     if(getCtaPrimary())
     {
+
         ret["cta_primary"]=getValueOfCtaPrimary();
+
     }
     else
     {
         ret["cta_primary"]=Json::Value();
     }
+
     if(getCtaSecondary())
     {
+
         ret["cta_secondary"]=getValueOfCtaSecondary();
+
     }
     else
     {
         ret["cta_secondary"]=Json::Value();
     }
+
     if(getDisplayOrder())
     {
+
         ret["display_order"]=getValueOfDisplayOrder();
+
     }
     else
     {
         ret["display_order"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool HeroSlides::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("headline"))
     {
         if(!validJsonOfField(1, "headline", pJson["headline"], err, true))
             return false;
     }
+
     else
     {
         err="The headline column cannot be null";
         return false;
     }
+
     if(pJson.isMember("copy"))
     {
         if(!validJsonOfField(2, "copy", pJson["copy"], err, true))
             return false;
     }
+
     if(pJson.isMember("image_url"))
     {
         if(!validJsonOfField(3, "image_url", pJson["image_url"], err, true))
             return false;
     }
+
     else
     {
         err="The image_url column cannot be null";
         return false;
     }
+
     if(pJson.isMember("cta_primary"))
     {
         if(!validJsonOfField(4, "cta_primary", pJson["cta_primary"], err, true))
             return false;
     }
+
     if(pJson.isMember("cta_secondary"))
     {
         if(!validJsonOfField(5, "cta_secondary", pJson["cta_secondary"], err, true))
             return false;
     }
+
     if(pJson.isMember("display_order"))
     {
         if(!validJsonOfField(6, "display_order", pJson["display_order"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(7, "is_active", pJson["is_active"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(8, "created_at", pJson["created_at"], err, true))
             return false;
     }
-    else
-    {
-        err="The created_at column cannot be null";
-        return false;
-    }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(9, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1604,6 +1876,7 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1611,7 +1884,9 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1619,12 +1894,15 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1632,7 +1910,9 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1640,12 +1920,15 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[3] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1653,7 +1936,9 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1661,7 +1946,9 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1669,7 +1956,9 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -1677,7 +1966,9 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -1685,12 +1976,9 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
-        else
-        {
-            err="The " + pMasqueradingVector[8] + " column cannot be null";
-            return false;
-        }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -1698,7 +1986,9 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1709,61 +1999,73 @@ bool HeroSlides::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool HeroSlides::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("headline"))
     {
         if(!validJsonOfField(1, "headline", pJson["headline"], err, false))
             return false;
     }
+
     if(pJson.isMember("copy"))
     {
         if(!validJsonOfField(2, "copy", pJson["copy"], err, false))
             return false;
     }
+
     if(pJson.isMember("image_url"))
     {
         if(!validJsonOfField(3, "image_url", pJson["image_url"], err, false))
             return false;
     }
+
     if(pJson.isMember("cta_primary"))
     {
         if(!validJsonOfField(4, "cta_primary", pJson["cta_primary"], err, false))
             return false;
     }
+
     if(pJson.isMember("cta_secondary"))
     {
         if(!validJsonOfField(5, "cta_secondary", pJson["cta_secondary"], err, false))
             return false;
     }
+
     if(pJson.isMember("display_order"))
     {
         if(!validJsonOfField(6, "display_order", pJson["display_order"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(7, "is_active", pJson["is_active"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(8, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(9, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool HeroSlides::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1776,61 +2078,73 @@ bool HeroSlides::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1847,157 +2161,198 @@ bool HeroSlides::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 500)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 500)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 500)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 255)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 255)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 255)";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 8:
-            if(pJson.isNull())
-            {
-                err="The " + fieldName + " column cannot be null";
-                return false;
-            }
-            if(!pJson.isString())
-            {
-                err="Type error in the "+fieldName+" field";
-                return false;
-            }
-            break;
-        case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
+        case 9:
+
+            if(pJson.isNull())
+            {
+                return true;
+            }
+
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

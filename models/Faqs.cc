@@ -1,3 +1,4 @@
+
 /**
  *
  *  Faqs.cc
@@ -6,23 +7,40 @@
  */
 
 #include "Faqs.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
+
+
 const std::string Faqs::Cols::_id = "\"id\"";
+
 const std::string Faqs::Cols::_question = "\"question\"";
+
 const std::string Faqs::Cols::_answer = "\"answer\"";
+
 const std::string Faqs::Cols::_category = "\"category\"";
+
 const std::string Faqs::Cols::_display_order = "\"display_order\"";
+
 const std::string Faqs::Cols::_is_active = "\"is_active\"";
+
 const std::string Faqs::Cols::_created_at = "\"created_at\"";
+
 const std::string Faqs::Cols::_updated_at = "\"updated_at\"";
+
+
 const std::string Faqs::primaryKeyName = "id";
+
+
 const bool Faqs::hasPrimaryKey = true;
+
 const std::string Faqs::tableName = "\"faqs\"";
 
 const std::vector<typename Faqs::MetaData> Faqs::metaData_={
@@ -34,6 +52,7 @@ const std::vector<typename Faqs::MetaData> Faqs::metaData_={
 {"is_active","bool","boolean",1,0,0,1},
 {"created_at","::trantor::Date","timestamp with time zone",0,0,0,1},
 {"updated_at","::trantor::Date","timestamp with time zone",0,0,0,0}
+
 };
 const std::string &Faqs::getColumnName(size_t index) noexcept(false)
 {
@@ -44,35 +63,55 @@ Faqs::Faqs(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["question"].isNull())
         {
+
             question_=std::make_shared<std::string>(r["question"].as<std::string>());
+
         }
+
         if(!r["answer"].isNull())
         {
+
             answer_=std::make_shared<std::string>(r["answer"].as<std::string>());
+
         }
+
         if(!r["category"].isNull())
         {
+
             category_=std::make_shared<std::string>(r["category"].as<std::string>());
+
         }
+
         if(!r["display_order"].isNull())
         {
+
             displayOrder_=std::make_shared<int32_t>(r["display_order"].as<int32_t>());
+
         }
+
         if(!r["is_active"].isNull())
         {
+
             isActive_=std::make_shared<bool>(r["is_active"].as<bool>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -90,11 +129,13 @@ Faqs::Faqs(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -112,6 +153,7 @@ Faqs::Faqs(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
     else
     {
@@ -122,42 +164,62 @@ Faqs::Faqs(const Row &r, const ssize_t indexOffset) noexcept
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             question_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             answer_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             category_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             displayOrder_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             isActive_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -175,12 +237,14 @@ Faqs::Faqs(const Row &r, const ssize_t indexOffset) noexcept
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -198,6 +262,7 @@ Faqs::Faqs(const Row &r, const ssize_t indexOffset) noexcept
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
     }
 
 }
@@ -209,6 +274,7 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -217,6 +283,7 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -225,6 +292,7 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
             question_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -233,6 +301,7 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
             answer_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -241,6 +310,7 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
             category_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -249,6 +319,7 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
             displayOrder_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -257,6 +328,7 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[5]].asBool());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -265,6 +337,7 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -283,6 +356,7 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
             }
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -291,6 +365,7 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
             auto timeStr = pJson[pMasqueradingVector[7]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -309,10 +384,12 @@ Faqs::Faqs(const Json::Value &pJson, const std::vector<std::string> &pMasqueradi
             }
         }
     }
+
 }
 
 Faqs::Faqs(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -321,6 +398,7 @@ Faqs::Faqs(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("question"))
     {
         dirtyFlag_[1]=true;
@@ -329,6 +407,7 @@ Faqs::Faqs(const Json::Value &pJson) noexcept(false)
             question_=std::make_shared<std::string>(pJson["question"].asString());
         }
     }
+
     if(pJson.isMember("answer"))
     {
         dirtyFlag_[2]=true;
@@ -337,6 +416,7 @@ Faqs::Faqs(const Json::Value &pJson) noexcept(false)
             answer_=std::make_shared<std::string>(pJson["answer"].asString());
         }
     }
+
     if(pJson.isMember("category"))
     {
         dirtyFlag_[3]=true;
@@ -345,6 +425,7 @@ Faqs::Faqs(const Json::Value &pJson) noexcept(false)
             category_=std::make_shared<std::string>(pJson["category"].asString());
         }
     }
+
     if(pJson.isMember("display_order"))
     {
         dirtyFlag_[4]=true;
@@ -353,6 +434,7 @@ Faqs::Faqs(const Json::Value &pJson) noexcept(false)
             displayOrder_=std::make_shared<int32_t>((int32_t)pJson["display_order"].asInt64());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[5]=true;
@@ -361,6 +443,7 @@ Faqs::Faqs(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[6]=true;
@@ -369,6 +452,7 @@ Faqs::Faqs(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -387,6 +471,7 @@ Faqs::Faqs(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[7]=true;
@@ -395,6 +480,7 @@ Faqs::Faqs(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -413,6 +499,7 @@ Faqs::Faqs(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
@@ -423,6 +510,7 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -430,6 +518,7 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -438,6 +527,7 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
             question_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -446,6 +536,7 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
             answer_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -454,6 +545,7 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
             category_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -462,6 +554,7 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
             displayOrder_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -470,6 +563,7 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[5]].asBool());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -478,6 +572,7 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[6]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -496,6 +591,7 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -504,6 +600,7 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[7]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -522,10 +619,12 @@ void Faqs::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
 }
 
 void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -533,6 +632,7 @@ void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("question"))
     {
         dirtyFlag_[1] = true;
@@ -541,6 +641,7 @@ void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
             question_=std::make_shared<std::string>(pJson["question"].asString());
         }
     }
+
     if(pJson.isMember("answer"))
     {
         dirtyFlag_[2] = true;
@@ -549,6 +650,7 @@ void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
             answer_=std::make_shared<std::string>(pJson["answer"].asString());
         }
     }
+
     if(pJson.isMember("category"))
     {
         dirtyFlag_[3] = true;
@@ -557,6 +659,7 @@ void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
             category_=std::make_shared<std::string>(pJson["category"].asString());
         }
     }
+
     if(pJson.isMember("display_order"))
     {
         dirtyFlag_[4] = true;
@@ -565,6 +668,7 @@ void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
             displayOrder_=std::make_shared<int32_t>((int32_t)pJson["display_order"].asInt64());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[5] = true;
@@ -573,6 +677,7 @@ void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[6] = true;
@@ -581,6 +686,7 @@ void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -599,6 +705,7 @@ void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[7] = true;
@@ -607,6 +714,7 @@ void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -625,6 +733,7 @@ void Faqs::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
 }
 
 const std::string &Faqs::getValueOfId() const noexcept
@@ -802,6 +911,7 @@ void Faqs::updateId(const uint64_t id)
 {
 }
 
+
 const std::vector<std::string> &Faqs::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
@@ -813,12 +923,14 @@ const std::vector<std::string> &Faqs::insertColumns() noexcept
         "is_active",
         "created_at",
         "updated_at"
+
     };
     return inCols;
 }
 
 void Faqs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -830,6 +942,7 @@ void Faqs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getQuestion())
@@ -841,6 +954,7 @@ void Faqs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getAnswer())
@@ -852,6 +966,7 @@ void Faqs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getCategory())
@@ -863,6 +978,7 @@ void Faqs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getDisplayOrder())
@@ -874,6 +990,7 @@ void Faqs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getIsActive())
@@ -885,6 +1002,7 @@ void Faqs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getCreatedAt())
@@ -896,6 +1014,7 @@ void Faqs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getUpdatedAt())
@@ -907,48 +1026,59 @@ void Faqs::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 
 const std::vector<std::string> Faqs::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     return ret;
 }
 
 void Faqs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -960,6 +1090,7 @@ void Faqs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getQuestion())
@@ -971,6 +1102,7 @@ void Faqs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getAnswer())
@@ -982,6 +1114,7 @@ void Faqs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getCategory())
@@ -993,6 +1126,7 @@ void Faqs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getDisplayOrder())
@@ -1004,6 +1138,7 @@ void Faqs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getIsActive())
@@ -1015,6 +1150,7 @@ void Faqs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getCreatedAt())
@@ -1026,6 +1162,7 @@ void Faqs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getUpdatedAt())
@@ -1037,74 +1174,100 @@ void Faqs::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
 }
 Json::Value Faqs::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getQuestion())
     {
+
         ret["question"]=getValueOfQuestion();
+
     }
     else
     {
         ret["question"]=Json::Value();
     }
+
     if(getAnswer())
     {
+
         ret["answer"]=getValueOfAnswer();
+
     }
     else
     {
         ret["answer"]=Json::Value();
     }
+
     if(getCategory())
     {
+
         ret["category"]=getValueOfCategory();
+
     }
     else
     {
         ret["category"]=Json::Value();
     }
+
     if(getDisplayOrder())
     {
+
         ret["display_order"]=getValueOfDisplayOrder();
+
     }
     else
     {
         ret["display_order"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
@@ -1119,221 +1282,283 @@ Json::Value Faqs::toMasqueradedJson(
     Json::Value ret;
     if(pMasqueradingVector.size() == 8)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getQuestion())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfQuestion();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getAnswer())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfAnswer();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getCategory())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfCategory();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getDisplayOrder())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfDisplayOrder();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getIsActive())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfIsActive();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[6]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[7]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getQuestion())
     {
+
         ret["question"]=getValueOfQuestion();
+
     }
     else
     {
         ret["question"]=Json::Value();
     }
+
     if(getAnswer())
     {
+
         ret["answer"]=getValueOfAnswer();
+
     }
     else
     {
         ret["answer"]=Json::Value();
     }
+
     if(getCategory())
     {
+
         ret["category"]=getValueOfCategory();
+
     }
     else
     {
         ret["category"]=Json::Value();
     }
+
     if(getDisplayOrder())
     {
+
         ret["display_order"]=getValueOfDisplayOrder();
+
     }
     else
     {
         ret["display_order"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
     return ret;
 }
 
 bool Faqs::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("question"))
     {
         if(!validJsonOfField(1, "question", pJson["question"], err, true))
             return false;
     }
+
     else
     {
         err="The question column cannot be null";
         return false;
     }
+
     if(pJson.isMember("answer"))
     {
         if(!validJsonOfField(2, "answer", pJson["answer"], err, true))
             return false;
     }
+
     else
     {
         err="The answer column cannot be null";
         return false;
     }
+
     if(pJson.isMember("category"))
     {
         if(!validJsonOfField(3, "category", pJson["category"], err, true))
             return false;
     }
+
     if(pJson.isMember("display_order"))
     {
         if(!validJsonOfField(4, "display_order", pJson["display_order"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(5, "is_active", pJson["is_active"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(6, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     else
     {
         err="The created_at column cannot be null";
         return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(7, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
     return true;
 }
 bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
@@ -1346,6 +1571,7 @@ bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1353,7 +1579,9 @@ bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1361,12 +1589,15 @@ bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1374,12 +1605,15 @@ bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[2] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1387,7 +1621,9 @@ bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1395,7 +1631,9 @@ bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1403,7 +1641,9 @@ bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1411,12 +1651,15 @@ bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[6] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -1424,7 +1667,9 @@ bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1435,51 +1680,61 @@ bool Faqs::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool Faqs::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("question"))
     {
         if(!validJsonOfField(1, "question", pJson["question"], err, false))
             return false;
     }
+
     if(pJson.isMember("answer"))
     {
         if(!validJsonOfField(2, "answer", pJson["answer"], err, false))
             return false;
     }
+
     if(pJson.isMember("category"))
     {
         if(!validJsonOfField(3, "category", pJson["category"], err, false))
             return false;
     }
+
     if(pJson.isMember("display_order"))
     {
         if(!validJsonOfField(4, "display_order", pJson["display_order"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(5, "is_active", pJson["is_active"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(6, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(7, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
     return true;
 }
 bool Faqs::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
@@ -1492,51 +1747,61 @@ bool Faqs::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1553,111 +1818,145 @@ bool Faqs::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

@@ -1,3 +1,4 @@
+
 /**
  *
  *  PrizeCategories.cc
@@ -6,26 +7,48 @@
  */
 
 #include "PrizeCategories.h"
+
 #include <drogon/utils/Utilities.h>
+
 #include <string>
+
 
 using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
+
+
 const std::string PrizeCategories::Cols::_id = "\"id\"";
+
 const std::string PrizeCategories::Cols::_name = "\"name\"";
+
 const std::string PrizeCategories::Cols::_code = "\"code\"";
+
 const std::string PrizeCategories::Cols::_description = "\"description\"";
+
 const std::string PrizeCategories::Cols::_priority = "\"priority\"";
+
 const std::string PrizeCategories::Cols::_max_winners = "\"max_winners\"";
+
 const std::string PrizeCategories::Cols::_reward_type = "\"reward_type\"";
+
 const std::string PrizeCategories::Cols::_is_repeatable = "\"is_repeatable\"";
+
 const std::string PrizeCategories::Cols::_is_active = "\"is_active\"";
+
 const std::string PrizeCategories::Cols::_created_at = "\"created_at\"";
+
 const std::string PrizeCategories::Cols::_updated_at = "\"updated_at\"";
+
+const std::string PrizeCategories::Cols::_caption_image_url = "\"caption_image_url\"";
+
+
 const std::string PrizeCategories::primaryKeyName = "id";
+
+
 const bool PrizeCategories::hasPrimaryKey = true;
+
 const std::string PrizeCategories::tableName = "\"prize_categories\"";
 
 const std::vector<typename PrizeCategories::MetaData> PrizeCategories::metaData_={
@@ -39,7 +62,9 @@ const std::vector<typename PrizeCategories::MetaData> PrizeCategories::metaData_
 {"is_repeatable","bool","boolean",1,0,0,0},
 {"is_active","bool","boolean",1,0,0,0},
 {"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
-{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
+{"caption_image_url","std::string","text",0,0,0,0}
+
 };
 const std::string &PrizeCategories::getColumnName(size_t index) noexcept(false)
 {
@@ -50,47 +75,76 @@ PrizeCategories::PrizeCategories(const Row &r, const ssize_t indexOffset) noexce
 {
     if(indexOffset < 0)
     {
+
         if(!r["id"].isNull())
         {
+
             id_=std::make_shared<std::string>(r["id"].as<std::string>());
+
         }
+
         if(!r["name"].isNull())
         {
+
             name_=std::make_shared<std::string>(r["name"].as<std::string>());
+
         }
+
         if(!r["code"].isNull())
         {
+
             code_=std::make_shared<std::string>(r["code"].as<std::string>());
+
         }
+
         if(!r["description"].isNull())
         {
+
             description_=std::make_shared<std::string>(r["description"].as<std::string>());
+
         }
+
         if(!r["priority"].isNull())
         {
+
             priority_=std::make_shared<int32_t>(r["priority"].as<int32_t>());
+
         }
+
         if(!r["max_winners"].isNull())
         {
+
             maxWinners_=std::make_shared<int32_t>(r["max_winners"].as<int32_t>());
+
         }
+
         if(!r["reward_type"].isNull())
         {
+
             rewardType_=std::make_shared<int32_t>(r["reward_type"].as<int32_t>());
+
         }
+
         if(!r["is_repeatable"].isNull())
         {
+
             isRepeatable_=std::make_shared<bool>(r["is_repeatable"].as<bool>());
+
         }
+
         if(!r["is_active"].isNull())
         {
+
             isActive_=std::make_shared<bool>(r["is_active"].as<bool>());
+
         }
+
         if(!r["created_at"].isNull())
         {
             auto timeStr = r["created_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -108,11 +162,13 @@ PrizeCategories::PrizeCategories(const Row &r, const ssize_t indexOffset) noexce
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         if(!r["updated_at"].isNull())
         {
             auto timeStr = r["updated_at"].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -130,67 +186,104 @@ PrizeCategories::PrizeCategories(const Row &r, const ssize_t indexOffset) noexce
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
+        if(!r["caption_image_url"].isNull())
+        {
+
+            captionImageUrl_=std::make_shared<std::string>(r["caption_image_url"].as<std::string>());
+
+        }
+
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 11 > r.size())
+        if(offset + 12 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
         }
         size_t index;
+
         index = offset + 0;
         if(!r[index].isNull())
         {
+
             id_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 1;
         if(!r[index].isNull())
         {
+
             name_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 2;
         if(!r[index].isNull())
         {
+
             code_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 3;
         if(!r[index].isNull())
         {
+
             description_=std::make_shared<std::string>(r[index].as<std::string>());
+
         }
+
         index = offset + 4;
         if(!r[index].isNull())
         {
+
             priority_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 5;
         if(!r[index].isNull())
         {
+
             maxWinners_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 6;
         if(!r[index].isNull())
         {
+
             rewardType_=std::make_shared<int32_t>(r[index].as<int32_t>());
+
         }
+
         index = offset + 7;
         if(!r[index].isNull())
         {
+
             isRepeatable_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 8;
         if(!r[index].isNull())
         {
+
             isActive_=std::make_shared<bool>(r[index].as<bool>());
+
         }
+
         index = offset + 9;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -208,12 +301,14 @@ PrizeCategories::PrizeCategories(const Row &r, const ssize_t indexOffset) noexce
                 createdAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
         index = offset + 10;
         if(!r[index].isNull())
         {
             auto timeStr = r[index].as<std::string>();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -231,17 +326,27 @@ PrizeCategories::PrizeCategories(const Row &r, const ssize_t indexOffset) noexce
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
         }
+
+        index = offset + 11;
+        if(!r[index].isNull())
+        {
+
+            captionImageUrl_=std::make_shared<std::string>(r[index].as<std::string>());
+
+        }
+
     }
 
 }
 
 PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 11)
+    if(pMasqueradingVector.size() != 12)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         dirtyFlag_[0] = true;
@@ -250,6 +355,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -258,6 +364,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             name_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -266,6 +373,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             code_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -274,6 +382,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             description_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -282,6 +391,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             priority_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -290,6 +400,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             maxWinners_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -298,6 +409,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             rewardType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -306,6 +418,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             isRepeatable_=std::make_shared<bool>(pJson[pMasqueradingVector[7]].asBool());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -314,6 +427,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[8]].asBool());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -322,6 +436,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             auto timeStr = pJson[pMasqueradingVector[9]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -340,6 +455,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             }
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -348,6 +464,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             auto timeStr = pJson[pMasqueradingVector[10]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -366,10 +483,21 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson, const std::vector<std
             }
         }
     }
+
+    if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
+    {
+        dirtyFlag_[11] = true;
+        if(!pJson[pMasqueradingVector[11]].isNull())
+        {
+            captionImageUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
+        }
+    }
+
 }
 
 PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         dirtyFlag_[0]=true;
@@ -378,6 +506,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("name"))
     {
         dirtyFlag_[1]=true;
@@ -386,6 +515,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             name_=std::make_shared<std::string>(pJson["name"].asString());
         }
     }
+
     if(pJson.isMember("code"))
     {
         dirtyFlag_[2]=true;
@@ -394,6 +524,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             code_=std::make_shared<std::string>(pJson["code"].asString());
         }
     }
+
     if(pJson.isMember("description"))
     {
         dirtyFlag_[3]=true;
@@ -402,6 +533,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             description_=std::make_shared<std::string>(pJson["description"].asString());
         }
     }
+
     if(pJson.isMember("priority"))
     {
         dirtyFlag_[4]=true;
@@ -410,6 +542,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             priority_=std::make_shared<int32_t>((int32_t)pJson["priority"].asInt64());
         }
     }
+
     if(pJson.isMember("max_winners"))
     {
         dirtyFlag_[5]=true;
@@ -418,6 +551,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             maxWinners_=std::make_shared<int32_t>((int32_t)pJson["max_winners"].asInt64());
         }
     }
+
     if(pJson.isMember("reward_type"))
     {
         dirtyFlag_[6]=true;
@@ -426,6 +560,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             rewardType_=std::make_shared<int32_t>((int32_t)pJson["reward_type"].asInt64());
         }
     }
+
     if(pJson.isMember("is_repeatable"))
     {
         dirtyFlag_[7]=true;
@@ -434,6 +569,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             isRepeatable_=std::make_shared<bool>(pJson["is_repeatable"].asBool());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[8]=true;
@@ -442,6 +578,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[9]=true;
@@ -450,6 +587,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -468,6 +606,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[10]=true;
@@ -476,6 +615,7 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -494,16 +634,27 @@ PrizeCategories::PrizeCategories(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
+    if(pJson.isMember("caption_image_url"))
+    {
+        dirtyFlag_[11]=true;
+        if(!pJson["caption_image_url"].isNull())
+        {
+            captionImageUrl_=std::make_shared<std::string>(pJson["caption_image_url"].asString());
+        }
+    }
+
 }
 
 void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 11)
+    if(pMasqueradingVector.size() != 12)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
     }
+
     if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
     {
         if(!pJson[pMasqueradingVector[0]].isNull())
@@ -511,6 +662,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             id_=std::make_shared<std::string>(pJson[pMasqueradingVector[0]].asString());
         }
     }
+
     if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
     {
         dirtyFlag_[1] = true;
@@ -519,6 +671,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             name_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
         }
     }
+
     if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
     {
         dirtyFlag_[2] = true;
@@ -527,6 +680,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             code_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
         }
     }
+
     if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
     {
         dirtyFlag_[3] = true;
@@ -535,6 +689,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             description_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
         }
     }
+
     if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
     {
         dirtyFlag_[4] = true;
@@ -543,6 +698,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             priority_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[4]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
     {
         dirtyFlag_[5] = true;
@@ -551,6 +707,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             maxWinners_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
     {
         dirtyFlag_[6] = true;
@@ -559,6 +716,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             rewardType_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[6]].asInt64());
         }
     }
+
     if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
     {
         dirtyFlag_[7] = true;
@@ -567,6 +725,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             isRepeatable_=std::make_shared<bool>(pJson[pMasqueradingVector[7]].asBool());
         }
     }
+
     if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
     {
         dirtyFlag_[8] = true;
@@ -575,6 +734,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             isActive_=std::make_shared<bool>(pJson[pMasqueradingVector[8]].asBool());
         }
     }
+
     if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
     {
         dirtyFlag_[9] = true;
@@ -583,6 +743,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[9]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -601,6 +762,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
     if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
     {
         dirtyFlag_[10] = true;
@@ -609,6 +771,7 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             auto timeStr = pJson[pMasqueradingVector[10]].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -627,10 +790,21 @@ void PrizeCategories::updateByMasqueradedJson(const Json::Value &pJson,
             }
         }
     }
+
+    if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
+    {
+        dirtyFlag_[11] = true;
+        if(!pJson[pMasqueradingVector[11]].isNull())
+        {
+            captionImageUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[11]].asString());
+        }
+    }
+
 }
 
 void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+
     if(pJson.isMember("id"))
     {
         if(!pJson["id"].isNull())
@@ -638,6 +812,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             id_=std::make_shared<std::string>(pJson["id"].asString());
         }
     }
+
     if(pJson.isMember("name"))
     {
         dirtyFlag_[1] = true;
@@ -646,6 +821,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             name_=std::make_shared<std::string>(pJson["name"].asString());
         }
     }
+
     if(pJson.isMember("code"))
     {
         dirtyFlag_[2] = true;
@@ -654,6 +830,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             code_=std::make_shared<std::string>(pJson["code"].asString());
         }
     }
+
     if(pJson.isMember("description"))
     {
         dirtyFlag_[3] = true;
@@ -662,6 +839,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             description_=std::make_shared<std::string>(pJson["description"].asString());
         }
     }
+
     if(pJson.isMember("priority"))
     {
         dirtyFlag_[4] = true;
@@ -670,6 +848,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             priority_=std::make_shared<int32_t>((int32_t)pJson["priority"].asInt64());
         }
     }
+
     if(pJson.isMember("max_winners"))
     {
         dirtyFlag_[5] = true;
@@ -678,6 +857,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             maxWinners_=std::make_shared<int32_t>((int32_t)pJson["max_winners"].asInt64());
         }
     }
+
     if(pJson.isMember("reward_type"))
     {
         dirtyFlag_[6] = true;
@@ -686,6 +866,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             rewardType_=std::make_shared<int32_t>((int32_t)pJson["reward_type"].asInt64());
         }
     }
+
     if(pJson.isMember("is_repeatable"))
     {
         dirtyFlag_[7] = true;
@@ -694,6 +875,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             isRepeatable_=std::make_shared<bool>(pJson["is_repeatable"].asBool());
         }
     }
+
     if(pJson.isMember("is_active"))
     {
         dirtyFlag_[8] = true;
@@ -702,6 +884,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             isActive_=std::make_shared<bool>(pJson["is_active"].asBool());
         }
     }
+
     if(pJson.isMember("created_at"))
     {
         dirtyFlag_[9] = true;
@@ -710,6 +893,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["created_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -728,6 +912,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
     if(pJson.isMember("updated_at"))
     {
         dirtyFlag_[10] = true;
@@ -736,6 +921,7 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             auto timeStr = pJson["updated_at"].asString();
             struct tm stm;
             memset(&stm,0,sizeof(stm));
+            stm.tm_isdst = -1;
             auto p = strptime(timeStr.c_str(),"%Y-%m-%d %H:%M:%S",&stm);
             time_t t = mktime(&stm);
             size_t decimalNum = 0;
@@ -754,6 +940,16 @@ void PrizeCategories::updateByJson(const Json::Value &pJson) noexcept(false)
             }
         }
     }
+
+    if(pJson.isMember("caption_image_url"))
+    {
+        dirtyFlag_[11] = true;
+        if(!pJson["caption_image_url"].isNull())
+        {
+            captionImageUrl_=std::make_shared<std::string>(pJson["caption_image_url"].asString());
+        }
+    }
+
 }
 
 const std::string &PrizeCategories::getValueOfId() const noexcept
@@ -1008,9 +1204,37 @@ void PrizeCategories::setUpdatedAtToNull() noexcept
     dirtyFlag_[10] = true;
 }
 
+const std::string &PrizeCategories::getValueOfCaptionImageUrl() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(captionImageUrl_)
+        return *captionImageUrl_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &PrizeCategories::getCaptionImageUrl() const noexcept
+{
+    return captionImageUrl_;
+}
+void PrizeCategories::setCaptionImageUrl(const std::string &pCaptionImageUrl) noexcept
+{
+    captionImageUrl_ = std::make_shared<std::string>(pCaptionImageUrl);
+    dirtyFlag_[11] = true;
+}
+void PrizeCategories::setCaptionImageUrl(std::string &&pCaptionImageUrl) noexcept
+{
+    captionImageUrl_ = std::make_shared<std::string>(std::move(pCaptionImageUrl));
+    dirtyFlag_[11] = true;
+}
+void PrizeCategories::setCaptionImageUrlToNull() noexcept
+{
+    captionImageUrl_.reset();
+    dirtyFlag_[11] = true;
+}
+
 void PrizeCategories::updateId(const uint64_t id)
 {
 }
+
 
 const std::vector<std::string> &PrizeCategories::insertColumns() noexcept
 {
@@ -1025,13 +1249,16 @@ const std::vector<std::string> &PrizeCategories::insertColumns() noexcept
         "is_repeatable",
         "is_active",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "caption_image_url"
+
     };
     return inCols;
 }
 
 void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1043,6 +1270,7 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getName())
@@ -1054,6 +1282,7 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getCode())
@@ -1065,6 +1294,7 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getDescription())
@@ -1076,6 +1306,7 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getPriority())
@@ -1087,6 +1318,7 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getMaxWinners())
@@ -1098,6 +1330,7 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getRewardType())
@@ -1109,6 +1342,7 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getIsRepeatable())
@@ -1120,6 +1354,7 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getIsActive())
@@ -1131,6 +1366,7 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getCreatedAt())
@@ -1142,6 +1378,7 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getUpdatedAt())
@@ -1153,60 +1390,91 @@ void PrizeCategories::outputArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
+    if(dirtyFlag_[11])
+    {
+        if(getCaptionImageUrl())
+        {
+            binder << getValueOfCaptionImageUrl();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
 }
 
 const std::vector<std::string> PrizeCategories::updateColumns() const
 {
     std::vector<std::string> ret;
+
     if(dirtyFlag_[0])
     {
         ret.push_back(getColumnName(0));
     }
+
     if(dirtyFlag_[1])
     {
         ret.push_back(getColumnName(1));
     }
+
     if(dirtyFlag_[2])
     {
         ret.push_back(getColumnName(2));
     }
+
     if(dirtyFlag_[3])
     {
         ret.push_back(getColumnName(3));
     }
+
     if(dirtyFlag_[4])
     {
         ret.push_back(getColumnName(4));
     }
+
     if(dirtyFlag_[5])
     {
         ret.push_back(getColumnName(5));
     }
+
     if(dirtyFlag_[6])
     {
         ret.push_back(getColumnName(6));
     }
+
     if(dirtyFlag_[7])
     {
         ret.push_back(getColumnName(7));
     }
+
     if(dirtyFlag_[8])
     {
         ret.push_back(getColumnName(8));
     }
+
     if(dirtyFlag_[9])
     {
         ret.push_back(getColumnName(9));
     }
+
     if(dirtyFlag_[10])
     {
         ret.push_back(getColumnName(10));
     }
+
+    if(dirtyFlag_[11])
+    {
+        ret.push_back(getColumnName(11));
+    }
+
     return ret;
 }
 
 void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+
     if(dirtyFlag_[0])
     {
         if(getId())
@@ -1218,6 +1486,7 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[1])
     {
         if(getName())
@@ -1229,6 +1498,7 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[2])
     {
         if(getCode())
@@ -1240,6 +1510,7 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[3])
     {
         if(getDescription())
@@ -1251,6 +1522,7 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[4])
     {
         if(getPriority())
@@ -1262,6 +1534,7 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[5])
     {
         if(getMaxWinners())
@@ -1273,6 +1546,7 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[6])
     {
         if(getRewardType())
@@ -1284,6 +1558,7 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[7])
     {
         if(getIsRepeatable())
@@ -1295,6 +1570,7 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[8])
     {
         if(getIsActive())
@@ -1306,6 +1582,7 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[9])
     {
         if(getCreatedAt())
@@ -1317,6 +1594,7 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
     if(dirtyFlag_[10])
     {
         if(getUpdatedAt())
@@ -1328,98 +1606,156 @@ void PrizeCategories::updateArgs(drogon::orm::internal::SqlBinder &binder) const
             binder << nullptr;
         }
     }
+
+    if(dirtyFlag_[11])
+    {
+        if(getCaptionImageUrl())
+        {
+            binder << getValueOfCaptionImageUrl();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
 }
 Json::Value PrizeCategories::toJson() const
 {
     Json::Value ret;
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getName())
     {
+
         ret["name"]=getValueOfName();
+
     }
     else
     {
         ret["name"]=Json::Value();
     }
+
     if(getCode())
     {
+
         ret["code"]=getValueOfCode();
+
     }
     else
     {
         ret["code"]=Json::Value();
     }
+
     if(getDescription())
     {
+
         ret["description"]=getValueOfDescription();
+
     }
     else
     {
         ret["description"]=Json::Value();
     }
+
     if(getPriority())
     {
+
         ret["priority"]=getValueOfPriority();
+
     }
     else
     {
         ret["priority"]=Json::Value();
     }
+
     if(getMaxWinners())
     {
+
         ret["max_winners"]=getValueOfMaxWinners();
+
     }
     else
     {
         ret["max_winners"]=Json::Value();
     }
+
     if(getRewardType())
     {
+
         ret["reward_type"]=getValueOfRewardType();
+
     }
     else
     {
         ret["reward_type"]=Json::Value();
     }
+
     if(getIsRepeatable())
     {
+
         ret["is_repeatable"]=getValueOfIsRepeatable();
+
     }
     else
     {
         ret["is_repeatable"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
+    if(getCaptionImageUrl())
+    {
+
+        ret["caption_image_url"]=getValueOfCaptionImageUrl();
+
+    }
+    else
+    {
+        ret["caption_image_url"]=Json::Value();
+    }
+
     return ret;
 }
 
@@ -1432,302 +1768,416 @@ Json::Value PrizeCategories::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 11)
+    if(pMasqueradingVector.size() == 12)
     {
+
         if(!pMasqueradingVector[0].empty())
         {
             if(getId())
             {
+
                 ret[pMasqueradingVector[0]]=getValueOfId();
+
             }
             else
             {
                 ret[pMasqueradingVector[0]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[1].empty())
         {
             if(getName())
             {
+
                 ret[pMasqueradingVector[1]]=getValueOfName();
+
             }
             else
             {
                 ret[pMasqueradingVector[1]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[2].empty())
         {
             if(getCode())
             {
+
                 ret[pMasqueradingVector[2]]=getValueOfCode();
+
             }
             else
             {
                 ret[pMasqueradingVector[2]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[3].empty())
         {
             if(getDescription())
             {
+
                 ret[pMasqueradingVector[3]]=getValueOfDescription();
+
             }
             else
             {
                 ret[pMasqueradingVector[3]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[4].empty())
         {
             if(getPriority())
             {
+
                 ret[pMasqueradingVector[4]]=getValueOfPriority();
+
             }
             else
             {
                 ret[pMasqueradingVector[4]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[5].empty())
         {
             if(getMaxWinners())
             {
+
                 ret[pMasqueradingVector[5]]=getValueOfMaxWinners();
+
             }
             else
             {
                 ret[pMasqueradingVector[5]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[6].empty())
         {
             if(getRewardType())
             {
+
                 ret[pMasqueradingVector[6]]=getValueOfRewardType();
+
             }
             else
             {
                 ret[pMasqueradingVector[6]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[7].empty())
         {
             if(getIsRepeatable())
             {
+
                 ret[pMasqueradingVector[7]]=getValueOfIsRepeatable();
+
             }
             else
             {
                 ret[pMasqueradingVector[7]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[8].empty())
         {
             if(getIsActive())
             {
+
                 ret[pMasqueradingVector[8]]=getValueOfIsActive();
+
             }
             else
             {
                 ret[pMasqueradingVector[8]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[9].empty())
         {
             if(getCreatedAt())
             {
+
                 ret[pMasqueradingVector[9]]=getCreatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[9]]=Json::Value();
             }
         }
+
         if(!pMasqueradingVector[10].empty())
         {
             if(getUpdatedAt())
             {
+
                 ret[pMasqueradingVector[10]]=getUpdatedAt()->toDbStringLocal();
+
             }
             else
             {
                 ret[pMasqueradingVector[10]]=Json::Value();
             }
         }
+
+        if(!pMasqueradingVector[11].empty())
+        {
+            if(getCaptionImageUrl())
+            {
+
+                ret[pMasqueradingVector[11]]=getValueOfCaptionImageUrl();
+
+            }
+            else
+            {
+                ret[pMasqueradingVector[11]]=Json::Value();
+            }
+        }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+
     if(getId())
     {
+
         ret["id"]=getValueOfId();
+
     }
     else
     {
         ret["id"]=Json::Value();
     }
+
     if(getName())
     {
+
         ret["name"]=getValueOfName();
+
     }
     else
     {
         ret["name"]=Json::Value();
     }
+
     if(getCode())
     {
+
         ret["code"]=getValueOfCode();
+
     }
     else
     {
         ret["code"]=Json::Value();
     }
+
     if(getDescription())
     {
+
         ret["description"]=getValueOfDescription();
+
     }
     else
     {
         ret["description"]=Json::Value();
     }
+
     if(getPriority())
     {
+
         ret["priority"]=getValueOfPriority();
+
     }
     else
     {
         ret["priority"]=Json::Value();
     }
+
     if(getMaxWinners())
     {
+
         ret["max_winners"]=getValueOfMaxWinners();
+
     }
     else
     {
         ret["max_winners"]=Json::Value();
     }
+
     if(getRewardType())
     {
+
         ret["reward_type"]=getValueOfRewardType();
+
     }
     else
     {
         ret["reward_type"]=Json::Value();
     }
+
     if(getIsRepeatable())
     {
+
         ret["is_repeatable"]=getValueOfIsRepeatable();
+
     }
     else
     {
         ret["is_repeatable"]=Json::Value();
     }
+
     if(getIsActive())
     {
+
         ret["is_active"]=getValueOfIsActive();
+
     }
     else
     {
         ret["is_active"]=Json::Value();
     }
+
     if(getCreatedAt())
     {
+
         ret["created_at"]=getCreatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["created_at"]=Json::Value();
     }
+
     if(getUpdatedAt())
     {
+
         ret["updated_at"]=getUpdatedAt()->toDbStringLocal();
+
     }
     else
     {
         ret["updated_at"]=Json::Value();
     }
+
+    if(getCaptionImageUrl())
+    {
+
+        ret["caption_image_url"]=getValueOfCaptionImageUrl();
+
+    }
+    else
+    {
+        ret["caption_image_url"]=Json::Value();
+    }
+
     return ret;
 }
 
 bool PrizeCategories::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, true))
             return false;
     }
+
     if(pJson.isMember("name"))
     {
         if(!validJsonOfField(1, "name", pJson["name"], err, true))
             return false;
     }
+
     else
     {
         err="The name column cannot be null";
         return false;
     }
+
     if(pJson.isMember("code"))
     {
         if(!validJsonOfField(2, "code", pJson["code"], err, true))
             return false;
     }
+
     else
     {
         err="The code column cannot be null";
         return false;
     }
+
     if(pJson.isMember("description"))
     {
         if(!validJsonOfField(3, "description", pJson["description"], err, true))
             return false;
     }
+
     if(pJson.isMember("priority"))
     {
         if(!validJsonOfField(4, "priority", pJson["priority"], err, true))
             return false;
     }
+
     if(pJson.isMember("max_winners"))
     {
         if(!validJsonOfField(5, "max_winners", pJson["max_winners"], err, true))
             return false;
     }
+
     if(pJson.isMember("reward_type"))
     {
         if(!validJsonOfField(6, "reward_type", pJson["reward_type"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_repeatable"))
     {
         if(!validJsonOfField(7, "is_repeatable", pJson["is_repeatable"], err, true))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(8, "is_active", pJson["is_active"], err, true))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(9, "created_at", pJson["created_at"], err, true))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(10, "updated_at", pJson["updated_at"], err, true))
             return false;
     }
+
+    if(pJson.isMember("caption_image_url"))
+    {
+        if(!validJsonOfField(11, "caption_image_url", pJson["caption_image_url"], err, true))
+            return false;
+    }
+
     return true;
 }
 bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                          const std::vector<std::string> &pMasqueradingVector,
                                                          std::string &err)
 {
-    if(pMasqueradingVector.size() != 11)
+    if(pMasqueradingVector.size() != 12)
     {
         err = "Bad masquerading vector";
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty())
       {
           if(pJson.isMember(pMasqueradingVector[0]))
@@ -1735,7 +2185,9 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[1].empty())
       {
           if(pJson.isMember(pMasqueradingVector[1]))
@@ -1743,12 +2195,15 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[1] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[2].empty())
       {
           if(pJson.isMember(pMasqueradingVector[2]))
@@ -1756,12 +2211,15 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
                   return false;
           }
+
         else
         {
             err="The " + pMasqueradingVector[2] + " column cannot be null";
             return false;
         }
+
       }
+
       if(!pMasqueradingVector[3].empty())
       {
           if(pJson.isMember(pMasqueradingVector[3]))
@@ -1769,7 +2227,9 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[4].empty())
       {
           if(pJson.isMember(pMasqueradingVector[4]))
@@ -1777,7 +2237,9 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[5].empty())
       {
           if(pJson.isMember(pMasqueradingVector[5]))
@@ -1785,7 +2247,9 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[6].empty())
       {
           if(pJson.isMember(pMasqueradingVector[6]))
@@ -1793,7 +2257,9 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[7].empty())
       {
           if(pJson.isMember(pMasqueradingVector[7]))
@@ -1801,7 +2267,9 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[8].empty())
       {
           if(pJson.isMember(pMasqueradingVector[8]))
@@ -1809,7 +2277,9 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[9].empty())
       {
           if(pJson.isMember(pMasqueradingVector[9]))
@@ -1817,7 +2287,9 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, true))
                   return false;
           }
+
       }
+
       if(!pMasqueradingVector[10].empty())
       {
           if(pJson.isMember(pMasqueradingVector[10]))
@@ -1825,7 +2297,19 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
               if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, true))
                   return false;
           }
+
       }
+
+      if(!pMasqueradingVector[11].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[11]))
+          {
+              if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, true))
+                  return false;
+          }
+
+      }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1836,138 +2320,176 @@ bool PrizeCategories::validateMasqueradedJsonForCreation(const Json::Value &pJso
 }
 bool PrizeCategories::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+
     if(pJson.isMember("id"))
     {
         if(!validJsonOfField(0, "id", pJson["id"], err, false))
             return false;
     }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
     if(pJson.isMember("name"))
     {
         if(!validJsonOfField(1, "name", pJson["name"], err, false))
             return false;
     }
+
     if(pJson.isMember("code"))
     {
         if(!validJsonOfField(2, "code", pJson["code"], err, false))
             return false;
     }
+
     if(pJson.isMember("description"))
     {
         if(!validJsonOfField(3, "description", pJson["description"], err, false))
             return false;
     }
+
     if(pJson.isMember("priority"))
     {
         if(!validJsonOfField(4, "priority", pJson["priority"], err, false))
             return false;
     }
+
     if(pJson.isMember("max_winners"))
     {
         if(!validJsonOfField(5, "max_winners", pJson["max_winners"], err, false))
             return false;
     }
+
     if(pJson.isMember("reward_type"))
     {
         if(!validJsonOfField(6, "reward_type", pJson["reward_type"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_repeatable"))
     {
         if(!validJsonOfField(7, "is_repeatable", pJson["is_repeatable"], err, false))
             return false;
     }
+
     if(pJson.isMember("is_active"))
     {
         if(!validJsonOfField(8, "is_active", pJson["is_active"], err, false))
             return false;
     }
+
     if(pJson.isMember("created_at"))
     {
         if(!validJsonOfField(9, "created_at", pJson["created_at"], err, false))
             return false;
     }
+
     if(pJson.isMember("updated_at"))
     {
         if(!validJsonOfField(10, "updated_at", pJson["updated_at"], err, false))
             return false;
     }
+
+    if(pJson.isMember("caption_image_url"))
+    {
+        if(!validJsonOfField(11, "caption_image_url", pJson["caption_image_url"], err, false))
+            return false;
+    }
+
     return true;
 }
 bool PrizeCategories::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                        const std::vector<std::string> &pMasqueradingVector,
                                                        std::string &err)
 {
-    if(pMasqueradingVector.size() != 11)
+    if(pMasqueradingVector.size() != 12)
     {
         err = "Bad masquerading vector";
         return false;
     }
     try {
+
       if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
       {
           if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
               return false;
       }
+
     else
     {
         err = "The value of primary key must be set in the json object for update";
         return false;
     }
+
       if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
       {
           if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
       {
           if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
       {
           if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
       {
           if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
       {
           if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[6].empty() && pJson.isMember(pMasqueradingVector[6]))
       {
           if(!validJsonOfField(6, pMasqueradingVector[6], pJson[pMasqueradingVector[6]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[7].empty() && pJson.isMember(pMasqueradingVector[7]))
       {
           if(!validJsonOfField(7, pMasqueradingVector[7], pJson[pMasqueradingVector[7]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[8].empty() && pJson.isMember(pMasqueradingVector[8]))
       {
           if(!validJsonOfField(8, pMasqueradingVector[8], pJson[pMasqueradingVector[8]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[9].empty() && pJson.isMember(pMasqueradingVector[9]))
       {
           if(!validJsonOfField(9, pMasqueradingVector[9], pJson[pMasqueradingVector[9]], err, false))
               return false;
       }
+
       if(!pMasqueradingVector[10].empty() && pJson.isMember(pMasqueradingVector[10]))
       {
           if(!validJsonOfField(10, pMasqueradingVector[10], pJson[pMasqueradingVector[10]], err, false))
               return false;
       }
+
+      if(!pMasqueradingVector[11].empty() && pJson.isMember(pMasqueradingVector[11]))
+      {
+          if(!validJsonOfField(11, pMasqueradingVector[11], pJson[pMasqueradingVector[11]], err, false))
+              return false;
+      }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -1984,149 +2506,210 @@ bool PrizeCategories::validJsonOfField(size_t index,
 {
     switch(index)
     {
+
         case 0:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 1:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 100)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 100)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 100)";
                 return false;
             }
+
             break;
+
         case 2:
+
             if(pJson.isNull())
             {
                 err="The " + fieldName + " column cannot be null";
                 return false;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
-            if(pJson.isString() && std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-                .from_bytes(pJson.asCString()).size() > 50)
+
+            if(pJson.isString() && drogon::utils::utf8Length(pJson.asCString()) > 50)
             {
                 err="String length exceeds limit for the " +
                     fieldName +
                     " field (the maximum value is 50)";
                 return false;
             }
+
             break;
+
         case 3:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 4:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 5:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 6:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isInt())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 7:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 8:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isBool())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 9:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
         case 10:
+
             if(pJson.isNull())
             {
                 return true;
             }
+
             if(!pJson.isString())
             {
                 err="Type error in the "+fieldName+" field";
                 return false;
             }
+
             break;
+
+        case 11:
+
+            if(pJson.isNull())
+            {
+                return true;
+            }
+
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
         default:
             err="Internal error in the server";
             return false;
     }
     return true;
 }
+

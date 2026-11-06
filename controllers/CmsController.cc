@@ -227,7 +227,7 @@ namespace {
     constexpr const char *kHeroSlideImageField = "image";
 
     // Cloudinary folder the hero slide images are stored in.
-    constexpr const char *kHeroSlideImageFolder = "hero-slides";
+    constexpr const char *kHeroSlideImageFolder = "nsaa";
 
     HttpResponsePtr jsonError(const std::string &message,
                               HttpStatusCode statusCode = k400BadRequest,
