@@ -45,6 +45,8 @@ const std::string Prizes::Cols::_created_at = "\"created_at\"";
 
 const std::string Prizes::Cols::_updated_at = "\"updated_at\"";
 
+const std::string Prizes::Cols::_image_url = "\"image_url\"";
+
 
 const std::string Prizes::primaryKeyName = "id";
 
@@ -66,7 +68,8 @@ const std::vector<typename Prizes::MetaData> Prizes::metaData_={
 {"probability","std::string","numeric",0,0,0,0},
 {"metadata","std::string","jsonb",0,0,0,0},
 {"created_at","::trantor::Date","timestamp without time zone",0,0,0,0},
-{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0}
+{"updated_at","::trantor::Date","timestamp without time zone",0,0,0,0},
+{"image_url","std::string","text",0,0,0,0}
 
 };
 const std::string &Prizes::getColumnName(size_t index) noexcept(false)
@@ -204,11 +207,18 @@ Prizes::Prizes(const Row &r, const ssize_t indexOffset) noexcept
             }
         }
 
+        if(!r["image_url"].isNull())
+        {
+
+            imageUrl_=std::make_shared<std::string>(r["image_url"].as<std::string>());
+
+        }
+
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 13 > r.size())
+        if(offset + 14 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
@@ -353,13 +363,21 @@ Prizes::Prizes(const Row &r, const ssize_t indexOffset) noexcept
             }
         }
 
+        index = offset + 13;
+        if(!r[index].isNull())
+        {
+
+            imageUrl_=std::make_shared<std::string>(r[index].as<std::string>());
+
+        }
+
     }
 
 }
 
 Prizes::Prizes(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 13)
+    if(pMasqueradingVector.size() != 14)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -517,6 +535,15 @@ Prizes::Prizes(const Json::Value &pJson, const std::vector<std::string> &pMasque
                 }
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
+        }
+    }
+
+    if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
+    {
+        dirtyFlag_[13] = true;
+        if(!pJson[pMasqueradingVector[13]].isNull())
+        {
+            imageUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[13]].asString());
         }
     }
 
@@ -680,12 +707,21 @@ Prizes::Prizes(const Json::Value &pJson) noexcept(false)
         }
     }
 
+    if(pJson.isMember("image_url"))
+    {
+        dirtyFlag_[13]=true;
+        if(!pJson["image_url"].isNull())
+        {
+            imageUrl_=std::make_shared<std::string>(pJson["image_url"].asString());
+        }
+    }
+
 }
 
 void Prizes::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 13)
+    if(pMasqueradingVector.size() != 14)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
@@ -845,6 +881,15 @@ void Prizes::updateByMasqueradedJson(const Json::Value &pJson,
         }
     }
 
+    if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
+    {
+        dirtyFlag_[13] = true;
+        if(!pJson[pMasqueradingVector[13]].isNull())
+        {
+            imageUrl_=std::make_shared<std::string>(pJson[pMasqueradingVector[13]].asString());
+        }
+    }
+
 }
 
 void Prizes::updateByJson(const Json::Value &pJson) noexcept(false)
@@ -1001,6 +1046,15 @@ void Prizes::updateByJson(const Json::Value &pJson) noexcept(false)
                 }
                 updatedAt_=std::make_shared<::trantor::Date>(t*1000000+decimalNum);
             }
+        }
+    }
+
+    if(pJson.isMember("image_url"))
+    {
+        dirtyFlag_[13] = true;
+        if(!pJson["image_url"].isNull())
+        {
+            imageUrl_=std::make_shared<std::string>(pJson["image_url"].asString());
         }
     }
 
@@ -1327,6 +1381,33 @@ void Prizes::setUpdatedAtToNull() noexcept
     dirtyFlag_[12] = true;
 }
 
+const std::string &Prizes::getValueOfImageUrl() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(imageUrl_)
+        return *imageUrl_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Prizes::getImageUrl() const noexcept
+{
+    return imageUrl_;
+}
+void Prizes::setImageUrl(const std::string &pImageUrl) noexcept
+{
+    imageUrl_ = std::make_shared<std::string>(pImageUrl);
+    dirtyFlag_[13] = true;
+}
+void Prizes::setImageUrl(std::string &&pImageUrl) noexcept
+{
+    imageUrl_ = std::make_shared<std::string>(std::move(pImageUrl));
+    dirtyFlag_[13] = true;
+}
+void Prizes::setImageUrlToNull() noexcept
+{
+    imageUrl_.reset();
+    dirtyFlag_[13] = true;
+}
+
 void Prizes::updateId(const uint64_t id)
 {
 }
@@ -1347,7 +1428,8 @@ const std::vector<std::string> &Prizes::insertColumns() noexcept
         "probability",
         "metadata",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "image_url"
 
     };
     return inCols;
@@ -1512,6 +1594,18 @@ void Prizes::outputArgs(drogon::orm::internal::SqlBinder &binder) const
         }
     }
 
+    if(dirtyFlag_[13])
+    {
+        if(getImageUrl())
+        {
+            binder << getValueOfImageUrl();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
 }
 
 const std::vector<std::string> Prizes::updateColumns() const
@@ -1581,6 +1675,11 @@ const std::vector<std::string> Prizes::updateColumns() const
     if(dirtyFlag_[12])
     {
         ret.push_back(getColumnName(12));
+    }
+
+    if(dirtyFlag_[13])
+    {
+        ret.push_back(getColumnName(13));
     }
 
     return ret;
@@ -1745,6 +1844,18 @@ void Prizes::updateArgs(drogon::orm::internal::SqlBinder &binder) const
         }
     }
 
+    if(dirtyFlag_[13])
+    {
+        if(getImageUrl())
+        {
+            binder << getValueOfImageUrl();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+
 }
 Json::Value Prizes::toJson() const
 {
@@ -1893,6 +2004,17 @@ Json::Value Prizes::toJson() const
         ret["updated_at"]=Json::Value();
     }
 
+    if(getImageUrl())
+    {
+
+        ret["image_url"]=getValueOfImageUrl();
+
+    }
+    else
+    {
+        ret["image_url"]=Json::Value();
+    }
+
     return ret;
 }
 
@@ -1905,7 +2027,7 @@ Json::Value Prizes::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 13)
+    if(pMasqueradingVector.size() == 14)
     {
 
         if(!pMasqueradingVector[0].empty())
@@ -2090,6 +2212,20 @@ Json::Value Prizes::toMasqueradedJson(
             }
         }
 
+        if(!pMasqueradingVector[13].empty())
+        {
+            if(getImageUrl())
+            {
+
+                ret[pMasqueradingVector[13]]=getValueOfImageUrl();
+
+            }
+            else
+            {
+                ret[pMasqueradingVector[13]]=Json::Value();
+            }
+        }
+
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
@@ -2237,6 +2373,17 @@ Json::Value Prizes::toMasqueradedJson(
         ret["updated_at"]=Json::Value();
     }
 
+    if(getImageUrl())
+    {
+
+        ret["image_url"]=getValueOfImageUrl();
+
+    }
+    else
+    {
+        ret["image_url"]=Json::Value();
+    }
+
     return ret;
 }
 
@@ -2327,13 +2474,19 @@ bool Prizes::validateJsonForCreation(const Json::Value &pJson, std::string &err)
             return false;
     }
 
+    if(pJson.isMember("image_url"))
+    {
+        if(!validJsonOfField(13, "image_url", pJson["image_url"], err, true))
+            return false;
+    }
+
     return true;
 }
 bool Prizes::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                 const std::vector<std::string> &pMasqueradingVector,
                                                 std::string &err)
 {
-    if(pMasqueradingVector.size() != 13)
+    if(pMasqueradingVector.size() != 14)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2476,6 +2629,16 @@ bool Prizes::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 
       }
 
+      if(!pMasqueradingVector[13].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[13]))
+          {
+              if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, true))
+                  return false;
+          }
+
+      }
+
     }
     catch(const Json::LogicError &e)
     {
@@ -2571,13 +2734,19 @@ bool Prizes::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
             return false;
     }
 
+    if(pJson.isMember("image_url"))
+    {
+        if(!validJsonOfField(13, "image_url", pJson["image_url"], err, false))
+            return false;
+    }
+
     return true;
 }
 bool Prizes::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                               const std::vector<std::string> &pMasqueradingVector,
                                               std::string &err)
 {
-    if(pMasqueradingVector.size() != 13)
+    if(pMasqueradingVector.size() != 14)
     {
         err = "Bad masquerading vector";
         return false;
@@ -2665,6 +2834,12 @@ bool Prizes::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
       if(!pMasqueradingVector[12].empty() && pJson.isMember(pMasqueradingVector[12]))
       {
           if(!validJsonOfField(12, pMasqueradingVector[12], pJson[pMasqueradingVector[12]], err, false))
+              return false;
+      }
+
+      if(!pMasqueradingVector[13].empty() && pJson.isMember(pMasqueradingVector[13]))
+      {
+          if(!validJsonOfField(13, pMasqueradingVector[13], pJson[pMasqueradingVector[13]], err, false))
               return false;
       }
 
@@ -2884,6 +3059,21 @@ bool Prizes::validJsonOfField(size_t index,
             break;
 
         case 12:
+
+            if(pJson.isNull())
+            {
+                return true;
+            }
+
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+
+            break;
+
+        case 13:
 
             if(pJson.isNull())
             {

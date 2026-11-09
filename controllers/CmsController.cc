@@ -1017,6 +1017,17 @@ Task<HttpResponsePtr> CmsController::getActiveRaffleOptions(HttpRequestPtr req) 
 
 }
 
+
+Task<HttpResponsePtr> CmsController::getPricesFromAllActiveRaffles(HttpRequestPtr req) {
+
+    auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+    auto &raffleService = plugin->getRaffleService();
+
+    auto result = co_await raffleService.getPricesFromAllActiveRaffles();
+    auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+    co_return resp;
+}
+
 Task<HttpResponsePtr> CmsController::getDrawHistory(HttpRequestPtr req) {
 
     int pageNo = 1;

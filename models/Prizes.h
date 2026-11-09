@@ -60,6 +60,7 @@ class Prizes
         static const std::string _metadata;
         static const std::string _created_at;
         static const std::string _updated_at;
+        static const std::string _image_url;
 
     };
 
@@ -239,9 +240,19 @@ class Prizes
     void setUpdatedAt(const ::trantor::Date &pUpdatedAt) noexcept;
     void setUpdatedAtToNull() noexcept;
 
+    /**  For column image_url  */
+    ///Get the value of the column image_url, returns the default value if the column is null
+    const std::string &getValueOfImageUrl() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getImageUrl() const noexcept;
+    ///Set the value of the column image_url
+    void setImageUrl(const std::string &pImageUrl) noexcept;
+    void setImageUrl(std::string &&pImageUrl) noexcept;
+    void setImageUrlToNull() noexcept;
 
 
-    static size_t getColumnNumber() noexcept {  return 13;  }
+
+    static size_t getColumnNumber() noexcept {  return 14;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -277,6 +288,7 @@ class Prizes
     std::shared_ptr<std::string> metadata_;
     std::shared_ptr<::trantor::Date> createdAt_;
     std::shared_ptr<::trantor::Date> updatedAt_;
+    std::shared_ptr<std::string> imageUrl_;
 
     struct MetaData
     {
@@ -289,7 +301,7 @@ class Prizes
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[13]={ false };
+    bool dirtyFlag_[14]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
@@ -393,6 +405,12 @@ class Prizes
         if(dirtyFlag_[12])
         {
             sql += "updated_at,";
+            ++parametersCount;
+        }
+
+        if(dirtyFlag_[13])
+        {
+            sql += "image_url,";
             ++parametersCount;
         }
 
@@ -526,6 +544,14 @@ class Prizes
         }
 
         if(dirtyFlag_[12])
+        {
+
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+
+        }
+
+        if(dirtyFlag_[13])
         {
 
             n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);

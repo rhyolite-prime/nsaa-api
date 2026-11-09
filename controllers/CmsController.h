@@ -52,6 +52,7 @@ class CmsController : public drogon::HttpController<CmsController>
     //active raffles
     ADD_METHOD_TO(CmsController::getActiveRaffles, std::string(PREFIX) + "raffles/get-all", Get, Options);
     ADD_METHOD_TO(CmsController::getActiveRaffleOptions, std::string(PREFIX) + "raffles/get-options", Get, Options);
+    ADD_METHOD_TO(CmsController::getPricesFromAllActiveRaffles, std::string(PREFIX) + "get-prizes-from-all-active-raffles", Get, Options);
 
     // tickets and draws
     ADD_METHOD_TO(CmsController::getDrawHistory, std::string(PREFIX) + "get-draw-history", Get, Options);
@@ -106,6 +107,8 @@ class CmsController : public drogon::HttpController<CmsController>
     Task<HttpResponsePtr> getActiveRaffles(HttpRequestPtr req);
 
     Task<HttpResponsePtr> getActiveRaffleOptions(HttpRequestPtr req);
+    
+    Task<HttpResponsePtr> getPricesFromAllActiveRaffles(HttpRequestPtr req);
 
     // tickets and draws
     Task<HttpResponsePtr> getDrawHistory(HttpRequestPtr req);
