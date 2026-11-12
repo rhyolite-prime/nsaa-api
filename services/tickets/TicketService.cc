@@ -85,6 +85,173 @@ std::string formatAmount(double amount) {
   return amountStream.str();
 }
 
+/**
+ * Time to wait after a payment request was queued before the transaction is
+ * checked again and the customer is reminded about the pending ticket.
+ */
+constexpr double kPendingTicketReminderDelaySeconds = 5.0 * 60.0; // 5 minutes
+
+/** ChopMoney USSD service code customers dial to reach their tickets. */
+constexpr const char *kUssdShortCode = "*2727#";
+
+/** USSD menu path that lists the customer's pending tickets. */
+constexpr const char *kUssdPendingTicketsMenu = "Account > Pending Tickets";
+
+/** Returns true when a Hubtel status check reports a payment that went
+ * through. */
+bool isSuccessfulPaymentStatus(
+    const dto::TransactionStatusCheckResponse &statusCheck) {
+  if (statusCheck.data.isFulfilled.value_or(false)) {
+    return true;
+  }
+
+  std::string status = statusCheck.data.status;
+  std::transform(status.begin(), status.end(), status.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
+
+  return status == "success" || status == "successful" || status == "paid" ||
+         status == "completed" || status == "complete";
+}
+
+/**
+ * Background job started by create(): five minutes after a payment prompt was
+ * queued it asks Hubtel for the transaction status and, when the payment did
+ * not go through while the ticket is still pending, sends the customer an SMS
+ * telling them to revive the pending ticket so the entry is not lost.
+ *
+ * It runs detached from the request (see drogon::async_run), so the whole body
+ * is wrapped in try/catch: an escaping exception would take the process down.
+ */
+drogon::Task<void> remindPendingTicketPayment(std::string ticketId,
+                                              std::string paymentReference,
+                                              std::string customerPhone,
+                                              std::string raffleName,
+                                              std::string amount) {
+  try {
+    co_await drogon::sleepCoro(drogon::app().getLoop(),
+                               kPendingTicketReminderDelaySeconds);
+
+    raffle::services::HubtelApi hubtelApi;
+
+    // 1. Did the payment eventually go through?
+    auto statusCheck =
+        co_await hubtelApi.TransactionStatusCheck(paymentReference);
+
+    LOG_INFO << "Pending ticket reminder status check for ticket=" << ticketId
+             << ", clientReference=" << paymentReference
+             << ", responseCode=" << statusCheck.responseCode
+             << ", status=" << statusCheck.data.status;
+
+    // The status could not be determined (transport/parsing error): do not
+    // nag the customer because of a problem on our side.
+    if (statusCheck.responseCode == "ERROR" ||
+        statusCheck.responseCode == "EXCEPTION" ||
+        statusCheck.responseCode == "INVALID_JSON") {
+      LOG_WARN << "Skipping the pending ticket reminder for ticket " << ticketId
+               << ": the payment status could not be determined.";
+      co_return;
+    }
+
+    if (isSuccessfulPaymentStatus(statusCheck)) {
+      LOG_INFO << "Payment for ticket " << ticketId
+               << " went through. No reminder needed.";
+      co_return;
+    }
+
+    // 2. Confirm from the database that the ticket is still awaiting payment
+    //    and that it still belongs to this payment attempt.
+    CoroMapper<Tickets> ticketMapper(drogon::app().getDbClient());
+    auto tickets = co_await ticketMapper.findBy(
+        Criteria(Tickets::Cols::_id, CompareOperator::EQ, ticketId));
+
+    if (tickets.empty()) {
+      LOG_WARN << "Ticket " << ticketId
+               << " no longer exists. Skipping the pending ticket reminder.";
+      co_return;
+    }
+
+    auto ticket = tickets[0];
+
+    if (ticket.getValueOfIsActive() ||
+        ticket.getValueOfPaymentStatus() == constants::PaymentStatus::SUCCESS) {
+      LOG_INFO << "Ticket " << ticketId
+               << " is already active. No reminder needed.";
+      co_return;
+    }
+
+    if (ticket.getValueOfPaymentReference() != paymentReference) {
+      LOG_INFO << "Ticket " << ticketId << " now uses payment reference "
+               << ticket.getValueOfPaymentReference()
+               << "; the reminder for " << paymentReference << " is stale.";
+      co_return;
+    }
+
+    // 3. Text the customer so they can revive the pending ticket.
+    std::string recipientPhone = ticket.getValueOfCustomerPhone();
+    if (recipientPhone.empty()) {
+      recipientPhone = customerPhone;
+    }
+
+    if (recipientPhone.empty()) {
+      LOG_WARN << "No phone number to remind for ticket " << ticketId << ".";
+      co_return;
+    }
+
+    std::string ticketLabel = ticket.getValueOfTicketAlias();
+    if (ticketLabel.empty()) {
+      ticketLabel = ticket.getValueOfTicketNumber();
+    }
+
+    std::string rafflePart;
+    if (!raffleName.empty()) {
+      rafflePart = " for the " + raffleName + " raffle";
+    }
+
+    const std::string message =
+        "Your ChopMoney ticket " + ticketLabel + rafflePart +
+        " is still unpaid. GHS " + amount + " is due. Dial " + kUssdShortCode +
+        " and select " + kUssdPendingTicketsMenu +
+        " to revive your pending ticket. Good luck!";
+
+    const bool smsSent = co_await hubtelApi.SendSms(recipientPhone, message);
+    if (!smsSent) {
+      LOG_WARN << "Pending ticket reminder SMS failed for ticket " << ticketId
+               << " (phone: " << recipientPhone << ").";
+      co_return;
+    }
+
+    LOG_INFO << "Pending ticket reminder SMS sent for ticket " << ticketId
+             << " (phone: " << recipientPhone << ").";
+
+  } catch (const std::exception &e) {
+    LOG_ERROR << "Pending ticket reminder failed for ticket " << ticketId
+              << ": " << e.what();
+  } catch (...) {
+    LOG_ERROR << "Pending ticket reminder failed for ticket " << ticketId
+              << ": unknown error";
+  }
+}
+
+/**
+ * Schedules the pending ticket reminder in the background, so that create()
+ * returns immediately instead of holding the request for five minutes.
+ */
+void schedulePendingTicketReminder(const std::string &ticketId,
+                                   const std::string &paymentReference,
+                                   const std::string &customerPhone,
+                                   const std::string &raffleName,
+                                   const std::string &amount) {
+  LOG_INFO << "Scheduling the pending ticket reminder for ticket=" << ticketId
+           << ", clientReference=" << paymentReference << " in "
+           << kPendingTicketReminderDelaySeconds << " seconds.";
+
+  drogon::async_run([ticketId, paymentReference, customerPhone, raffleName,
+                     amount]() -> drogon::Task<void> {
+    co_await remindPendingTicketPayment(ticketId, paymentReference,
+                                        customerPhone, raffleName, amount);
+  });
+}
+
 } // namespace
 
 drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query, const std::string &raffleId, const std::string &status, const std::string &startDate, const std::string &endDate) {
@@ -523,6 +690,15 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
         response.error["message"] = "Payment initialization failed.";
         response.result["ticketId"] = result.getValueOfId();
       }
+    }
+
+    // The payment was initiated successfully: check back with Hubtel in the
+    // background after five minutes and, if the customer never paid, text them
+    // so they can revive the pending ticket instead of losing their entry.
+    if (response.success) {
+      schedulePendingTicketReminder(result.getValueOfId(), clientReference,
+                                    result.getValueOfCustomerPhone(),
+                                    raffleName, formatAmount(totalAmount));
     }
 
     co_return response;

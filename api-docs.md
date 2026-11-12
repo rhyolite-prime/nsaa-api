@@ -1841,3 +1841,36 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/ticket/reactivate/7f6
 
 * `200 OK` – Payment prompt queued, or validation/not-found error returned in the body
 * `400 Bad Request` – `ticketId` path parameter missing
+
+## Pending Ticket Payment Reminder
+
+When a ticket purchase is created (`/ticket/buy`, `/customers/buy-ticket`,
+`/customers/buy-guest-ticket`) and the payment is initiated successfully, the
+API schedules a background job that runs five minutes later:
+
+1. The transaction is re-checked with Hubtel
+   (`HubtelApi::TransactionStatusCheck`, keyed on the ticket's
+   `paymentReference`).
+2. If the payment did not succeed, the ticket is loaded from the database. The
+   reminder is skipped when the ticket is already active/paid, when it no longer
+   exists, or when its `paymentReference` was rotated by a revive attempt.
+3. Otherwise the customer receives an SMS telling them how to find the pending
+   ticket on the ChopMoney USSD menu (`*2727#` > `Account` > `Pending Tickets`),
+   e.g.
+
+```
+Your ChopMoney ticket WDW-004 for the Wealth Drop Wednesday raffle is still
+unpaid. GHS 2.40 is due. Dial *2727# and select Account > Pending Tickets to
+revive your pending ticket. Good luck!
+```
+
+The USSD service code and the menu path are defined as `kUssdShortCode` and
+`kUssdPendingTicketsMenu` in `services/tickets/TicketService.cc`, so they can be
+changed in one place if the menu is re-labelled.
+
+The job is detached (`drogon::async_run`) so the create request is not blocked,
+and any error while checking the status or sending the SMS is logged and
+swallowed. It lives in the running process, so restarting the API before the
+five minutes elapse cancels that reminder. If Hubtel cannot report the status at
+all (`ERROR`, `EXCEPTION`, `INVALID_JSON`) no SMS is sent, so customers are never
+nagged because of a problem on our side.
