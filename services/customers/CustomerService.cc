@@ -1645,8 +1645,90 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getTicketSummary(const dto::
 }
 
 drogon::Task<dto::BaseApiResponse> CustomerService::getPendingTickets(const std::string &phoneNo) {
+  dto::BaseApiResponse response;
 
+  if (phoneNo.empty()) {
+    response.success = false;
+    response.error["code"] = constants::ERR_MISSING_PARAMETER;
+    response.error["message"] = "Phone number is required.";
+    response.message = "Phone number is required.";
+    co_return response;
+  }
 
+  std::string normalizedPhone = phoneNo;
+  if (normalizedPhone[0] == '0') {
+    normalizedPhone = "233" + normalizedPhone.substr(1);
+  }
+
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Customers> customerMapper(dbClient);
+
+  Criteria criteria =
+      Criteria(Customers::Cols::_msisdn, CompareOperator::EQ,
+               normalizedPhone) &&
+      Criteria(Customers::Cols::_is_active, CompareOperator::EQ, true) &&
+      Criteria(Customers::Cols::_is_locked_out, CompareOperator::EQ, false);
+
+  try {
+    auto customer = co_await customerMapper.findOne(criteria);
+
+    auto result = co_await dbClient->execSqlCoro(
+        "SELECT t.ticket_alias, t.quantity, t.raffle_id, "
+        "       r.name AS raffle_name, t.created_at "
+        "FROM tickets t "
+        "JOIN raffles r ON r.id = t.raffle_id "
+        "WHERE t.customer_id = $1 "
+        "  AND t.is_active = false "
+        "  AND t.payment_status = $2 "
+        "  AND t.created_at >= NOW() - INTERVAL '7 days' "
+        "ORDER BY t.created_at DESC",
+        customer.getValueOfId(), static_cast<int>(constants::TicketStatus::PENDING));
+
+    Json::Value data = Json::arrayValue;
+
+    if (result.empty()) {
+      Json::Value item;
+      item["ticketAlias"] = "";
+      item["raffleName"]  = "No Tickets found";
+      item["quantity"]    = 0;
+      item["raffleId"]    = "";
+      data.append(item);
+    } else {
+      for (const auto &row : result) {
+        Json::Value item;
+        item["ticketAlias"] = row["ticket_alias"].as<std::string>();
+        item["raffleName"]  = row["raffle_name"].as<std::string>();
+        item["quantity"]    = row["quantity"].as<int>();
+        item["raffleId"]    = row["raffle_id"].as<std::string>();
+        data.append(item);
+      }
+    }
+
+    response.success = true;
+    response.result["data"] = data;
+    response.result["totalCount"] = (Json::UInt64)data.size();
+    co_return response;
+
+  } catch (const drogon::orm::UnexpectedRows &) {
+    response.success = false;
+    response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
+    response.error["message"] =
+        "Account not found or account is inactive/locked.";
+    response.message = "Account not found or account is inactive/locked.";
+    co_return response;
+  } catch (const drogon::orm::DrogonDbException &e) {
+    response.success = false;
+    response.error["code"] = constants::ERR_DB_QUERY;
+    response.error["message"] = "Error while fetching pending tickets.";
+    response.error["detail"] = e.base().what();
+    co_return response;
+  } catch (const std::exception &e) {
+    response.success = false;
+    response.error["code"] = constants::ERR_INTERNAL;
+    response.error["message"] = "Internal error.";
+    response.error["detail"] = e.what();
+    co_return response;
+  }
 }
 
 
