@@ -1765,3 +1765,79 @@ in `YYYY-MM-DD` format and filter tickets by `createdAt`. Both bounds are
 inclusive; `endDate` includes the entire day. Either bound can be used alone,
 and date filters are combined with the other supplied filters. Invalid dates
 return `400 Bad Request`.
+
+## Revive Pending Ticket
+
+**GET** `/api/v1/ticket/reactivate/{ticketId}?customerPhone=&provider=`
+
+### Description
+
+Re-initiates a mobile money payment prompt (Hubtel direct receive money) for a
+ticket that was created but never paid for, e.g. the buyer dismissed the USSD
+prompt, the prompt timed out, or the earlier attempt failed.
+
+`ticketId` is the id of the pending ticket. `customerPhone` and `provider` are
+optional query parameters:
+
+* `customerPhone` – number to send the prompt to. Defaults to the phone number
+  stored on the ticket.
+* `provider` – mobile money network (`mtn`, `vodafone`/`telecel`,
+  `airtel`/`tigo`). Defaults to the payment method stored on the ticket when
+  that identifies a mobile money network, otherwise it is required.
+
+The ticket's `paymentReference` is rotated for every attempt so the Hubtel
+callback resolves the new payment, and the ticket is moved back to
+`PAYMENT_INITIATED` while the prompt is queued. If Hubtel rejects the request,
+the ticket is marked `PAYMENT_FAILED` and another revive attempt can be made.
+
+Tickets that are already active or paid cannot be revived.
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/ticket/reactivate/7f6361c7-76dd-4c2c-b86f-8c0e52352893?provider=mtn&customerPhone=0245444123'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "Authorize Payment of GHS 2.40 by entering PIN on your mobile device. If no bill prompt appears, dial *170# to resume.",
+  "result": {
+    "paymentReference": "690864ea-a3c9-0d95-85c9-56fddd5197a3",
+    "selectedOptionValue": "gold",
+    "ticketAlias": "WDW-004",
+    "ticketId": "7f6361c7-76dd-4c2c-b86f-8c0e52352893",
+    "ticketNumber": "20260707083625",
+    "totalAmount": 2.4
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+### Failure Response
+
+```json
+{
+  "error": {
+    "code": 1500,
+    "message": "Payment initialization failed."
+  },
+  "message": "Failed to initiate mobile money prompt for the pending ticket. Failure",
+  "result": {
+    "paymentReference": "690864ea-a3c9-0d95-85c9-56fddd5197a3",
+    "ticketAlias": "WDW-004",
+    "ticketId": "7f6361c7-76dd-4c2c-b86f-8c0e52352893",
+    "ticketNumber": "20260707083625"
+  },
+  "success": false,
+  "targetUrl": ""
+}
+```
+
+### Response Codes
+
+* `200 OK` – Payment prompt queued, or validation/not-found error returned in the body
+* `400 Bad Request` – `ticketId` path parameter missing

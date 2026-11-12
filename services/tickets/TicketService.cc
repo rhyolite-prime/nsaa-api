@@ -12,10 +12,12 @@
 #include "dto/BaseApiResponse.h"
 #include "dto/CheckoutResponse.h"
 #include "dto/CreateTicketDto.h"
+#include "dto/DirectReceiveMoneyDto.h"
 #include "dto/WebCheckoutDto.h"
 #include "utils/IdGeneratorUtils.h"
 #include "utils/TicketDateFilter.h"
 #include <algorithm>
+#include <cctype>
 #include <drogon/orm/CoroMapper.h>
 #include <drogon/orm/DbClient.h>
 #include <drogon/orm/Mapper.h>
@@ -31,6 +33,59 @@ using namespace drogon::orm;
 using namespace drogon_model::ChopMoneyRaffle;
 
 namespace raffle::services {
+
+namespace {
+
+/**
+ * Normalises a mobile money provider name into the channel identifier expected
+ * by the Hubtel direct receive money API (e.g. "MTN" -> "mtn-gh").
+ */
+std::string toHubtelChannel(const std::string &provider) {
+  std::string channel = provider;
+  std::transform(channel.begin(), channel.end(), channel.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
+
+  if (channel.find("mtn") != std::string::npos) {
+    return "mtn-gh";
+  }
+  if (channel.find("vodafone") != std::string::npos) {
+    return "vodafone-gh";
+  }
+  if (channel.find("telecel") != std::string::npos) {
+    return "vodafone-gh";
+  }
+  if (channel.find("airtel") != std::string::npos) {
+    return "tigo-gh";
+  }
+  if (channel.find("tigo") != std::string::npos) {
+    return "tigo-gh";
+  }
+
+  return channel;
+}
+
+/**
+ * Returns the USSD retry hint appended to the payment prompt, based on the
+ * Hubtel channel the request was queued on.
+ */
+std::string ussdHintForChannel(const std::string &channel) {
+  if (channel == "mtn-gh") {
+    return " If no bill prompt appears, dial *170# to resume.";
+  }
+  if (channel == "vodafone-gh" || channel == "tigo-gh") {
+    return " If no bill prompt appears, dial *110# to resume.";
+  }
+  return "";
+}
+
+/** Formats a monetary amount with two decimal places. */
+std::string formatAmount(double amount) {
+  std::ostringstream amountStream;
+  amountStream << std::fixed << std::setprecision(2) << amount;
+  return amountStream.str();
+}
+
+} // namespace
 
 drogon::Task<dto::BaseApiResponse> TicketService::getAll(int pageNo, int pageSize, const std::string &query, const std::string &raffleId, const std::string &status, const std::string &startDate, const std::string &endDate) {
 
@@ -422,23 +477,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
       }
     } else {
 
-      std::string provider = dto.getProvider();
-
-      // convert to lowercase
-      std::transform(provider.begin(), provider.end(), provider.begin(),
-                     [](unsigned char c) { return std::tolower(c); });
-
-      if (provider.find("mtn") != std::string::npos) {
-        provider = "mtn-gh";
-      } else if (provider.find("vodafone") != std::string::npos) {
-        provider = "vodafone-gh";
-      } else if (provider.find("airtel") != std::string::npos) {
-        provider = "tigo-gh";
-      } else if (provider.find("tigo") != std::string::npos) {
-        provider = "tigo-gh";
-      } else if (provider.find("telecel") != std::string::npos) {
-        provider = "vodafone-gh";
-      }
+      const std::string provider = toHubtelChannel(dto.getProvider());
 
       dto::DirectReceiveMoneyDto directReceiveDto;
       directReceiveDto.setCustomerName("NSAA_" + dto.getCustomerPhone());
@@ -463,15 +502,10 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
 
       if (hubtelResult.responseCode == "0001") {
 
-        std::ostringstream amountStream;
-        amountStream << std::fixed << std::setprecision(2) << totalAmount;
-        std::string promptMessage = "Authorize Payment of GHS " + amountStream.str() + " by entering PIN on your mobile device. ";
-
-        if (provider == "mtn-gh") {
-          promptMessage += "If no bill prompt appears, dial *170# to resume.";
-        } else if (provider == "vodafone-gh" || provider == "tigo-gh") {
-          promptMessage += "If no bill prompt appears, dial *110# to resume.";
-        }
+        std::string promptMessage =
+            "Authorize Payment of GHS " + formatAmount(totalAmount) +
+            " by entering PIN on your mobile device.";
+        promptMessage += ussdHintForChannel(provider);
 
         response.success = true;
         response.message = promptMessage;
@@ -677,9 +711,229 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
 
 
 drogon::Task<dto::BaseApiResponse> TicketService::revivePendingTicket(const dto::ReviveTicketDto &dto) {
+  auto dbClient = drogon::app().getDbClient();
+  CoroMapper<Tickets> ticketMapper(dbClient);
+  CoroMapper<Raffles> raffleMapper(dbClient);
 
-  //use the ticketId to retrieve the total amount due to initiate direct receive money as seen in the create method
+  LOG_INFO << "ReviveTicketDto request:"
+           << " ticketId=" << dto.getTicketId()
+           << " customerPhone=" << dto.getCustomerPhone()
+           << " provider=" << dto.getProvider();
 
+  try {
+    // 1. Validate the ticket id
+    if (dto.getTicketId().empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_MISSING_PARAMETER;
+      errorResponse.error["message"] = "Ticket id is required.";
+      co_return errorResponse;
+    }
+
+    // 2. Retrieve the pending ticket
+    auto tickets = co_await ticketMapper.findBy(
+        Criteria(Tickets::Cols::_id, CompareOperator::EQ, dto.getTicketId()));
+
+    if (tickets.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_DB_NOT_FOUND;
+      errorResponse.error["message"] =
+          "Ticket not found with the provided ticket id.";
+      co_return errorResponse;
+    }
+
+    auto ticket = tickets[0];
+
+    // 3. Only tickets that are still awaiting payment can be revived
+    if (ticket.getValueOfIsActive() ||
+        ticket.getValueOfPaymentStatus() == constants::PaymentStatus::SUCCESS) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] =
+          "Ticket is already active or paid and cannot be revived.";
+      errorResponse.result["ticketId"] = ticket.getValueOfId();
+      co_return errorResponse;
+    }
+
+    // 4. Amount due for the pending ticket
+    double totalAmount = 0.0;
+    try {
+      totalAmount = std::stod(ticket.getValueOfTotalAmount());
+    } catch (...) {
+      totalAmount = 0.0;
+    }
+
+    if (totalAmount <= 0.0) {
+      double entryFee = 0.0;
+      try {
+        entryFee = std::stod(ticket.getValueOfEntryFee());
+      } catch (...) {
+        entryFee = 0.0;
+      }
+      totalAmount = entryFee * static_cast<double>(ticket.getValueOfQuantity());
+    }
+
+    if (totalAmount <= 0.0) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_VALIDATION;
+      errorResponse.error["message"] =
+          "Unable to determine the amount due for this ticket.";
+      errorResponse.result["ticketId"] = ticket.getValueOfId();
+      co_return errorResponse;
+    }
+
+    // 5. Resolve the payment channel and the customer phone number
+    std::string channel;
+    if (!dto.getProvider().empty()) {
+      // The caller explicitly chose a provider for this attempt.
+      channel = toHubtelChannel(dto.getProvider());
+    } else {
+      // Fall back to the payment method recorded on the ticket, which is only
+      // usable when it identifies a mobile money network (e.g. not
+      // "HUBTEL CHECKOUT").
+      const std::string storedChannel =
+          toHubtelChannel(ticket.getValueOfPaymentMethod());
+      if (storedChannel == "mtn-gh" || storedChannel == "vodafone-gh" ||
+          storedChannel == "tigo-gh") {
+        channel = storedChannel;
+      }
+    }
+
+    if (channel.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_MISSING_PARAMETER;
+      errorResponse.error["message"] =
+          "Payment provider is required to revive a pending ticket. Provide "
+          "mtn, vodafone/telecel or airtel/tigo.";
+      errorResponse.result["ticketId"] = ticket.getValueOfId();
+      co_return errorResponse;
+    }
+
+    std::string customerPhone = dto.getCustomerPhone();
+    if (customerPhone.empty()) {
+      customerPhone = ticket.getValueOfCustomerPhone();
+    }
+
+    if (customerPhone.empty()) {
+      dto::BaseApiResponse errorResponse;
+      errorResponse.success = false;
+      errorResponse.error["code"] = constants::ERR_MISSING_PARAMETER;
+      errorResponse.error["message"] =
+          "Customer phone number is required to revive a pending ticket.";
+      errorResponse.result["ticketId"] = ticket.getValueOfId();
+      co_return errorResponse;
+    }
+
+    // 6. Build the payment description from the raffle the ticket belongs to
+    std::string description = "Ticket Purchase";
+    const std::string raffleId = ticket.getValueOfRaffleId();
+    if (!raffleId.empty()) {
+      try {
+        auto raffle = co_await raffleMapper.findByPrimaryKey(raffleId);
+        const std::string slug = raffle.getValueOfSlug();
+        if (!slug.empty()) {
+          description += " - " + slug;
+        }
+      } catch (const drogon::orm::DrogonDbException &e) {
+        LOG_WARN << "Failed to load raffle " << raffleId
+                 << " while reviving ticket " << ticket.getValueOfId()
+                 << ": " << e.base().what();
+      }
+    }
+
+    // 7. Rotate the payment reference so the new payment attempt can be
+    //    resolved by the payment callbacks, and persist before queueing the
+    //    request with Hubtel.
+    const std::string clientReference = utils::IdGeneratorUtils::generateGuid();
+
+    ticket.setPaymentReference(clientReference);
+    ticket.setCustomerPhone(customerPhone);
+    ticket.setPaymentStatus(constants::PaymentStatus::PAYMENT_INITIATED);
+    ticket.setUpdatedAt(trantor::Date::now());
+    co_await ticketMapper.update(ticket);
+
+    // 8. Queue the direct receive money request, exactly as in create()
+    const auto &customConfig = drogon::app().getCustomConfig();
+    const auto &hubtelConfig = customConfig["HubtelPaymentApi"];
+
+    dto::DirectReceiveMoneyDto directReceiveDto;
+    directReceiveDto.setCustomerName("NSAA_" + customerPhone);
+    directReceiveDto.setCustomerEmail(customerPhone + "@nsaaplay.com");
+    directReceiveDto.setCustomerMsisdn(customerPhone);
+    directReceiveDto.setAmount(totalAmount);
+    directReceiveDto.setChannel(channel);
+    directReceiveDto.setClientReference(clientReference);
+    directReceiveDto.setDescription(description);
+    directReceiveDto.setPrimaryCallbackUrl(
+        hubtelConfig["DirectReceiveMoneyCallBackUrl"].asString());
+
+    HubtelApi hubtelApi;
+    auto hubtelResult =
+        co_await hubtelApi.QueueReceiveMoneyRequest(directReceiveDto);
+
+    LOG_INFO << "Hubtel DirectReceive result for revived ticket="
+             << ticket.getValueOfId()
+             << " clientReference=" << clientReference
+             << " responseCode=" << hubtelResult.responseCode
+             << " transactionId=" << hubtelResult.data.transactionId;
+
+    dto::BaseApiResponse response;
+    response.result["ticketId"] = ticket.getValueOfId();
+    response.result["ticketNumber"] = ticket.getValueOfTicketNumber();
+    response.result["ticketAlias"] = ticket.getValueOfTicketAlias();
+    response.result["paymentReference"] = clientReference;
+    response.result["selectedOptionValue"] =
+        ticket.getValueOfSelectedOptionValue();
+
+    if (hubtelResult.responseCode == "0001") {
+      std::string promptMessage =
+          "Authorize Payment of GHS " + formatAmount(totalAmount) +
+          " by entering PIN on your mobile device.";
+      promptMessage += ussdHintForChannel(channel);
+
+      response.success = true;
+      response.message = promptMessage;
+      response.result["totalAmount"] = totalAmount;
+      co_return response;
+    }
+
+    // 9. The payment prompt could not be queued: flag the ticket as failed so
+    //    that another revive attempt can be made later.
+    ticket.setPaymentStatus(constants::PaymentStatus::PAYMENT_FAILED);
+    ticket.setUpdatedAt(trantor::Date::now());
+    co_await ticketMapper.update(ticket);
+
+    LOG_ERROR << "Failed to revive pending ticket " << ticket.getValueOfId()
+              << ". responseCode=" << hubtelResult.responseCode
+              << ", message=" << hubtelResult.message;
+
+    response.success = false;
+    response.message = "Failed to initiate mobile money prompt for the pending "
+                       "ticket. " + hubtelResult.message;
+    response.error["code"] = constants::ERR_INTERNAL;
+    response.error["message"] = "Payment initialization failed.";
+    co_return response;
+
+  } catch (const drogon::orm::DrogonDbException &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_DB_QUERY;
+    errorResponse.error["message"] =
+        "Database error while reviving pending ticket.";
+    errorResponse.error["detail"] = e.base().what();
+    co_return errorResponse;
+  } catch (const std::exception &e) {
+    dto::BaseApiResponse errorResponse;
+    errorResponse.success = false;
+    errorResponse.error["code"] = constants::ERR_INTERNAL;
+    errorResponse.error["message"] = "Internal error.";
+    errorResponse.error["detail"] = e.what();
+    co_return errorResponse;
+  }
 }
 
 } // namespace raffle::services
