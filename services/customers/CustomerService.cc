@@ -1680,7 +1680,7 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getPendingTickets(const std:
         "WHERE t.customer_id = $1 "
         "  AND t.is_active = false "
         "  AND t.payment_status = $2 "
-        "  AND t.created_at >= NOW() - INTERVAL '7 days' "
+        "  AND t.created_at >= NOW() - INTERVAL '10 days' "
         "ORDER BY t.created_at DESC",
         customer.getValueOfId(), static_cast<int>(constants::TicketStatus::PENDING));
 
