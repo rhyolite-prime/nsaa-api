@@ -91,6 +91,12 @@ std::string formatAmount(double amount) {
  */
 constexpr double kPendingTicketReminderDelaySeconds = 5.0 * 60.0; // 5 minutes
 
+/** ChopMoney USSD service code customers dial to reach their tickets. */
+constexpr const char *kUssdShortCode = "*2727#";
+
+/** USSD menu path that lists the customer's pending tickets. */
+constexpr const char *kUssdPendingTicketsMenu = "Account > Pending Tickets";
+
 /** Returns true when a Hubtel status check reports a payment that went
  * through. */
 bool isSuccessfulPaymentStatus(
@@ -203,9 +209,9 @@ drogon::Task<void> remindPendingTicketPayment(std::string ticketId,
 
     const std::string message =
         "Your ChopMoney ticket " + ticketLabel + rafflePart +
-        " is still unpaid. GHS " + amount +
-        " is due. Revive your pending ticket in the app to complete your "
-        "entry. Good luck!";
+        " is still unpaid. GHS " + amount + " is due. Dial " + kUssdShortCode +
+        " and select " + kUssdPendingTicketsMenu +
+        " to revive your pending ticket. Good luck!";
 
     const bool smsSent = co_await hubtelApi.SendSms(recipientPhone, message);
     if (!smsSent) {
