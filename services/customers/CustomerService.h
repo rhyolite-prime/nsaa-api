@@ -45,6 +45,9 @@ public:
   drogon::Task<dto::BaseApiResponse> getRaffleHistory(const std::string &customerId, int pageNo, int pageSize,  const std::string &query);
 
   drogon::Task<dto::BaseApiResponse> getTicketSummary(const dto::TicketSummaryRequestDto &dto);
+
+  drogon::Task<dto::BaseApiResponse> getPendingTickets(const std::string &phoneNo);
+
 };
 
 } // namespace raffle::services

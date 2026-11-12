@@ -169,7 +169,6 @@ drogon::Task<HttpResponsePtr> CustomersController::getTickets(HttpRequestPtr req
 }
 
 
-
 drogon::Task<HttpResponsePtr> CustomersController::getTicketSummary(HttpRequestPtr req) {
 
   auto jsonBody = req->getJsonObject();
@@ -226,4 +225,20 @@ drogon::Task<HttpResponsePtr> CustomersController::getRaffleHistory(HttpRequestP
   auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
   co_return resp;
 
+}
+
+
+Task<HttpResponsePtr> CustomersController::getPendingTickets(HttpRequestPtr req) {
+
+  std::string phoneNo = req->getParameter("phoneNo");
+  if (phoneNo.empty()) {
+    phoneNo = "";
+  }
+
+  auto plugin = app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &customerService = plugin->getCustomerService();
+
+  auto result = co_await customerService.getPendingTickets(phoneNo);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
 }

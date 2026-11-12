@@ -1195,6 +1195,9 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/cms/raffles/get-o
 
 ```
 
+
+
+
 # ⚠️ Error Handling
 
 
@@ -1562,6 +1565,72 @@ curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/get-draw-history'
 }
 
 ```
+
+## 26. Get Prizes From All Active Raffles
+
+**POST** `/cms/get-prizes-from-all-active-raffles`
+
+### Description
+
+Gets Prizes From All Active Raffles
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/cms/get-prizes-from-all-active-raffles'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "imageUrl": "https://res.cloudinary.com/rhyoliteprime/image/upload/v1794239364/nsaa/silver_phone_front_and_back.png",
+        "prizeCategoryId": "eded97f7-cba1-4667-b6b5-9fd179fc0c20",
+        "prizeId": "a36d9e48-6c5c-4b82-acc2-76a61b14c32a",
+        "prizeName": "iPhone 17",
+        "value": 1
+      },
+      {
+        "imageUrl": "https://res.cloudinary.com/rhyoliteprime/image/upload/v1794239333/nsaa/dark_phone_front_and_back.png",
+        "prizeCategoryId": "eded97f7-cba1-4667-b6b5-9fd179fc0c20",
+        "prizeId": "ec1b419c-6de6-45ee-bbe7-7bb8eff68b75",
+        "prizeName": "Samsung Galaxy Smartphone",
+        "value": 1
+      },
+      {
+        "imageUrl": "https://res.cloudinary.com/rhyoliteprime/image/upload/v1794239368/nsaa/tv_55_inch.png",
+        "prizeCategoryId": "7073c55d-99b8-4e82-92c6-fb6e1f5c33b2",
+        "prizeId": "ee349037-3414-4298-b227-63c073e87ee0",
+        "prizeName": "55 inch Smart TV",
+        "value": 1
+      },
+      {
+        "imageUrl": "https://res.cloudinary.com/rhyoliteprime/image/upload/v1794239317/nsaa/fuel_voucher_straight.png",
+        "prizeCategoryId": "0a6f9349-65e8-44ad-82b6-d515b79c0795",
+        "prizeId": "d1a6763c-0254-45a6-a4a7-0c109398ef21",
+        "prizeName": "Fuel Voucher",
+        "value": 1
+      },
+      {
+        "imageUrl": "https://res.cloudinary.com/rhyoliteprime/image/upload/v1794239320/nsaa/shopping_voucher_straight.png",
+        "prizeCategoryId": "0c128366-d0d5-49c1-a15f-ef71ec7b4fc0",
+        "prizeId": "6eba66cd-da9f-496a-8946-4322bed2ace6",
+        "prizeName": "Shopping Voucher",
+        "value": 1
+      }
+    ]
+  },
+  "success": true,
+  "targetUrl": ""
+}
+
+```
+
 
 
 Common error responses:

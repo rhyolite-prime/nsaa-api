@@ -1447,9 +1447,7 @@ CustomerService::getTickets(const std::string &customerId, int pageNo,
   }
 }
 
-drogon::Task<dto::BaseApiResponse>
-CustomerService::getRaffleHistory(const std::string &customerId, int pageNo,
-                                  int pageSize, const std::string &query) {
+drogon::Task<dto::BaseApiResponse> CustomerService::getRaffleHistory(const std::string &customerId, int pageNo, int pageSize, const std::string &query) {
   auto dbClient = drogon::app().getDbClient();
 
   try {
@@ -1521,8 +1519,7 @@ CustomerService::getRaffleHistory(const std::string &customerId, int pageNo,
     dto::BaseApiResponse errorResponse;
     errorResponse.success = false;
     errorResponse.error["code"] = constants::ERR_DB_QUERY;
-    errorResponse.error["message"] =
-        "Database error while fetching raffle history.";
+    errorResponse.error["message"] = "Database error while fetching raffle history.";
     errorResponse.error["detail"] = e.base().what();
     co_return errorResponse;
   } catch (const std::exception &e) {
@@ -1620,8 +1617,6 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getTicketSummary(const dto::
       }
     }
 
-
-
     response.success = true;
     response.result["data"] = data;
     response.result["totalCount"] = (Json::UInt64)data.size();
@@ -1631,13 +1626,13 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getTicketSummary(const dto::
     response.success = false;
     response.error["code"] = constants::ERR_RESOURCE_NOT_FOUND;
     response.error["message"] =
-        "Customer not found or account is inactive/locked.";
-    response.message = "Customer not found or account is inactive/locked.";
+        "Account not found or account is inactive/locked.";
+    response.message = "Account not found or account is inactive/locked.";
     co_return response;
   } catch (const drogon::orm::DrogonDbException &e) {
     response.success = false;
     response.error["code"] = constants::ERR_DB_QUERY;
-    response.error["message"] = "Database error while fetching ticket summary.";
+    response.error["message"] = "Error while fetching ticket summary.";
     response.error["detail"] = e.base().what();
     co_return response;
   } catch (const std::exception &e) {
@@ -1649,5 +1644,11 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getTicketSummary(const dto::
   }
 }
 
-} // namespace raffle::services
+drogon::Task<dto::BaseApiResponse> CustomerService::getPendingTickets(const std::string &phoneNo) {
+
+
+}
+
+
+}
 // namespace raffle::services

@@ -10,11 +10,13 @@ public:
   METHOD_LIST_BEGIN
     ADD_METHOD_TO(TicketsController::getAll, std::string(PREFIX) + "get-all", Get, Options);
     ADD_METHOD_TO(TicketsController::create, std::string(PREFIX) + "buy", Post, Options);
+    ADD_METHOD_TO(TicketsController::getPendingTickets, std::string(PREFIX) + "buy", Get, Options);
     ADD_METHOD_TO(TicketsController::getRaffleTicketStats, std::string(PREFIX) + "get-stats/{1}", Get, Options);
   METHOD_LIST_END
 
   Task<HttpResponsePtr> getAll(HttpRequestPtr req);
   Task<HttpResponsePtr> create(HttpRequestPtr req);
+  Task<HttpResponsePtr> getPendingTickets(HttpRequestPtr req);
   Task<HttpResponsePtr> getRaffleTicketStats(HttpRequestPtr req, std::string raffleId);
 
 };

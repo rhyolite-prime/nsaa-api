@@ -18,6 +18,7 @@ public:
   ADD_METHOD_TO(CustomersController::buyGuestTicket, std::string(PREFIX) + "buy-guest-ticket", Post, Options);
   ADD_METHOD_TO(CustomersController::getTickets, std::string(PREFIX) + "get-tickets", Get, Options, "CustomerJwtAuthFilter");
   ADD_METHOD_TO(CustomersController::getTicketSummary, std::string(PREFIX) + "get-ticket-summary", Post, Options); //for USSD only
+  ADD_METHOD_TO(CustomersController::getPendingTickets, std::string(PREFIX) + "get-pending-tickets", Get, Options); //for USSD only
   ADD_METHOD_TO(CustomersController::getRaffleHistory, std::string(PREFIX) + "get-raffle-history", Get, Options, "CustomerJwtAuthFilter");
   METHOD_LIST_END
 
@@ -32,6 +33,7 @@ public:
   drogon::Task<HttpResponsePtr> buyGuestTicket(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> getTickets(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> getTicketSummary(HttpRequestPtr req);
+  drogon::Task<HttpResponsePtr> getPendingTickets(HttpRequestPtr req);
   drogon::Task<HttpResponsePtr> getRaffleHistory(HttpRequestPtr req);
 
 };
