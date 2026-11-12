@@ -676,4 +676,10 @@ drogon::Task<dto::BaseApiResponse> TicketService::activate(const std::string &pa
 }
 
 
+drogon::Task<dto::BaseApiResponse> TicketService::revivePendingTicket(const dto::ReviveTicketDto &dto) {
+
+  //use the ticketId to retrieve the total amount due to initiate direct receive money as seen in the create method
+
+}
+
 } // namespace raffle::services

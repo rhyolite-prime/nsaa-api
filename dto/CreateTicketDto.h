@@ -10,7 +10,7 @@
 
 namespace raffle::dto {
 
-class CreateTicketDto {
+  class CreateTicketDto {
 
 public:
   CreateTicketDto() = default;
@@ -47,7 +47,7 @@ public:
 
 };
 
-inline void CreateTicketDto::fromJson(const Json::Value &json) {
+  inline void CreateTicketDto::fromJson(const Json::Value &json) {
 
   if (json.isMember("raffleId") && !json["raffleId"].isNull()) {
     setRaffleId(json["raffleId"].asString());
@@ -79,6 +79,49 @@ inline void CreateTicketDto::fromJson(const Json::Value &json) {
   }
 
 }
+
+
+  class ReviveTicketDto {
+
+public:
+  ReviveTicketDto() = default;
+
+  void fromJson(const Json::Value &json);
+
+  // Getters
+  [[nodiscard]] const std::string &getTicketId() const { return ticket_id_; }
+  [[nodiscard]] const std::string& getCustomerPhone() const { return customer_phone_; }
+  [[nodiscard]] const std::string& getProvider() const { return provider_; }
+
+  // Setters
+  void setTicketId(const std::string &value) { ticket_id_ = value; }
+  void setCustomerPhone(const std::string &value) { customer_phone_ = value; }
+  void setProvider(const std::string &value) { provider_ = value; }
+
+
+  private:
+    std::string ticket_id_;
+    std::string customer_phone_;
+    std::string provider_;
+
+};
+
+  inline void ReviveTicketDto::fromJson(const Json::Value &json) {
+
+  if (json.isMember("ticketId") && !json["ticketId"].isNull()) {
+    setTicketId(json["ticketId"].asString());
+  }
+
+  if (json.isMember("customerPhone") && !json["customerPhone"].isNull()) {
+    customer_phone_ = json["customerPhone"].asString();
+  }
+
+  if (json.isMember("provider") && !json["provider"].isNull()) {
+    provider_ = json["provider"].asString();
+  }
+
+}
+
 
 } // namespace raffle::dto
 #endif // CHOPMONEYRAFFLEAPI_CREATETICKETDTO_H

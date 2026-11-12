@@ -21,6 +21,8 @@ public:
 
   drogon::Task<dto::BaseApiResponse> getRaffleTicketStats(const std::string &raffleId);
 
+  drogon::Task<dto::BaseApiResponse> revivePendingTicket(const dto::ReviveTicketDto &dto);
+
   drogon::Task<dto::BaseApiResponse> create(const dto::CreateTicketDto &dto);
 };
 
