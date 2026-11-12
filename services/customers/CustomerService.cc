@@ -1673,7 +1673,7 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getPendingTickets(const std:
     auto customer = co_await customerMapper.findOne(criteria);
 
     auto result = co_await dbClient->execSqlCoro(
-        "SELECT t.ticket_alias, t.quantity, t.raffle_id, "
+        "SELECT t.id, t.ticket_alias, t.quantity, t.raffle_id, "
         "       r.name AS raffle_name, t.created_at "
         "FROM tickets t "
         "JOIN raffles r ON r.id = t.raffle_id "
@@ -1688,6 +1688,7 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getPendingTickets(const std:
 
     if (result.empty()) {
       Json::Value item;
+      item["ticketId"]    = "";
       item["ticketAlias"] = "";
       item["raffleName"]  = "No Tickets found";
       item["quantity"]    = 0;
@@ -1696,6 +1697,7 @@ drogon::Task<dto::BaseApiResponse> CustomerService::getPendingTickets(const std:
     } else {
       for (const auto &row : result) {
         Json::Value item;
+        item["ticketId"]    = row["id"].as<std::string>();
         item["ticketAlias"] = row["ticket_alias"].as<std::string>();
         item["raffleName"]  = row["raffle_name"].as<std::string>();
         item["quantity"]    = row["quantity"].as<int>();

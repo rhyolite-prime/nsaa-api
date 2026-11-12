@@ -1874,3 +1874,51 @@ swallowed. It lives in the running process, so restarting the API before the
 five minutes elapse cancels that reminder. If Hubtel cannot report the status at
 all (`ERROR`, `EXCEPTION`, `INVALID_JSON`) no SMS is sent, so customers are never
 nagged because of a problem on our side.
+
+## Get Pending Tickets (USSD)
+
+**GET** `/api/v1/customers/get-pending-tickets?phoneNo=`
+
+### Description
+
+Lists the customer's unpaid tickets from the last 10 days, so the USSD menu
+(`Account > Pending Tickets`) can offer each one for revival.
+
+`phoneNo` accepts the local format (`0245444123`) and is normalised to
+`233...` before the lookup. The customer must exist and be active/unlocked.
+
+Each row now carries the ticket `ticketId`, which is what
+`/api/v1/ticket/reactivate/{ticketId}` expects.
+
+### Example Request
+
+```bash
+curl --location 'https://nsaa-api.rhyoliteprime.com/api/v1/customers/get-pending-tickets?phoneNo=0245444123'
+```
+
+### Example Response
+
+```json
+{
+  "error": null,
+  "message": "",
+  "result": {
+    "data": [
+      {
+        "ticketId": "7f6361c7-76dd-4c2c-b86f-8c0e52352893",
+        "ticketAlias": "WDW-004",
+        "raffleName": "Wealth Drop Wednesday",
+        "quantity": 2,
+        "raffleId": "8990662a-e40f-4344-9b56-1fd16b0c3f0a"
+      }
+    ],
+    "totalCount": 1
+  },
+  "success": true,
+  "targetUrl": ""
+}
+```
+
+When the customer has no pending ticket, `data` holds a single placeholder row
+with empty `ticketId`/`ticketAlias`/`raffleId`, `quantity` 0 and
+`raffleName` `"No Tickets found"`.
