@@ -486,7 +486,7 @@ drogon::Task<dto::BaseApiResponse> TicketService::create(const dto::CreateTicket
             "Ticket created but failed to initiate mobile money prompt. " +
             hubtelResult.message;
         response.error["code"] = constants::ERR_INTERNAL;
-        response.error["message"] = "Direct payment initialization failed.";
+        response.error["message"] = "Payment initialization failed.";
         response.result["ticketId"] = result.getValueOfId();
       }
     }
