@@ -57,6 +57,17 @@ Task<HttpResponsePtr> TicketsController::getAll(HttpRequestPtr req) {
   co_return resp;
 }
 
+Task<HttpResponsePtr> TicketsController::reactivatePendingTicket(HttpRequestPtr req, std::string ticketId) {
+
+  auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
+  auto &ticketService = plugin->getTicketService();
+
+  auto result = co_await ticketService.getRaffleTicketStats(raffleId);
+  auto resp = HttpResponse::newHttpJsonResponse(result.toJson());
+  co_return resp;
+
+}
+
 
 Task<HttpResponsePtr> TicketsController::getRaffleTicketStats(HttpRequestPtr req, std::string raffleId) {
 
