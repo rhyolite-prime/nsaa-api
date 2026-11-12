@@ -89,8 +89,7 @@ std::string formatAmount(double amount) {
  * Time to wait after a payment request was queued before the transaction is
  * checked again and the customer is reminded about the pending ticket.
  */
-//constexpr double kPendingTicketReminderDelaySeconds = 5.0 * 60.0; // 5 minutes
-constexpr double kPendingTicketReminderDelaySeconds = 5;
+constexpr double kPendingTicketReminderDelaySeconds = 5.0 * 60.0; // 5 minutes
 
 /** ChopMoney USSD service code customers dial to reach their tickets. */
 constexpr const char *kUssdShortCode = "*2727#";
