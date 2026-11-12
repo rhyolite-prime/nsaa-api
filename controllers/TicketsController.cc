@@ -57,22 +57,21 @@ Task<HttpResponsePtr> TicketsController::getAll(HttpRequestPtr req) {
   co_return resp;
 }
 
-Task<HttpResponsePtr> TicketsController::revivePendingTicket(HttpRequestPtr req, std::string ticketId) {
+Task<HttpResponsePtr> TicketsController::revivePendingTicket(HttpRequestPtr req) {
 
-  if (ticketId.empty()) {
+  auto jsonBody = req->getJsonObject();
+
+  if (!jsonBody) {
     raffle::dto::BaseApiResponse response;
     response.success = false;
-    response.error["code"] = raffle::constants::ERR_MISSING_PARAMETER;
-    response.error["message"] = "Ticket id is required.";
+    response.error["message"] = "Invalid JSON body";
     auto resp = HttpResponse::newHttpJsonResponse(response.toJson());
     resp->setStatusCode(k400BadRequest);
     co_return resp;
   }
 
   raffle::dto::ReviveTicketDto dto;
-  dto.setTicketId(ticketId);
-  dto.setCustomerPhone(req->getParameter("customerPhone"));
-  dto.setProvider(req->getParameter("provider"));
+  dto.fromJson(*jsonBody);
 
   auto plugin = drogon::app().getPlugin<raffle::plugins::RaffleServicePlugin>();
   auto &ticketService = plugin->getTicketService();
